@@ -136,6 +136,7 @@ test.describe('People Management', () => {
       const notesBtn = page.locator('button').getByText('Notes');
       await notesBtn.click();
       const editBtn = page.locator('button').getByText('edit');
+      await expect(editBtn).toBeVisible({ timeout: 10000 });
       await editBtn.click();
       const seekNotes = page.locator('textArea').first();
       await expect(seekNotes).toBeVisible({ timeout: 10000 });
@@ -154,8 +155,10 @@ test.describe('People Management', () => {
       const notesBtn = page.locator('button').getByText('Notes');
       await notesBtn.click();
       const editBtn = page.locator('button').getByText('edit');
+      await expect(editBtn).toBeVisible({ timeout: 10000 });
       await editBtn.click();
       const deleteBtn = page.locator('button').getByText('delete');
+      await expect(deleteBtn).toBeVisible({ timeout: 10000 });
       await deleteBtn.click();
       const validatedDeletion = page.locator('p').getByText('Testing Note');
       await expect(validatedDeletion).toHaveCount(0, { timeout: 10000 });
@@ -364,9 +367,12 @@ test.describe('People Management', () => {
       await expect(page).toHaveURL(/\/people\/PER\d+/);
 
       const editBtn = page.locator('button').getByText('edit');
+      await expect(editBtn).toBeVisible({ timeout: 10000 });
       await editBtn.click();
       const cancelBtn = page.locator('button').getByText('Cancel');
+      await expect(cancelBtn).toBeVisible({ timeout: 10000 });
       await cancelBtn.click();
+      await expect(editBtn).toBeVisible({ timeout: 10000 });
       await editBtn.click();
     });
 
@@ -378,6 +384,7 @@ test.describe('People Management', () => {
       await expect(page).toHaveURL(/\/people\/PER\d+/);
 
       const editBtn = page.locator('button').getByText('edit');
+      await expect(editBtn).toBeVisible({ timeout: 10000 });
       await editBtn.click();
       const removeBtn = page.locator('button').getByText('Remove').last();
       await expect(removeBtn).toBeVisible({ timeout: 10000 });
@@ -399,8 +406,10 @@ test.describe('People Management', () => {
       await expect(page).toHaveURL(/\/people\/PER\d+/);
 
       const editBtn = page.locator('button').getByText('edit');
+      await expect(editBtn).toBeVisible({ timeout: 10000 });
       await editBtn.click();
       const addBtn = page.locator('button').getByText('Add');
+      await expect(addBtn).toBeVisible({ timeout: 10000 });
       await addBtn.click();
       const searchInput = page.locator('input[name="personAddText"]');
       await searchInput.fill('Carol');
@@ -426,8 +435,10 @@ test.describe('People Management', () => {
       await expect(page).toHaveURL(/\/people\/PER\d+/);
 
       const editBtn = page.locator('button').getByText('edit');
+      await expect(editBtn).toBeVisible({ timeout: 10000 });
       await editBtn.click();
       const addBtn = page.locator('button').getByText('Add');
+      await expect(addBtn).toBeVisible({ timeout: 10000 });
       await addBtn.click();
       const closeBtn = page.locator('button').getByText('close');
       await closeBtn.click();
@@ -442,8 +453,10 @@ test.describe('People Management', () => {
       await expect(page).toHaveURL(/\/people\/PER\d+/);
 
       const editBtn = page.locator('button').filter({ has: page.locator('[d*="M3 17.25"]') });
+      await expect(editBtn).toBeVisible({ timeout: 10000 });
       await editBtn.click();
       const cancelBtn = page.locator('button').getByText('Cancel');
+      await expect(cancelBtn).toBeVisible({ timeout: 10000 });
       await cancelBtn.click();
       const inputs = page.locator('input');
       await expect(inputs).toHaveCount(0);
@@ -457,6 +470,7 @@ test.describe('People Management', () => {
       await expect(page).toHaveURL(/\/people\/PER\d+/);
 
       const editBtn = page.locator('button').filter({ has: page.locator('[d*="M3 17.25"]') });
+      await expect(editBtn).toBeVisible({ timeout: 10000 });
       await editBtn.click();
       const middleName = page.locator('[name="name.middle"]');
       await expect(middleName).toBeVisible({ timeout: 10000 });
@@ -477,8 +491,10 @@ test.describe('People Management', () => {
       await expect(page).toHaveURL(/\/people\/PER\d+/);
 
       const editBtn = page.locator('button').filter({ has: page.locator('[d*="M3 17.25"]') });
+      await expect(editBtn).toBeVisible({ timeout: 10000 });
       await editBtn.click();
       const mergeBtn = page.locator('button').getByText('merge');
+      await expect(mergeBtn).toBeVisible({ timeout: 10000 });
       await mergeBtn.click();
       const cancelBtn = page.locator('button').getByText('Cancel').first();
       await cancelBtn.click();
@@ -494,14 +510,17 @@ test.describe('People Management', () => {
       await expect(page).toHaveURL(/\/people\/PER\d+/);
 
       const editBtn = page.locator('button').filter({ has: page.locator('[d*="M3 17.25"]') });
+      await expect(editBtn).toBeVisible({ timeout: 10000 });
       await editBtn.click();
       const mergeBtn = page.locator('button').getByText('merge');
+      await expect(mergeBtn).toBeVisible({ timeout: 10000 });
       await mergeBtn.click();
       const mergeSearch = page.locator('[name="personAddText"]');
       await mergeSearch.fill('Robert Moore');
       const searchBtn = page.locator('button').getByText("Search");
       await searchBtn.click();
       const mergePplBtn = page.locator('[data-testid="select-person-button"]');
+      await expect(mergePplBtn).toBeVisible({ timeout: 10000 });
       await mergePplBtn.click();
       const confirmBtn = page.locator('button').getByText('Confirm');
       await confirmBtn.click();
@@ -524,8 +543,10 @@ test.describe('People Management', () => {
       await expect(page).toHaveURL(/\/people\/PER\d+/);
 
       const editBtn = page.locator('button').filter({ has: page.locator('[d*="M3 17.25"]') });
+      await expect(editBtn).toBeVisible({ timeout: 10000 });
       await editBtn.click();
       const deleteBtn = page.locator('button').getByText('Delete');
+      await expect(deleteBtn).toBeVisible({ timeout: 10000 });
       await deleteBtn.click();
 
       await expect(page).toHaveURL(/\/people/, { timeout: 10000 });

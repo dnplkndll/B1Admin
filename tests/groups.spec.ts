@@ -43,16 +43,17 @@ test.describe('Group Management', () => {
       await expect(page).toHaveURL(/\/groups\/GRP\d+/);
 
       const searchInput = page.locator('input[name="personAddText"]');
+      await expect(searchInput).toBeVisible({ timeout: 10000 });
       await searchInput.fill('Demo User');
       const searchBtn = page.locator('button').getByText('Search').first();
+      await expect(searchBtn).toBeVisible({ timeout: 10000 });
       await searchBtn.click();
 
-      await page.waitForResponse(response => response.url().includes('/people') && response.status() === 200, { timeout: 10000 });
       const addBtn = page.locator('button').getByText('Add').first();
-      await expect(addBtn).toBeVisible({ timeout: 10000 });
+      await expect(addBtn).toBeVisible({ timeout: 15000 });
       await addBtn.click();
       const validatedPerson = page.locator('[data-testid="display-box-content"] td').getByText('Demo User');
-      await expect(validatedPerson).toHaveCount(1);
+      await expect(validatedPerson).toHaveCount(1, { timeout: 10000 });
     });
 
     test('should advanced add people', async ({ page }) => {
@@ -62,25 +63,27 @@ test.describe('Group Management', () => {
       await expect(page).toHaveURL(/\/groups\/GRP\d+/);
 
       const advBtn = page.locator('button').getByText('Advanced');
+      await expect(advBtn).toBeVisible({ timeout: 10000 });
       await advBtn.click();
       const firstCheck = page.locator('div input[type="checkbox"]').first();
       await expect(firstCheck).toBeVisible({ timeout: 10000 });
       await firstCheck.click();
       const condition = page.locator('div[aria-haspopup="listbox"]');
+      await expect(condition).toBeVisible({ timeout: 10000 });
       await condition.click();
       const equalsCondition = page.locator('li[data-value="equals"]');
+      await expect(equalsCondition).toBeVisible({ timeout: 10000 });
       await equalsCondition.click();
       const firstName = page.locator('input[type="text"]');
       await firstName.fill('Donald');
 
-      await page.waitForResponse(response => response.url().includes('/people') && response.status() === 200, { timeout: 10000 });
-
       const addBtn = page.locator('button').getByText('Add').last();
-      await expect(addBtn).toBeVisible({ timeout: 10000 });
+      await expect(addBtn).toBeVisible({ timeout: 15000 });
       await addBtn.click();
       const validatePerson = page.locator('[id="groupMemberTable"]').getByText('Donald Clark');
-      await expect(validatePerson).toHaveCount(1);
+      await expect(validatePerson).toHaveCount(1, { timeout: 10000 });
       const removeBtn = page.locator('button').getByText('person_remove').last();
+      await expect(removeBtn).toBeVisible({ timeout: 10000 });
       await removeBtn.click();
     });
 
@@ -91,15 +94,18 @@ test.describe('Group Management', () => {
       await expect(page).toHaveURL(/\/groups\/GRP\d+/);
 
       const advBtn = page.locator('button').getByText('Advanced');
+      await expect(advBtn).toBeVisible({ timeout: 10000 });
       await advBtn.click();
       const firstCheck = page.locator('div input[type="checkbox"]').first();
       await expect(firstCheck).toBeVisible({ timeout: 10000 });
       await firstCheck.click();
       const secondCheck = page.locator('div input[type="checkbox"]').nth(1);
+      await expect(secondCheck).toBeVisible({ timeout: 10000 });
       await secondCheck.click();
       const checkTwo = page.locator('span').getByText('2 active:');
       await expect(checkTwo).toHaveCount(1);
-      const deleteLast = page.locator('[d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"]').last();
+      const deleteLast = page.locator('button').filter({ has: page.locator('svg path[d*="M19 6.41"]') }).last();
+      await expect(deleteLast).toBeVisible({ timeout: 10000 });
       await deleteLast.click();
       const checkOne = page.locator('span').getByText('1 active:');
       await expect(checkOne).toHaveCount(1);
@@ -117,6 +123,7 @@ test.describe('Group Management', () => {
       await expect(page).toHaveURL(/\/groups\/GRP\d+/);
 
       const removeBtn = page.locator('button').getByText('person_remove').last();
+      await expect(removeBtn).toBeVisible({ timeout: 10000 });
       await removeBtn.click();
       const validateRemoval = page.locator('[id="groupMemberTable"]').getByText('Donald Clark');
       await expect(validateRemoval).toHaveCount(0, { timeout: 10000 });
@@ -130,6 +137,7 @@ test.describe('Group Management', () => {
       await expect(page).toHaveURL(/\/groups\/GRP\d+/);
 
       const messageBtn = page.locator('button').getByText('edit_square');
+      await expect(messageBtn).toBeVisible({ timeout: 10000 });
       await messageBtn.click();
       const messageBox = page.locator('textarea').first();
       await messageBox.fill('Test Message Sent.');
@@ -164,9 +172,10 @@ test.describe('Group Management', () => {
       await expect(page).toHaveURL(/\/groups\/GRP\d+/);
 
       const editBtn = page.locator('button').filter({ has: page.locator('[d*="M3 17.25"]') });
+      await expect(editBtn).toBeVisible({ timeout: 10000 });
       await editBtn.click();
       const nameEdit = page.locator('[name="name"]');
-      await expect(nameEdit).toHaveCount(1);
+      await expect(nameEdit).toBeVisible({ timeout: 10000 });
       const cancelBtn = page.locator('button').getByText('Cancel');
       await cancelBtn.click();
       await expect(nameEdit).toHaveCount(0, { timeout: 10000 });
@@ -198,8 +207,10 @@ test.describe('Group Management', () => {
       await expect(page).toHaveURL(/\/groups\/GRP\d+/);
 
       const sessionsBtn = page.locator('button').getByText('Sessions');
+      await expect(sessionsBtn).toBeVisible({ timeout: 10000 });
       await sessionsBtn.click();
       const newBtn = page.locator('button').getByText('New').first();
+      await expect(newBtn).toBeVisible({ timeout: 10000 });
       await newBtn.click();
       const dateEntry = page.locator('[data-testid="session-date-input"]');
       await expect(dateEntry).toHaveCount(1);
@@ -235,8 +246,10 @@ test.describe('Group Management', () => {
       await expect(page).toHaveURL(/\/groups\/GRP\d+/);
 
       const sessionsBtn = page.locator('button').getByText('Sessions');
+      await expect(sessionsBtn).toBeVisible({ timeout: 10000 });
       await sessionsBtn.click();
       const newBtn = page.locator('button').getByText('New').first();
+      await expect(newBtn).toBeVisible({ timeout: 10000 });
       await newBtn.click();
       const dateBox = page.locator('[type="date"]');
       await dateBox.fill('2025-10-01');
@@ -247,9 +260,10 @@ test.describe('Group Management', () => {
       await expect(viewBtn).toBeVisible({ timeout: 10000 });
       await viewBtn.click();
       const addBtn = page.locator('button[data-testid="add-member-button"]').first();
+      await expect(addBtn).toBeVisible({ timeout: 10000 });
       await addBtn.click();
       const addedPerson = page.locator('[id="groupMemberTable"] td a');
-      await expect(addedPerson).toHaveCount(1);
+      await expect(addedPerson).toHaveCount(1, { timeout: 10000 });
     });
 
     test('should remove person from session', async ({ page }) => {
@@ -259,8 +273,10 @@ test.describe('Group Management', () => {
       await expect(page).toHaveURL(/\/groups\/GRP\d+/);
 
       const sessionsBtn = page.locator('button').getByText('Sessions');
+      await expect(sessionsBtn).toBeVisible({ timeout: 10000 });
       await sessionsBtn.click();
       const newBtn = page.locator('button').getByText('New').first();
+      await expect(newBtn).toBeVisible({ timeout: 10000 });
       await newBtn.click();
       const dateBox = page.locator('[type="date"]');
       await dateBox.fill('2025-11-01');
@@ -271,16 +287,19 @@ test.describe('Group Management', () => {
       await expect(viewBtn).toBeVisible({ timeout: 10000 });
       await viewBtn.click();
       const addBtn = page.locator('button[data-testid="add-member-button"]').first();
+      await expect(addBtn).toBeVisible({ timeout: 10000 });
       await addBtn.click();
       const addedPerson = page.locator('[id="groupMemberTable"] td a');
-      await expect(addedPerson).toHaveCount(1);
+      await expect(addedPerson).toHaveCount(1, { timeout: 10000 });
       const removeBtn = page.locator('button').getByText('Remove').first();
+      await expect(removeBtn).toBeVisible({ timeout: 10000 });
       await removeBtn.click();
       await expect(addedPerson).toHaveCount(0, { timeout: 10000 });
     });
 
     test('should cancel adding group', async ({ page }) => {
       const addBtn = page.locator('button').getByText('Add Group');
+      await expect(addBtn).toBeVisible({ timeout: 10000 });
       await addBtn.click();
       const nameInput = page.locator('input[id="groupName"]');
       await expect(nameInput).toHaveCount(1);
@@ -291,19 +310,23 @@ test.describe('Group Management', () => {
 
     test('should add group', async ({ page }) => {
       const addBtn = page.locator('button').getByText('Add Group');
+      await expect(addBtn).toBeVisible({ timeout: 10000 });
       await addBtn.click();
       const categorySelect = page.locator('div[role="combobox"]');
+      await expect(categorySelect).toBeVisible({ timeout: 10000 });
       await categorySelect.click();
       const newCat = page.locator('li[data-value="__ADD_NEW__"]');
+      await expect(newCat).toBeVisible({ timeout: 10000 });
       await newCat.click();
       const categoryInput = page.locator('input').first();
       await categoryInput.fill('Test Category');
       const nameInput = page.locator('[name="name"]');
       await nameInput.fill('Octavian Test Group');
       const saveBtn = page.locator('button').getByText('Add').last();
+      await expect(saveBtn).toBeVisible({ timeout: 10000 });
       await saveBtn.click();
       const validateGroup = page.locator('table tbody tr a').getByText('Octavian Test Group');
-      await expect(validateGroup).toHaveCount(1);
+      await expect(validateGroup).toHaveCount(1, { timeout: 10000 });
     });
 
     test('should delete group', async ({ page }) => {

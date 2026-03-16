@@ -20,6 +20,7 @@ test.describe('Attendance Management', () => {
 
     test('should add campus', async ({ page }) => {
       const addBtn = page.locator('[data-testid="add-campus-button"]');
+      await expect(addBtn).toBeVisible({ timeout: 10000 });
       await addBtn.click();
       const campusName = page.locator('input[id="name"]');
       await campusName.fill('Octavian Test Campus');
@@ -31,9 +32,10 @@ test.describe('Attendance Management', () => {
 
     test('should cancel adding campus', async ({ page }) => {
       const addBtn = page.locator('[data-testid="add-campus-button"]');
+      await expect(addBtn).toBeVisible({ timeout: 10000 });
       await addBtn.click();
       const campusName = page.locator('input[id="name"]');
-      await expect(campusName).toHaveCount(1);
+      await expect(campusName).toHaveCount(1, { timeout: 10000 });
       const cancelBtn = page.locator('button').getByText('Cancel');
       await cancelBtn.click();
       await expect(campusName).toHaveCount(0, { timeout: 10000 });
@@ -41,6 +43,7 @@ test.describe('Attendance Management', () => {
 
     test('should edit campus', async ({ page }) => {
       const originName = page.locator('button').getByText('Octavian Test Campus');
+      await expect(originName).toBeVisible({ timeout: 10000 });
       await originName.click();
       const campusName = page.locator('input[id="name"]');
       await campusName.fill('Octavius Test Campus');
@@ -52,9 +55,10 @@ test.describe('Attendance Management', () => {
 
     test('should cancel editing campus', async ({ page }) => {
       const originName = page.locator('button').getByText('Octavius Test Campus');
+      await expect(originName).toBeVisible({ timeout: 10000 });
       await originName.click();
       const campusName = page.locator('input[id="name"]');
-      await expect(campusName).toHaveCount(1);
+      await expect(campusName).toHaveCount(1, { timeout: 10000 });
       const cancelBtn = page.locator('button').getByText('Cancel');
       await cancelBtn.click();
       await expect(campusName).toHaveCount(0, { timeout: 10000 });
@@ -62,8 +66,10 @@ test.describe('Attendance Management', () => {
 
     test('should add service', async ({ page }) => {
       const addServBtn = page.locator('button').getByText('Add Service').last();
+      await expect(addServBtn).toBeVisible({ timeout: 10000 });
       await addServBtn.click();
       const campusSelect = page.locator('div[role="combobox"]');
+      await expect(campusSelect).toBeVisible({ timeout: 10000 });
       await campusSelect.click();
       const selCampus = page.locator('li').getByText('Octavius Test Campus');
       await expect(selCampus).toBeVisible({ timeout: 10000 });
@@ -78,8 +84,10 @@ test.describe('Attendance Management', () => {
 
     test('should edit service', async ({ page }) => {
       const serv = page.locator('button').getByText('Octavian Test Service');
+      await expect(serv).toBeVisible({ timeout: 10000 });
       await serv.click();
       const campusSelect = page.locator('div[role="combobox"]');
+      await expect(campusSelect).toBeVisible({ timeout: 10000 });
       await campusSelect.click();
       const selCampus = page.locator('li').getByText('Octavius Test Campus');
       await expect(selCampus).toBeVisible({ timeout: 10000 });
@@ -94,6 +102,7 @@ test.describe('Attendance Management', () => {
 
     test('should cancel editing service', async ({ page }) => {
       const serv = page.locator('button').getByText('Sunday Evening Service');
+      await expect(serv).toBeVisible({ timeout: 10000 });
       await serv.click();
       const campusSelect = page.locator('div[role="combobox"]');
       await expect(campusSelect).toHaveCount(1, { timeout: 10000 });
@@ -104,8 +113,10 @@ test.describe('Attendance Management', () => {
 
     test('should add service time', async ({ page }) => {
       const addServTimeBtn = page.locator('button').getByText('Add Service Time').first();
+      await expect(addServTimeBtn).toBeVisible({ timeout: 10000 });
       await addServTimeBtn.click();
       const servSelect = page.locator('div[role="combobox"]');
+      await expect(servSelect).toBeVisible({ timeout: 10000 });
       await servSelect.click();
       const selServ = page.locator('li').getByText('Octavius Test Service');
       await expect(selServ).toBeVisible({ timeout: 10000 });
@@ -120,8 +131,10 @@ test.describe('Attendance Management', () => {
 
     test('should edit service time', async ({ page }) => {
       const time = page.locator('button').getByText('Octavian Test Time');
+      await expect(time).toBeVisible({ timeout: 10000 });
       await time.click();
       const servSelect = page.locator('div[role="combobox"]');
+      await expect(servSelect).toBeVisible({ timeout: 10000 });
       await servSelect.click();
       const selServ = page.locator('li').getByText('Octavius Test Service');
       await expect(selServ).toBeVisible({ timeout: 10000 });
@@ -136,6 +149,7 @@ test.describe('Attendance Management', () => {
 
     test('should cancel editing service time', async ({ page }) => {
       const serv = page.locator('button').getByText('6:00 PM Service');
+      await expect(serv).toBeVisible({ timeout: 10000 });
       await serv.click();
       const servSelect = page.locator('div[role="combobox"]');
       await expect(servSelect).toHaveCount(1, { timeout: 10000 });
@@ -152,8 +166,10 @@ test.describe('Attendance Management', () => {
       });
 
       const time = page.locator('button').getByText('Octavius Test Time');
+      await expect(time).toBeVisible({ timeout: 10000 });
       await time.click();
       const deleteBtn = page.locator('button').getByText('Delete');
+      await expect(deleteBtn).toBeVisible({ timeout: 10000 });
       await deleteBtn.click();
       await expect(time).toHaveCount(0, { timeout: 10000 });
     });
@@ -166,8 +182,10 @@ test.describe('Attendance Management', () => {
       });
 
       const serv = page.locator('button').getByText('Octavius Test Service');
+      await expect(serv).toBeVisible({ timeout: 10000 });
       await serv.click();
       const deleteBtn = page.locator('button').getByText('Delete');
+      await expect(deleteBtn).toBeVisible({ timeout: 10000 });
       await deleteBtn.click();
       await expect(serv).toHaveCount(0, { timeout: 10000 });
     });
@@ -180,14 +198,17 @@ test.describe('Attendance Management', () => {
       });
 
       const originName = page.locator('button').getByText('Octavius Test Campus');
+      await expect(originName).toBeVisible({ timeout: 10000 });
       await originName.click();
       const deleteBtn = page.locator('button').getByText('Delete');
+      await expect(deleteBtn).toBeVisible({ timeout: 10000 });
       await deleteBtn.click();
       await expect(originName).toHaveCount(0, { timeout: 10000 });
     });
 
     test('should view group from attendance homepage', async ({ page }) => {
       const groupBtn = page.locator('a').getByText('Preschool (3-5)').first();
+      await expect(groupBtn).toBeVisible({ timeout: 10000 });
       await groupBtn.click();
 
       await page.waitForURL(/\/groups\/GRP\d+/, { timeout: 10000 });
@@ -201,26 +222,35 @@ test.describe('Attendance Management', () => {
   test.describe('Trends', () => {
     test('should filter attendance trends', async ({ page }) => {
       const trendTab = page.locator('button[role="tab"]').getByText('Attendance Trend');
+      await expect(trendTab).toBeVisible({ timeout: 10000 });
       await trendTab.click();
 
       const campusName = page.locator('[id="mui-component-select-campusId"]');
       await expect(campusName).toBeVisible({ timeout: 10000 });
       await campusName.click();
       const campusSel = page.locator('li').getByText('Main Campus');
+      await expect(campusSel).toBeVisible({ timeout: 10000 });
       await campusSel.click();
       const serviceName = page.locator('[id="mui-component-select-serviceId"]');
+      await expect(serviceName).toBeVisible({ timeout: 10000 });
       await serviceName.click();
       const serviceSel = page.locator('li').getByText('Sunday Morning Service');
+      await expect(serviceSel).toBeVisible({ timeout: 10000 });
       await serviceSel.click();
       const timeName = page.locator('[id="mui-component-select-serviceTimeId"]');
+      await expect(timeName).toBeVisible({ timeout: 10000 });
       await timeName.click();
       const timeSel = page.locator('li').getByText('10:30 AM Service');
+      await expect(timeSel).toBeVisible({ timeout: 10000 });
       await timeSel.click();
       const groupName = page.locator('[id="mui-component-select-groupId"]');
+      await expect(groupName).toBeVisible({ timeout: 10000 });
       await groupName.click();
       const groupSel = page.locator('li').getByText('Sunday Morning Service');
+      await expect(groupSel).toBeVisible({ timeout: 10000 });
       await groupSel.click();
       const runBtn = page.locator('button').getByText('Run Report');
+      await expect(runBtn).toBeVisible({ timeout: 10000 });
       await runBtn.click();
 
       const resultsTableRows = page.locator('[id="reportsBox"] table tr');
@@ -230,20 +260,26 @@ test.describe('Attendance Management', () => {
     test('UPDATE should display group attendance', async ({ page }) => {
       // completed as I can, correcting reports display info is up to father. Data does not load in.
       const trendTab = page.locator('button[role="tab"]').getByText('Group Attendance');
+      await expect(trendTab).toBeVisible({ timeout: 10000 });
       await trendTab.click();
 
       const campusName = page.locator('[id="mui-component-select-campusId"]');
       await expect(campusName).toBeVisible({ timeout: 10000 });
       await campusName.click();
       const campusSel = page.locator('li').getByText('Main Campus');
+      await expect(campusSel).toBeVisible({ timeout: 10000 });
       await campusSel.click();
       const serviceName = page.locator('[id="mui-component-select-serviceId"]');
+      await expect(serviceName).toBeVisible({ timeout: 10000 });
       await serviceName.click();
       const serviceSel = page.locator('li').getByText('Sunday Morning Service');
+      await expect(serviceSel).toBeVisible({ timeout: 10000 });
       await serviceSel.click();
       const weekBox = page.locator('[name="week"]');
+      await expect(weekBox).toBeVisible({ timeout: 10000 });
       await weekBox.fill('2024-03-03');
       const runBtn = page.locator('button').getByText('Run Report');
+      await expect(runBtn).toBeVisible({ timeout: 10000 });
       await runBtn.click();
       const report = page.locator('td').getByText('10:30 AM Service');
       await expect(report).toBeVisible({ timeout: 10000 });

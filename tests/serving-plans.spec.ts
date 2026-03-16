@@ -39,6 +39,7 @@ test.describe('Serving Management - Plans', () => {
       const minBtn = page.locator('[role="tab"]').getByText('Octavian Ministry');
       await minBtn.click();
       const manageBtn = page.locator('a').getByText('Edit Ministry');
+      await expect(manageBtn).toBeVisible({ timeout: 10000 });
       await manageBtn.click();
       const editBtn = page.locator('button span').getByText('edit').first();
       await expect(editBtn).toBeVisible({ timeout: 10000 });
@@ -57,6 +58,7 @@ test.describe('Serving Management - Plans', () => {
       const minBtn = page.locator('[role="tab"]').getByText('Octavius Ministry');
       await minBtn.click();
       const manageBtn = page.locator('a').getByText('Edit Ministry');
+      await expect(manageBtn).toBeVisible({ timeout: 10000 });
       await manageBtn.click();
       const editBtn = page.locator('button span').getByText('edit').first();
       await expect(editBtn).toBeVisible({ timeout: 10000 });
@@ -73,6 +75,7 @@ test.describe('Serving Management - Plans', () => {
       const minBtn = page.locator('[role="tab"]').getByText('Octavius Ministry');
       await minBtn.click();
       const manageBtn = page.locator('a').getByText('Edit Ministry');
+      await expect(manageBtn).toBeVisible({ timeout: 10000 });
       await manageBtn.click();
 
       const personSearch = page.locator('[name="personAddText"]');
@@ -91,6 +94,7 @@ test.describe('Serving Management - Plans', () => {
       const minBtn = page.locator('[role="tab"]').getByText('Octavius Ministry');
       await minBtn.click();
       const manageBtn = page.locator('a').getByText('Edit Ministry');
+      await expect(manageBtn).toBeVisible({ timeout: 10000 });
       await manageBtn.click();
 
       const advBtn = page.locator('button').getByText('Advanced');
@@ -117,6 +121,7 @@ test.describe('Serving Management - Plans', () => {
       const minBtn = page.locator('[role="tab"]').getByText('Octavius Ministry');
       await minBtn.click();
       const manageBtn = page.locator('a').getByText('Edit Ministry');
+      await expect(manageBtn).toBeVisible({ timeout: 10000 });
       await manageBtn.click();
 
       const promoteBtn = page.locator('button').getByText('key').first();
@@ -131,6 +136,7 @@ test.describe('Serving Management - Plans', () => {
       const minBtn = page.locator('[role="tab"]').getByText('Octavius Ministry');
       await minBtn.click();
       const manageBtn = page.locator('a').getByText('Edit Ministry');
+      await expect(manageBtn).toBeVisible({ timeout: 10000 });
       await manageBtn.click();
 
       const removeBtn = page.locator('button').getByText('person_remove').first();

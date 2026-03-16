@@ -16,6 +16,7 @@ test.describe('Serving Management - Lessons', () => {
   test.describe('Lesson Plans', () => {
     test('should add lesson plan', async ({ page }) => {
       const minBtn = page.locator('[role="tab"]').getByText('Octavius Ministry');
+      await expect(minBtn).toBeVisible({ timeout: 10000 });
       await minBtn.click();
       const plansBtn = page.locator('a').getByText('Octavius Plans');
       await expect(plansBtn).toBeVisible({ timeout: 10000 });
@@ -26,6 +27,7 @@ test.describe('Serving Management - Lessons', () => {
       await expect(arrowBtn).toBeVisible({ timeout: 10000 });
       await arrowBtn.click();
       const lessonBtn = page.locator('li').getByText('Schedule Lesson');
+      await expect(lessonBtn).toBeVisible({ timeout: 10000 });
       await lessonBtn.click();
       const date = page.locator('[type="date"]');
       await expect(date).toBeVisible({ timeout: 10000 });
@@ -39,6 +41,7 @@ test.describe('Serving Management - Lessons', () => {
 
     test('should edit lesson plan', async ({ page }) => {
       const minBtn = page.locator('[role="tab"]').getByText('Octavius Ministry');
+      await expect(minBtn).toBeVisible({ timeout: 10000 });
       await minBtn.click();
       const plansBtn = page.locator('a').getByText('Octavius Plans');
       await expect(plansBtn).toBeVisible({ timeout: 10000 });
@@ -61,6 +64,7 @@ test.describe('Serving Management - Lessons', () => {
   test.describe('Positions', () => {
     test('should add position to lesson', async ({ page }) => {
       const minBtn = page.locator('[role="tab"]').getByText('Octavius Ministry');
+      await expect(minBtn).toBeVisible({ timeout: 10000 });
       await minBtn.click();
       const plansBtn = page.locator('a').getByText('Octavius Plans');
       await expect(plansBtn).toBeVisible({ timeout: 10000 });
@@ -76,8 +80,10 @@ test.describe('Serving Management - Lessons', () => {
       const name = page.locator('[name="name"]');
       await name.fill('Octavian Assignment');
       const volunteerGroup = page.locator('[role="combobox"]').last();
+      await expect(volunteerGroup).toBeVisible({ timeout: 10000 });
       await volunteerGroup.click();
       const octaviusTeam = page.locator('li').getByText('Octavius Team');
+      await expect(octaviusTeam).toBeVisible({ timeout: 10000 });
       await octaviusTeam.click();
       const saveBtn = page.locator('button').getByText('Save').last();
       await saveBtn.click();
@@ -87,6 +93,7 @@ test.describe('Serving Management - Lessons', () => {
 
     test('should edit lesson position', async ({ page }) => {
       const minBtn = page.locator('[role="tab"]').getByText('Octavius Ministry');
+      await expect(minBtn).toBeVisible({ timeout: 10000 });
       await minBtn.click();
       const plansBtn = page.locator('a').getByText('Octavius Plans');
       await expect(plansBtn).toBeVisible({ timeout: 10000 });
@@ -109,6 +116,7 @@ test.describe('Serving Management - Lessons', () => {
 
     test('should assign person to lesson position', async ({ page }) => {
       const minBtn = page.locator('[role="tab"]').getByText('Octavius Ministry');
+      await expect(minBtn).toBeVisible({ timeout: 10000 });
       await minBtn.click();
       const plansBtn = page.locator('a').getByText('Octavius Plans');
       await expect(plansBtn).toBeVisible({ timeout: 10000 });
@@ -122,6 +130,7 @@ test.describe('Serving Management - Lessons', () => {
       await expect(assignment).toBeVisible({ timeout: 10000 });
       await assignment.click();
       const person = page.locator('td button').getByText('Dorothy Jackson');
+      await expect(person).toBeVisible({ timeout: 10000 });
       await person.click();
       const verifiedAddition = page.locator('td button').getByText('Dorothy Jackson');
       await expect(verifiedAddition).toHaveCount(1, { timeout: 10000 });
@@ -129,6 +138,7 @@ test.describe('Serving Management - Lessons', () => {
 
     test('should delete lesson position', async ({ page }) => {
       const minBtn = page.locator('[role="tab"]').getByText('Octavius Ministry');
+      await expect(minBtn).toBeVisible({ timeout: 10000 });
       await minBtn.click();
       const plansBtn = page.locator('a').getByText('Octavius Plans');
       await expect(plansBtn).toBeVisible({ timeout: 10000 });
@@ -151,6 +161,7 @@ test.describe('Serving Management - Lessons', () => {
   test.describe('Times', () => {
     test('should add time to lesson', async ({ page }) => {
       const minBtn = page.locator('[role="tab"]').getByText('Octavius Ministry');
+      await expect(minBtn).toBeVisible({ timeout: 10000 });
       await minBtn.click();
       const plansBtn = page.locator('a').getByText('Octavius Plans');
       await expect(plansBtn).toBeVisible({ timeout: 10000 });
@@ -166,6 +177,7 @@ test.describe('Serving Management - Lessons', () => {
       const name = page.locator('[name="displayName"]');
       await name.fill('Octavian Service');
       const team = page.locator('[type="checkbox"]');
+      await expect(team).toBeVisible({ timeout: 10000 });
       await team.click();
       const saveBtn = page.locator('button').getByText('Save').last();
       await saveBtn.click();
@@ -175,6 +187,7 @@ test.describe('Serving Management - Lessons', () => {
 
     test('should edit lesson time', async ({ page }) => {
       const minBtn = page.locator('[role="tab"]').getByText('Octavius Ministry');
+      await expect(minBtn).toBeVisible({ timeout: 10000 });
       await minBtn.click();
       const plansBtn = page.locator('a').getByText('Octavius Plans');
       await expect(plansBtn).toBeVisible({ timeout: 10000 });
@@ -197,6 +210,7 @@ test.describe('Serving Management - Lessons', () => {
 
     test('should delete lesson time', async ({ page }) => {
       const minBtn = page.locator('[role="tab"]').getByText('Octavius Ministry');
+      await expect(minBtn).toBeVisible({ timeout: 10000 });
       await minBtn.click();
       const plansBtn = page.locator('a').getByText('Octavius Plans');
       await expect(plansBtn).toBeVisible({ timeout: 10000 });
@@ -219,6 +233,7 @@ test.describe('Serving Management - Lessons', () => {
   test.describe('Service Order', () => {
     test('should add section to service order', async ({ page }) => {
       const minBtn = page.locator('[role="tab"]').getByText('Octavius Ministry');
+      await expect(minBtn).toBeVisible({ timeout: 10000 });
       await minBtn.click();
       const plansBtn = page.locator('a').getByText('Octavius Plans');
       await expect(plansBtn).toBeVisible({ timeout: 10000 });
@@ -244,6 +259,7 @@ test.describe('Serving Management - Lessons', () => {
 
     test('should edit service order section', async ({ page }) => {
       const minBtn = page.locator('[role="tab"]').getByText('Octavius Ministry');
+      await expect(minBtn).toBeVisible({ timeout: 10000 });
       await minBtn.click();
       const plansBtn = page.locator('a').getByText('Octavius Plans');
       await expect(plansBtn).toBeVisible({ timeout: 10000 });
@@ -269,6 +285,7 @@ test.describe('Serving Management - Lessons', () => {
 
     test('should add song to service order', async ({ page }) => {
       const minBtn = page.locator('[role="tab"]').getByText('Octavius Ministry');
+      await expect(minBtn).toBeVisible({ timeout: 10000 });
       await minBtn.click();
       const plansBtn = page.locator('a').getByText('Octavius Plans');
       await expect(plansBtn).toBeVisible({ timeout: 10000 });
@@ -285,6 +302,7 @@ test.describe('Serving Management - Lessons', () => {
       await expect(addBtn).toBeVisible({ timeout: 10000 });
       await addBtn.click();
       const song = page.locator('li').getByText('Song');
+      await expect(song).toBeVisible({ timeout: 10000 });
       await song.click();
       const searchBar = page.locator('[name="searchText"]');
       await searchBar.fill('Amazing');
@@ -299,6 +317,7 @@ test.describe('Serving Management - Lessons', () => {
 
     test('should add item to service order', async ({ page }) => {
       const minBtn = page.locator('[role="tab"]').getByText('Octavius Ministry');
+      await expect(minBtn).toBeVisible({ timeout: 10000 });
       await minBtn.click();
       const plansBtn = page.locator('a').getByText('Octavius Plans');
       await expect(plansBtn).toBeVisible({ timeout: 10000 });
@@ -315,6 +334,7 @@ test.describe('Serving Management - Lessons', () => {
       await expect(addBtn).toBeVisible({ timeout: 10000 });
       await addBtn.click();
       const item = page.locator('li').getByText('Item');
+      await expect(item).toBeVisible({ timeout: 10000 });
       await item.click();
       const name = page.locator('[name="label"]');
       await name.fill('Octavian Item');
@@ -328,6 +348,7 @@ test.describe('Serving Management - Lessons', () => {
 
     test('should edit service order item', async ({ page }) => {
       const minBtn = page.locator('[role="tab"]').getByText('Octavius Ministry');
+      await expect(minBtn).toBeVisible({ timeout: 10000 });
       await minBtn.click();
       const plansBtn = page.locator('a').getByText('Octavius Plans');
       await expect(plansBtn).toBeVisible({ timeout: 10000 });
@@ -353,6 +374,7 @@ test.describe('Serving Management - Lessons', () => {
 
     test('should add lesson action to service order', async ({ page }) => {
       const minBtn = page.locator('[role="tab"]').getByText('Octavius Ministry');
+      await expect(minBtn).toBeVisible({ timeout: 10000 });
       await minBtn.click();
       const plansBtn = page.locator('a').getByText('Octavius Plans');
       await expect(plansBtn).toBeVisible({ timeout: 10000 });
@@ -369,6 +391,7 @@ test.describe('Serving Management - Lessons', () => {
       await expect(addBtn).toBeVisible({ timeout: 10000 });
       await addBtn.click();
       const action = page.locator('li').getByText('Lesson Action');
+      await expect(action).toBeVisible({ timeout: 10000 });
       await action.click();
       const selectBtn = page.locator('button').getByText('Select Action');
       await expect(selectBtn).toBeVisible({ timeout: 10000 });
@@ -379,6 +402,7 @@ test.describe('Serving Management - Lessons', () => {
 
     test('should add add-on to service order', async ({ page }) => {
       const minBtn = page.locator('[role="tab"]').getByText('Octavius Ministry');
+      await expect(minBtn).toBeVisible({ timeout: 10000 });
       await minBtn.click();
       const plansBtn = page.locator('a').getByText('Octavius Plans');
       await expect(plansBtn).toBeVisible({ timeout: 10000 });
@@ -395,14 +419,19 @@ test.describe('Serving Management - Lessons', () => {
       await expect(addBtn).toBeVisible({ timeout: 10000 });
       await addBtn.click();
       const addition = page.locator('li').getByText('Add-On');
+      await expect(addition).toBeVisible({ timeout: 10000 });
       await addition.click();
       const category = page.locator('[role="combobox"]');
+      await expect(category).toBeVisible({ timeout: 10000 });
       await category.click();
       const scriptureSong = page.locator('li').getByText('scripture song');
+      await expect(scriptureSong).toBeVisible({ timeout: 10000 });
       await scriptureSong.click();
       const starTrek = page.locator('p').getByText('First Add On');
+      await expect(starTrek).toBeVisible({ timeout: 10000 });
       await starTrek.click();
       const selectBtn = page.locator('button').getByText('Select Add-On');
+      await expect(selectBtn).toBeVisible({ timeout: 10000 });
       await selectBtn.click()
       const verifiedAddition = page.locator('div a').getByText('First Add On');
       await expect(verifiedAddition).toHaveCount(1, { timeout: 10000 });
@@ -410,6 +439,7 @@ test.describe('Serving Management - Lessons', () => {
 
     test('should delete add-on from service order', async ({ page }) => {
       const minBtn = page.locator('[role="tab"]').getByText('Octavius Ministry');
+      await expect(minBtn).toBeVisible({ timeout: 10000 });
       await minBtn.click();
       const plansBtn = page.locator('a').getByText('Octavius Plans');
       await expect(plansBtn).toBeVisible({ timeout: 10000 });
@@ -436,6 +466,7 @@ test.describe('Serving Management - Lessons', () => {
   test.describe('Cleanup', () => {
     test('should delete lesson plan', async ({ page }) => {
       const minBtn = page.locator('[role="tab"]').getByText('Octavius Ministry');
+      await expect(minBtn).toBeVisible({ timeout: 10000 });
       await minBtn.click();
       const plansBtn = page.locator('a').getByText('Octavius Plans');
       await expect(plansBtn).toBeVisible({ timeout: 10000 });
@@ -460,6 +491,7 @@ test.describe('Serving Management - Lessons', () => {
       });
 
       const minBtn = page.locator('[role="tab"]').getByText('Octavius Ministry');
+      await expect(minBtn).toBeVisible({ timeout: 10000 });
       await minBtn.click();
       const teamBtn = page.locator('a').getByText('Octavius Team');
       await expect(teamBtn).toBeVisible({ timeout: 10000 });
@@ -470,6 +502,7 @@ test.describe('Serving Management - Lessons', () => {
       await editBtn.click();
 
       const deleteBtn = page.locator('button').getByText('Delete');
+      await expect(deleteBtn).toBeVisible({ timeout: 10000 });
       await deleteBtn.click();
       const verifiedRemoved = page.locator('table a').getByText('Octavius Team');
       await expect(verifiedRemoved).toHaveCount(0, { timeout: 10000 });
@@ -483,8 +516,10 @@ test.describe('Serving Management - Lessons', () => {
       });
 
       const minBtn = page.locator('[role="tab"]').getByText('Octavius Ministry');
+      await expect(minBtn).toBeVisible({ timeout: 10000 });
       await minBtn.click();
       const manageBtn = page.locator('a').getByText('Edit Ministry');
+      await expect(manageBtn).toBeVisible({ timeout: 10000 });
       await manageBtn.click();
       const editBtn = page.locator('button span').getByText('edit').first();
       await expect(editBtn).toBeVisible({ timeout: 10000 });

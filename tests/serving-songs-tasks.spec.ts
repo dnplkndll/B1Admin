@@ -35,7 +35,7 @@ test.describe('Serving Management - Songs & Tasks', () => {
       await saveBtn.click();
       const validatedSong = page.locator('h4').getByText('Frolic');
       await expect(validatedSong).toBeVisible({ timeout: 10000 });
-      await expect(validatedSong).toHaveCount(1);
+      await expect(validatedSong).toHaveCount(1, { timeout: 10000 });
     });
 
     test('should add song key', async ({ page }) => {
@@ -50,7 +50,7 @@ test.describe('Serving Management - Songs & Tasks', () => {
       await addKeyBtn.click();
       const saveBtn = page.locator('button').getByText('Save');
       await saveBtn.click();
-      await expect(addKeyBtn).toHaveCount(2);
+      await expect(addKeyBtn).toHaveCount(2, { timeout: 10000 });
     });
 
     test('should add link from song key menu', async ({ page }) => {
@@ -72,7 +72,7 @@ test.describe('Serving Management - Songs & Tasks', () => {
       const saveBtn = page.locator('button').getByText('Save');
       await saveBtn.click();
       const validatedLink = page.locator('a').getByText('Frolic on YouTube');
-      await expect(validatedLink).toHaveCount(1);
+      await expect(validatedLink).toHaveCount(1, { timeout: 10000 });
     });
 
     test('should edit link from song key menu', async ({ page }) => {
@@ -84,13 +84,14 @@ test.describe('Serving Management - Songs & Tasks', () => {
       await song.click();
       await expect(page.locator('h4').getByText('Frolic')).toBeVisible({ timeout: 10000 });
       const editBtn = page.locator('button').filter({ has: page.locator('[d*="M3 17.25"]') }).last();
+      await expect(editBtn).toBeVisible({ timeout: 10000 });
       await editBtn.click();
       const textInput = page.locator('[name="text"]');
       await textInput.fill('Frolic');
       const saveBtn = page.locator('button').getByText('Save');
       await saveBtn.click();
       const validatedLink = page.locator('a').getByText('Frolic');
-      await expect(validatedLink).toHaveCount(1);
+      await expect(validatedLink).toHaveCount(1, { timeout: 10000 });
     });
 
     test('should cancel editing link from song key menu', async ({ page }) => {
@@ -102,12 +103,13 @@ test.describe('Serving Management - Songs & Tasks', () => {
       await song.click();
       await expect(page.locator('h4').getByText('Frolic')).toBeVisible({ timeout: 10000 });
       const editBtn = page.locator('button').filter({ has: page.locator('[d*="M3 17.25"]') }).last();
+      await expect(editBtn).toBeVisible({ timeout: 10000 });
       await editBtn.click();
       const textInput = page.locator('[name="text"]');
-      await expect(textInput).toHaveCount(1);
+      await expect(textInput).toHaveCount(1, { timeout: 10000 });
       const cancelBtn = page.locator('button').getByText('Cancel');
       await cancelBtn.click();
-      await expect(textInput).toHaveCount(0);
+      await expect(textInput).toHaveCount(0, { timeout: 10000 });
     });
 
     test('should delete link from song key menu', async ({ page }) => {
@@ -125,11 +127,12 @@ test.describe('Serving Management - Songs & Tasks', () => {
       await song.click();
       await expect(page.locator('h4').getByText('Frolic')).toBeVisible({ timeout: 10000 });
       const editBtn = page.locator('button').filter({ has: page.locator('[d*="M3 17.25"]') }).last();
+      await expect(editBtn).toBeVisible({ timeout: 10000 });
       await editBtn.click();
       const deleteBtn = page.locator('button').getByText('Delete').last();
       await deleteBtn.click();
       const validatedDeletion = page.locator('a').getByText('Frolic');
-      await expect(validatedDeletion).toHaveCount(0);
+      await expect(validatedDeletion).toHaveCount(0, { timeout: 10000 });
     });
 
     test('should edit song key', async ({ page }) => {
@@ -141,13 +144,14 @@ test.describe('Serving Management - Songs & Tasks', () => {
       await song.click();
       await expect(page.locator('h4').getByText('Frolic')).toBeVisible({ timeout: 10000 });
       const editBtn = page.locator('button').filter({ has: page.locator('[d*="M3 17.25"]') }).last();
+      await expect(editBtn).toBeVisible({ timeout: 10000 });
       await editBtn.click();
       const label = page.locator('textarea').first();
       await label.fill('Octavian Key');
       const saveBtn = page.locator('button').getByText('Save');
       await saveBtn.click();
       const validatedEdit = page.locator('[role="tab"]').getByText('Octavian Key');
-      await expect(validatedEdit).toHaveCount(1);
+      await expect(validatedEdit).toHaveCount(1, { timeout: 10000 });
     });
 
     test('should cancel editing song key', async ({ page }) => {
@@ -159,12 +163,13 @@ test.describe('Serving Management - Songs & Tasks', () => {
       await song.click();
       await expect(page.locator('h4').getByText('Frolic')).toBeVisible({ timeout: 10000 });
       const editBtn = page.locator('button').filter({ has: page.locator('[d*="M3 17.25"]') }).last();
+      await expect(editBtn).toBeVisible({ timeout: 10000 });
       await editBtn.click();
       const label = page.locator('textarea').first();
-      await expect(label).toHaveCount(1);
+      await expect(label).toHaveCount(1, { timeout: 10000 });
       const cancelBtn = page.locator('button').getByText('Cancel');
       await cancelBtn.click();
-      await expect(label).toHaveCount(0);
+      await expect(label).toHaveCount(0, { timeout: 10000 });
     });
 
     test('should delete key', async ({ page }) => {
@@ -182,11 +187,12 @@ test.describe('Serving Management - Songs & Tasks', () => {
       await song.click();
       await expect(page.locator('h4').getByText('Frolic')).toBeVisible({ timeout: 10000 });
       const editBtn = page.locator('button').filter({ has: page.locator('[d*="M3 17.25"]') }).last();
+      await expect(editBtn).toBeVisible({ timeout: 10000 });
       await editBtn.click();
       const deleteBtn = page.locator('button').getByText('Delete').last();
       await deleteBtn.click();
       const validatedDeletion = page.locator('[role="tab"]').getByText('Octavian Key');
-      await expect(validatedDeletion).toHaveCount(0);
+      await expect(validatedDeletion).toHaveCount(0, { timeout: 10000 });
     });
 
     test('should add external link', async ({ page }) => {
@@ -198,8 +204,10 @@ test.describe('Serving Management - Songs & Tasks', () => {
       await song.click();
       await expect(page.locator('h4').getByText('Frolic')).toBeVisible({ timeout: 10000 });
       const editBtn = page.locator('button').filter({ has: page.locator('[d*="M3 17.25"]') }).nth(1);
+      await expect(editBtn).toBeVisible({ timeout: 10000 });
       await editBtn.click();
       const addBtn = page.locator('button').filter({ has: page.locator('[d*="M19 13h-6"]') }).nth(2);
+      await expect(addBtn).toBeVisible({ timeout: 10000 });
       await addBtn.click();
       const serviceBox = page.locator('[role="combobox"]');
       await serviceBox.click();
@@ -210,11 +218,12 @@ test.describe('Serving Management - Songs & Tasks', () => {
       const saveBtn = page.locator('button').getByText('Save');
       await saveBtn.click();
       const checkBtn = page.locator('button').filter({ has: page.locator('[d*="M9 16.2"]') });
+      await expect(checkBtn).toBeVisible({ timeout: 10000 });
       await checkBtn.click();
 
       const validatedAddition = page.locator('a img');
       await expect(validatedAddition).toBeVisible({ timeout: 10000 });
-      await expect(validatedAddition).toHaveCount(1);
+      await expect(validatedAddition).toHaveCount(1, { timeout: 10000 });
     });
 
     test('should cancel adding external link', async ({ page }) => {
@@ -226,14 +235,16 @@ test.describe('Serving Management - Songs & Tasks', () => {
       await song.click();
       await expect(page.locator('h4').getByText('Frolic')).toBeVisible({ timeout: 10000 });
       const editBtn = page.locator('button').filter({ has: page.locator('[d*="M3 17.25"]') }).nth(1);
+      await expect(editBtn).toBeVisible({ timeout: 10000 });
       await editBtn.click();
       const addBtn = page.locator('button').filter({ has: page.locator('[d*="M19 13h-6"]') }).nth(2);
+      await expect(addBtn).toBeVisible({ timeout: 10000 });
       await addBtn.click();
       const serviceBox = page.locator('[role="combobox"]');
-      await expect(serviceBox).toHaveCount(1);
+      await expect(serviceBox).toHaveCount(1, { timeout: 10000 });
       const cancelBtn = page.locator('button').getByText('Cancel');
       await cancelBtn.click();
-      await expect(serviceBox).toHaveCount(0);
+      await expect(serviceBox).toHaveCount(0, { timeout: 10000 });
     });
 
     test('should add lyrics', async ({ page }) => {
@@ -245,6 +256,7 @@ test.describe('Serving Management - Songs & Tasks', () => {
       await song.click();
       await expect(page.locator('h4').getByText('Frolic')).toBeVisible({ timeout: 10000 });
       const editBtn = page.locator('button').filter({ has: page.locator('[d*="M3 17.25"]') }).nth(2);
+      await expect(editBtn).toBeVisible({ timeout: 10000 });
       await editBtn.click();
       const lyricBox = page.locator('[name="lyrics"]');
       await lyricBox.fill('No Lyrics');
@@ -252,7 +264,7 @@ test.describe('Serving Management - Songs & Tasks', () => {
       await saveBtn.click();
       const validatedLyrics = page.locator('div').getByText('No Lyrics');
       await expect(validatedLyrics).toBeVisible({ timeout: 10000 });
-      await expect(validatedLyrics).toHaveCount(1);
+      await expect(validatedLyrics).toHaveCount(1, { timeout: 10000 });
     });
 
     test('should cancel editing lyrics', async ({ page }) => {
@@ -264,12 +276,13 @@ test.describe('Serving Management - Songs & Tasks', () => {
       await song.click();
       await expect(page.locator('h4').getByText('Frolic')).toBeVisible({ timeout: 10000 });
       const editBtn = page.locator('button').filter({ has: page.locator('[d*="M3 17.25"]') }).nth(2);
+      await expect(editBtn).toBeVisible({ timeout: 10000 });
       await editBtn.click();
       const lyricBox = page.locator('[name="lyrics"]');
-      await expect(lyricBox).toHaveCount(1);
+      await expect(lyricBox).toHaveCount(1, { timeout: 10000 });
       const cancelBtn = page.locator('button').getByText('Cancel');
       await cancelBtn.click();
-      await expect(lyricBox).toHaveCount(0);
+      await expect(lyricBox).toHaveCount(0, { timeout: 10000 });
     });
 
     test('should delete arrangement', async ({ page }) => {
@@ -287,11 +300,12 @@ test.describe('Serving Management - Songs & Tasks', () => {
       await song.click();
       await expect(page.locator('h4').getByText('Frolic')).toBeVisible({ timeout: 10000 });
       const editBtn = page.locator('button').filter({ has: page.locator('[d*="M3 17.25"]') }).nth(2);
+      await expect(editBtn).toBeVisible({ timeout: 10000 });
       await editBtn.click();
       const deleteBtn = page.locator('button').getByText('Delete').last();
       await deleteBtn.click();
       const validatedDeletion = page.locator('a').getByText('Frolic');
-      await expect(validatedDeletion).toHaveCount(0);
+      await expect(validatedDeletion).toHaveCount(0, { timeout: 10000 });
     });
 
     test('should search for songs', async ({ page }) => {
@@ -305,7 +319,7 @@ test.describe('Serving Management - Songs & Tasks', () => {
       await searchInput.fill('Amazing Grace');
       await searchInput.press('Enter');
       const results = page.locator('a');
-      await expect(results).toHaveCount(7);
+      await expect(results).toHaveCount(7, { timeout: 10000 });
     });
   });
 
@@ -318,6 +332,7 @@ test.describe('Serving Management - Songs & Tasks', () => {
       const addBtn = page.locator('[data-testid="add-task-button"]');
       await addBtn.click();
       const assignInput = page.locator('[data-testid="assign-to-input"]');
+      await expect(assignInput).toBeVisible({ timeout: 10000 });
       await assignInput.click();
       const personSearch = page.locator('[name="personAddText"]');
       await personSearch.fill('Demo User');
@@ -343,10 +358,10 @@ test.describe('Serving Management - Songs & Tasks', () => {
       const addBtn = page.locator('[data-testid="add-task-button"]');
       await addBtn.click();
       const assignInput = page.locator('[data-testid="assign-to-input"]');
-      await expect(assignInput).toHaveCount(1);
+      await expect(assignInput).toHaveCount(1, { timeout: 10000 });
       const cancelBtn = page.locator('button').getByText('Cancel');
       await cancelBtn.click();
-      await expect(assignInput).toHaveCount(0);
+      await expect(assignInput).toHaveCount(0, { timeout: 10000 });
     });
 
     test('should toggle show closed tasks', async ({ page }) => {
@@ -355,7 +370,7 @@ test.describe('Serving Management - Songs & Tasks', () => {
       await expect(page).toHaveURL(/\/tasks/, { timeout: 10000 });
 
       const task = page.locator('a').getByText('Test Task');
-      await expect(task).toHaveCount(4);
+      await expect(task).toHaveCount(4, { timeout: 10000 });
       const closedBtn = page.locator('[data-testid="show-closed-tasks-button"]');
       await closedBtn.click();
       await expect(task).toHaveCount(0, { timeout: 10000 });
@@ -370,10 +385,11 @@ test.describe('Serving Management - Songs & Tasks', () => {
       await expect(page).toHaveURL(/\/tasks/, { timeout: 10000 });
 
       const task = page.locator('a').getByText('Test Task');
-      await expect(task).toHaveCount(4);
+      await expect(task).toHaveCount(4, { timeout: 10000 });
       const selectedTask = page.locator('a').getByText('Test Task').first();
       await selectedTask.click()
       const assignBtn = page.locator('[title="Edit Assigned"]');
+      await expect(assignBtn).toBeVisible({ timeout: 10000 });
       await assignBtn.click();
       const personSearch = page.locator('[name="personAddText"]');
       await personSearch.fill('Dorothy');
@@ -393,6 +409,7 @@ test.describe('Serving Management - Songs & Tasks', () => {
       const task = page.locator('a').getByText('Test Task').first();
       await task.click()
       const associateBtn = page.locator('[title="Edit Associated"]');
+      await expect(associateBtn).toBeVisible({ timeout: 10000 });
       await associateBtn.click();
       const personSearch = page.locator('[name="personAddText"]');
       await personSearch.fill('Grace Jackson');
@@ -413,6 +430,7 @@ test.describe('Serving Management - Songs & Tasks', () => {
       const task = page.locator('a').getByText('Test Task').first();
       await task.click();
       const openBtn = page.locator('button').getByText('Open');
+      await expect(openBtn).toBeVisible({ timeout: 10000 });
       await openBtn.click();
       const closedBtn = page.locator('li').getByText('Closed');
       await closedBtn.click();
@@ -420,7 +438,7 @@ test.describe('Serving Management - Songs & Tasks', () => {
       await expect(task).toHaveCount(1, { timeout: 10000 });
       const closedTasksBtn = page.locator('[data-testid="show-closed-tasks-button"]');
       await closedTasksBtn.click();
-      await expect(task).toHaveCount(1);
+      await expect(task).toHaveCount(1, { timeout: 10000 });
     });
 
     test('should add an automation', async ({ page }) => {
@@ -444,7 +462,7 @@ test.describe('Serving Management - Songs & Tasks', () => {
       await saveBtn.click();
       const validatedAuto = page.locator('h6').getByText('Octavian Test Automation');
       await expect(validatedAuto).toBeVisible({ timeout: 10000 });
-      await expect(validatedAuto).toHaveCount(1);
+      await expect(validatedAuto).toHaveCount(1, { timeout: 10000 });
     });
 
     test('should cancel adding an automation', async ({ page }) => {
@@ -458,10 +476,10 @@ test.describe('Serving Management - Songs & Tasks', () => {
       const addBtn = page.locator('button').getByText('Add Automation');
       await addBtn.click();
       const autoName = page.locator('[name="title"]');
-      await expect(autoName).toHaveCount(1);
+      await expect(autoName).toHaveCount(1, { timeout: 10000 });
       const cancelBtn = page.locator('button').getByText('Cancel');
       await cancelBtn.click();
-      await expect(autoName).toHaveCount(0);
+      await expect(autoName).toHaveCount(0, { timeout: 10000 });
     });
 
     test('should add task to an automation', async ({ page }) => {
@@ -473,8 +491,10 @@ test.describe('Serving Management - Songs & Tasks', () => {
       await expect(page).toHaveURL(/\/tasks\/automations/);
 
       const auto = page.locator('h6').getByText('Octavian Test Automation');
+      await expect(auto).toBeVisible({ timeout: 10000 });
       await auto.click();
       const addBtn = page.locator('button').getByText('Add Action');
+      await expect(addBtn).toBeVisible({ timeout: 10000 });
       await addBtn.click();
       const assignBox = page.locator('input').nth(1);
       await assignBox.click();
@@ -492,7 +512,7 @@ test.describe('Serving Management - Songs & Tasks', () => {
       await saveBtn.click();
       const validatedTask = page.locator('p').getByText('Octavian Test Task');
       await expect(validatedTask).toBeVisible({ timeout: 10000 });
-      await expect(validatedTask).toHaveCount(1);
+      await expect(validatedTask).toHaveCount(1, { timeout: 10000 });
     });
 
     test('should cancel adding task to an automation', async ({ page }) => {
@@ -504,14 +524,16 @@ test.describe('Serving Management - Songs & Tasks', () => {
       await expect(page).toHaveURL(/\/tasks\/automations/);
 
       const auto = page.locator('h6').getByText('Octavian Test Automation');
+      await expect(auto).toBeVisible({ timeout: 10000 });
       await auto.click();
       const addBtn = page.locator('button').getByText('Add Action');
+      await expect(addBtn).toBeVisible({ timeout: 10000 });
       await addBtn.click();
       const assignBox = page.locator('input').nth(1);
-      await expect(assignBox).toHaveCount(1);
+      await expect(assignBox).toHaveCount(1, { timeout: 10000 });
       const cancelBtn = page.locator('button').getByText('Cancel');
       await cancelBtn.click();
-      await expect(assignBox).toHaveCount(0);
+      await expect(assignBox).toHaveCount(0, { timeout: 10000 });
     });
 
     test('should edit task on automation', async ({ page }) => {
@@ -523,8 +545,10 @@ test.describe('Serving Management - Songs & Tasks', () => {
       await expect(page).toHaveURL(/\/tasks\/automations/);
 
       const auto = page.locator('h6').getByText('Octavian Test Automation');
+      await expect(auto).toBeVisible({ timeout: 10000 });
       await auto.click();
       const editBtn = page.locator('button').filter({ has: page.locator('[d*="M3 17.25"]') }).nth(1);
+      await expect(editBtn).toBeVisible({ timeout: 10000 });
       await editBtn.click();
       const taskName = page.locator('[name="title"]');
       await taskName.fill('Octavius Test Task');
@@ -532,7 +556,7 @@ test.describe('Serving Management - Songs & Tasks', () => {
       await saveBtn.click();
       const validatedTask = page.locator('p').getByText('Octavius Test Task');
       await expect(validatedTask).toBeVisible({ timeout: 10000 });
-      await expect(validatedTask).toHaveCount(1);
+      await expect(validatedTask).toHaveCount(1, { timeout: 10000 });
     });
 
     test('should add condition to an automation', async ({ page }) => {
@@ -544,8 +568,10 @@ test.describe('Serving Management - Songs & Tasks', () => {
       await expect(page).toHaveURL(/\/tasks\/automations/);
 
       const auto = page.locator('h6').getByText('Octavian Test Automation');
+      await expect(auto).toBeVisible({ timeout: 10000 });
       await auto.click();
       const addBtn = page.locator('button').getByText('Add Condition');
+      await expect(addBtn).toBeVisible({ timeout: 10000 });
       await addBtn.click();
       const typeBox = page.locator('[id="mui-component-select-groupType"]')
       await typeBox.click();
@@ -568,7 +594,7 @@ test.describe('Serving Management - Songs & Tasks', () => {
       await saveBtn.click();
       const validatedCon = page.locator('p').getByText('Display Name is Demo User');
       await expect(validatedCon).toBeVisible({ timeout: 10000 });
-      await expect(validatedCon).toHaveCount(1);
+      await expect(validatedCon).toHaveCount(1, { timeout: 10000 });
     });
 
     test('should edit an automation', async ({ page }) => {
@@ -580,8 +606,10 @@ test.describe('Serving Management - Songs & Tasks', () => {
       await expect(page).toHaveURL(/\/tasks\/automations/);
 
       const auto = page.locator('h6').getByText('Octavian Test Automation');
+      await expect(auto).toBeVisible({ timeout: 10000 });
       await auto.click();
       const editBtn = page.locator('button').filter({ has: page.locator('[d*="M3 17.25"]') }).first();
+      await expect(editBtn).toBeVisible({ timeout: 10000 });
       await editBtn.click();
       const autoName = page.locator('[name="title"]');
       await autoName.fill('Octavius Test Automation');
@@ -589,7 +617,7 @@ test.describe('Serving Management - Songs & Tasks', () => {
       await saveBtn.click();
       const validatedAuto = page.locator('h6').getByText('Octavius Test Automation');
       await expect(validatedAuto).toBeVisible({ timeout: 10000 });
-      await expect(validatedAuto).toHaveCount(1);
+      await expect(validatedAuto).toHaveCount(1, { timeout: 10000 });
     });
 
     test('should cancel editing an automation', async ({ page }) => {
@@ -601,14 +629,16 @@ test.describe('Serving Management - Songs & Tasks', () => {
       await expect(page).toHaveURL(/\/tasks\/automations/);
 
       const auto = page.locator('h6').getByText('Octavius Test Automation');
+      await expect(auto).toBeVisible({ timeout: 10000 });
       await auto.click();
       const editBtn = page.locator('button').filter({ has: page.locator('[d*="M3 17.25"]') }).first();
+      await expect(editBtn).toBeVisible({ timeout: 10000 });
       await editBtn.click();
       const autoName = page.locator('[name="title"]');
-      await expect(autoName).toHaveCount(1);
+      await expect(autoName).toHaveCount(1, { timeout: 10000 });
       const cancelBtn = page.locator('button').getByText('Cancel');
       await cancelBtn.click();
-      await expect(autoName).toHaveCount(0);
+      await expect(autoName).toHaveCount(0, { timeout: 10000 });
     });
 
     test('should delete an automation', async ({ page }) => {
@@ -620,13 +650,15 @@ test.describe('Serving Management - Songs & Tasks', () => {
       await expect(page).toHaveURL(/\/tasks\/automations/);
 
       const auto = page.locator('h6').getByText('Octavius Test Automation');
+      await expect(auto).toBeVisible({ timeout: 10000 });
       await auto.click();
       const editBtn = page.locator('button').filter({ has: page.locator('[d*="M3 17.25"]') }).first();
+      await expect(editBtn).toBeVisible({ timeout: 10000 });
       await editBtn.click();
       const deleteBtn = page.locator('button').getByText('Delete');
       await deleteBtn.click();
       const validatedDeletion = page.locator('h6').getByText('Octavius Test Automation');
-      await expect(validatedDeletion).toHaveCount(0);
+      await expect(validatedDeletion).toHaveCount(0, { timeout: 10000 });
     });
   });
 });

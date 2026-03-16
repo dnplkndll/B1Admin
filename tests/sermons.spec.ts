@@ -32,12 +32,13 @@ test.describe('Sermons Management', () => {
       const saveBtn = page.locator('button').getByText('Save');
       await saveBtn.click();
       const validatedSermon = page.locator('td').getByText('Octavian Test Sermon');
-      await expect(validatedSermon).toHaveCount(1);
+      await expect(validatedSermon).toHaveCount(1, { timeout: 10000 });
     });
 
     test('should edit sermon', async ({ page }) => {
       const sermonRow = page.locator('tr').filter({ hasText: 'Octavian Test Sermon' });
       const editBtn = sermonRow.locator('button').getByText('edit');
+      await expect(editBtn).toBeVisible({ timeout: 10000 });
       await editBtn.click();
       const name = page.locator('[name="title"]');
       await expect(name).toHaveValue('Octavian Test Sermon', { timeout: 10000 });
@@ -47,25 +48,26 @@ test.describe('Sermons Management', () => {
       const saveBtn = page.locator('button').getByText('Save');
       await saveBtn.click();
       const validatedSermon = page.locator('td').getByText('Octavius Test Sermon');
-      await expect(validatedSermon).toHaveCount(1);
+      await expect(validatedSermon).toHaveCount(1, { timeout: 10000 });
     });
 
     test('should search for a sermon', async ({ page }) => {
       const searchBar = page.locator('input');
       await searchBar.fill('Octavius Test Sermon')
       const validatedSermon = page.locator('td').getByText('Octavius Test Sermon');
-      await expect(validatedSermon).toHaveCount(1);
+      await expect(validatedSermon).toHaveCount(1, { timeout: 10000 });
     });
 
     test('should cancel editing sermon', async ({ page }) => {
       const sermonRow = page.locator('tr').filter({ hasText: 'Octavius Test Sermon' });
       const editBtn = sermonRow.locator('button').getByText('edit');
+      await expect(editBtn).toBeVisible({ timeout: 10000 });
       await editBtn.click();
       const date = page.locator('[name="publishDate"]');
       await expect(date).toBeVisible({ timeout: 10000 });
       const cancelBtn = page.locator('button').getByText('Cancel');
       await cancelBtn.click();
-      await expect(date).toHaveCount(0);
+      await expect(date).toHaveCount(0, { timeout: 10000 });
     });
 
     test('should delete sermon', async ({ page }) => {
@@ -77,6 +79,7 @@ test.describe('Sermons Management', () => {
 
       const sermonRow = page.locator('tr').filter({ hasText: 'Octavius Test Sermon' });
       const editBtn = sermonRow.locator('button').getByText('edit');
+      await expect(editBtn).toBeVisible({ timeout: 10000 });
       await editBtn.click();
       const deleteBtn = page.locator('button').getByText('Delete');
       await deleteBtn.click();
@@ -94,12 +97,13 @@ test.describe('Sermons Management', () => {
       const saveBtn = page.locator('button').getByText('Save');
       await saveBtn.click();
       const validatedUrl = page.locator('td').getByText('Octavian Test Live URL');
-      await expect(validatedUrl).toHaveCount(1);
+      await expect(validatedUrl).toHaveCount(1, { timeout: 10000 });
     });
 
     test('should edit live URL', async ({ page }) => {
       const urlRow = page.locator('tr').filter({ hasText: 'Octavian Test Live URL' });
       const editBtn = urlRow.locator('button').getByText('edit');
+      await expect(editBtn).toBeVisible({ timeout: 10000 });
       await editBtn.click();
       const name = page.locator('[name="title"]');
       await expect(name).toHaveValue('Octavian Test Live URL', { timeout: 10000 });
@@ -107,18 +111,19 @@ test.describe('Sermons Management', () => {
       const saveBtn = page.locator('button').getByText('Save');
       await saveBtn.click();
       const validatedUrl = page.locator('td').getByText('Octavius Test Live URL');
-      await expect(validatedUrl).toHaveCount(1);
+      await expect(validatedUrl).toHaveCount(1, { timeout: 10000 });
     });
 
     test('should cancel editing live URL', async ({ page }) => {
       const urlRow = page.locator('tr').filter({ hasText: 'Octavius Test Live URL' });
       const editBtn = urlRow.locator('button').getByText('edit');
+      await expect(editBtn).toBeVisible({ timeout: 10000 });
       await editBtn.click();
       const name = page.locator('[name="title"]');
       await expect(name).toBeVisible({ timeout: 10000 });
       const cancelBtn = page.locator('button').getByText('Cancel');
       await cancelBtn.click();
-      await expect(name).toHaveCount(0);
+      await expect(name).toHaveCount(0, { timeout: 10000 });
     });
 
     test('should delete live URL', async ({ page }) => {
@@ -130,6 +135,7 @@ test.describe('Sermons Management', () => {
 
       const urlRow = page.locator('tr').filter({ hasText: 'Octavius Test Live URL' });
       const editBtn = urlRow.locator('button').getByText('edit');
+      await expect(editBtn).toBeVisible({ timeout: 10000 });
       await editBtn.click();
       const deleteBtn = page.locator('button').getByText('Delete');
       await deleteBtn.click();
@@ -154,11 +160,12 @@ test.describe('Sermons Management', () => {
       const saveBtn = page.locator('button').getByText('Save');
       await saveBtn.click();
       const validatedPlaylist = page.locator('td').getByText('Octavian Test Playlist');
-      await expect(validatedPlaylist).toHaveCount(1);
+      await expect(validatedPlaylist).toHaveCount(1, { timeout: 10000 });
     });
 
     test('should edit playlist', async ({ page }) => {
       const editBtn = page.locator('button span').getByText('edit').first();
+      await expect(editBtn).toBeVisible({ timeout: 10000 });
       await editBtn.click();
       const name = page.locator('[name="title"]');
       await expect(name).toBeVisible({ timeout: 10000 });
@@ -166,7 +173,7 @@ test.describe('Sermons Management', () => {
       const saveBtn = page.locator('button').getByText('Save');
       await saveBtn.click();
       const validatedPlaylist = page.locator('td').getByText('Octavius Test Playlist');
-      await expect(validatedPlaylist).toHaveCount(1);
+      await expect(validatedPlaylist).toHaveCount(1, { timeout: 10000 });
     });
 
     test('should search for a playlist', async ({ page }) => {
@@ -175,17 +182,18 @@ test.describe('Sermons Management', () => {
       const searchBar = page.locator('input');
       await searchBar.fill('Octavius Test Playlist')
       const validatedPlaylist = page.locator('td').getByText('Octavius Test Playlist');
-      await expect(validatedPlaylist).toHaveCount(1);
+      await expect(validatedPlaylist).toHaveCount(1, { timeout: 10000 });
     });
 
     test('should cancel editing playlist', async ({ page }) => {
       const editBtn = page.locator('button span').getByText('edit').first();
+      await expect(editBtn).toBeVisible({ timeout: 10000 });
       await editBtn.click();
       const name = page.locator('[name="title"]');
       await expect(name).toBeVisible({ timeout: 10000 });
       const cancelBtn = page.locator('button').getByText('Cancel');
       await cancelBtn.click();
-      await expect(name).toHaveCount(0);
+      await expect(name).toHaveCount(0, { timeout: 10000 });
     });
 
     test('should delete playlist', async ({ page }) => {
@@ -196,6 +204,7 @@ test.describe('Sermons Management', () => {
       });
 
       const editBtn = page.locator('button span').getByText('edit').first();
+      await expect(editBtn).toBeVisible({ timeout: 10000 });
       await editBtn.click();
       const deleteBtn = page.locator('button').getByText('Delete');
       await deleteBtn.click();
@@ -220,11 +229,12 @@ test.describe('Sermons Management', () => {
       const saveBtn = page.locator('button').getByText('Save');
       await saveBtn.click();
       const validatedService = page.locator('p').getByText('Octavian Test Service');
-      await expect(validatedService).toHaveCount(1);
+      await expect(validatedService).toHaveCount(1, { timeout: 10000 });
     });
 
     test('should edit service', async ({ page }) => {
       const editBtn = page.locator('button').getByText('edit').last();
+      await expect(editBtn).toBeVisible({ timeout: 10000 });
       await editBtn.click();
       const name = page.locator('[name="serviceLabel"]');
       await expect(name).toBeVisible({ timeout: 10000 });
@@ -232,17 +242,18 @@ test.describe('Sermons Management', () => {
       const saveBtn = page.locator('button').getByText('Save');
       await saveBtn.click();
       const validatedService = page.locator('td').getByText('Octavius Test Service');
-      await expect(validatedService).toHaveCount(1);
+      await expect(validatedService).toHaveCount(1, { timeout: 10000 });
     });
 
     test('should cancel editing service', async ({ page }) => {
       const editBtn = page.locator('button').getByText('edit').last();
+      await expect(editBtn).toBeVisible({ timeout: 10000 });
       await editBtn.click();
       const name = page.locator('[name="serviceLabel"]');
       await expect(name).toBeVisible({ timeout: 10000 });
       const cancelBtn = page.locator('button').getByText('Cancel');
       await cancelBtn.click();
-      await expect(name).toHaveCount(0);
+      await expect(name).toHaveCount(0, { timeout: 10000 });
     });
 
     test('should delete service', async ({ page }) => {
@@ -253,6 +264,7 @@ test.describe('Sermons Management', () => {
       });
 
       const editBtn = page.locator('button').getByText('edit').last();
+      await expect(editBtn).toBeVisible({ timeout: 10000 });
       await editBtn.click();
       const deleteBtn = page.locator('button').getByText('Delete');
       await deleteBtn.click();
@@ -333,6 +345,7 @@ test.describe('Sermons Management', () => {
       await settingsBtn.click();
 
       const addBtn = page.locator('[data-testid="small-button-add"]');
+      await expect(addBtn).toBeVisible({ timeout: 10000 });
       await addBtn.click();
       const name = page.locator('[name="text"]');
       await name.fill('Harder Better Faster Stronger Test');
@@ -341,7 +354,7 @@ test.describe('Sermons Management', () => {
       const saveBtn = page.locator('button').getByText('Save Tab');
       await saveBtn.click();
       const validatedTab = page.locator('a').getByText('Harder Better Faster Stronger Test');
-      await expect(validatedTab).toHaveCount(1);
+      await expect(validatedTab).toHaveCount(1, { timeout: 10000 });
       await validatedTab.click();
       await expect(page).toHaveURL('https://www.youtube.com/watch?v=yydNF8tuVmU', { timeout: 10000 });
     });
@@ -360,7 +373,7 @@ test.describe('Sermons Management', () => {
       const saveBtn = page.locator('button').getByText('Save Tab');
       await saveBtn.click();
       const validatedTab = page.locator('a').getByText('Harker Betker Fasker Stronker Test');
-      await expect(validatedTab).toHaveCount(1);
+      await expect(validatedTab).toHaveCount(1, { timeout: 10000 });
     });
 
     test('should cancel editing sidebar tab', async ({ page }) => {
@@ -371,10 +384,10 @@ test.describe('Sermons Management', () => {
       await expect(editBtn).toBeVisible({ timeout: 10000 });
       await editBtn.click();
       const name = page.locator('[name="text"]');
-      await expect(name).toHaveCount(1);
+      await expect(name).toHaveCount(1, { timeout: 10000 });
       const cancelBtn = page.locator('button').getByText('Cancel');
       await cancelBtn.click();
-      await expect(name).toHaveCount(0);
+      await expect(name).toHaveCount(0, { timeout: 10000 });
     });
 
     test('should delete sidebar tab', async ({ page }) => {

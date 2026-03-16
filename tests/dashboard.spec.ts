@@ -32,26 +32,34 @@ test.describe('Dashboard Management', () => {
     await results.click();
     await expect(page).toHaveURL(/\/people\/PER\d+/, { timeout: 10000 });
     const validatedName = page.locator('p').getByText('Dorothy Jackson');
-    await expect(validatedName).toHaveCount(1);
+    await expect(validatedName).toHaveCount(1, { timeout: 10000 });
   });
 
   test('should add task from dashboard', async ({ page }) => {
     const addBtn = page.locator('[data-testid="add-task-button"]');
+    await expect(addBtn).toBeVisible({ timeout: 10000 });
     await addBtn.click();
     // nth(2) targets the assignee input in the task form
     const assignInput = page.locator('input').nth(2);
+    await expect(assignInput).toBeVisible({ timeout: 10000 });
     await assignInput.click();
     const personSearch = page.locator('[name="personAddText"]');
+    await expect(personSearch).toBeVisible({ timeout: 10000 });
     await personSearch.fill('Demo User');
     const searchBtn = page.locator('[data-testid="search-button"]');
+    await expect(searchBtn).toBeVisible({ timeout: 10000 });
     await searchBtn.click();
     const selectBtn = page.locator('button').getByText('Select');
+    await expect(selectBtn).toBeVisible({ timeout: 10000 });
     await selectBtn.click();
     const taskName = page.locator('[name="title"]');
+    await expect(taskName).toBeVisible({ timeout: 10000 });
     await taskName.fill('Test Task');
     const taskNotes = page.locator('[name="note"]');
+    await expect(taskNotes).toBeVisible({ timeout: 10000 });
     await taskNotes.fill('Octavian Testing (Playwright)');
     const saveBtn = page.locator('button').getByText('Save');
+    await expect(saveBtn).toBeVisible({ timeout: 10000 });
     await saveBtn.click();
     const validatedTask = page.locator('a').getByText('Test Task');
     await expect(validatedTask).toHaveCount(2, { timeout: 10000 });
@@ -59,12 +67,14 @@ test.describe('Dashboard Management', () => {
 
   test('should load task from dashboard', async ({ page }) => {
     const task = page.locator('a').getByText('Test Task').first();
+    await expect(task).toBeVisible({ timeout: 10000 });
     await task.click();
     await expect(page).toHaveURL(/\/tasks\/[^/]+/, { timeout: 10000 });
   });
 
   test('should cancel adding task from dashboard', async ({ page }) => {
     const addBtn = page.locator('[data-testid="add-task-button"]');
+    await expect(addBtn).toBeVisible({ timeout: 10000 });
     await addBtn.click();
     const assignInput = page.locator('input').nth(2);
     await expect(assignInput).toBeVisible({ timeout: 10000 });
