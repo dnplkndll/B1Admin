@@ -376,51 +376,7 @@ test.describe('Serving Management - Plans', () => {
       await expect(verifiedRemoved).toHaveCount(0, { timeout: 10000 });
     });
 
-    test('should delete team', async ({ page }) => {
-      page.once('dialog', async dialog => {
-        expect(dialog.type()).toBe('confirm');
-        expect(dialog.message()).toContain('Are you sure');
-        await dialog.accept();
-      });
-
-      const minBtn = page.locator('[role="tab"]').getByText('Octavius Ministry');
-      await minBtn.click();
-      const teamBtn = page.locator('a').getByText('Octavius Team');
-      await expect(teamBtn).toBeVisible({ timeout: 10000 });
-      await teamBtn.click()
-      await expect(page).toHaveURL(/\/groups\/[^/]+/);
-      const editBtn = page.locator('button span').getByText('edit');
-      await expect(editBtn).toBeVisible({ timeout: 10000 });
-      await editBtn.click();
-
-      const deleteBtn = page.locator('button').getByText('Delete');
-      await deleteBtn.click();
-      const verifiedRemoved = page.locator('table a').getByText('Octavius Team');
-      await expect(verifiedRemoved).toHaveCount(0, { timeout: 10000 });
-    });
-  });
-
-  test.describe('Cleanup', () => {
-    test('should delete ministry', async ({ page }) => {
-      page.once('dialog', async dialog => {
-        expect(dialog.type()).toBe('confirm');
-        expect(dialog.message()).toContain('Are you sure');
-        await dialog.accept();
-      });
-
-      const minBtn = page.locator('[role="tab"]').getByText('Octavius Ministry');
-      await minBtn.click();
-      const manageBtn = page.locator('a').getByText('Edit Ministry');
-      await manageBtn.click();
-      const editBtn = page.locator('button span').getByText('edit').first();
-      await expect(editBtn).toBeVisible({ timeout: 10000 });
-      await editBtn.click();
-
-      const deleteBtn = page.locator('button').getByText('Delete');
-      await expect(deleteBtn).toBeVisible({ timeout: 10000 });
-      await deleteBtn.click();
-      const verifiedRemoved = page.locator('table a').getByText('Octavius Ministry');
-      await expect(verifiedRemoved).toHaveCount(0, { timeout: 10000 });
-    });
+    // Team and ministry deletion moved to serving-lessons.spec.ts cleanup
+    // (serving-lessons depends on this data existing)
   });
 });

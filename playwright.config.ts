@@ -38,7 +38,29 @@ export default defineConfig({
       },
       testMatch: /settings\.spec\.ts/,
     },
-    // All other tests run in parallel after settings completes
+    // serving-plans must run before serving-lessons (lessons depends on ministry/plans/team data)
+    {
+      name: 'serving-plans',
+      dependencies: ['settings'],
+      use: {
+        ...devices['Desktop Chrome'],
+        headless: true,
+        viewport: { width: 1280, height: 1200 },
+      },
+      testMatch: /serving-plans\.spec\.ts/,
+    },
+    // serving-lessons depends on data created by serving-plans
+    {
+      name: 'serving-lessons',
+      dependencies: ['serving-plans'],
+      use: {
+        ...devices['Desktop Chrome'],
+        headless: true,
+        viewport: { width: 1280, height: 1200 },
+      },
+      testMatch: /serving-lessons\.spec\.ts/,
+    },
+    // All other tests run after settings completes
     {
       name: 'chromium',
       dependencies: ['settings'],
@@ -48,7 +70,7 @@ export default defineConfig({
         // Taller viewport prevents the sticky header from covering action buttons
         viewport: { width: 1280, height: 1200 },
       },
-      testIgnore: /settings\.spec\.ts/,
+      testIgnore: /(settings|serving-plans|serving-lessons)\.spec\.ts/,
     },
   ],
 });
