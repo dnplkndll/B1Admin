@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { login } from './helpers/auth';
+import { login, scrollPastHeader } from './helpers/auth';
 import { navigateToPeople } from './helpers/navigation';
 
 // OCTAVIAN/OCTAVIUS are the names used for testing. If you see Octavian/Octavius entered anywhere, it is a result of these tests.
@@ -8,6 +8,7 @@ test.describe('People Management', () => {
     await login(page);
     await navigateToPeople(page);
     await expect(page).toHaveURL(/\/people/);
+    await scrollPastHeader(page);
   });
 
   test.describe('Individuals', () => {

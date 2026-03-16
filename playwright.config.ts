@@ -11,7 +11,7 @@ export default defineConfig({
   fullyParallel: false,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
-  workers: process.env.CI ? 2 : undefined,
+  workers: 1,
   reporter: process.env.CI ? 'list' : 'html',
   timeout: 60 * 1000,
   expect: { timeout: 5 * 1000 },
@@ -45,6 +45,8 @@ export default defineConfig({
       use: {
         ...devices['Desktop Chrome'],
         headless: true,
+        // Taller viewport prevents the sticky header from covering action buttons
+        viewport: { width: 1280, height: 1200 },
       },
       testIgnore: /settings\.spec\.ts/,
     },

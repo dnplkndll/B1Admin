@@ -1,5 +1,27 @@
 import type { Page } from "@playwright/test";
 
+/**
+ * Prevent the sticky/fixed site header from intercepting clicks on content
+ * below it. Makes the header overlay transparent to pointer events while
+ * keeping interactive elements (buttons, links) inside it clickable.
+ * Must be called after each page.goto / navigation since new pages lose injected CSS.
+ */
+export async function scrollPastHeader(page: Page) {
+  await page.addStyleTag({
+    content: `
+      #site-header, #site-toolbar {
+        pointer-events: none !important;
+      }
+      #site-header a, #site-header button, #site-header input,
+      #site-header [role="tab"], #site-header [role="combobox"],
+      #site-header span, #site-header img, #site-header div[id="secondaryMenu"],
+      #site-header div[id="secondaryMenu"] * {
+        pointer-events: auto !important;
+      }
+    `,
+  });
+}
+
 export async function login(page: Page) {
   await page.goto("/");
 

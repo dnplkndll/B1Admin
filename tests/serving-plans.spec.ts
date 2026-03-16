@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { login } from './helpers/auth';
+import { login, scrollPastHeader } from './helpers/auth';
 
 // OCTAVIAN/OCTAVIUS are the names used for testing. If you see Octavian or Octavius entered anywhere, it is a result of these tests.
 test.describe('Serving Management - Plans', () => {
@@ -10,6 +10,7 @@ test.describe('Serving Management - Plans', () => {
     const servingHomeBtn = page.locator('[data-testid="nav-item-serving"]');
     await servingHomeBtn.click();
     await expect(page).toHaveURL(/\/serving/);
+    await scrollPastHeader(page);
   });
 
   test.describe('Ministry CRUD', () => {

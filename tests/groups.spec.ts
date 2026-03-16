@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { login } from './helpers/auth';
+import { login, scrollPastHeader } from './helpers/auth';
 
 test.describe('Group Management', () => {
   test.beforeEach(async ({ page }) => {
@@ -12,6 +12,7 @@ test.describe('Group Management', () => {
     const groupHomeBtn = page.locator('[id="secondaryMenu"]').getByText('Groups');
     await groupHomeBtn.click();
     await expect(page).toHaveURL(/\/groups/);
+    await scrollPastHeader(page);
   });
 
   test.describe('Groups', () => {

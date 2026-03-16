@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { login } from './helpers/auth';
+import { login, scrollPastHeader } from './helpers/auth';
 
 // OCTAVIAN/OCTAVIUS are the names used for testing. If you see Octavian or Octavius entered anywhere, it is a result of these tests.
 test.describe('Sermons Management', () => {
@@ -10,6 +10,7 @@ test.describe('Sermons Management', () => {
     const sermonsHomeBtn = page.locator('[data-testid="nav-item-sermons"]');
     await sermonsHomeBtn.click();
     await expect(page).toHaveURL(/\/sermons/);
+    await scrollPastHeader(page);
   });
 
   /* test('should load sermons home', async ({ page }) => {
@@ -142,6 +143,7 @@ test.describe('Sermons Management', () => {
     test.beforeEach(async ({ page }) => {
       const playlistHomeBtn = page.locator('[id="secondaryMenu"]').getByText('Playlists');
       await playlistHomeBtn.click();
+      await scrollPastHeader(page);
     });
 
     test('should add playlist', async ({ page }) => {
@@ -207,6 +209,7 @@ test.describe('Sermons Management', () => {
     test.beforeEach(async ({ page }) => {
       const streamHomeBtn = page.locator('[id="secondaryMenu"]').getByText('Live Stream Times');
       await streamHomeBtn.click();
+      await scrollPastHeader(page);
     });
 
     test('should add service', async ({ page }) => {

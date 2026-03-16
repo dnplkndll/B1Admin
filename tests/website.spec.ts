@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { login } from './helpers/auth';
+import { login, scrollPastHeader } from './helpers/auth';
 
 // OCTAVIAN/OCTAVIUS are the names used for testing. If you see Octavian or Octavius entered anywhere, it is a result of these tests.
 test.describe('Website Management', () => {
@@ -10,6 +10,7 @@ test.describe('Website Management', () => {
     const websiteHomeBtn = page.locator('[data-testid="nav-item-website"]');
     await websiteHomeBtn.click();
     await expect(page).toHaveURL(/\/site\/pages/);
+    await scrollPastHeader(page);
   });
 
   /* test('should load website home', async ({ page }) => {
@@ -156,6 +157,7 @@ test.describe('Website Management', () => {
       const blocksHomeBtn = page.locator('a').getByText('Blocks').first();
       await blocksHomeBtn.click();
       await expect(page).toHaveURL(/\/site\/blocks/);
+      await scrollPastHeader(page);
     });
 
     test('should add block', async ({ page }) => {
@@ -245,6 +247,7 @@ test.describe('Website Management', () => {
       const appearanceHomeBtn = page.locator('a').getByText('Appearance').first();
       await appearanceHomeBtn.click();
       await expect(page).toHaveURL(/\/site\/appearance/);
+      await scrollPastHeader(page);
     });
 
     test('should change color palette', async ({ page }) => {
@@ -326,6 +329,7 @@ test.describe('Website Management', () => {
       const filesHomeBtn = page.locator('a').getByText('Files').first();
       await filesHomeBtn.click();
       await expect(page).toHaveURL(/\/site\/files/);
+      await scrollPastHeader(page);
     });
 
     test('should upload file', async ({ page }) => {
@@ -359,6 +363,7 @@ test.describe('Website Management', () => {
       const calendarHomeBtn = page.locator('a').getByText('Calendar').first();
       await calendarHomeBtn.click();
       await expect(page).toHaveURL(/\/calendars/);
+      await scrollPastHeader(page);
     });
 
     test('should add calendar', async ({ page }) => {

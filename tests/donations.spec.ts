@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { login } from './helpers/auth';
+import { login, scrollPastHeader } from './helpers/auth';
 
 // OCTAVIAN/OCTAVIUS are the names used for testing. If you see Octavian or Octavius entered anywhere, it is a result of these tests.
 test.describe('Donations Management', () => {
@@ -10,6 +10,7 @@ test.describe('Donations Management', () => {
     const donationHomeBtn = page.locator('[data-testid="nav-item-donations"]');
     await donationHomeBtn.click();
     await expect(page).toHaveURL(/\/donations/);
+    await scrollPastHeader(page);
   });
 
   test.describe('Summary', () => {

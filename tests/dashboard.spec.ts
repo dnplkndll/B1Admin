@@ -1,12 +1,13 @@
 import { test, expect } from '@playwright/test';
-import { login } from './helpers/auth';
+import { login, scrollPastHeader } from './helpers/auth';
 
 // OCTAVIAN/OCTAVIUS are the names used for testing. If you see Octavian or Octavius entered anywhere, it is a result of these tests.
 test.describe('Dashboard Management', () => {
   test.beforeEach(async ({ page }) => {
     await login(page);
     await page.goto('/dashboard');
-    await expect(page.locator('h6').first()).toBeVisible({ timeout: 15000 });
+    await expect(page.locator('[id="searchText"]')).toBeVisible({ timeout: 15000 });
+    await scrollPastHeader(page);
   });
 
   /* test('should load dashboard', async ({ page }) => {
@@ -15,9 +16,9 @@ test.describe('Dashboard Management', () => {
   }); */
 
   test('should load group from dashboard', async ({ page }) => {
-    const firstGroup = page.locator('h6').first();
-    await expect(firstGroup).toBeVisible({ timeout: 10000 });
-    await firstGroup.click();
+    const groupLink = page.locator('a[href^="/groups/"]').first();
+    await expect(groupLink).toBeVisible({ timeout: 10000 });
+    await groupLink.click();
     await expect(page).toHaveURL(/\/groups\/GRP\d+/, { timeout: 10000 });
   });
 
@@ -26,7 +27,7 @@ test.describe('Dashboard Management', () => {
     await searchBox.fill('Dorothy Jackson');
     const searchBtn = page.locator('[data-testid="dashboard-search-button"]');
     await searchBtn.click();
-    const results = page.locator('h6').getByText('Dorothy Jackson');
+    const results = page.getByText('Dorothy Jackson').first();
     await expect(results).toBeVisible({ timeout: 10000 });
     await results.click();
     await expect(page).toHaveURL(/\/people\/PER\d+/, { timeout: 10000 });
