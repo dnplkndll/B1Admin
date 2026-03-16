@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { login } from './helpers/auth';
+import { login, scrollPastHeader } from './helpers/auth';
 
 // OCTAVIAN/OCTAVIUS are the names used for testing. If you see Octavian or Octavius entered anywhere, it is a result of these tests.
 test.describe('Website Management', () => {
@@ -9,8 +9,8 @@ test.describe('Website Management', () => {
     await menuBtn.click();
     const websiteHomeBtn = page.locator('[data-testid="nav-item-website"]');
     await websiteHomeBtn.click();
-    await page.waitForTimeout(5000);
     await expect(page).toHaveURL(/\/site\/pages/);
+    await scrollPastHeader(page);
   });
 
   /* test('should load website home', async ({ page }) => {
@@ -22,58 +22,68 @@ test.describe('Website Management', () => {
   test.describe('Pages', () => {
     test('should add page', async ({ page }) => {
       const addBtn = page.locator('[data-testid="add-page-button"]');
+      await expect(addBtn).toBeVisible({ timeout: 10000 });
       await addBtn.click();
       const name = page.locator('[name="title"]');
       await name.fill('Octavian Test Page');
       const saveBtn = page.locator('button').getByText('Save');
       await saveBtn.click();
       const validatedPage = page.locator('td').getByText('Octavian Test Page');
-      await expect(validatedPage).toHaveCount(1);
+      await expect(validatedPage).toHaveCount(1, { timeout: 10000 });
     });
 
     test('should cancel adding page', async ({ page }) => {
       const addBtn = page.locator('[data-testid="add-page-button"]');
+      await expect(addBtn).toBeVisible({ timeout: 10000 });
       await addBtn.click();
       const name = page.locator('[name="title"]');
-      await expect(name).toHaveCount(1);
+      await expect(name).toHaveCount(1, { timeout: 10000 });
       const cancelBtn = page.locator('button').getByText('Cancel');
+      await expect(cancelBtn).toBeVisible({ timeout: 10000 });
       await cancelBtn.click();
-      await expect(name).toHaveCount(0);
+      await expect(name).toHaveCount(0, { timeout: 10000 });
     });
 
     test('should edit page title', async ({ page }) => {
       const editBtn = page.locator('[data-testid="edit-page-button"]').last();
+      await expect(editBtn).toBeVisible({ timeout: 10000 });
       await editBtn.click();
       const settingsBtn = page.locator('button').getByText('Page Settings');
+      await expect(settingsBtn).toBeVisible({ timeout: 10000 });
       await settingsBtn.click();
       const name = page.locator('[name="title"]');
       await name.fill('Octavius Test Page');
       const saveBtn = page.locator('button').getByText('Save');
       await saveBtn.click();
       const validatedPage = page.locator('h6').getByText('Octavius Test Page');
-      await expect(validatedPage).toHaveCount(1);
+      await expect(validatedPage).toHaveCount(1, { timeout: 10000 });
     });
 
     test('should cancel editing page title', async ({ page }) => {
       const editBtn = page.locator('[data-testid="edit-page-button"]').last();
+      await expect(editBtn).toBeVisible({ timeout: 10000 });
       await editBtn.click();
       const settingsBtn = page.locator('button').getByText('Page Settings');
+      await expect(settingsBtn).toBeVisible({ timeout: 10000 });
       await settingsBtn.click();
       const name = page.locator('[name="title"]');
-      await expect(name).toHaveCount(1);
+      await expect(name).toHaveCount(1, { timeout: 10000 });
       const cancelBtn = page.locator('button').getByText('Cancel');
+      await expect(cancelBtn).toBeVisible({ timeout: 10000 });
       await cancelBtn.click();
-      await expect(name).toHaveCount(0);
+      await expect(name).toHaveCount(0, { timeout: 10000 });
     });
 
     test('should edit page content', async ({ page }) => {
       const editBtn = page.locator('[data-testid="edit-page-button"]').last();
+      await expect(editBtn).toBeVisible({ timeout: 10000 });
       await editBtn.click();
       const contentBtn = page.locator('button').getByText('Edit Content');
+      await expect(contentBtn).toBeVisible({ timeout: 10000 });
       await contentBtn.click();
       const addBtn = page.locator('button').getByText('add');
       await addBtn.click();
-      await page.waitForTimeout(500);
+      await expect(page.locator('div').getByText('Section').nth(2)).toBeVisible({ timeout: 10000 });
       const section = page.locator('div').getByText('Section').nth(2);
       const dropzone = page.locator('div [data-testid="droppable-area"]').first();
       await section.hover();
@@ -85,7 +95,7 @@ test.describe('Website Management', () => {
       await saveBtn.click();
       //add text to confirm
       await addBtn.click();
-      await page.waitForTimeout(500);
+      await expect(page.locator('div').getByText('Text').nth(1)).toBeVisible({ timeout: 10000 });
       const text = page.locator('div').getByText('Text').nth(1);
       const secondaryDropzone = page.locator('div [data-testid="droppable-area"]').nth(1);
       await text.hover();
@@ -96,9 +106,9 @@ test.describe('Website Management', () => {
       const textbox = page.locator('[role="textbox"]');
       await textbox.fill('Octavian Test Text');
       await saveBtn.click();
-      await page.waitForTimeout(500);
       const validatedText = page.locator('p').getByText('Octavian Test Text');
-      await expect(validatedText).toHaveCount(1);
+      await expect(validatedText).toBeVisible({ timeout: 10000 });
+      await expect(validatedText).toHaveCount(1, { timeout: 10000 });
     });
 
     /* DOESN'T WORK due to not using staging
@@ -113,15 +123,16 @@ test.describe('Website Management', () => {
 
     test('should verify done button functionality', async ({ page }) => {
       const editBtn = page.locator('[data-testid="edit-page-button"]').last();
+      await expect(editBtn).toBeVisible({ timeout: 10000 });
       await editBtn.click();
       const contentBtn = page.locator('button').getByText('Edit Content');
+      await expect(contentBtn).toBeVisible({ timeout: 10000 });
       await contentBtn.click();
       await expect(page).toHaveURL(/\/site\/pages\/[^/]+/);
-      await page.waitForTimeout(2000);
       const doneBtn = page.locator('[data-testid="content-editor-done-button"]');
+      await expect(doneBtn).toBeVisible({ timeout: 10000 });
       await doneBtn.click();
-      await page.waitForTimeout(2000);
-      await expect(page).toHaveURL(/\/site\/pages\/preview\/[^/]+/);
+      await expect(page).toHaveURL(/\/site\/pages\/preview\/[^/]+/, { timeout: 10000 });
     });
 
     test('should delete page', async ({ page }) => {
@@ -132,24 +143,26 @@ test.describe('Website Management', () => {
       });
 
       const editBtn = page.locator('[data-testid="edit-page-button"]').last();
+      await expect(editBtn).toBeVisible({ timeout: 10000 });
       await editBtn.click();
       const settingsBtn = page.locator('button').getByText('Page Settings');
+      await expect(settingsBtn).toBeVisible({ timeout: 10000 });
       await settingsBtn.click();
       const deleteBtn = page.locator('button').getByText('Delete');
+      await expect(deleteBtn).toBeVisible({ timeout: 10000 });
       await deleteBtn.click();
-      await page.waitForTimeout(2000);
 
       /* OUTDATED- navigates back to website home, now happens automatically:
       const menuBtn = page.locator('[id="primaryNavButton"]').getByText('expand_more');
       await menuBtn.click();
-      await page.waitForTimeout(500);
+      await page.waitForTimeout(200);
       const websiteHomeBtn = page.locator('[data-testid="nav-item-website"]');
       await websiteHomeBtn.click();
       await page.waitForTimeout(5000);
       await expect(page).toHaveURL(/\/site\/pages/); */
 
       const validatedDeletion = page.locator('td').getByText('Octavius Test Page');
-      await expect(validatedDeletion).toHaveCount(0);
+      await expect(validatedDeletion).toHaveCount(0, { timeout: 10000 });
     });
 
   });
@@ -157,13 +170,15 @@ test.describe('Website Management', () => {
   test.describe('Blocks', () => {
     test.beforeEach(async ({ page }) => {
       const blocksHomeBtn = page.locator('a').getByText('Blocks').first();
+      await expect(blocksHomeBtn).toBeVisible({ timeout: 10000 });
       await blocksHomeBtn.click();
-      await page.waitForTimeout(2000);
       await expect(page).toHaveURL(/\/site\/blocks/);
+      await scrollPastHeader(page);
     });
 
     test('should add block', async ({ page }) => {
       const addBtn = page.locator('[data-testid="add-block-button"]');
+      await expect(addBtn).toBeVisible({ timeout: 10000 });
       await addBtn.click();
       const name = page.locator('[name="name"]');
       await name.fill('Octavian Test Block');
@@ -173,28 +188,31 @@ test.describe('Website Management', () => {
       await typeSelect.click();
       const saveBtn = page.locator('button').getByText('Save');
       await saveBtn.click();
-      await page.waitForTimeout(500);
       const validatedBlock = page.locator('td').getByText('Octavian Test Block');
-      await expect(validatedBlock).toHaveCount(1);
+      await expect(validatedBlock).toBeVisible({ timeout: 10000 });
+      await expect(validatedBlock).toHaveCount(1, { timeout: 10000 });
     });
 
     test('should cancel adding block', async ({ page }) => {
       const addBtn = page.locator('[data-testid="add-block-button"]');
+      await expect(addBtn).toBeVisible({ timeout: 10000 });
       await addBtn.click();
       const name = page.locator('[name="name"]');
-      await expect(name).toHaveCount(1);
+      await expect(name).toHaveCount(1, { timeout: 10000 });
       const cancelBtn = page.locator('button').getByText('Cancel');
+      await expect(cancelBtn).toBeVisible({ timeout: 10000 });
       await cancelBtn.click();
-      await expect(name).toHaveCount(0);
+      await expect(name).toHaveCount(0, { timeout: 10000 });
     });
 
     test('should edit block content', async ({ page }) => {
-      const editBtn = page.locator('td a').getByText('Edit').nth(6);
+      const editBtn = page.locator('td a').getByText('Edit').last();
+      await expect(editBtn).toBeVisible({ timeout: 10000 });
       await editBtn.click();
-      page.waitForTimeout(500);
       const addBtn = page.locator('button').getByText('add');
+      await expect(addBtn).toBeVisible({ timeout: 10000 });
       await addBtn.click();
-      await page.waitForTimeout(500);
+      await expect(page.locator('div').getByText('Section').nth(2)).toBeVisible({ timeout: 10000 });
       const section = page.locator('div').getByText('Section').nth(2);
       const dropzone = page.locator('div [data-testid="droppable-area"]').first();
       await section.hover();
@@ -206,7 +224,7 @@ test.describe('Website Management', () => {
       await saveBtn.click();
       //add text to confirm
       await addBtn.click();
-      await page.waitForTimeout(500);
+      await expect(page.locator('div').getByText('Text').nth(1)).toBeVisible({ timeout: 10000 });
       const text = page.locator('div').getByText('Text').nth(1);
       const secondaryDropzone = page.locator('div [data-testid="droppable-area"]').nth(1);
       await text.hover();
@@ -217,9 +235,9 @@ test.describe('Website Management', () => {
       const textbox = page.locator('[role="textbox"]');
       await textbox.fill('Octavian Test Text');
       await saveBtn.click();
-      await page.waitForTimeout(500);
       const validatedText = page.locator('p').getByText('Octavian Test Text');
-      await expect(validatedText).toHaveCount(1);
+      await expect(validatedText).toBeVisible({ timeout: 10000 });
+      await expect(validatedText).toHaveCount(1, { timeout: 10000 });
     });
 
     /*test('UNFINISHED should view mobile preview of block content', async ({ page }) => {
@@ -234,10 +252,12 @@ test.describe('Website Management', () => {
     });*/
 
     test('should verify done btn functionality', async ({ page }) => {
-      const editBtn = page.locator('td a').getByText('Edit').nth(6);
+      const editBtn = page.locator('td a').getByText('Edit').last();
+      await expect(editBtn).toBeVisible({ timeout: 10000 });
       await editBtn.click();
       await expect(page).toHaveURL(/\/site\/blocks\/[^/]+/);
       const doneBtn = page.locator('[data-testid="content-editor-done-button"]');
+      await expect(doneBtn).toBeVisible({ timeout: 10000 });
       await doneBtn.click();
       await expect(page).toHaveURL(/\/site\/blocks/);
     });
@@ -247,88 +267,98 @@ test.describe('Website Management', () => {
   test.describe('Appearance', () => {
     test.beforeEach(async ({ page }) => {
       const appearanceHomeBtn = page.locator('a').getByText('Appearance').first();
+      await expect(appearanceHomeBtn).toBeVisible({ timeout: 10000 });
       await appearanceHomeBtn.click();
-      await page.waitForTimeout(2000);
       await expect(page).toHaveURL(/\/site\/appearance/);
+      await scrollPastHeader(page);
     });
 
     test('should change color palette', async ({ page }) => {
       const colorSettings = page.locator('h6').getByText('Color Palette');
+      await expect(colorSettings).toBeVisible({ timeout: 10000 });
       await colorSettings.click();
       const palettePreset = page.locator('span').getByText('Palette 16');
+      await expect(palettePreset).toBeVisible({ timeout: 10000 });
       await palettePreset.click();
       const saveBtn = page.locator('[data-testid="save-palette-button"]');
+      await expect(saveBtn).toBeVisible({ timeout: 10000 });
       await saveBtn.click();
-      await page.waitForTimeout(2000);
       const validatedChange = page.locator('[data-testid="preview-plan-visit-button"]');
       await expect(validatedChange).toHaveCSS('background-color', 'rgb(255, 100, 10)');
     });
 
     test('should cancel changing color palette', async ({ page }) => {
       const colorSettings = page.locator('h6').getByText('Color Palette');
+      await expect(colorSettings).toBeVisible({ timeout: 10000 });
       await colorSettings.click();
       const palettePreset = page.locator('span').getByText('Palette 16');
-      await expect(palettePreset).toHaveCount(1);
+      await expect(palettePreset).toHaveCount(1, { timeout: 10000 });
       const cancelBtn = page.locator('button').getByText('Cancel');
+      await expect(cancelBtn).toBeVisible({ timeout: 10000 });
       await cancelBtn.click();
-      await page.waitForTimeout(2000);
-      await expect(palettePreset).toHaveCount(0);
+      await expect(palettePreset).toHaveCount(0, { timeout: 10000 });
     });
 
     test('should change font', async ({ page }) => {
       const fontSettings = page.locator('h6').getByText('Fonts');
+      await expect(fontSettings).toBeVisible({ timeout: 10000 });
       await fontSettings.click();
       const headerFontSelect = page.locator('[data-testid="heading-font-button"]');
+      await expect(headerFontSelect).toBeVisible({ timeout: 10000 });
       await headerFontSelect.click();
-      await page.waitForTimeout(500);
       const headerFont = page.locator('td').getByText('Montserrat').first();
+      await expect(headerFont).toBeVisible({ timeout: 10000 });
       await headerFont.click();
       const saveBtn = page.locator('[data-testid="save-fonts-button"]');
+      await expect(saveBtn).toBeVisible({ timeout: 10000 });
       await saveBtn.click();
-      await page.waitForTimeout(2000);
       const validatedChange = page.locator('h1').getByText('Welcome to Grace Community Church');
       await expect(validatedChange).toHaveCSS('font-family', 'Montserrat');
     });
 
     test('should cancel changing font', async ({ page }) => {
       const fontSettings = page.locator('h6').getByText('Fonts');
+      await expect(fontSettings).toBeVisible({ timeout: 10000 });
       await fontSettings.click();
       const headerFontSelect = page.locator('[data-testid="heading-font-button"]');
-      await expect(headerFontSelect).toHaveCount(1);
+      await expect(headerFontSelect).toHaveCount(1, { timeout: 10000 });
       const cancelBtn = page.locator('button').getByText('Cancel');
+      await expect(cancelBtn).toBeVisible({ timeout: 10000 });
       await cancelBtn.click();
-      await page.waitForTimeout(2000);
-      await expect(headerFontSelect).toHaveCount(0);
+      await expect(headerFontSelect).toHaveCount(0, { timeout: 10000 });
     });
 
     test('should add custom CSS', async ({ page }) => {
       const stylesheetSettings = page.locator('h6').getByText('CSS & Javascript');
+      await expect(stylesheetSettings).toBeVisible({ timeout: 10000 });
       await stylesheetSettings.click();
       const cssBox = page.locator('textarea').first();
+      await expect(cssBox).toBeVisible({ timeout: 10000 });
       await cssBox.fill('h1 {\ncolor: #7FFF00\n}');
       const saveBtn = page.locator('button').getByText('Save Changes');
+      await expect(saveBtn).toBeVisible({ timeout: 10000 });
       await saveBtn.click();
-      await page.waitForTimeout(2000);
       const validatedChange = page.locator('h1').getByText("Welcome to Grace Community Church");
       await expect(validatedChange).toHaveCSS('color', 'rgb(127, 255, 0)');
     });
 
     test('should cancel adding custom CSS', async ({ page }) => {
       const stylesheetSettings = page.locator('h6').getByText('CSS & Javascript');
+      await expect(stylesheetSettings).toBeVisible({ timeout: 10000 });
       await stylesheetSettings.click();
       const cssBox = page.locator('textarea').first();
-      await expect(cssBox).toHaveCount(1);
+      await expect(cssBox).toHaveCount(1, { timeout: 10000 });
       const cancelBtn = page.locator('button').getByText('Cancel');
+      await expect(cancelBtn).toBeVisible({ timeout: 10000 });
       await cancelBtn.click();
-      await page.waitForTimeout(2000);
-      await expect(cssBox).toHaveCount(0);
+      await expect(cssBox).toHaveCount(0, { timeout: 10000 });
     });
 
     test('should add footer', async ({ page }) => {
       const footerSettings = page.locator('h6').getByText('Site Footer');
+      await expect(footerSettings).toBeVisible({ timeout: 10000 });
       await footerSettings.click();
-      await page.waitForTimeout(2000);
-      await expect(page).toHaveURL(/\/site\/blocks\/[^/]+/);
+      await expect(page).toHaveURL(/\/site\/blocks\/[^/]+/, { timeout: 10000 });
     });
 
   });
@@ -336,20 +366,23 @@ test.describe('Website Management', () => {
   test.describe('Files', () => {
     test.beforeEach(async ({ page }) => {
       const filesHomeBtn = page.locator('a').getByText('Files').first();
+      await expect(filesHomeBtn).toBeVisible({ timeout: 10000 });
       await filesHomeBtn.click();
-      await page.waitForTimeout(2000);
       await expect(page).toHaveURL(/\/site\/files/);
+      await scrollPastHeader(page);
     });
 
     test('should upload file', async ({ page }) => {
       const chooseFileBtn = page.locator('[id="fileUpload"]');
+      await expect(chooseFileBtn).toBeVisible({ timeout: 10000 });
       await chooseFileBtn.click();
       await chooseFileBtn.setInputFiles('public/images/logo.png');
       const uploadBtn = page.locator('button').getByText('Upload');
+      await expect(uploadBtn).toBeVisible({ timeout: 10000 });
       await uploadBtn.click();
-      await page.waitForTimeout(2000);
       const validatedUpload = page.locator('td').getByText('Logo.png');
-      await expect(validatedUpload).toHaveCount(1);
+      await expect(validatedUpload).toBeVisible({ timeout: 10000 });
+      await expect(validatedUpload).toHaveCount(1, { timeout: 10000 });
     });
 
     test('should remove file', async ({ page }) => {
@@ -360,10 +393,10 @@ test.describe('Website Management', () => {
       });
 
       const deleteBtn = page.locator('button').getByText('delete');
+      await expect(deleteBtn).toBeVisible({ timeout: 10000 });
       await deleteBtn.click();
-      await page.waitForTimeout(200);
       const validatedDeletion = page.locator('td').getByText('Logo.png');
-      await expect(validatedDeletion).toHaveCount(0);
+      await expect(validatedDeletion).toHaveCount(0, { timeout: 10000 });
     });
 
   });
@@ -371,52 +404,64 @@ test.describe('Website Management', () => {
   test.describe('Calendar', () => {
     test.beforeEach(async ({ page }) => {
       const calendarHomeBtn = page.locator('a').getByText('Calendar').first();
+      await expect(calendarHomeBtn).toBeVisible({ timeout: 10000 });
       await calendarHomeBtn.click();
-      await page.waitForTimeout(2000);
       await expect(page).toHaveURL(/\/calendars/);
+      await scrollPastHeader(page);
     });
 
     test('should add calendar', async ({ page }) => {
       const addBtn = page.locator('[data-testid="add-calendar"]');
+      await expect(addBtn).toBeVisible({ timeout: 10000 });
       await addBtn.click();
       const name = page.locator('[name="name"]');
       await name.fill('Octavian Test Calendar');
       const saveBtn = page.locator('[data-testid="save-calendar-button"]');
+      await expect(saveBtn).toBeVisible({ timeout: 10000 });
       await saveBtn.click();
       const validatedCalendar = page.locator('h6').getByText('Octavian Test Calendar');
-      await expect(validatedCalendar).toHaveCount(1);
+      await expect(validatedCalendar).toHaveCount(1, { timeout: 10000 });
     });
 
     test('should add group events to calendar', async ({ page }) => {
       const editBtn = page.locator('[aria-label="Manage Events"]').last();
+      await expect(editBtn).toBeVisible({ timeout: 10000 });
       await editBtn.click();
       const addBtn = page.locator('[data-testid="calendar-add-event-button"]');
+      await expect(addBtn).toBeVisible({ timeout: 10000 });
       await addBtn.click();
       const groupSelectBox = page.locator('[role="combobox"]');
+      await expect(groupSelectBox).toBeVisible({ timeout: 10000 });
       await groupSelectBox.click();
       const groupSelect = page.locator('li').getByText('Adult Bible Class');
+      await expect(groupSelect).toBeVisible({ timeout: 10000 });
       await groupSelect.click();
       const saveBtn = page.locator('[data-testid="calendar-edit-save-button"]');
+      await expect(saveBtn).toBeVisible({ timeout: 10000 });
       await saveBtn.click();
-      await page.waitForTimeout(500);
       const validatedGroup = page.locator('td').getByText('Adult Bible Class');
-      await expect(validatedGroup).toHaveCount(1);
+      await expect(validatedGroup).toBeVisible({ timeout: 10000 });
+      await expect(validatedGroup).toHaveCount(1, { timeout: 10000 });
       const agendaBtn = page.locator('button').getByText('Agenda');
+      await expect(agendaBtn).toBeVisible({ timeout: 10000 });
       await agendaBtn.click();
       const validatedEvents = page.locator('[class="rbc-agenda-table"] td').getByText('Adult Bible Class').first();
-      await expect(validatedEvents).toHaveCount(1);
+      await expect(validatedEvents).toHaveCount(1, { timeout: 10000 });
     });
 
     test('should cancel adding group events to calendar', async ({ page }) => {
       const editBtn = page.locator('[aria-label="Manage Events"]').last();
+      await expect(editBtn).toBeVisible({ timeout: 10000 });
       await editBtn.click();
       const addBtn = page.locator('[data-testid="calendar-add-event-button"]');
+      await expect(addBtn).toBeVisible({ timeout: 10000 });
       await addBtn.click();
       const groupSelectBox = page.locator('[role="combobox"]');
-      await expect(groupSelectBox).toHaveCount(1);
+      await expect(groupSelectBox).toHaveCount(1, { timeout: 10000 });
       const cancelBtn = page.locator('[data-testid="calendar-edit-cancel-button"]');
+      await expect(cancelBtn).toBeVisible({ timeout: 10000 });
       await cancelBtn.click();
-      await expect(groupSelectBox).toHaveCount(0);
+      await expect(groupSelectBox).toHaveCount(0, { timeout: 10000 });
     });
 
     test('should remove group events from calendar', async ({ page }) => {
@@ -427,32 +472,37 @@ test.describe('Website Management', () => {
       });
 
       const editBtn = page.locator('[aria-label="Manage Events"]').last();
+      await expect(editBtn).toBeVisible({ timeout: 10000 });
       await editBtn.click();
-      const removeBtn = page.locator('[d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6zM19 4h-3.5l-1-1h-5l-1 1H5v2h14z"]').first();
+      const removeBtn = page.locator('button').filter({ has: page.locator('[d*="M6 19c0"]') }).first();
+      await expect(removeBtn).toBeVisible({ timeout: 10000 });
       await removeBtn.click();
       const validatedDeletion = page.locator('td').getByText('Adult Bible Class');
-      await expect(validatedDeletion).toHaveCount(0);
+      await expect(validatedDeletion).toHaveCount(0, { timeout: 10000 });
     });
 
     test('should edit calendar', async ({ page }) => {
       const editBtn = page.locator('[aria-label="Edit"]').last();
+      await expect(editBtn).toBeVisible({ timeout: 10000 });
       await editBtn.click();
       const name = page.locator('[name="name"]');
       await name.fill('Octavius Test Calendar');
       const saveBtn = page.locator('[data-testid="save-calendar-button"]');
       await saveBtn.click();
       const validatedChange = page.locator('h6').getByText('Octavius Test Calendar');
-      await expect(validatedChange).toHaveCount(1);
+      await expect(validatedChange).toHaveCount(1, { timeout: 10000 });
     });
 
     test('should cancel editing calendar', async ({ page }) => {
       const editBtn = page.locator('[aria-label="Edit"]').last();
+      await expect(editBtn).toBeVisible({ timeout: 10000 });
       await editBtn.click();
       const name = page.locator('[name="name"]');
-      await expect(name).toHaveCount(1);
+      await expect(name).toHaveCount(1, { timeout: 10000 });
       const cancelBtn = page.locator('button').getByText('Cancel');
+      await expect(cancelBtn).toBeVisible({ timeout: 10000 });
       await cancelBtn.click();
-      await expect(name).toHaveCount(0);
+      await expect(name).toHaveCount(0, { timeout: 10000 });
     });
 
     test('should delete calendar', async ({ page }) => {
@@ -463,11 +513,13 @@ test.describe('Website Management', () => {
       });
 
       const editBtn = page.locator('[aria-label="Edit"]').last();
+      await expect(editBtn).toBeVisible({ timeout: 10000 });
       await editBtn.click();
       const deleteBtn = page.locator('[data-testid="delete-calendar-button"]');
+      await expect(deleteBtn).toBeVisible({ timeout: 10000 });
       await deleteBtn.click();
       const validatedDeletion = page.locator('h6').getByText('Octavius Test Calendar');
-      await expect(validatedDeletion).toHaveCount(0);
+      await expect(validatedDeletion).toHaveCount(0, { timeout: 10000 });
     });
 
   });
