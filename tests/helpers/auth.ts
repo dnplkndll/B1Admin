@@ -1,25 +1,44 @@
 import type { Page } from "@playwright/test";
 
+const HEADER_FIX_CSS = `
+  #site-header, #site-toolbar {
+    pointer-events: none !important;
+  }
+  #site-header a, #site-header button, #site-header input,
+  #site-header [role="tab"], #site-header [role="combobox"],
+  #site-header span, #site-header img, #site-header div[id="secondaryMenu"],
+  #site-header div[id="secondaryMenu"] * {
+    pointer-events: auto !important;
+  }
+`;
+
 /**
  * Prevent the sticky/fixed site header from intercepting clicks on content
  * below it. Makes the header overlay transparent to pointer events while
  * keeping interactive elements (buttons, links) inside it clickable.
- * Must be called after each page.goto / navigation since new pages lose injected CSS.
+ *
+ * Uses addInitScript to inject CSS on every page load (including in-test
+ * navigations like clicking links), so it only needs to be called once
+ * per test in beforeEach.
  */
 export async function scrollPastHeader(page: Page) {
-  await page.addStyleTag({
-    content: `
-      #site-header, #site-toolbar {
-        pointer-events: none !important;
-      }
-      #site-header a, #site-header button, #site-header input,
-      #site-header [role="tab"], #site-header [role="combobox"],
-      #site-header span, #site-header img, #site-header div[id="secondaryMenu"],
-      #site-header div[id="secondaryMenu"] * {
-        pointer-events: auto !important;
-      }
-    `,
-  });
+  // addInitScript runs on every new document (navigation), before page scripts.
+  // We inject a <style> tag as soon as the document is available.
+  await page.addInitScript((css: string) => {
+    const inject = () => {
+      if (document.getElementById("pw-header-fix")) return;
+      const style = document.createElement("style");
+      style.id = "pw-header-fix";
+      style.textContent = css;
+      (document.head || document.documentElement).appendChild(style);
+    };
+    // Try immediately (for document_start), and also on DOMContentLoaded
+    if (document.head || document.documentElement) inject();
+    else document.addEventListener("DOMContentLoaded", inject);
+  }, HEADER_FIX_CSS);
+
+  // Also inject on the current page right now
+  await page.addStyleTag({ content: HEADER_FIX_CSS });
 }
 
 export async function login(page: Page) {
