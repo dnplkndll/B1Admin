@@ -76,6 +76,9 @@ test.describe('Group Management', () => {
       await equalsCondition.click();
       const firstName = page.locator('input[type="text"]');
       await firstName.fill('Donald');
+      const searchBtn = page.locator('button').getByText('Search').last();
+      await expect(searchBtn).toBeVisible({ timeout: 10000 });
+      await searchBtn.click();
 
       const addBtn = page.locator('button').getByText('Add').last();
       await expect(addBtn).toBeVisible({ timeout: 15000 });
