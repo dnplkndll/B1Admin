@@ -22,6 +22,7 @@ test.describe('Website Management', () => {
   test.describe('Pages', () => {
     test('should add page', async ({ page }) => {
       const addBtn = page.locator('[data-testid="add-page-button"]');
+      await expect(addBtn).toBeVisible({ timeout: 10000 });
       await addBtn.click();
       const name = page.locator('[name="title"]');
       await name.fill('Octavian Test Page');

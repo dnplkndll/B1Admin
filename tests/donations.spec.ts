@@ -17,10 +17,12 @@ test.describe('Donations Management', () => {
 
     test('should run donations summary', async ({ page }) => {
       const startDate = page.locator('[name="startDate"]');
+      await expect(startDate).toBeVisible({ timeout: 10000 });
       await startDate.fill('2025-03-01');
       const endDate = page.locator('[name="endDate"]');
       await endDate.fill('2025-05-01');
       const runBtn = page.locator('button').getByText('Run Report');
+      await expect(runBtn).toBeVisible({ timeout: 10000 });
       await runBtn.click();
       // Wait for chart to render
       const chartTexts = page.locator('g text');
@@ -34,6 +36,7 @@ test.describe('Donations Management', () => {
   test.describe('Funds', () => {
     test('should create fund', async ({ page }) => {
       const fundsBtn = page.locator('[id="secondaryMenu"]').getByText('Funds');
+      await expect(fundsBtn).toBeVisible({ timeout: 10000 });
       await fundsBtn.click();
       const addBtn = page.locator('[data-testid="add-fund-button"]');
       await expect(addBtn).toBeVisible({ timeout: 10000 });
@@ -43,6 +46,7 @@ test.describe('Donations Management', () => {
       const taxCheck = page.locator('[name="taxDeductible"]');
       await taxCheck.click();
       const saveBtn = page.locator('button').getByText('Save');
+      await expect(saveBtn).toBeVisible({ timeout: 10000 });
       await saveBtn.click();
 
       const verifyFund = page.locator('a').getByText('Octavian Fund');
