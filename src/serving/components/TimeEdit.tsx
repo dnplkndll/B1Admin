@@ -1,5 +1,5 @@
 import React from "react";
-import { Checkbox, TextField, Typography } from "@mui/material";
+import { Checkbox, MenuItem, TextField, Typography } from "@mui/material";
 import { type TimeInterface } from "@churchapps/helpers";
 import { ApiHelper, DateHelper, ErrorMessages, InputBox, Locale } from "@churchapps/apphelper";
 
@@ -21,6 +21,7 @@ export const TimeEdit = (props: Props) => {
       case "displayName": t.displayName = value; break;
       case "startTime": t.startTime = new Date(value); break;
       case "endTime": t.endTime = new Date(value); break;
+      case "serviceTimeType": t.serviceTimeType = value; break;
     }
     setTime(t);
   };
@@ -30,7 +31,6 @@ export const TimeEdit = (props: Props) => {
     if (!time.displayName) errors.push(Locale.label("plans.timeEdit.disNameReq"));
     if (!time.startTime) errors.push(Locale.label("plans.timeEdit.startReq"));
     if (!time.endTime) errors.push(Locale.label("plans.timeEdit.endReq"));
-    if (!time.teams || time.teams === "") errors.push(Locale.label("plans.timeEdit.teamReq"));
     setErrors(errors);
     if (errors.length === 0) ApiHelper.post("/times", [time], "DoingApi").then(props.onUpdate);
   };
@@ -83,8 +83,22 @@ export const TimeEdit = (props: Props) => {
         headerIcon="assignment"
         saveFunction={handleSave}
         cancelFunction={props.onUpdate}
-        deleteFunction={time.id ? handleDelete : null}
-        isSubmitting={props.categories.length === 0}>
+        deleteFunction={time.id ? handleDelete : null}>
+        <TextField
+          fullWidth
+          select
+          label={Locale.label("plans.timeEdit.type")}
+          id="serviceTimeType"
+          name="serviceTimeType"
+          value={time.serviceTimeType ?? "service"}
+          onChange={handleChange}
+          data-testid="time-type-input"
+          aria-label={Locale.label("plans.timeEdit.typeAria")}
+        >
+          <MenuItem value="service">{Locale.label("plans.timeEdit.typeService")}</MenuItem>
+          <MenuItem value="rehearsal">{Locale.label("plans.timeEdit.typeRehearsal")}</MenuItem>
+          <MenuItem value="other">{Locale.label("plans.timeEdit.typeOther")}</MenuItem>
+        </TextField>
         <TextField
           fullWidth
           label={Locale.label("plans.timeEdit.disName")}
