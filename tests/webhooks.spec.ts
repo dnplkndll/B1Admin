@@ -1,6 +1,6 @@
 import { test, expect, type Page } from '@playwright/test';
 import { login } from './helpers/auth';
-import { navigateToSettings } from './helpers/navigation';
+import { navigateTo } from './helpers/navigation';
 import { STORAGE_STATE_PATH } from './global-setup';
 
 // ZACCHAEUS/ZEBEDEE are the names used for testing. If you see Zacchaeus or
@@ -9,11 +9,10 @@ const WEBHOOK_NAME = 'Zacchaeus Test Webhook';
 const WEBHOOK_NAME_EDITED = 'Zebedee Test Webhook';
 const WEBHOOK_URL = 'https://example.com/hooks/playwright';
 
-// The Webhooks page is reached via a button in the Settings header, not the
-// primary nav — it has no nav-item testid of its own.
+// Webhooks now lives as a sub-tab under the Developer secondary-nav item.
 const openWebhooksPage = async (page: Page) => {
-  await page.getByRole('button', { name: 'Webhooks', exact: true }).click();
-  await page.waitForURL(/\/settings\/webhooks/, { timeout: 15000 });
+  await navigateTo(page, 'developer');
+  await page.getByRole('tab', { name: 'Webhooks', exact: true }).click();
   await expect(page.getByRole('button', { name: 'New Webhook' })).toBeVisible({ timeout: 15000 });
 };
 
@@ -24,7 +23,6 @@ test.describe.serial('Webhooks', () => {
     const context = await browser.newContext({ storageState: STORAGE_STATE_PATH });
     page = await context.newPage();
     await login(page);
-    await navigateToSettings(page);
     await openWebhooksPage(page);
   });
 
@@ -117,6 +115,41 @@ test.describe.serial('Webhooks', () => {
     await expect(page.locator('tr').filter({ hasText: 'person.created' }).first()).toBeVisible({ timeout: 10000 });
 
     // Return to the list so the next test starts from the webhook list view.
+    await page.locator('button').getByText('Cancel').click();
+    await expect(page.getByRole('button', { name: 'New Webhook' })).toBeVisible({ timeout: 10000 });
+  });
+
+  test('delivers Slack-formatted payloads for a Slack connector', async () => {
+    await page.locator('tr').filter({ hasText: WEBHOOK_NAME_EDITED }).first().getByText(WEBHOOK_NAME_EDITED).click();
+
+    // Switch the connector type to Slack — a single MUI Select on the editor.
+    const connectorSelect = page.getByRole('combobox');
+    await expect(connectorSelect).toBeVisible({ timeout: 10000 });
+    await connectorSelect.click();
+    await page.getByRole('option', { name: 'Slack', exact: true }).click();
+
+    const savePost = page.waitForResponse(
+      (r) => r.url().includes('/webhooks') && r.request().method() === 'POST',
+      { timeout: 15000 }
+    );
+    await page.locator('button').getByText('Save').click();
+    await savePost;
+
+    // Reopen and confirm the connector type persisted.
+    await page.locator('tr').filter({ hasText: WEBHOOK_NAME_EDITED }).first().getByText(WEBHOOK_NAME_EDITED).click();
+    await expect(page.getByRole('combobox')).toHaveText('Slack', { timeout: 10000 });
+
+    // A test delivery for a Slack connector carries a Slack {text} message,
+    // not the raw {event,...} envelope — the test route returns the delivery.
+    const testPost = page.waitForResponse(
+      (r) => /\/webhooks\/[^/]+\/test$/.test(r.url()) && r.request().method() === 'POST',
+      { timeout: 15000 }
+    );
+    await page.getByRole('button', { name: 'Send Test Event' }).click();
+    const delivery = await (await testPost).json();
+    expect(delivery.payload).toContain('"text"');
+    expect(delivery.payload).not.toContain('"occurredAt"');
+
     await page.locator('button').getByText('Cancel').click();
     await expect(page.getByRole('button', { name: 'New Webhook' })).toBeVisible({ timeout: 10000 });
   });
