@@ -1057,6 +1057,7 @@
     },
     "groupDetailsEdit": {
       "addPhoto": "Add Photo",
+      "ageGrade": "Age & Grade",
       "archive": "Archive",
       "archiveAria": "Archive group",
       "attTrack": "Track Attendance",
@@ -1076,14 +1077,21 @@
       "groupNameMsg": "Please enter a group name.",
       "groupPhotoAlt": "group",
       "groupSlugAria": "Group slug",
+      "maxAge": "Maximum Age",
+      "maxGrade": "Maximum Grade",
       "meetingLocation": "Meeting Location",
       "meetingLocationAria": "Meeting location",
       "meetingTime": "Meeting Time",
       "meetingTimeAria": "Meeting time",
+      "minAge": "Minimum Age",
+      "minGrade": "Minimum Grade",
+      "months": "Months",
+      "noLimit": "No limit",
       "parPick": "Parent Pickup",
       "prinName": "Print Nametag",
       "publicRoster": "Show roster on website",
-      "slug": "Slug (key name used for urls)"
+      "slug": "Slug (key name used for urls)",
+      "years": "Years"
     },
     "groupHealth": {
       "attendance": "Attendance",
@@ -1697,6 +1705,7 @@
     "female": "Female",
     "firstName": "First Name",
     "gender": "Gender",
+    "grade": "Grade",
     "inactive": "Inactive",
     "lastName": "Last Name",
     "line1": "Line 1",
@@ -1714,6 +1723,7 @@
     "phone": "Phone",
     "prefix": "Prefix",
     "regularAttendee": "Regular Attendee",
+    "school": "School",
     "single": "Single",
     "staff": "Staff",
     "state": "State/Province",
@@ -3027,6 +3037,14 @@
       "webhookKeyHelper": "Webhook signing secret from the Kingdom Funding control panel. Required for transaction status updates.",
       "webhookUrlCopied": "Webhook URL copied to clipboard"
     },
+    "gradePromotionSettingsEdit": {
+      "day": "Day",
+      "disabled": "Disabled",
+      "enabled": "Enabled",
+      "help": "On this date each year, everyone with a grade is promoted to the next grade automatically (12th grade becomes Graduated). Leave disabled to turn off automatic promotion.",
+      "month": "Month",
+      "title": "Grade Promotion"
+    },
     "landing": {
       "campusesCount": "{count} locations",
       "campusesOne": "1 location",
@@ -3037,6 +3055,8 @@
       "domainsNone": "No custom domains",
       "domainsOne": "1 connected",
       "givingProvider": "{provider} · {currency}",
+      "gradePromotionOff": "Automatic promotion disabled",
+      "gradePromotionOn": "Promotes on {date} each year",
       "notConfigured": "Not configured",
       "notSet": "Not set"
     },

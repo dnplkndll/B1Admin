@@ -16,4 +16,5 @@ export { EnvironmentHelper } from "./EnvironmentHelper";
 export { PageHelper } from "./PageHelper";
 export { ReportHelper } from "./ReportHelper";
 export { hasPlansEditAccess } from "./PlanPermissionHelper";
+export { GRADE_OPTIONS } from "./GradeOptions";
 export { StyleHelper } from "@churchapps/apphelper/website";

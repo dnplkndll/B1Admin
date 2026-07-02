@@ -10,6 +10,7 @@ import UserContext from "../../UserContext";
 import { Button, FormControl, Grid, InputLabel, MenuItem, Select, TextField, Box, FormControlLabel, Checkbox } from "@mui/material";
 import { getMembershipStatusOptions } from "../helpers/MembershipStatusOptions";
 import { CampusSelect } from "../../components/CampusSelect";
+import { GRADE_OPTIONS } from "../../helpers/GradeOptions";
 
 // PersonInterface has typed subfields; RHF nested paths require looser typing
 type AnyRecord = Record<string, any>;
@@ -263,6 +264,20 @@ export const PersonEdit = memo((props: Props) => {
         <Grid container spacing={3}>
           <Grid size={{ xs: 12, md: 4 }}>
             <CampusSelect control={control} />
+          </Grid>
+          <Grid size={{ xs: 12, md: 4 }}>
+            <FormControl fullWidth>
+              <InputLabel id="grade-label">{Locale.label("person.grade")}</InputLabel>
+              <Controller name="grade" control={control} render={({ field }) => (
+                <Select {...field} value={field.value ?? ""} id="grade" labelId="grade-label" label={Locale.label("person.grade")} data-testid="grade-select" aria-label="Grade">
+                  <MenuItem value="">{Locale.label("person.unspecified")}</MenuItem>
+                  {GRADE_OPTIONS.map((g) => <MenuItem key={g} value={g}>{g}</MenuItem>)}
+                </Select>
+              )} />
+            </FormControl>
+          </Grid>
+          <Grid size={{ xs: 12, md: 4 }}>
+            <TextField fullWidth id="school" label={Locale.label("person.school")} data-testid="school-input" aria-label="School" {...register("school")} />
           </Grid>
         </Grid>
 

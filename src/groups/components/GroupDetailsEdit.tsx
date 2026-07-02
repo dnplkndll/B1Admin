@@ -12,6 +12,7 @@ import { useMountedState } from "@churchapps/apphelper";
 import { MarkdownEditor } from "@churchapps/apphelper/markdown";
 import { GroupLabelsEdit } from "./GroupLabelsEdit";
 import { CampusSelect } from "../../components/CampusSelect";
+import { GRADE_OPTIONS } from "../../helpers/GradeOptions";
 
 type AnyRecord = Record<string, any>;
 
@@ -44,9 +45,22 @@ export const GroupDetailsEdit: React.FC<Props> = (props) => {
       slug: "",
       campusId: "",
       joinPolicy: "open",
-      publicRoster: "false"
+      publicRoster: "false",
+      minYears: "",
+      minMonths: "",
+      maxYears: "",
+      maxMonths: "",
+      minGrade: "",
+      maxGrade: ""
     }
   });
+
+  const monthsToParts = (m?: number) => (m == null ? { years: "", months: "" } : { years: String(Math.floor(m / 12)), months: String(m % 12) });
+  const partsToMonths = (years: string, months: string): number | null => {
+    // null (not undefined) so clearing a limit survives JSON and reaches the update SQL.
+    if ((years ?? "") === "" && (months ?? "") === "") return null;
+    return (Number(years) || 0) * 12 + (Number(months) || 0);
+  };
 
   const { errors } = useFormState({ control });
   const e = errors as any;
@@ -72,7 +86,13 @@ export const GroupDetailsEdit: React.FC<Props> = (props) => {
         slug: props.group.slug || "",
         campusId: props.group.campusId || "",
         joinPolicy: props.group.joinPolicy || "open",
-        publicRoster: (props.group as AnyRecord).publicRoster?.toString() || "false"
+        publicRoster: (props.group as AnyRecord).publicRoster?.toString() || "false",
+        minYears: monthsToParts(props.group.minAgeMonths).years,
+        minMonths: monthsToParts(props.group.minAgeMonths).months,
+        maxYears: monthsToParts(props.group.maxAgeMonths).years,
+        maxMonths: monthsToParts(props.group.maxAgeMonths).months,
+        minGrade: props.group.minGrade || "",
+        maxGrade: props.group.maxGrade || ""
       });
       setAbout(props.group.about || "");
       setPhotoUrl(props.group.photoUrl || "");
@@ -96,7 +116,11 @@ export const GroupDetailsEdit: React.FC<Props> = (props) => {
       joinPolicy: values.joinPolicy as GroupInterface["joinPolicy"],
       about,
       photoUrl,
-      labelArray
+      labelArray,
+      minAgeMonths: partsToMonths(values.minYears, values.minMonths),
+      maxAgeMonths: partsToMonths(values.maxYears, values.maxMonths),
+      minGrade: values.minGrade || null,
+      maxGrade: values.maxGrade || null
     };
     // "" = Unassigned; store null so it matches campusId IS NULL.
     group.campusId = values.campusId || null;
@@ -314,6 +338,47 @@ export const GroupDetailsEdit: React.FC<Props> = (props) => {
                     <Select {...field} value={field.value ?? "false"} label={Locale.label("groups.groupDetailsEdit.publicRoster")} data-testid="public-roster-select">
                       <MenuItem value="false">{Locale.label("common.no")}</MenuItem>
                       <MenuItem value="true">{Locale.label("common.yes")}</MenuItem>
+                    </Select>
+                  )} />
+                </FormControl>
+              </Grid>
+            </Grid>
+            <Box sx={{ backgroundColor: "primary.light", color: "primary.contrastText", p: 1.25, my: 2.5 }}>
+              <b>{Locale.label("groups.groupDetailsEdit.ageGrade")}</b>
+            </Box>
+            <Grid container spacing={3}>
+              <Grid size={{ xs: 12, md: 6 }}>
+                <Typography variant="body2" sx={{ mb: 1, color: "text.secondary" }}>{Locale.label("groups.groupDetailsEdit.minAge")}</Typography>
+                <Stack direction="row" spacing={2}>
+                  <TextField fullWidth type="number" label={Locale.label("groups.groupDetailsEdit.years")} slotProps={{ htmlInput: { min: 0 } }} data-testid="min-age-years-input" {...register("minYears")} />
+                  <TextField fullWidth type="number" label={Locale.label("groups.groupDetailsEdit.months")} slotProps={{ htmlInput: { min: 0, max: 11 } }} data-testid="min-age-months-input" {...register("minMonths")} />
+                </Stack>
+              </Grid>
+              <Grid size={{ xs: 12, md: 6 }}>
+                <Typography variant="body2" sx={{ mb: 1, color: "text.secondary" }}>{Locale.label("groups.groupDetailsEdit.maxAge")}</Typography>
+                <Stack direction="row" spacing={2}>
+                  <TextField fullWidth type="number" label={Locale.label("groups.groupDetailsEdit.years")} slotProps={{ htmlInput: { min: 0 } }} data-testid="max-age-years-input" {...register("maxYears")} />
+                  <TextField fullWidth type="number" label={Locale.label("groups.groupDetailsEdit.months")} slotProps={{ htmlInput: { min: 0, max: 11 } }} data-testid="max-age-months-input" {...register("maxMonths")} />
+                </Stack>
+              </Grid>
+              <Grid size={{ xs: 12, md: 6 }}>
+                <FormControl fullWidth>
+                  <InputLabel id="minGrade-label">{Locale.label("groups.groupDetailsEdit.minGrade")}</InputLabel>
+                  <Controller name="minGrade" control={control} render={({ field }) => (
+                    <Select {...field} value={field.value ?? ""} id="minGrade" labelId="minGrade-label" label={Locale.label("groups.groupDetailsEdit.minGrade")} data-testid="min-grade-select">
+                      <MenuItem value="">{Locale.label("groups.groupDetailsEdit.noLimit")}</MenuItem>
+                      {GRADE_OPTIONS.map((g) => <MenuItem key={g} value={g}>{g}</MenuItem>)}
+                    </Select>
+                  )} />
+                </FormControl>
+              </Grid>
+              <Grid size={{ xs: 12, md: 6 }}>
+                <FormControl fullWidth>
+                  <InputLabel id="maxGrade-label">{Locale.label("groups.groupDetailsEdit.maxGrade")}</InputLabel>
+                  <Controller name="maxGrade" control={control} render={({ field }) => (
+                    <Select {...field} value={field.value ?? ""} id="maxGrade" labelId="maxGrade-label" label={Locale.label("groups.groupDetailsEdit.maxGrade")} data-testid="max-grade-select">
+                      <MenuItem value="">{Locale.label("groups.groupDetailsEdit.noLimit")}</MenuItem>
+                      {GRADE_OPTIONS.map((g) => <MenuItem key={g} value={g}>{g}</MenuItem>)}
                     </Select>
                   )} />
                 </FormControl>

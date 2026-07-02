@@ -4,7 +4,7 @@ import { UserHelper, Permissions, Locale, ApiHelper, Loading, PageHeader } from 
 import { useNavigate, useLocation } from "react-router-dom";
 import { PermissionDenied } from "../components";
 import { Box, Button, Grid, Stack, Typography } from "@mui/material";
-import { PlayArrow as PlayArrowIcon, History as HistoryIcon, Business as BusinessIcon, Tune as TuneIcon, VolunteerActivism as VolunteerActivismIcon, Sms as SmsIcon, Language as LanguageIcon, Link as LinkIcon, Code as CodeIcon } from "@mui/icons-material";
+import { PlayArrow as PlayArrowIcon, History as HistoryIcon, Business as BusinessIcon, Tune as TuneIcon, VolunteerActivism as VolunteerActivismIcon, Sms as SmsIcon, Language as LanguageIcon, Link as LinkIcon, Code as CodeIcon, School as SchoolIcon } from "@mui/icons-material";
 import { useQuery } from "@tanstack/react-query";
 import { SettingsConfigList, type ConfigSection } from "./components/SettingsConfigList";
 import { ChurchInfoSection } from "./components/ChurchInfoSection";
@@ -15,8 +15,11 @@ import { SupportContactSettingsEdit } from "./components/SupportContactSettingsE
 import { GivingSettingsEdit } from "./components/GivingSettingsEdit";
 import { TextingSettingsEdit } from "./components/TextingSettingsEdit";
 import { DomainSettingsEdit } from "./components/DomainSettingsEdit";
+import { GradePromotionSettingsEdit } from "./components/GradePromotionSettingsEdit";
 
-const SECTION_KEYS = ["church-info", "general", "giving", "texting", "domains", "campuses", "developer"];
+const SECTION_KEYS = [
+  "church-info", "general", "giving", "texting", "domains", "grade-promotion", "campuses", "developer"
+];
 
 const headerButtonSx = {
   color: "#FFF",
@@ -72,6 +75,10 @@ export const ManageChurch = () => {
   const textingProvider = (texting.data || [])[0]?.provider;
   const domainList = domains.data || [];
   const campusCount = (campuses.data || []).length;
+  const gradePromotionDate = (settingsQ.data || []).find((s) => s.keyName === "gradePromotionDate")?.value;
+  const gradePromotionSubtitle = gradePromotionDate
+    ? Locale.label("settings.landing.gradePromotionOn").replace("{date}", new Date(2000, Number(gradePromotionDate.split("-")[0]) - 1, Number(gradePromotionDate.split("-")[1])).toLocaleDateString(undefined, { month: "long", day: "numeric" }))
+    : Locale.label("settings.landing.gradePromotionOff");
 
   const domainsSubtitle = domainList.length === 0
     ? Locale.label("settings.landing.domainsNone")
@@ -94,6 +101,7 @@ export const ManageChurch = () => {
     ...(hasGiving ? [{ key: "giving", title: Locale.label("settings.givingSettingsEdit.giving"), subtitle: givingSubtitle, icon: <VolunteerActivismIcon />, color: "success" } as ConfigSection] : []),
     { key: "texting", title: Locale.label("settings.churchSettingsEdit.textingTitle"), subtitle: textingSubtitle, icon: <SmsIcon />, color: "warning" },
     { key: "domains", title: Locale.label("settings.domainSettingsEdit.domains"), subtitle: domainsSubtitle, icon: <LanguageIcon />, color: "info" },
+    { key: "grade-promotion", title: Locale.label("settings.gradePromotionSettingsEdit.title"), subtitle: gradePromotionSubtitle, icon: <SchoolIcon />, color: "secondary" },
     { key: "campuses", title: Locale.label("settings.campuses.campuses"), subtitle: campusesSubtitle, icon: <BusinessIcon />, color: "primary" },
     { key: "developer", title: Locale.label("settings.developer.title"), subtitle: Locale.label("settings.landing.developerSubtitle"), icon: <CodeIcon />, color: "secondary" }
   ];
@@ -167,6 +175,17 @@ export const ManageChurch = () => {
             data-testid="settings-domains"
             view={domainsView}
             renderEdit={(saveTrigger) => <DomainSettingsEdit churchId={churchId} saveTrigger={saveTrigger} />}
+            onSaved={handleSaved}
+          />
+        );
+      case "grade-promotion":
+        return (
+          <SettingsToggleSection
+            headerText={Locale.label("settings.gradePromotionSettingsEdit.title")}
+            headerIcon="school"
+            data-testid="settings-grade-promotion"
+            view={<SummaryRow label={Locale.label("settings.gradePromotionSettingsEdit.title")} value={gradePromotionSubtitle} />}
+            renderEdit={(saveTrigger) => <GradePromotionSettingsEdit churchId={churchId} saveTrigger={saveTrigger} />}
             onSaved={handleSaved}
           />
         );
