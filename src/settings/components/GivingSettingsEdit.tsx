@@ -31,11 +31,7 @@ export const GivingSettingsEdit: React.FC<Props> = (props) => {
   const provider = watch("provider");
   const currency = watch("currency");
 
-  // Everything provider-specific comes from the registry descriptor, so a new
-  // gateway shows up here (dropdown, key labels, currency, setup) with no edits.
-  // getPaymentProvider() falls back to Stripe for an unrecognized value; in the admin UI
-  // that would silently show Stripe's key labels/fees for a misconfigured gateway, so detect
-  // an unknown provider and suppress the (wrong) fields instead.
+  // Detect unknown providers to suppress wrong fields instead of silently showing Stripe labels.
   const knownProvider = !provider || listPaymentProviders().some((p) => p.descriptor.adminValue?.toLowerCase() === String(provider).toLowerCase());
   const descriptor = (provider && knownProvider) ? getPaymentProvider(provider).descriptor : undefined;
   const providerOptions = listPaymentProviders().filter((p) => p.descriptor.selectableInAdmin && (!p.descriptor.betaOnly || !isProd || p.descriptor.adminValue === provider));

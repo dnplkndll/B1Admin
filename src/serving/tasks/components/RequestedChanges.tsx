@@ -130,7 +130,6 @@ export const RequestedChanges = (props: Props) => {
       }}>
       <CardContent>
         <Stack spacing={3}>
-          {/* Header */}
           <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
             <Stack direction="row" alignItems="center" spacing={1}>
               <ChangesIcon sx={{ color: "primary.main", fontSize: 20 }} />
@@ -154,7 +153,6 @@ export const RequestedChanges = (props: Props) => {
             )}
           </Box>
 
-          {/* Changes Table */}
           <Paper
             sx={{
               overflow: "hidden",

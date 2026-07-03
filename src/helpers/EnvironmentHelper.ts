@@ -19,9 +19,7 @@ export class EnvironmentHelper {
     }
     EnvironmentHelper.Common.init(stage);
 
-    // Inlined from apphelper/website EnvironmentHelper.init() — that helper crashes
-    // here because its internal `Common` reference is undefined (circular import with
-    // apphelper main snapshots the binding before it initializes).
+    // Inlined from apphelper/website EnvironmentHelper.init — that helper crashes due to circular import.
     ApiHelper.apiConfigs = [
       { keyName: "MembershipApi", url: CommonEnvironmentHelper.MembershipApi, jwt: "", permissions: [] },
       { keyName: "AttendanceApi", url: CommonEnvironmentHelper.AttendanceApi, jwt: "", permissions: [] },

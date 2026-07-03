@@ -3,14 +3,11 @@ import { Dialog, DialogTitle, DialogContent, DialogActions, Button, TextField, T
 import { ApiHelper, Locale } from "@churchapps/apphelper";
 
 interface Props {
-  // Group mode
   groupId?: string;
   groupName?: string;
-  // Person mode
   personId?: string;
   personName?: string;
   phoneNumber?: string;
-  // Common
   onClose: () => void;
 }
 

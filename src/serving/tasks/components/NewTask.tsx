@@ -150,7 +150,6 @@ export const NewTask = (props: Props) => {
       }}>
       <CardContent>
         <Stack spacing={3}>
-          {/* Header */}
           <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
             <Stack direction="row" alignItems="center" spacing={1}>
               <TaskIcon sx={{ color: "primary.main" }} />
@@ -160,10 +159,8 @@ export const NewTask = (props: Props) => {
             </Stack>
           </Box>
 
-          {/* Error Messages */}
           {errors.length > 0 && <ErrorMessages errors={errors} />}
 
-          {/* Form Fields */}
           <Grid container spacing={2}>
             <Grid size={{ xs: 12, sm: 6, md: props.compact ? 6 : 4 }}>
               <TextField
@@ -227,7 +224,6 @@ export const NewTask = (props: Props) => {
             </Grid>
           </Grid>
 
-          {/* Notes Field */}
           <TextField
             fullWidth
             label={Locale.label("common.notes")}
@@ -243,7 +239,6 @@ export const NewTask = (props: Props) => {
             sx={{ "& .MuiOutlinedInput-root": { "&:hover fieldset": { borderColor: "primary.main" } } }}
           />
 
-          {/* Action Buttons */}
           <Stack direction="row" spacing={2} justifyContent="flex-end">
             <Button
               variant="outlined"
@@ -272,7 +267,6 @@ export const NewTask = (props: Props) => {
         </Stack>
       </CardContent>
 
-      {/* Modal */}
       {modalField !== "" && <ContentPicker onClose={handleModalClose} onSelect={handleContentPicked} />}
     </Card>
   );

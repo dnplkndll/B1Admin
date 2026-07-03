@@ -73,7 +73,6 @@ export const PlanTypePage = () => {
         </Box>
       </Box>
 
-      {/* Content */}
       <Box sx={{ p: 3 }}>
         <PlanList key="plans" ministry={ministry.data} planTypeId={planType.data.id} />
         <Box sx={{ mt: 4 }}>

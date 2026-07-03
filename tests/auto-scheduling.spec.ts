@@ -5,11 +5,7 @@ import { login } from "./helpers/auth";
 import { navigateToServing } from "./helpers/navigation";
 import { STORAGE_STATE_PATH } from "./global-setup";
 
-// JETHRO is the marker name for this chain. The whole file is one serial chain:
-// build a Jethro Ministry -> Team (Dorothy + Grace) -> Plan Type -> Plan with one
-// position and a 9am service time, then exercise the 2.14/2.15 auto-scheduling
-// features (preferences, preferred-time-aware auto-assign, undo, penciled-in ->
-// publish & notify) and tear everything down.
+// JETHRO is the marker name; the file is one serial chain testing auto-scheduling features.
 test.describe.serial("Auto-Scheduling (2.14/2.15)", () => {
   test.describe.configure({ retries: 0 });
   let page: Page;
@@ -30,7 +26,7 @@ test.describe.serial("Auto-Scheduling (2.14/2.15)", () => {
   });
 
   const openMinistryTab = async () => {
-    // Anchor the match — /serving/plans/:id (plan detail) must navigate back to the list.
+    // Detail pages live at /serving/plans/:id (exact match to avoid false positives).
     if (!/\/serving\/plans$/.test(page.url().split("?")[0])) {
       await page.goto("/serving/plans");
       await page.waitForURL(/\/serving\/plans/, { timeout: 15000 });
@@ -61,8 +57,7 @@ test.describe.serial("Auto-Scheduling (2.14/2.15)", () => {
     const addBtn = row.locator('[data-testid^="add-person-button-"]').first();
     await expect(addBtn).toBeVisible({ timeout: 10000 });
     await addBtn.click();
-    // The invite dialog opens only after the groupmembers POST resolves — wait for
-    // it instead of polling, or it blocks the next member's search click.
+    // Invite dialog opens after POST resolves; wait instead of polling.
     const inviteDialog = page.locator('div[role="dialog"]:has-text("Send Invite Email")');
     await inviteDialog.waitFor({ state: "visible", timeout: 5000 }).catch(() => { });
     if (await inviteDialog.isVisible().catch(() => false)) {
@@ -107,7 +102,7 @@ test.describe.serial("Auto-Scheduling (2.14/2.15)", () => {
 
     await page.locator('[data-testid="add-plan-button"]').click();
     await page.locator('[name="name"]').fill("Jethro Service");
-    // A far-future Sunday keeps demo blockouts and same-date plans out of the picture.
+    // Far-future Sunday avoids demo blockouts and conflicts.
     await page.locator('[id="serviceDate"]').fill("2030-06-09");
     await page.locator("button").getByText("Save").click();
     await expect(page.locator("a").getByText("Jethro Service")).toHaveCount(1, { timeout: 10000 });
@@ -117,11 +112,11 @@ test.describe.serial("Auto-Scheduling (2.14/2.15)", () => {
     await openPlanPage();
 
     await page.locator('[data-testid="add-position-button"]').click();
-    // Category is a creatable ReactSelect; explicitly pick Band so the form value is set.
+    // CreatableSelect; explicitly pick Band to set form value.
     await page.locator(".comboBox").click();
     await page.getByRole("option", { name: "Band" }).click();
     await page.locator('[id="name"]').fill("Greeter");
-    // MUI v7 Select exposes an unnamed combobox — find it via its FormControl text.
+    // MUI v7 Select unnamed; find via FormControl text.
     await page.locator(".MuiFormControl-root", { hasText: "Volunteer Group" }).getByRole("combobox").click();
     await page.getByRole("option", { name: "Jethro Team" }).click();
     await page.getByRole("button", { name: "Save", exact: true }).click();
@@ -146,7 +141,7 @@ test.describe.serial("Auto-Scheduling (2.14/2.15)", () => {
 
     const dialog = page.locator('[data-testid="scheduling-preference-dialog"]');
     await expect(dialog).toBeVisible({ timeout: 10000 });
-    // Dorothy prefers evenings; the plan's only time is 9:00 am, so auto-assign should pass her over.
+    // Dorothy prefers evenings; plan has only 9:00 am time, so auto-assign skips her.
     await dialog.locator('[data-testid="preferred-times-input"] input').fill("8:00 pm");
     await dialog.locator('[data-testid="max-per-month-input"] input').fill("2");
     const prefPost = page.waitForResponse(r => r.url().includes("/schedulingPreferences") && r.request().method() === "POST", { timeout: 15000 });
@@ -154,7 +149,7 @@ test.describe.serial("Auto-Scheduling (2.14/2.15)", () => {
     await prefPost;
     await expect(dialog).toHaveCount(0, { timeout: 10000 });
 
-    // Reopen to confirm persistence.
+    // Reopen dialog to confirm persistence.
     await dorothyRow.locator('[data-testid^="preferences-button-"]').click();
     const dialog2 = page.locator('[data-testid="scheduling-preference-dialog"]');
     await expect(dialog2).toBeVisible({ timeout: 10000 });
@@ -208,7 +203,7 @@ test.describe.serial("Auto-Scheduling (2.14/2.15)", () => {
 
   test("publish & notify clears the penciled-in state", async () => {
     await openPlanPage();
-    // Schedule someone so publishing also has a notification to send.
+    // Schedule someone to generate notification for publish.
     const autofillPost = page.waitForResponse(r => r.url().includes("/plans/autofill/") && r.request().method() === "POST", { timeout: 15000 });
     await page.locator('[data-testid="auto-assign-button"]').click();
     await autofillPost;

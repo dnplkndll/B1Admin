@@ -33,19 +33,18 @@ export const LessonScheduleEdit: React.FC<Props> = (props) => {
   // Lesson selector modal state
   const [showLessonSelector, setShowLessonSelector] = useState(false);
 
-  // Get the most recent plan that is before the new plan's scheduled date
   const previousPlan = React.useMemo(() => {
     if (!props.plans || props.plans.length === 0 || !scheduledDate) return null;
     const currentDate = new Date(scheduledDate).getTime();
     const sorted = [...props.plans]
       .filter(p => {
         const planDate = p.serviceDate ? new Date(p.serviceDate).getTime() : 0;
-        return planDate < currentDate;  // Only include plans before new plan's date
+        return planDate < currentDate;
       })
       .sort((a, b) => {
         const dateA = a.serviceDate ? new Date(a.serviceDate).getTime() : 0;
         const dateB = b.serviceDate ? new Date(b.serviceDate).getTime() : 0;
-        return dateB - dateA;  // Sort descending to get most recent previous plan first
+        return dateB - dateA;
       });
     return sorted[0] || null;
   }, [props.plans, scheduledDate]);
@@ -126,7 +125,6 @@ export const LessonScheduleEdit: React.FC<Props> = (props) => {
           aria-label={Locale.label("plans.lessonScheduleEdit.scheduledDateAria")}
         />
 
-        {/* Lesson Selection */}
         <Box sx={{ mt: 2 }}>
           <Typography variant="body2" sx={{ mb: 1 }}>
             {Locale.label("plans.lessonSelector.lesson") || "Lesson"}

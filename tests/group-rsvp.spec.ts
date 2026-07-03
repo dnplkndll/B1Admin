@@ -41,11 +41,10 @@ test.describe.serial("Group RSVP summary + roster (B1Admin)", () => {
     const ctx = await request.newContext();
     const first = await apiLogin(ctx);
     setup = { ctx, ...first };
-    // Resolve the admin's display name from the same endpoint the roster dialog hydrates from.
     const ppl = await (await ctx.get(`${API}/membership/people/ids?ids=${setup.personId}`, authHeaders(setup.jwt))).json();
     setup.adminName = ppl[0]?.name?.display || setup.adminName;
 
-    // Standard group so the Calendar/RSVP tab renders; admin joins so its JWT carries groupId.
+    // Standard group so JWT carries groupId for Calendar/RSVP access.
     const groupRes = await ctx.post(`${API}/membership/groups`, {
       ...authHeaders(setup.jwt),
       data: [{ name: groupName, categoryName: "RSVP Test", tags: "standard" }]
@@ -53,7 +52,7 @@ test.describe.serial("Group RSVP summary + roster (B1Admin)", () => {
     groupId = (await groupRes.json())[0].id;
     await ctx.post(`${API}/membership/groupmembers`, { ...authHeaders(setup.jwt), data: [{ groupId, personId: setup.personId }] });
 
-    // Re-login so au.groupIds includes the new group (RSVP POST is gated on membership).
+    // Re-login so au.groupIds includes new group (RSVP POST is membership-gated).
     const refreshed = await apiLogin(ctx);
     setup.jwt = refreshed.jwt;
 
@@ -69,14 +68,13 @@ test.describe.serial("Group RSVP summary + roster (B1Admin)", () => {
     });
     disabledEventId = (await disRes.json())[0].id;
 
-    // Seed the admin's own "yes" response for the enabled event's occurrence.
     const rsvpRes = await ctx.post(`${API}/content/events/${rsvpEventId}/rsvp`, {
       ...authHeaders(setup.jwt),
       data: { occurrenceStart, response: "yes" }
     });
     expect(rsvpRes.ok(), "seed rsvp POST succeeded").toBeTruthy();
 
-    // Fresh browser context (no cached JWT) so the in-app token carries the new groupId.
+    // Fresh browser context so in-app JWT carries the new groupId.
     const context = await browser.newContext();
     page = await context.newPage();
     await login(page);
@@ -129,15 +127,12 @@ test.describe.serial("Group RSVP summary + roster (B1Admin)", () => {
     const last = "2026-09-02";
     await page.locator('[data-testid="bulk-events-first-date"] input').fill(first);
     await page.locator('[data-testid="bulk-events-last-date"] input').fill(last);
-    // Uncheck "Allow RSVPs" so created events send rsvpDisabled=true.
     await page.locator('[data-testid="bulk-events-allow-rsvps"] input').uncheck();
 
     const eventPost = page.waitForResponse((r) => r.url().includes("/events") && r.request().method() === "POST" && r.ok(), { timeout: 15000 });
     await page.locator('[data-testid="bulk-events-save-button"]').click();
     const created = await (await eventPost).json();
     expect(created[0].rsvpDisabled, "created event rsvpDisabled").toBe(true);
-
-    // Calendar shows the new event with no RSVP summary (Disabled).
     await expect(page.locator('[data-testid="group-calendar-tab"]')).toBeVisible({ timeout: 15000 });
     const row = page.locator("table tbody tr").filter({ hasText: "Bulk No-RSVP Event" });
     await expect(row.getByText("Disabled", { exact: true })).toBeVisible({ timeout: 10000 });

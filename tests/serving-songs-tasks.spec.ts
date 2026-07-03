@@ -5,8 +5,6 @@ import { login } from "./helpers/auth";
 import { navigateToServing } from "./helpers/navigation";
 import { STORAGE_STATE_PATH } from "./global-setup";
 
-// The "My Work" inbox (/serving/tasks) shows My Cards beside the tasks module; the
-// plain task list (Add Task, sections) is the right-hand module.
 async function openMyTasks(page: Page) {
   await page.locator('[id="secondaryMenu"] a').getByText("My Work").click();
   await expect(page).toHaveURL(/\/tasks/, { timeout: 10000 });
@@ -36,13 +34,7 @@ test.describe("Serving Management - Songs & Tasks", () => {
     test("should add a song", async () => {
       const songsBtn = page.locator('[id="secondaryMenu"] a').getByText("Songs");
       await songsBtn.click();
-      // Tight match: the songs *list* page, not /serving/songs/<id> (detail).
-      // On the detail page, "Frolic" matches the renamed YouTube link first,
-      // and clicking it opens an external tab.
       await expect(page).toHaveURL(/\/serving\/songs(?:\/?$|\?)/, { timeout: 10000 });
-      // Wait for the songs-list query to settle so locator('a') sees list
-      // links (which navigate to /serving/songs/<id>) rather than stale
-      // detail-page anchors (which include the YouTube link renamed "Frolic").
       await page.locator('[data-testid="add-song-button"]').waitFor({ state: "visible", timeout: 10000 });
 
       const addBtn = page.locator('[data-testid="add-song-button"]');
@@ -75,14 +67,11 @@ test.describe("Serving Management - Songs & Tasks", () => {
       await song.click();
       await expect(page.getByRole("heading", { name: "Frolic" })).toBeVisible({ timeout: 10000 });
 
-      // "Add Arrangement" creates a blank arrangement inline — it must NOT open
-      // the PraiseCharts song-search dialog.
       await page.locator("button").getByText("Add Arrangement").first().click();
       await expect(page.getByText("New Arrangement").first()).toBeVisible({ timeout: 10000 });
       await expect(page.locator('[data-testid="song-search-dialog-input"]')).toHaveCount(0);
 
-      // Clean up so the single-arrangement assertions later in the chain hold:
-      // delete the new arrangement; the "(Default)" sibling keeps the song alive.
+      // Delete new arrangement to keep single-arrangement assertions later.
       page.once("dialog", async dialog => { await dialog.accept(); });
       const arrCard = page.locator(".MuiCard-root").filter({ hasText: "Arrangement - New Arrangement" });
       await arrCard.getByRole("button", { name: "Edit" }).first().click();
@@ -93,46 +82,27 @@ test.describe("Serving Management - Songs & Tasks", () => {
     test("should add song key", async () => {
       const songsBtn = page.locator('[id="secondaryMenu"] a').getByText("Songs");
       await songsBtn.click();
-      // Tight match: the songs *list* page, not /serving/songs/<id> (detail).
-      // On the detail page, "Frolic" matches the renamed YouTube link first,
-      // and clicking it opens an external tab.
       await expect(page).toHaveURL(/\/serving\/songs(?:\/?$|\?)/, { timeout: 10000 });
-      // Wait for the songs-list query to settle so locator('a') sees list
-      // links (which navigate to /serving/songs/<id>) rather than stale
-      // detail-page anchors (which include the YouTube link renamed "Frolic").
       await page.locator('[data-testid="add-song-button"]').waitFor({ state: "visible", timeout: 10000 });
 
-      // Songs page renders both "Frolic" (link to song) and "Play Frolic"
-      // (player link). Use exact match to avoid strict-mode violation.
       const song = page.locator("a").getByText("Frolic", { exact: true }).first();
       await song.click();
       await expect(page.getByRole("heading", { name: "Frolic" })).toBeVisible({ timeout: 10000 });
-      // Song was created with a default key, so the Keys tablist already has
-      // ["Default", "Add"]. Click "Add" to open the new-key form.
       const allTabs = page.locator('[role="tab"]');
       await expect(allTabs).toHaveCount(2, { timeout: 10000 });
       const addKeyTab = page.getByRole("tab", { name: /Add/ });
       await addKeyTab.click();
       const saveBtn = page.locator("button").getByText("Save");
       await saveBtn.click();
-      // After save: two real keys (Default + the new one) plus the "Add" tab = 3.
       await expect(allTabs).toHaveCount(3, { timeout: 10000 });
     });
 
     test("should add link from song key menu", async () => {
       const songsBtn = page.locator('[id="secondaryMenu"] a').getByText("Songs");
       await songsBtn.click();
-      // Tight match: the songs *list* page, not /serving/songs/<id> (detail).
-      // On the detail page, "Frolic" matches the renamed YouTube link first,
-      // and clicking it opens an external tab.
       await expect(page).toHaveURL(/\/serving\/songs(?:\/?$|\?)/, { timeout: 10000 });
-      // Wait for the songs-list query to settle so locator('a') sees list
-      // links (which navigate to /serving/songs/<id>) rather than stale
-      // detail-page anchors (which include the YouTube link renamed "Frolic").
       await page.locator('[data-testid="add-song-button"]').waitFor({ state: "visible", timeout: 10000 });
 
-      // Songs page renders both "Frolic" (link to song) and "Play Frolic"
-      // (player link). Use exact match to avoid strict-mode violation.
       const song = page.locator("a").getByText("Frolic", { exact: true }).first();
       await song.click();
       await expect(page.getByRole("heading", { name: "Frolic" })).toBeVisible({ timeout: 10000 });
@@ -153,23 +123,12 @@ test.describe("Serving Management - Songs & Tasks", () => {
     test("should edit link from song key menu", async () => {
       const songsBtn = page.locator('[id="secondaryMenu"] a').getByText("Songs");
       await songsBtn.click();
-      // Tight match: the songs *list* page, not /serving/songs/<id> (detail).
-      // On the detail page, "Frolic" matches the renamed YouTube link first,
-      // and clicking it opens an external tab.
       await expect(page).toHaveURL(/\/serving\/songs(?:\/?$|\?)/, { timeout: 10000 });
-      // Wait for the songs-list query to settle so locator('a') sees list
-      // links (which navigate to /serving/songs/<id>) rather than stale
-      // detail-page anchors (which include the YouTube link renamed "Frolic").
       await page.locator('[data-testid="add-song-button"]').waitFor({ state: "visible", timeout: 10000 });
 
-      // Exact match — the songs page renders a "Play Frolic" link too, which
-      // would make a substring locator strict-mode-violate.
       const song = page.locator("a").getByText("Frolic", { exact: true }).first();
       await song.click();
       await expect(page.getByRole("heading", { name: "Frolic" })).toBeVisible({ timeout: 10000 });
-      // Target the Edit button inside the list item for the YouTube link, not
-      // the outermost edit icon (which now opens the Arrangement editor after
-      // the Keys redesign).
       const linkRow = page.locator("li").filter({ hasText: "Frolic on YouTube" });
       const editBtn = linkRow.locator('button:has(svg[data-testid="EditIcon"])').first();
       await editBtn.click();
@@ -185,25 +144,13 @@ test.describe("Serving Management - Songs & Tasks", () => {
     test("should cancel editing link from song key menu", async () => {
       const songsBtn = page.locator('[id="secondaryMenu"] a').getByText("Songs");
       await songsBtn.click();
-      // Tight match: the songs *list* page, not /serving/songs/<id> (detail).
-      // On the detail page, "Frolic" matches the renamed YouTube link first,
-      // and clicking it opens an external tab.
       await expect(page).toHaveURL(/\/serving\/songs(?:\/?$|\?)/, { timeout: 10000 });
-      // Wait for the songs-list query to settle so locator('a') sees list
-      // links (which navigate to /serving/songs/<id>) rather than stale
-      // detail-page anchors (which include the YouTube link renamed "Frolic").
       await page.locator('[data-testid="add-song-button"]').waitFor({ state: "visible", timeout: 10000 });
 
-      // Songs page renders both "Frolic" (link to song) and "Play Frolic"
-      // (player link). Use exact match to avoid strict-mode violation.
       const song = page.locator("a").getByText("Frolic", { exact: true }).first();
       await song.click();
       await expect(page.getByRole("heading", { name: "Frolic" })).toBeVisible({ timeout: 10000 });
-      // Keys load first, then a follow-up effect fetches links — the link
-      // list re-renders mid-page-load. Wait for the YouTube link itself to
-      // render before clicking its row's edit icon, then dispatch the click
-      // directly so the click survives a layout shift between actionability
-      // check and execution (the IconButton was detaching otherwise).
+      // Link list re-renders mid-load; wait for link to render then dispatch click.
       await page.locator('a[href*="youtu.be"]').waitFor({ state: "visible", timeout: 10000 });
       const linkRow = page.locator("li").filter({ has: page.locator('a[href*="youtu.be"]') });
       await linkRow.locator('button:has(svg[data-testid="EditIcon"])').first().dispatchEvent("click");
@@ -223,23 +170,13 @@ test.describe("Serving Management - Songs & Tasks", () => {
 
       const songsBtn = page.locator('[id="secondaryMenu"] a').getByText("Songs");
       await songsBtn.click();
-      // Tight match: the songs *list* page, not /serving/songs/<id> (detail).
-      // On the detail page, "Frolic" matches the renamed YouTube link first,
-      // and clicking it opens an external tab.
       await expect(page).toHaveURL(/\/serving\/songs(?:\/?$|\?)/, { timeout: 10000 });
-      // Wait for the songs-list query to settle so locator('a') sees list
-      // links (which navigate to /serving/songs/<id>) rather than stale
-      // detail-page anchors (which include the YouTube link renamed "Frolic").
       await page.locator('[data-testid="add-song-button"]').waitFor({ state: "visible", timeout: 10000 });
 
-      // Songs page renders both "Frolic" (link to song) and "Play Frolic"
-      // (player link). Use exact match to avoid strict-mode violation.
       const song = page.locator("a").getByText("Frolic", { exact: true }).first();
       await song.click();
       await expect(page.getByRole("heading", { name: "Frolic" })).toBeVisible({ timeout: 10000 });
-      // Wait for the YouTube link to render, then dispatch the edit click
-      // directly — the link list keeps re-rendering as keys/links/products
-      // load, so a normal click hits the actionability retry/detach loop.
+      // Link list re-renders mid-load; wait for link then dispatch click.
       await page.locator('a[href*="youtu.be"]').waitFor({ state: "visible", timeout: 10000 });
       const linkRow = page.locator("li").filter({ has: page.locator('a[href*="youtu.be"]') });
       await linkRow.locator('button:has(svg[data-testid="EditIcon"])').first().dispatchEvent("click");
@@ -252,26 +189,13 @@ test.describe("Serving Management - Songs & Tasks", () => {
     test("should edit song key", async () => {
       const songsBtn = page.locator('[id="secondaryMenu"] a').getByText("Songs");
       await songsBtn.click();
-      // Tight match: the songs *list* page, not /serving/songs/<id> (detail).
-      // On the detail page, "Frolic" matches the renamed YouTube link first,
-      // and clicking it opens an external tab.
       await expect(page).toHaveURL(/\/serving\/songs(?:\/?$|\?)/, { timeout: 10000 });
-      // Wait for the songs-list query to settle so locator('a') sees list
-      // links (which navigate to /serving/songs/<id>) rather than stale
-      // detail-page anchors (which include the YouTube link renamed "Frolic").
       await page.locator('[data-testid="add-song-button"]').waitFor({ state: "visible", timeout: 10000 });
 
-      // Songs page renders both "Frolic" (link to song) and "Play Frolic"
-      // (player link). Use exact match to avoid strict-mode violation.
       const song = page.locator("a").getByText("Frolic", { exact: true }).first();
       await song.click();
       await expect(page.getByRole("heading", { name: "Frolic" })).toBeVisible({ timeout: 10000 });
-      // Target the "Edit selected key" button directly. editIconButton().last()
-      // is fragile here because the page has multiple EditIcon buttons (header,
-      // External Links, Arrangement, Keys) and DOM order changed.
-      // The selected-key edit is an icon-only "Edit" AppIconButton in the
-      // Keys & Downloads card header — scope to that card to disambiguate
-      // from the other Edit icons on the song page.
+      // Scope to Keys card header to disambiguate from other Edit icons.
       const editBtn = page.locator(".MuiCard-root").filter({ has: page.getByRole("heading", { name: "Keys", exact: true }) }).locator('button[aria-label="Edit"]').first();
       await editBtn.click();
       const label = page.locator('[name="shortDescription"]');
@@ -286,23 +210,12 @@ test.describe("Serving Management - Songs & Tasks", () => {
     test("should cancel editing song key", async () => {
       const songsBtn = page.locator('[id="secondaryMenu"] a').getByText("Songs");
       await songsBtn.click();
-      // Tight match: the songs *list* page, not /serving/songs/<id> (detail).
-      // On the detail page, "Frolic" matches the renamed YouTube link first,
-      // and clicking it opens an external tab.
       await expect(page).toHaveURL(/\/serving\/songs(?:\/?$|\?)/, { timeout: 10000 });
-      // Wait for the songs-list query to settle so locator('a') sees list
-      // links (which navigate to /serving/songs/<id>) rather than stale
-      // detail-page anchors (which include the YouTube link renamed "Frolic").
       await page.locator('[data-testid="add-song-button"]').waitFor({ state: "visible", timeout: 10000 });
 
-      // Songs page renders both "Frolic" (link to song) and "Play Frolic"
-      // (player link). Use exact match to avoid strict-mode violation.
       const song = page.locator("a").getByText("Frolic", { exact: true }).first();
       await song.click();
       await expect(page.getByRole("heading", { name: "Frolic" })).toBeVisible({ timeout: 10000 });
-      // The selected-key edit is an icon-only "Edit" AppIconButton in the
-      // Keys & Downloads card header — scope to that card to disambiguate
-      // from the other Edit icons on the song page.
       const editBtn = page.locator(".MuiCard-root").filter({ has: page.getByRole("heading", { name: "Keys", exact: true }) }).locator('button[aria-label="Edit"]').first();
       await editBtn.click();
       const keySignature = page.locator('[name="keySignature"]');
@@ -321,25 +234,13 @@ test.describe("Serving Management - Songs & Tasks", () => {
 
       const songsBtn = page.locator('[id="secondaryMenu"] a').getByText("Songs");
       await songsBtn.click();
-      // Tight match: the songs *list* page, not /serving/songs/<id> (detail).
-      // On the detail page, "Frolic" matches the renamed YouTube link first,
-      // and clicking it opens an external tab.
       await expect(page).toHaveURL(/\/serving\/songs(?:\/?$|\?)/, { timeout: 10000 });
-      // Wait for the songs-list query to settle so locator('a') sees list
-      // links (which navigate to /serving/songs/<id>) rather than stale
-      // detail-page anchors (which include the YouTube link renamed "Frolic").
       await page.locator('[data-testid="add-song-button"]').waitFor({ state: "visible", timeout: 10000 });
 
-      // Songs page renders both "Frolic" (link to song) and "Play Frolic"
-      // (player link). Use exact match to avoid strict-mode violation.
       const song = page.locator("a").getByText("Frolic", { exact: true }).first();
       await song.click();
       await expect(page.getByRole("heading", { name: "Frolic" })).toBeVisible({ timeout: 10000 });
-      // Click the "Zacchaeus Key" tab so it becomes selected, then delete it.
       await page.locator('[role="tab"]').filter({ hasText: "Zacchaeus Key" }).click();
-      // The selected-key edit is an icon-only "Edit" AppIconButton in the
-      // Keys & Downloads card header — scope to that card to disambiguate
-      // from the other Edit icons on the song page.
       const editBtn = page.locator(".MuiCard-root").filter({ has: page.getByRole("heading", { name: "Keys", exact: true }) }).locator('button[aria-label="Edit"]').first();
       await editBtn.click();
       const deleteBtn = page.locator("button").getByText("Delete").last();
@@ -351,22 +252,12 @@ test.describe("Serving Management - Songs & Tasks", () => {
     test("should add external link", async () => {
       const songsBtn = page.locator('[id="secondaryMenu"] a').getByText("Songs");
       await songsBtn.click();
-      // Tight match: the songs *list* page, not /serving/songs/<id> (detail).
-      // On the detail page, "Frolic" matches the renamed YouTube link first,
-      // and clicking it opens an external tab.
       await expect(page).toHaveURL(/\/serving\/songs(?:\/?$|\?)/, { timeout: 10000 });
-      // Wait for the songs-list query to settle so locator('a') sees list
-      // links (which navigate to /serving/songs/<id>) rather than stale
-      // detail-page anchors (which include the YouTube link renamed "Frolic").
       await page.locator('[data-testid="add-song-button"]').waitFor({ state: "visible", timeout: 10000 });
 
-      // Songs page renders both "Frolic" (link to song) and "Play Frolic"
-      // (player link). Use exact match to avoid strict-mode violation.
       const song = page.locator("a").getByText("Frolic", { exact: true }).first();
       await song.click();
       await expect(page.getByRole("heading", { name: "Frolic" })).toBeVisible({ timeout: 10000 });
-      // Click the edit pencil next to the External Links heading to open
-      // SongDetailLinksEdit, then click the Add (+) icon it renders.
       const extHeading = page.getByRole("heading", { name: "External Links" });
       const extContainer = extHeading.locator("xpath=ancestor::div[1]/..");
       await extContainer.locator('button:has(svg[data-testid="EditIcon"])').first().click();
@@ -386,17 +277,9 @@ test.describe("Serving Management - Songs & Tasks", () => {
     test("should cancel adding external link", async () => {
       const songsBtn = page.locator('[id="secondaryMenu"] a').getByText("Songs");
       await songsBtn.click();
-      // Tight match: the songs *list* page, not /serving/songs/<id> (detail).
-      // On the detail page, "Frolic" matches the renamed YouTube link first,
-      // and clicking it opens an external tab.
       await expect(page).toHaveURL(/\/serving\/songs(?:\/?$|\?)/, { timeout: 10000 });
-      // Wait for the songs-list query to settle so locator('a') sees list
-      // links (which navigate to /serving/songs/<id>) rather than stale
-      // detail-page anchors (which include the YouTube link renamed "Frolic").
       await page.locator('[data-testid="add-song-button"]').waitFor({ state: "visible", timeout: 10000 });
 
-      // Songs page renders both "Frolic" (link to song) and "Play Frolic"
-      // (player link). Use exact match to avoid strict-mode violation.
       const song = page.locator("a").getByText("Frolic", { exact: true }).first();
       await song.click();
       await expect(page.getByRole("heading", { name: "Frolic" })).toBeVisible({ timeout: 10000 });
@@ -414,17 +297,9 @@ test.describe("Serving Management - Songs & Tasks", () => {
     test("should add lyrics", async () => {
       const songsBtn = page.locator('[id="secondaryMenu"] a').getByText("Songs");
       await songsBtn.click();
-      // Tight match: the songs *list* page, not /serving/songs/<id> (detail).
-      // On the detail page, "Frolic" matches the renamed YouTube link first,
-      // and clicking it opens an external tab.
       await expect(page).toHaveURL(/\/serving\/songs(?:\/?$|\?)/, { timeout: 10000 });
-      // Wait for the songs-list query to settle so locator('a') sees list
-      // links (which navigate to /serving/songs/<id>) rather than stale
-      // detail-page anchors (which include the YouTube link renamed "Frolic").
       await page.locator('[data-testid="add-song-button"]').waitFor({ state: "visible", timeout: 10000 });
 
-      // Songs page renders both "Frolic" (link to song) and "Play Frolic"
-      // (player link). Use exact match to avoid strict-mode violation.
       const song = page.locator("a").getByText("Frolic", { exact: true }).first();
       await song.click();
       await expect(page.getByRole("heading", { name: "Frolic" })).toBeVisible({ timeout: 10000 });
@@ -442,17 +317,9 @@ test.describe("Serving Management - Songs & Tasks", () => {
     test("should cancel editing lyrics", async () => {
       const songsBtn = page.locator('[id="secondaryMenu"] a').getByText("Songs");
       await songsBtn.click();
-      // Tight match: the songs *list* page, not /serving/songs/<id> (detail).
-      // On the detail page, "Frolic" matches the renamed YouTube link first,
-      // and clicking it opens an external tab.
       await expect(page).toHaveURL(/\/serving\/songs(?:\/?$|\?)/, { timeout: 10000 });
-      // Wait for the songs-list query to settle so locator('a') sees list
-      // links (which navigate to /serving/songs/<id>) rather than stale
-      // detail-page anchors (which include the YouTube link renamed "Frolic").
       await page.locator('[data-testid="add-song-button"]').waitFor({ state: "visible", timeout: 10000 });
 
-      // Songs page renders both "Frolic" (link to song) and "Play Frolic"
-      // (player link). Use exact match to avoid strict-mode violation.
       const song = page.locator("a").getByText("Frolic", { exact: true }).first();
       await song.click();
       await expect(page.getByRole("heading", { name: "Frolic" })).toBeVisible({ timeout: 10000 });
@@ -474,17 +341,9 @@ test.describe("Serving Management - Songs & Tasks", () => {
 
       const songsBtn = page.locator('[id="secondaryMenu"] a').getByText("Songs");
       await songsBtn.click();
-      // Tight match: the songs *list* page, not /serving/songs/<id> (detail).
-      // On the detail page, "Frolic" matches the renamed YouTube link first,
-      // and clicking it opens an external tab.
       await expect(page).toHaveURL(/\/serving\/songs(?:\/?$|\?)/, { timeout: 10000 });
-      // Wait for the songs-list query to settle so locator('a') sees list
-      // links (which navigate to /serving/songs/<id>) rather than stale
-      // detail-page anchors (which include the YouTube link renamed "Frolic").
       await page.locator('[data-testid="add-song-button"]').waitFor({ state: "visible", timeout: 10000 });
 
-      // Songs page renders both "Frolic" (link to song) and "Play Frolic"
-      // (player link). Use exact match to avoid strict-mode violation.
       const song = page.locator("a").getByText("Frolic", { exact: true }).first();
       await song.click();
       await expect(page.getByRole("heading", { name: "Frolic" })).toBeVisible({ timeout: 10000 });
@@ -499,24 +358,14 @@ test.describe("Serving Management - Songs & Tasks", () => {
     test("should search for songs", async () => {
       const songsBtn = page.locator('[id="secondaryMenu"] a').getByText("Songs");
       await songsBtn.click();
-      // Tight match: the songs *list* page, not /serving/songs/<id> (detail).
-      // On the detail page, "Frolic" matches the renamed YouTube link first,
-      // and clicking it opens an external tab.
       await expect(page).toHaveURL(/\/serving\/songs(?:\/?$|\?)/, { timeout: 10000 });
-      // Wait for the songs-list query to settle so locator('a') sees list
-      // links (which navigate to /serving/songs/<id>) rather than stale
-      // detail-page anchors (which include the YouTube link renamed "Frolic").
       await page.locator('[data-testid="add-song-button"]').waitFor({ state: "visible", timeout: 10000 });
 
       const searchBtn = page.locator("button").getByText("Search");
       await searchBtn.click();
-      // After clicking Search, a search input renders; multiple inputs may be
-      // on the page, so target the visible textbox by role + name fallback.
       const searchInput = page.locator('input[type="text"]').last();
       await searchInput.fill("Amazing Grace");
       await searchInput.press("Enter");
-      // SongsPage filters client-side on title/artist substring; the demo
-      // seed has at least one Amazing Grace song, possibly more arrangements.
       const results = page.locator("a").getByText("Amazing Grace");
       await expect(results.first()).toBeVisible({ timeout: 10000 });
     });
@@ -540,10 +389,6 @@ test.describe("Serving Management - Songs & Tasks", () => {
       await page?.context().close();
     });
 
-    // The tasks module on My Work is the compact (tabbed) TaskList — one tab is
-    // visible at a time (Assigned to Me / My Groups / Created by Me), so counts are
-    // per-tab. "Test Task" is created by Demo User, so it always lives on the
-    // Created-by-Me tab regardless of who it's assigned to.
     test("should add a task", async () => {
       await openMyTasks(page);
 
@@ -555,7 +400,6 @@ test.describe("Serving Management - Songs & Tasks", () => {
       await personSearch.fill("Demo User");
       const searchBtn = page.locator('[data-testid="search-button"]');
       await searchBtn.click();
-      // Result rows render an icon-only AppIconButton (aria-label "Select").
       const selectBtn = page.locator('[data-testid^="add-person-"]').first();
       await selectBtn.click();
       const taskName = page.locator('[name="title"]');
@@ -564,7 +408,6 @@ test.describe("Serving Management - Songs & Tasks", () => {
       await taskNotes.fill("Zacchaeus Testing (Playwright)");
       const saveBtn = page.locator("button").getByText("Save");
       await saveBtn.click();
-      // New task is assigned to Demo User -> visible on the default Assigned-to-Me tab.
       const validatedTask = page.locator("a").getByText("Test Task");
       await expect(validatedTask).toHaveCount(1, { timeout: 10000 });
     });
@@ -576,8 +419,7 @@ test.describe("Serving Management - Songs & Tasks", () => {
       await addBtn.click();
       const assignInput = page.locator('[data-testid="assign-to-input"]');
       await expect(assignInput).toBeVisible({ timeout: 10000 });
-      // The NewTask form re-renders during async loads; force-click avoids
-      // the "element detached" race and target the last Cancel (in the form).
+      // Form re-renders during async loads; force-click avoids detach race.
       const cancelBtn = page.locator("button").getByText("Cancel").last();
       await cancelBtn.click({ force: true });
       await expect(assignInput).toHaveCount(0, { timeout: 10000 });
@@ -586,7 +428,6 @@ test.describe("Serving Management - Songs & Tasks", () => {
     test("should toggle show closed tasks", async () => {
       await openMyTasks(page);
 
-      // On the default Assigned-to-Me tab the open task shows once.
       const task = page.locator("a").getByText("Test Task");
       await expect(task).toHaveCount(1);
       const closedBtn = page.locator('[data-testid="show-closed-tasks-button"]');
@@ -610,20 +451,16 @@ test.describe("Serving Management - Songs & Tasks", () => {
       await personSearch.fill("Dorothy");
       const searchBtn = page.locator('[data-testid="search-button"]');
       await searchBtn.click();
-      // Result rows render an icon-only AppIconButton (aria-label "Select").
       const selectBtn = page.locator('[data-testid^="add-person-"]').first();
       await selectBtn.click();
       await openMyTasks(page);
-      // Reassigned to Dorothy -> gone from the Assigned-to-Me tab (default).
       await expect(task).toHaveCount(0, { timeout: 10000 });
-      // Still created by Demo User -> present on the Created-by-Me tab.
       await page.locator('[data-testid="tasklist-tab-created"]').click();
       await expect(task).toHaveCount(1, { timeout: 10000 });
     });
 
     test("should reassociate tasks", async () => {
       await openMyTasks(page);
-      // The task was reassigned away from Demo User, so find it on the Created-by-Me tab.
       await page.locator('[data-testid="tasklist-tab-created"]').click();
 
       const task = page.locator("a").getByText("Test Task").first();
@@ -634,10 +471,8 @@ test.describe("Serving Management - Songs & Tasks", () => {
       await personSearch.fill("Grace Jackson");
       const searchBtn = page.locator('[data-testid="search-button"]');
       await searchBtn.click();
-      // Result rows render an icon-only AppIconButton (aria-label "Select").
       const selectBtn = page.locator('[data-testid^="add-person-"]').first();
       await selectBtn.click();
-      // The task detail header reflects the new association (compact list rows omit it).
       await expect(page.getByText(/Grace Jackson/).first()).toBeVisible({ timeout: 10000 });
     });
 
@@ -653,12 +488,10 @@ test.describe("Serving Management - Songs & Tasks", () => {
       await closedBtn.click();
       await openMyTasks(page);
       await page.locator('[data-testid="tasklist-tab-created"]').click();
-      // Task is now closed -> invisible on the default "Open" filter.
       const task2 = page.locator("a").getByText("Test Task");
       await expect(task2).toHaveCount(0, { timeout: 10000 });
       const closedTasksBtn = page.locator('[data-testid="show-closed-tasks-button"]');
       await closedTasksBtn.click();
-      // After switching to "Closed" filter, the task reappears on Created-by-Me.
       await expect(task2).toHaveCount(1, { timeout: 10000 });
     });
   });
@@ -682,10 +515,7 @@ test.describe("Serving Management - Songs & Tasks", () => {
     });
   });
 
-  // Transpose key select restored on the arrangement view (Arrangement.tsx). The keyOffset
-  // it drives is pure client state (not persisted), so this is read-only/no-cleanup-needed.
-  // Seed lyrics contain no ChordPro [bracket] notation, so we verify the select's presence,
-  // default value, and reactivity rather than pixel-diffing transposed chord text.
+  // keyOffset is client state (not persisted); verify select presence/default/reactivity.
   test.describe("Songs — transpose key select", () => {
     test("Key select appears for a song with a keySignature and updates on change", async ({ page }) => {
       const songsBtn = page.locator('[id="secondaryMenu"] a').getByText("Songs");
@@ -693,7 +523,6 @@ test.describe("Serving Management - Songs & Tasks", () => {
       await expect(page).toHaveURL(/\/serving\/songs(?:\/?$|\?)/, { timeout: 10000 });
       await page.locator('[data-testid="add-song-button"]').waitFor({ state: "visible", timeout: 10000 });
 
-      // Amazing Grace (SDT00000006) is seeded with keySignature 'G'.
       const song = page.locator("a").getByText("Amazing Grace", { exact: true }).first();
       await song.click();
       await expect(page.getByRole("heading", { name: "Amazing Grace" })).toBeVisible({ timeout: 10000 });
@@ -702,14 +531,12 @@ test.describe("Serving Management - Songs & Tasks", () => {
       await expect(arrangementCard).toBeVisible({ timeout: 10000 });
       const keySelect = arrangementCard.locator('[role="combobox"]');
       await expect(keySelect).toBeVisible({ timeout: 10000 });
-      // Defaults to the original key (offset 0).
       await expect(keySelect).toHaveText("G");
 
       await keySelect.click();
       await page.getByRole("option", { name: "C", exact: true }).click();
       await expect(keySelect).toHaveText("C");
 
-      // Lyrics re-render without error after transposing.
       await expect(page.locator(".chordPro")).toBeVisible();
     });
   });

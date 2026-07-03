@@ -81,8 +81,7 @@ export const PeoplePage = memo(() => {
   const [selectedColumns, setSelectedColumns] = React.useState<string[]>(["photo", "displayName"]);
   const [isSearchPerformed, setIsSearchPerformed] = React.useState(false);
   const [selectedListFilters, setSelectedListFilters] = React.useState<Record<string, ActiveFilter> | undefined>(undefined);
-  // The query behind the current results (advanced filter spec or simple/AI conditions),
-  // so it can be saved as a List. Null when results aren't from a search.
+  // Query behind current results; null when not from a search.
   const [saveableCriteria, setSaveableCriteria] = React.useState<ListConditions | null>(null);
   const emptySaveListDialog = { open: false, name: "", category: "", scope: "org", match: "all" as "all" | "any", householdInclusion: "none", autoRefresh: false, notifyOnChange: false, saving: false };
   const [saveListDialog, setSaveListDialog] = React.useState(emptySaveListDialog);
@@ -180,9 +179,7 @@ export const PeoplePage = memo(() => {
   const handleSelectList = useCallback((list: ListInterface) => {
     const conditions = list.conditions;
     setIsSearchPerformed(true);
-    // Match-any / household-inclusion semantics only exist server-side; those lists
-    // evaluate via the rules engine. Plain all-match lists keep the client flow so
-    // the advanced panel stays seeded and editable.
+    // Server-eval for match-any and household-inclusion; client-eval for plain all-match.
     const needsServerEval = !!list.id && !!list.rules && (list.rules.match !== "all" || (!!list.householdInclusion && list.householdInclusion !== "none"));
     if (needsServerEval) {
       setSaveableCriteria(null);
@@ -197,7 +194,7 @@ export const PeoplePage = memo(() => {
         setSearchResults(data.map((d: PersonInterface) => B1AdminPersonHelper.getExpandedPersonObject(d)));
       });
     } else {
-      // Advanced list: seed the advanced panel (new ref each time so re-selecting re-seeds).
+      // New ref on re-select to re-seed advanced panel.
       setSaveableCriteria(conditions);
       setSelectedListFilters({ ...conditions });
     }
@@ -216,8 +213,7 @@ export const PeoplePage = memo(() => {
     if (!saveableCriteria || !saveListDialog.name.trim()) return;
     setSaveListDialog((d) => ({ ...d, saving: true }));
     try {
-      // The rules tree is the canonical server-evaluable query; the conditions blob is
-      // kept alongside so the advanced panel can be re-seeded for editing.
+      // Rules tree is canonical server query; conditions blob allows re-seeding for edit.
       const rules = buildRulesFromCriteria(saveableCriteria, saveListDialog.match);
       await ApiHelper.post("/lists", [
         {

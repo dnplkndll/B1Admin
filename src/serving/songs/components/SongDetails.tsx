@@ -143,7 +143,6 @@ export const SongDetails = memo((props: Props) => {
   return (
     <Card sx={{ borderRadius: 2, border: "1px solid", borderColor: "divider" }}>
       <CardContent>
-        {/* Header */}
         <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 3 }}>
           <Stack direction="row" spacing={2} alignItems="center">
             <AlbumIcon sx={{ color: "primary.main", fontSize: 28 }} />
@@ -154,7 +153,6 @@ export const SongDetails = memo((props: Props) => {
           <AppIconButton label={Locale.label("common.edit")} icon={<EditIcon />} tone="card" onClick={handleEdit} />
         </Stack>
 
-        {/* Song Thumbnail */}
         {props.songDetail?.thumbnail && (
           <Box sx={{ display: "flex", justifyContent: "center", mb: 3 }}>
             <Avatar
@@ -172,7 +170,6 @@ export const SongDetails = memo((props: Props) => {
           </Box>
         )}
 
-        {/* Song Details */}
         {songDetailItems.length > 0 ? (
           <List sx={{ p: 0 }}>
             {songDetailItems.map((item, index) => (
@@ -208,7 +205,6 @@ export const SongDetails = memo((props: Props) => {
           <EmptyState icon={<AlbumIcon />} title={Locale.label("songs.songDetails.noDetails")} />
         )}
 
-        {/* Links Section */}
         <Box sx={{ mt: 3 }}>
           <SongDetailLinks songDetail={props.songDetail} />
         </Box>

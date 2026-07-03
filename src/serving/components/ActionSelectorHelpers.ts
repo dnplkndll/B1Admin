@@ -1,9 +1,7 @@
 import { type Instructions, type InstructionItem, type IProvider } from "@churchapps/content-providers";
 
-// Generate a dot-notation path from indices array (e.g., [0, 2, 1] -> "0.2.1")
 export const generatePath = (indices: number[]): string => indices.join(".");
 
-// Helper to get instructions from provider based on its capabilities
 export async function getProviderInstructions(provider: IProvider, path: string, auth?: any): Promise<Instructions | null> {
   const capabilities = provider.capabilities;
   if (capabilities.instructions && provider.getInstructions) {
@@ -12,17 +10,14 @@ export async function getProviderInstructions(provider: IProvider, path: string,
   return null;
 }
 
-// Extract sections from instructions that contain actions
 export function extractSections(instructions: Instructions): InstructionItem[] {
   const sections: InstructionItem[] = [];
 
-  // Recursively find all items with itemType 'section'
   function findSections(items: InstructionItem[]) {
     for (const item of items) {
       if (item.itemType === "section" && item.children && item.children.length > 0) {
         sections.push(item);
       }
-      // Continue searching in children
       if (item.children) {
         findSections(item.children);
       }
@@ -31,8 +26,7 @@ export function extractSections(instructions: Instructions): InstructionItem[] {
 
   findSections(instructions.items);
 
-  // If no sections found by itemType, fall back to structure-based detection
-  // Look for items whose children are actions (have 'action' itemType or no grandchildren)
+  // Fallback: structure-based detection if itemType not found
   if (sections.length === 0) {
     for (const item of instructions.items) {
       if (item.children && item.children.length > 0) {

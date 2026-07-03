@@ -98,7 +98,6 @@ export const SendEmailDialog: React.FC<Props> = (props) => {
     return previewSubject;
   };
 
-  // Load templates on mount
   React.useEffect(() => {
     setLoadingTemplates(true);
     ApiHelper.get("/emailTemplates", "MessagingApi")
@@ -107,7 +106,6 @@ export const SendEmailDialog: React.FC<Props> = (props) => {
       .finally(() => setLoadingTemplates(false));
   }, []);
 
-  // Load preview data for group
   React.useEffect(() => {
     if (!props.groupId) return;
     setLoadingPreview(true);
@@ -211,7 +209,6 @@ export const SendEmailDialog: React.FC<Props> = (props) => {
 
             {!showPreview ? (
               <>
-                {/* Optional template selector + manage link */}
                 {!loadingTemplates && (
                   <Box sx={{ mb: 2, display: "flex", alignItems: "center", gap: 1 }}>
                     {templates.length > 0 && (
@@ -236,7 +233,6 @@ export const SendEmailDialog: React.FC<Props> = (props) => {
                   </Box>
                 )}
 
-                {/* Subject with merge fields */}
                 <Box sx={{ mb: 1 }}>
                   <Typography variant="caption" color="text.secondary" sx={{ mb: 0.5, display: "block" }}>
                     {Locale.label("groups.sendEmailDialog.subjectMergeFieldHint")}
@@ -257,7 +253,6 @@ export const SendEmailDialog: React.FC<Props> = (props) => {
                   sx={{ mb: 2 }}
                 />
 
-                {/* Body with merge fields */}
                 <Box sx={{ mb: 1 }}>
                   <Typography variant="caption" color="text.secondary" sx={{ mb: 0.5, display: "block" }}>
                     {Locale.label("groups.sendEmailDialog.bodyMergeFieldHint")}

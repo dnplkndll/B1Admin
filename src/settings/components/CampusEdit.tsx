@@ -12,16 +12,14 @@ interface Props {
 
 type AnyRecord = Record<string, any>;
 
-// IANA time zone list for the selector. Intl.supportedValuesOf is available in
-// all evergreen browsers; fall back to a small common set if unavailable.
 const getTimezones = (): string[] => {
   try {
     const anyIntl = Intl as any;
-    if (typeof anyIntl.supportedValuesOf === "function") return anyIntl.supportedValuesOf("timeZone");
+    if (typeof anyIntl.supportedValuesOf === "function") return anyIntl.supportedValuesOf("timeZone"); // Use IANA zones if supported
   } catch {
     /* ignore */
   }
-  return ["America/New_York", "America/Chicago", "America/Denver", "America/Los_Angeles", "America/Anchorage", "Pacific/Honolulu", "UTC"];
+  return ["America/New_York", "America/Chicago", "America/Denver", "America/Los_Angeles", "America/Anchorage", "Pacific/Honolulu", "UTC"]; // Fallback common zones
 };
 
 const TIMEZONES = getTimezones();

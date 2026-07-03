@@ -89,9 +89,7 @@ export const SongsPage = memo(() => {
 
   const filteredSongs = useMemo(() => {
     if (!songs.data) return null;
-    // The /songDetails endpoint joins songs→arrangements→songDetails, so a song
-    // with multiple arrangements appears once per arrangement. Dedupe by songId
-    // (each row from that join carries `songId` from the song table).
+    // Dedupe by songId: /songDetails join produces one row per arrangement.
     const seen = new Set<string>();
     const unique = songs.data.filter((song) => {
       const id = (song as any).songId || song.id;
@@ -141,7 +139,6 @@ export const SongsPage = memo(() => {
                       aria-label={Locale.label("common.select") || "Select"}
                     />
                   )}
-                  {/* Thumbnail/Avatar */}
                   <Avatar
                     src={songDetail.thumbnail && !failedImages.has(songDetail.thumbnail) ? songDetail.thumbnail : undefined}
                     sx={{ width: 60, height: 60, bgcolor: "primary.light" }}
@@ -149,7 +146,6 @@ export const SongsPage = memo(() => {
                     <MusicIcon sx={{ fontSize: 28, color: "primary.main" }} />
                   </Avatar>
 
-                  {/* Song Info */}
                   <Box sx={{ flex: 1, minWidth: 0 }}>
                     <Typography
                       variant="h6"
@@ -176,7 +172,6 @@ export const SongsPage = memo(() => {
                     </Stack>
                   </Box>
 
-                  {/* Action Button */}
                   <Tooltip title={`Play ${songDetail.title}`}>
                     <IconButton
                       component={Link}

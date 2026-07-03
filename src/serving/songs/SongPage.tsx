@@ -56,7 +56,6 @@ export const SongPage = memo(() => {
   const refetch = useCallback(async () => {
     const results = await Promise.all([song.refetch(), arrangements.refetch(), songDetail.refetch()]);
 
-    // Update selected arrangement with fresh data after refetch
     if (selectedArrangement?.id) {
       const arrangementResult = results[1];
       if (arrangementResult.data) {
@@ -160,7 +159,6 @@ export const SongPage = memo(() => {
           </CardContent>
         </Card>
 
-        {/* External Links Card */}
         <Card sx={{ height: "fit-content", borderRadius: 2 }}>
           <CardContent>
             {songDetail.data &&

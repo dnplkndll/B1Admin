@@ -89,7 +89,6 @@ export const ConditionEdit = (props: Props) => {
       }}>
       <CardContent>
         <Stack spacing={3}>
-          {/* Header */}
           <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
             <Stack direction="row" alignItems="center" spacing={1}>
               <ConditionIcon sx={{ color: "primary.main" }} />
@@ -99,10 +98,8 @@ export const ConditionEdit = (props: Props) => {
             </Stack>
           </Box>
 
-          {/* Error Messages */}
           {errors.length > 0 && <ErrorMessages errors={errors} />}
 
-          {/* Form Fields */}
           <Stack spacing={2}>
             <FormControl fullWidth variant="outlined">
               <InputLabel>{Locale.label("tasks.conditionEdit.conType")}</InputLabel>
@@ -150,7 +147,6 @@ export const ConditionEdit = (props: Props) => {
 
             <Divider />
 
-            {/* Condition Details */}
             <Box>
               <Typography variant="subtitle2" sx={{ fontWeight: 600, mb: 2, color: "text.secondary" }}>
                 {Locale.label("tasks.conditionEdit.conDetails")}
@@ -159,7 +155,6 @@ export const ConditionEdit = (props: Props) => {
             </Box>
           </Stack>
 
-          {/* Action Buttons */}
           <Stack direction="row" spacing={2} justifyContent="flex-end">
             {condition?.id && (
               <Button

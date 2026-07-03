@@ -23,8 +23,7 @@ const sharp = { sm: "2px", md: "4px", lg: "6px", xl: "8px" };
 const soft = { sm: "6px", md: "12px", lg: "18px", xl: "24px" };
 const round = { sm: "10px", md: "18px", lg: "26px", xl: "32px" };
 
-// Each template ships a distinct palette + font pairing + corner style so fresh sites
-// open with a real visual identity instead of all defaulting to blue / Roboto / 8px.
+// Each template ships distinct visual identity rather than defaulting to blue/Roboto/8px.
 const themes: Record<string, SiteTemplateTheme> = {
   classic: { palette: { light: "#ffffff", lightAccent: "#ece3cf", accent: "#1f3a5f", darkAccent: "#b8902f", dark: "#14233a", radius: sharp }, fonts: { heading: "Playfair Display", body: "Lato" } },
   simple: { palette: { light: "#ffffff", lightAccent: "#d6edf2", accent: "#0f766e", darkAccent: "#134e4a", dark: "#0b1f1d", radius: soft }, fonts: { heading: "Inter", body: "Inter" } },
@@ -39,11 +38,7 @@ const sermonsNav: SiteTemplatePageDef = { url: "/sermons", navKey: "sermons", na
 const giveNav: SiteTemplatePageDef = { url: "/donate", navKey: "give", navIcon: "favorite" };
 const liveNav: SiteTemplatePageDef = { url: "/stream", navKey: "live", navIcon: "live_tv" };
 
-// Per-template heroes so each site (and its picker thumbnail) opens with a genuinely
-// different layout, not just different copy — composing all templates from the same
-// library heroes made them look identical.
-
-// Card-overlay hero: white content card floating on the left half of a full-bleed photo.
+// Per-template layouts prevent all templates from looking identical.
 const visitorHero: SectionContentDef = {
   section: { background: STOCK + "/4/hands2.png", textColor: "light", styles: { all: { "padding-top": "70px", "padding-bottom": "70px" } } },
   elements: [
@@ -64,7 +59,6 @@ const visitorHero: SectionContentDef = {
   ]
 };
 
-// Split hero: photo left, headline and CTA right, on the light accent band.
 const communityHero: SectionContentDef = {
   section: { background: "var(--lightAccent)", textColor: "dark", styles: { all: { "padding-top": "70px", "padding-bottom": "70px" } } },
   elements: [
@@ -78,7 +72,6 @@ const communityHero: SectionContentDef = {
   ]
 };
 
-// Broadcast hero: left-aligned with a LIVE eyebrow line — deliberately not centered.
 const mediaHero: SectionContentDef = {
   section: { background: STOCK + "/4/bible2.png", textColor: "light", styles: { all: { "padding-top": "120px", "padding-bottom": "120px" } } },
   elements: [
@@ -87,7 +80,6 @@ const mediaHero: SectionContentDef = {
   ]
 };
 
-// Asymmetric hero: headline left, white service-times card right, on the gradient.
 const modernHero: SectionContentDef = {
   section: { background: "linear-gradient(135deg, #1e3a8a 0%, #312e81 100%)", textColor: "light", styles: { all: { "padding-top": "80px", "padding-bottom": "80px" } } },
   elements: [
@@ -101,7 +93,6 @@ const modernHero: SectionContentDef = {
   ]
 };
 
-// Two-band hero: a quiet scripture banner over the photo, then a solid accent CTA strip.
 const heritageHeroQuote: SectionContentDef = {
   section: { background: STOCK + "/4/storm.png", textColor: "light", styles: { all: { "padding-top": "120px", "padding-bottom": "120px", "text-align": "center" } } },
   elements: [text("<h1>Rooted in Faith. Growing in Grace.</h1><p><em>&ldquo;For where two or three gather in my name, there am I with them.&rdquo; &mdash; Matthew 18:20</em></p>", "center")]

@@ -125,7 +125,6 @@ export function EditorToolbar(props: EditorToolbarProps) {
         minHeight: 56
       }}
     >
-      {/* LEFT: Exit + page title */}
       <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, minWidth: 0, flex: "0 0 auto" }}>
         <Button
           variant="text"
@@ -183,7 +182,6 @@ export function EditorToolbar(props: EditorToolbarProps) {
         )}
       </Box>
 
-      {/* CENTER: undo/redo + saved indicator */}
       <Box
         sx={{
           flex: "1 1 auto",
@@ -220,7 +218,6 @@ export function EditorToolbar(props: EditorToolbarProps) {
         </Box>
       </Box>
 
-      {/* RIGHT: Device toggle + Add + overflow */}
       <Box sx={{ display: "flex", alignItems: "center", gap: 1, flex: "0 0 auto" }}>
         {isPageMode && onPublish && (
           <Tooltip title={publishTooltip} placement="bottom">

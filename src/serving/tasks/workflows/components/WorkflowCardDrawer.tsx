@@ -18,9 +18,7 @@ interface Props {
 
 export const WorkflowCardDrawer = (props: Props) => {
   const { card, steps } = props;
-  // Outcome buttons configured for the card's current step.
   const outcomes = (props.routes || []).filter((r) => r.stepId === card.stepId && r.trigger === "onComplete");
-  // Automated-action events recorded on the card by action steps (stored in data JSON).
   const history: { date?: string; message?: string }[] = (() => {
     if (!card.data) return [];
     try {
@@ -119,7 +117,6 @@ export const WorkflowCardDrawer = (props: Props) => {
             </Stack>
           )}
 
-          {/* Outcome routing: completing via a named outcome can move the card on (or close it). */}
           {editable && outcomes.length > 0 && (
             <Box>
               <Typography variant="caption" color="text.secondary">{Locale.label("tasks.workflowCard.outcome")}</Typography>

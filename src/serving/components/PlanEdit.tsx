@@ -71,16 +71,14 @@ export const PlanEdit = (props: Props) => {
   const savePlanMutation = useMutation({
     mutationFn: async (plan: PlanInterface) => {
       const { ApiHelper } = await import("@churchapps/apphelper");
-      // Starting from a template: create the (empty) plan, then apply the snapshot.
+      // Template: create plan, then apply snapshot.
       if (!plan.id && templateId) {
         const saved = await ApiHelper.post("/plans", [plan], "DoingApi");
         const newPlan = Array.isArray(saved) ? saved[0] : saved;
         await ApiHelper.post("/plantemplates/apply/" + templateId, { planIds: [newPlan.id], serviceOrder: true, positions: true }, "DoingApi");
         return saved;
       }
-      // The copy-from-previous options only render for new plans; an existing
-      // plan must save plainly or the copy endpoint duplicates its positions
-      // (and 401s when the loaded plan row lacks ministryId).
+      // Copy-from-previous only for new plans; existing plan avoids duplicate positions.
       if (plan.id || (copyMode === "none" && !copyServiceOrder) || !previousPlan) {
         return ApiHelper.post("/plans", [plan], "DoingApi");
       } else {

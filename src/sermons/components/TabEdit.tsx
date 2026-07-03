@@ -167,7 +167,6 @@ export const TabEdit: React.FC<Props> = (props) => {
           <ErrorMessages errors={errors} />
 
           <Stack spacing={3} sx={{ mt: 2 }}>
-            {/* Tab Display Section */}
             <Card sx={{ borderRadius: 2, border: "1px solid", borderColor: "grey.200" }}>
               <CardContent>
                 <Stack direction="row" alignItems="center" spacing={1} sx={{ mb: 2 }}>
@@ -222,7 +221,6 @@ export const TabEdit: React.FC<Props> = (props) => {
               </CardContent>
             </Card>
 
-            {/* Link Configuration Section */}
             <Card sx={{ borderRadius: 2, border: "1px solid", borderColor: "grey.200" }}>
               <CardContent>
                 <Stack direction="row" alignItems="center" spacing={1} sx={{ mb: 2 }}>
@@ -265,7 +263,6 @@ export const TabEdit: React.FC<Props> = (props) => {
 
                   {getUrl()}
 
-                  {/* Link Type Helper */}
                   <Box sx={{ mt: 1 }}>
                     <Stack direction="row" spacing={1} alignItems="center">
                       <Icon sx={{ fontSize: 16, color: "text.secondary" }}>info</Icon>
@@ -328,7 +325,6 @@ export const TabEdit: React.FC<Props> = (props) => {
         </DialogActions>
       </Dialog>
 
-      {/* Delete Confirmation Dialog */}
       <Dialog open={deleteDialogOpen} onClose={() => setDeleteDialogOpen(false)}>
         <DialogTitle>
           <Stack direction="row" alignItems="center" spacing={2}>
@@ -361,7 +357,6 @@ export const TabEdit: React.FC<Props> = (props) => {
         </DialogActions>
       </Dialog>
 
-      {/* Icon Picker Dialog */}
       {iconPickerOpen && (
         <IconPicker
           currentIcon={currentTab?.icon}

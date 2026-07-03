@@ -4,14 +4,6 @@ import { login } from "./helpers/auth";
 import { navigateToServing } from "./helpers/navigation";
 import { STORAGE_STATE_PATH } from "./global-setup";
 
-// Plan Templates: save a plan's order of service + positions as a reusable named
-// template, then start a new plan from it (and manage templates).
-//
-// Source is the demo "Upcoming Worship Schedule" plan (Worship ministry, Sunday
-// Service type) which ships with a full order of service. Capture is read-only on
-// that plan; the only rows this chain creates are one template + one throwaway
-// plan, both deleted in the final test. Names use a "Zephaniah" prefix to stay
-// clear of other serving specs.
 const MINISTRY = "Worship";
 const PLAN_TYPE = "Sunday Service";
 const SOURCE_PLAN = "Upcoming Worship Schedule";
@@ -35,9 +27,7 @@ test.describe.serial("Serving Management - Plan Templates", () => {
     await page?.context().close();
   });
 
-  // Land on the Sunday Service plan list under the Worship ministry. With a single
-  // ministry the page renders it directly (no ministry tabs), so click the tab only
-  // when one is present.
+  // Click ministry tab only if present.
   async function gotoPlanList() {
     await navigateToServing(page);
     await page.goto("/serving/plans");
@@ -108,15 +98,13 @@ test.describe.serial("Serving Management - Plan Templates", () => {
   });
 
   test("cleanup: deletes the new plan and the template", async () => {
-    // Delete the throwaway plan via its card's Edit -> Delete.
     await gotoPlanList();
     const card = page.locator(".MuiCard-root").filter({ has: page.getByRole("link", { name: NEW_PLAN, exact: true }) });
     await card.getByRole("button", { name: "Edit" }).click();
-    // FormCard's delete carries id="delete"; scope to it (the page has other Delete buttons).
+    // FormCard's delete carries id="delete"; scope to it.
     await page.locator("#delete").click();
     await expect(page.getByRole("link", { name: NEW_PLAN, exact: true })).toHaveCount(0, { timeout: 10000 });
 
-    // Delete the template from the manager (confirms via window.confirm).
     await gotoPlanList();
     await page.locator("button").getByText("Templates").first().click();
     const dialog = page.getByRole("dialog");

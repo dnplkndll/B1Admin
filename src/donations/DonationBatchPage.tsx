@@ -136,9 +136,7 @@ export const DonationBatchPage = () => {
         </Stack>
       </PageHeader>
 
-      {/* Main Content */}
       <Box sx={{ p: 3 }}>
-        {/* Bulk entry form - always visible when not editing existing donation */}
         {editDonationId === "notset" && UserHelper.checkAccess(Permissions.givingApi.donations.edit) && funds.data?.length > 0 && (
           <BulkDonationEntry
             batchId={batch.data?.id}
@@ -148,10 +146,8 @@ export const DonationBatchPage = () => {
           />
         )}
 
-        {/* Edit content appears when editing existing donation or batch */}
         {(editDonationId !== "notset" || editBatch) && <Box sx={{ mb: 3 }}>{getEditModules()}</Box>}
 
-        {/* Main donations table */}
         <Card>
           <Donations key={donationsKey} batch={batch.data} editFunction={showEditDonation} funds={funds.data} currency={currency} />
         </Card>

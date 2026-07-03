@@ -147,7 +147,6 @@ export const KioskThemeEdit: React.FC = () => {
         {Locale.label("mobile.checkInPage.kiosk.headerSubtitle")}
       </Typography>
 
-      {/* Background Image Section */}
       <Accordion defaultExpanded>
         <AccordionSummary expandIcon={<ExpandMore />}>
           <Typography variant="subtitle1" fontWeight={600}>{Locale.label("mobile.checkInPage.kiosk.backgroundImage")}</Typography>
@@ -174,7 +173,6 @@ export const KioskThemeEdit: React.FC = () => {
         </AccordionDetails>
       </Accordion>
 
-      {/* Idle Screen Section */}
       <Accordion>
         <AccordionSummary expandIcon={<ExpandMore />}>
           <Typography variant="subtitle1" fontWeight={600}>{Locale.label("mobile.checkInPage.kiosk.idleScreen")}</Typography>

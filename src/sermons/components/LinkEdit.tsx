@@ -169,7 +169,6 @@ export const LinkEdit: React.FC<Props> = (props) => {
           <ErrorMessages errors={errors} />
 
           <Stack spacing={3} sx={{ mt: 2 }}>
-            {/* Link Details Section */}
             <Card sx={{ borderRadius: 2, border: "1px solid", borderColor: "grey.200" }}>
               <CardContent>
                 <Stack direction="row" alignItems="center" spacing={1} sx={{ mb: 2 }}>
@@ -208,7 +207,6 @@ export const LinkEdit: React.FC<Props> = (props) => {
               </CardContent>
             </Card>
 
-            {/* Submenu Configuration Section */}
             {filteredGroupLinks?.length > 0 && (
               <Card sx={{ borderRadius: 2, border: "1px solid", borderColor: "grey.200" }}>
                 <CardContent>
@@ -331,7 +329,6 @@ export const LinkEdit: React.FC<Props> = (props) => {
         </DialogActions>
       </Dialog>
 
-      {/* Delete Confirmation Dialog */}
       <Dialog open={deleteDialogOpen} onClose={() => setDeleteDialogOpen(false)}>
         <DialogTitle>
           <Stack direction="row" alignItems="center" spacing={2}>

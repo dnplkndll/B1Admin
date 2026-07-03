@@ -1,12 +1,6 @@
 import type { Page } from "@playwright/test";
 
-// Primary nav items: rendered in the top-level drawer opened via #primaryNavButton.
-// Each maps to a data-testid=nav-item-<key> injected by Header.tsx useEffect.
-// NOTE: "tasks" is intentionally NOT a primary item — for the demo user (who has
-// plans access), Header.tsx renders /serving as primary and Tasks shows up as a
-// secondary item under Serving. See SECONDARY_ROUTES below.
-// NOTE: "calendars" is its own top-level primary item (Header.tsx pushes /calendars
-// as a sibling of /site/pages, not nested under Website) — see nav-item-calendars.
+// Tasks and calendars are secondary items per Header.tsx navigation structure.
 type PrimarySection =
   | "dashboard"
   | "people"

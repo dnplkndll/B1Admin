@@ -22,7 +22,6 @@ export const FormPage = () => {
     placeholderData: {} as MemberPermissionInterface
   });
 
-  // Get available tabs based on permissions
   const getAvailableTabs = () => {
     const tabs = [];
     const formType = form.data?.contentType;
@@ -47,7 +46,6 @@ export const FormPage = () => {
 
   const availableTabs = getAvailableTabs();
 
-  // Set default tab
   React.useEffect(() => {
     if (selectedTab === "" && availableTabs.length > 0) {
       setSelectedTab(availableTabs[0].key);
@@ -61,12 +59,11 @@ export const FormPage = () => {
       <PageHeader title={form.data.name} subtitle={Locale.label("forms.formPage.subtitleConfig")} />
       <FormNavigation selectedTab={selectedTab} onTabChange={setSelectedTab} form={form.data} memberPermission={memberPermission.data} />
 
-      {/* Tab Content */}
       <Box sx={{ p: 3 }}>
         <Box
           sx={{
-            "& > *:first-of-type": { mb: 2 }, // Add margin bottom to edit components that appear above
-            "& > *:not(:first-of-type)": { mt: 0 } // Ensure no extra margin for main content
+            "& > *:first-of-type": { mb: 2 },
+            "& > *:not(:first-of-type)": { mt: 0 }
           }}>
           <Tabs form={form.data} memberPermission={memberPermission.data} selectedTab={selectedTab} onTabChange={setSelectedTab} />
         </Box>

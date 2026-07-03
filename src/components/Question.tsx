@@ -14,10 +14,8 @@ export const Question: React.FC<Props> = memo((props) => {
   const a = props.answer;
   const showEmpty = props.showEmpty;
 
-  // Don't render if no answer (unless it's a heading or we're showing empty fields PCO-style)
   if (a === null && q.fieldType !== "Heading" && !showEmpty) return null;
 
-  // Handle heading type specially
   if (q.fieldType === "Heading") {
     return (
       <Box sx={{ py: 2 }}>
@@ -35,7 +33,6 @@ export const Question: React.FC<Props> = memo((props) => {
     );
   }
 
-  // Process the answer value based on field type
   let displayValue: string;
   let chipColor: "default" | "primary" | "secondary" | "error" | "info" | "success" | "warning" = "default";
 
@@ -68,7 +65,6 @@ export const Question: React.FC<Props> = memo((props) => {
       break;
   }
 
-  // Hide empty fields unless explicitly showing them (PCO-style "—" placeholder)
   const isEmpty = !displayValue;
   if (isEmpty && !showEmpty) return null;
   const shownValue = isEmpty ? "—" : displayValue;

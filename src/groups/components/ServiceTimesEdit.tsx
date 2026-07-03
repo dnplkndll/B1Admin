@@ -15,9 +15,7 @@ interface Props {
 }
 
 export const ServiceTimesEdit = memo((props: Props) => {
-  // Campuses are mastered in the membership module; build the "Campus - Service -
-  // Service Time" label client-side rather than relying on the (frozen)
-  // attendance longName join.
+  // Campuses are mastered in membership module; build label client-side instead of frozen attendance longName join.
   const campuses = useCampuses();
   const [groupServiceTimes, setGroupServiceTimes] = React.useState<GroupServiceTimeInterface[]>([]);
   const [serviceTimes, setServiceTimes] = React.useState<ServiceTimeInterface[]>([]);

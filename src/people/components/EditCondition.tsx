@@ -339,9 +339,7 @@ export function EditCondition(props: Props) {
       }
       if (condition.field === "memberAttendance") {
         setLoadingOptions(true);
-        // Campuses are mastered in the membership module; resolve campus names
-        // from there and build the service / service-time labels client-side
-        // (the attendance copy is frozen/deprecated).
+        // Attendance copy is frozen/deprecated; get campus names from membership master instead.
         (async () => {
           const [campuses, services, serviceTimes, groups] = await Promise.all([
             ApiHelper.get("/campuses", "MembershipApi") as Promise<CampusInterface[]>,

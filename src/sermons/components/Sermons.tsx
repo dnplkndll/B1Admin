@@ -26,7 +26,6 @@ export const Sermons = () => {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const navigate = useNavigate();
 
-  // Playlist panel (right column) state
   const [currentPlaylist, setCurrentPlaylist] = React.useState<PlaylistInterface>(null);
   const [playlistSearch, setPlaylistSearch] = React.useState<string>("");
   const [showPlaylistSearch, setShowPlaylistSearch] = React.useState<boolean>(false);
@@ -157,8 +156,6 @@ export const Sermons = () => {
     }
     return result;
   };
-
-  // ----- Playlist panel handlers -----
 
   const handlePlaylistUpdated = () => { setCurrentPlaylist(null); loadData(); };
 

@@ -40,14 +40,12 @@ export const BulkLessonSchedule: React.FC<Props> = (props) => {
   const [saveProgress, setSaveProgress] = useState(0);
   const [error, setError] = useState<string | null>(null);
 
-  // Selected starting lesson (from LessonSelector)
   const [selectedVenueId, setSelectedVenueId] = useState<string>("");
   const [selectedVenueName, setSelectedVenueName] = useState<string>("");
   const [selectedContentPath, setSelectedContentPath] = useState<string>("");
   const [selectedProviderId, setSelectedProviderId] = useState<string>("");
   const [showLessonSelector, setShowLessonSelector] = useState(false);
 
-  // Find the most recent previous plan with a lesson
   const previousPlan = useMemo(() => {
     if (!props.plans || props.plans.length === 0) return null;
     const withLesson = props.plans
@@ -60,9 +58,7 @@ export const BulkLessonSchedule: React.FC<Props> = (props) => {
     return withLesson[0] || null;
   }, [props.plans]);
 
-  // Browse content at a given path for a provider. Mirrors useProviderBrowser.browseRaw —
-  // when a ministryId is available, always go through the proxy so caching, CORS, and
-  // failure modes match the lesson selector elsewhere in B1Admin.
+  // Use the proxy when available to match caching/CORS behavior of lesson selector elsewhere.
   const browseAt = useCallback(async (path: string, provId: string): Promise<ContentFolder[]> => {
     const provider = getProvider(provId);
     if (!provider) return [];
@@ -84,7 +80,6 @@ export const BulkLessonSchedule: React.FC<Props> = (props) => {
     setError(null);
   }, []);
 
-  // When a starting lesson is selected, load all sibling lessons from that point onward
   useEffect(() => {
     if (!selectedContentPath || !selectedProviderId) return;
 
@@ -92,7 +87,6 @@ export const BulkLessonSchedule: React.FC<Props> = (props) => {
       setLoadingEntries(true);
       setEntries([]);
 
-      // Parse: /lessons/{programId}/{studyId}/{lessonId}/{venueId}
       const segments = selectedContentPath.replace(/^\//, "").split("/").filter(Boolean);
       if (segments.length < 4) {
         setError(Locale.label("plans.bulkLessonSchedule.pathNotSupported"));
@@ -104,10 +98,8 @@ export const BulkLessonSchedule: React.FC<Props> = (props) => {
         const studyLevelPath = "/" + segments.slice(0, 3).join("/");
         const selectedLessonId = segments[3];
 
-        // Load all lessons in the study
         const allLessons = await browseAt(studyLevelPath, selectedProviderId);
 
-        // Find the selected lesson's index
         const selectedIndex = allLessons.findIndex(l => {
           const s = l.path.replace(/^\//, "").split("/").filter(Boolean);
           return s[s.length - 1] === selectedLessonId;
@@ -120,7 +112,6 @@ export const BulkLessonSchedule: React.FC<Props> = (props) => {
           return;
         }
 
-        // Load venues for remaining lessons in parallel, match by selected venue name
         const newEntries: ScheduleEntry[] = await Promise.all(
           remaining.map(async (lesson, i) => {
             const date = new Date(startDate);
@@ -137,7 +128,9 @@ export const BulkLessonSchedule: React.FC<Props> = (props) => {
                 venue = venues[0];
                 venueMismatch = !!selectedVenueName;
               }
-            } catch { /* venue will be null */ }
+            } catch {
+              void 0;
+            }
 
             return { lesson, venue, venueMismatch, date, included: true };
           })
@@ -155,7 +148,6 @@ export const BulkLessonSchedule: React.FC<Props> = (props) => {
     loadSeries();
   }, [selectedContentPath, selectedProviderId]);
 
-  // Recalculate dates when startDate or interval changes
   useEffect(() => {
     if (entries.length > 0) {
       setEntries(prev => prev.map((entry, i) => {
@@ -178,9 +170,7 @@ export const BulkLessonSchedule: React.FC<Props> = (props) => {
 
     const toSchedule = entries.filter(e => e.included && e.venue);
     try {
-      // Chain the copy source forward: each new plan copies from the previously-created plan
-      // (or from previousPlan for the first iteration). This keeps each adjustTime diff small
-      // (one interval) instead of compounding from a single fixed origin.
+      // Chain each new plan from the prior one to keep diffs small.
       let copySourceId: string | undefined = previousPlan?.id;
       for (let i = 0; i < toSchedule.length; i++) {
         const entry = toSchedule[i];
@@ -230,7 +220,6 @@ export const BulkLessonSchedule: React.FC<Props> = (props) => {
         {error && <Alert severity="info" sx={{ mb: 2 }}>{error}</Alert>}
 
         <Stack spacing={2}>
-          {/* Lesson Selection - same pattern as LessonScheduleEdit */}
           <Box>
             <Typography variant="body2" sx={{ mb: 1 }}>
               {Locale.label("plans.bulkLessonSchedule.startingLesson") || "Starting Lesson"}
@@ -312,7 +301,6 @@ export const BulkLessonSchedule: React.FC<Props> = (props) => {
             </FormControl>
           )}
 
-          {/* Loading indicator for entries */}
           {loadingEntries && (
             <Box sx={{ py: 2, textAlign: "center" }}>
               <LinearProgress />
@@ -320,7 +308,6 @@ export const BulkLessonSchedule: React.FC<Props> = (props) => {
             </Box>
           )}
 
-          {/* Preview table */}
           {entries.length > 0 && (
             <>
               <Typography variant="subtitle2" color="text.secondary">

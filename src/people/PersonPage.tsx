@@ -26,15 +26,7 @@ export const PersonPage = () => {
     personData.refetch();
   }, [personData]);
 
-  // Subscribe to a content-scoped room for this person so any tab gets notified
-  // when a Notes conversation is created/updated for them — even before this tab
-  // knows the conversation id. Server broadcasts `conversationActivity` to
-  // `content-person-{id}` from ConversationController.save and MessageController.
-  //
-  // refetch is a useCallback whose reference changes every time react-query touches
-  // personData/formsData — which is constantly. Stash it in a ref so the subscription
-  // effect's deps stay limited to params.id. Otherwise every data update tears down
-  // the connection and re-creates it, racing with inbound broadcasts.
+  // Stash refetch in ref to avoid subscription re-create on every react-query update.
   const refetchRef = React.useRef(refetch);
   React.useEffect(() => { refetchRef.current = refetch; }, [refetch]);
 
@@ -57,7 +49,6 @@ export const PersonPage = () => {
 
   const person = useMemo(() => {
     if (params.id === "add" || !params.id) {
-      // Create a new empty person for adding
       return {
         name: {
           first: "",
@@ -122,9 +113,7 @@ export const PersonPage = () => {
 
   const getCurrentTab = () => {
     let currentTab: JSX.Element;
-    // Tabs other than details need a loaded person; the query can flush to
-    // null during refetches/navigation, so guard against crashing child
-    // components that dereference person.id unconditionally.
+    // Guard against null person during query refetches.
     if (selectedTab !== "details" && !person?.id) {
       return <div key="loading" />;
     }

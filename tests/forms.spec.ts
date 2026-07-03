@@ -1,77 +1,57 @@
-import type { Page } from '@playwright/test';
-import { settingsTest as test, expect } from './helpers/test-fixtures';
-import { navigateToForms, navigateToPeople } from './helpers/navigation';
-import { openPersonRow, SEED_PEOPLE } from './helpers/fixtures';
-import { login } from './helpers/auth';
-import { STORAGE_STATE_PATH } from './global-setup';
+import type { Page } from "@playwright/test";
+import { settingsTest as test, expect } from "./helpers/test-fixtures";
+import { navigateToForms, navigateToPeople } from "./helpers/navigation";
+import { openPersonRow, SEED_PEOPLE } from "./helpers/fixtures";
+import { login } from "./helpers/auth";
+import { STORAGE_STATE_PATH } from "./global-setup";
 
-// Coverage for ChurchAppsSupport/b1Admin/forms.md.
-// Forms live under People → Forms. Two contentTypes:
-//   - "person": data-collection forms attached to a person profile.
-//   - "form":   stand-alone forms with public URLs and access-window options.
-// FormEdit (FormEdit.tsx) is the create/edit drawer; Form.tsx renders
-// the questions table; FormQuestionEdit drives question CRUD.
+const DISPOSABLE_PERSON_FORM = "Zacchaeus Test Person Form";
+const DISPOSABLE_STANDALONE_FORM = "Zacchaeus Test Standalone Form";
 
-const DISPOSABLE_PERSON_FORM = 'Zacchaeus Test Person Form';
-const DISPOSABLE_STANDALONE_FORM = 'Zacchaeus Test Standalone Form';
-
-async function selectMuiOption(page: import('@playwright/test').Page, openLocator: ReturnType<import('@playwright/test').Page['locator']>, optionText: string) {
+async function selectMuiOption(page: import("@playwright/test").Page, openLocator: ReturnType<import("@playwright/test").Page["locator"]>, optionText: string) {
   await openLocator.click();
   const option = page.locator('li[role="option"]', { hasText: optionText }).first();
-  await option.waitFor({ state: 'visible', timeout: 10000 });
+  await option.waitFor({ state: "visible", timeout: 10000 });
   await option.click();
-  // wait for the listbox to detach so subsequent clicks don't re-target it
-  await page.locator('[role="listbox"]').waitFor({ state: 'hidden', timeout: 10000 }).catch(() => { });
+  await page.locator('[role="listbox"]').waitFor({ state: "hidden", timeout: 10000 }).catch(() => { });
 }
 
-async function openFormsPage(page: import('@playwright/test').Page) {
-  // settingsTest fixture lands us elsewhere; explicitly navigate to forms (People → Forms).
+async function openFormsPage(page: import("@playwright/test").Page) {
   await navigateToForms(page);
   await expect(page).toHaveURL(/\/forms/, { timeout: 15000 });
-  // Add Form button is the canonical signal that the page rendered.
-  await page.locator('[data-testid="add-form-button"]').waitFor({ state: 'visible', timeout: 15000 });
+  await page.locator('[data-testid="add-form-button"]').waitFor({ state: "visible", timeout: 15000 });
 }
 
-async function clickAddForm(page: import('@playwright/test').Page) {
+async function clickAddForm(page: import("@playwright/test").Page) {
   await page.locator('[data-testid="add-form-button"]').click();
-  await page.locator('[data-testid="form-name-input"] input').waitFor({ state: 'visible', timeout: 10000 });
+  await page.locator('[data-testid="form-name-input"] input').waitFor({ state: "visible", timeout: 10000 });
 }
 
-async function saveFormDrawer(page: import('@playwright/test').Page) {
-  // InputBox in apphelper renders a button with text "Save" in the formBox container.
-  await page.locator('#formBox button', { hasText: /^Save$/ }).click();
-  // After save, drawer closes (formBox detaches).
-  await page.locator('#formBox').waitFor({ state: 'hidden', timeout: 15000 });
+async function saveFormDrawer(page: import("@playwright/test").Page) {
+  await page.locator("#formBox button", { hasText: /^Save$/ }).click();
+  await page.locator("#formBox").waitFor({ state: "hidden", timeout: 15000 });
 }
 
-// No beforeAll cleanup: it would run once per worker and race with describe.serial
-// blocks in other workers. The pretest reset-demo handles fresh state, and the
-// final lifecycle test deletes the disposable form.
-
-test.describe('Forms page', () => {
-  test('should render Forms list with Add Form button', async ({ page }) => {
+test.describe("Forms page", () => {
+  test("should render Forms list with Add Form button", async ({ page }) => {
     await openFormsPage(page);
     await expect(page.locator('[data-testid="add-form-button"]')).toBeVisible();
     // Forms card header text comes from forms.formsPage.forms locale
-    await expect(page.getByRole('heading', { name: /^Forms$/ }).first()).toBeVisible();
+    await expect(page.getByRole("heading", { name: /^Forms$/ }).first()).toBeVisible();
   });
 
-  test('should require a name when creating a form', async ({ page }) => {
+  test("should require a name when creating a form", async ({ page }) => {
     await openFormsPage(page);
     await clickAddForm(page);
-    // Submit empty
-    await page.locator('#formBox button', { hasText: /^Save$/ }).click();
-    // Drawer must remain open and an error must appear.
-    await expect(page.locator('#formBox')).toBeVisible();
-    // ErrorMessages renders as alerts inside the drawer.
-    await expect(page.locator('#formBox').getByRole('alert').first()).toBeVisible({ timeout: 5000 });
-    // Cancel out so the drawer doesn't pollute later tests.
-    await page.locator('#formBox button', { hasText: /^Cancel$/ }).click();
-    await page.locator('#formBox').waitFor({ state: 'hidden', timeout: 10000 });
+    await page.locator("#formBox button", { hasText: /^Save$/ }).click();
+    await expect(page.locator("#formBox")).toBeVisible();
+    await expect(page.locator("#formBox").getByRole("alert").first()).toBeVisible({ timeout: 5000 });
+    await page.locator("#formBox button", { hasText: /^Cancel$/ }).click();
+    await page.locator("#formBox").waitFor({ state: "hidden", timeout: 10000 });
   });
 });
 
-test.describe.serial('People-associated form lifecycle', () => {
+test.describe.serial("People-associated form lifecycle", () => {
   let page: Page;
 
   test.beforeAll(async ({ browser }) => {
@@ -84,92 +64,82 @@ test.describe.serial('People-associated form lifecycle', () => {
     await page?.context().close();
   });
 
-  test('creates a People-associated form', async () => {
+  test("creates a People-associated form", async () => {
     await openFormsPage(page);
     await clickAddForm(page);
     await page.locator('[data-testid="form-name-input"] input').fill(DISPOSABLE_PERSON_FORM);
-    // Default contentType is "person", but click anyway to verify selector works.
-    await selectMuiOption(page, page.locator('[data-testid="content-type-select"]'), 'People');
+    await selectMuiOption(page, page.locator('[data-testid="content-type-select"]'), "People");
     await saveFormDrawer(page);
-    // Form should appear in the active list with a clickable link.
-    const row = page.locator('table tbody tr').filter({ hasText: DISPOSABLE_PERSON_FORM }).first();
+    const row = page.locator("table tbody tr").filter({ hasText: DISPOSABLE_PERSON_FORM }).first();
     await expect(row).toBeVisible({ timeout: 10000 });
-    // People-type forms have no public URL — second column should be empty.
-    const urlCell = row.locator('td').nth(1);
-    await expect(urlCell).toHaveText('');
+    const urlCell = row.locator("td").nth(1);
+    await expect(urlCell).toHaveText("");
   });
 
-  test('opens the form and shows the Add Question button', async () => {
+  test("opens the form and shows the Add Question button", async () => {
     await openFormsPage(page);
-    await page.locator('table tbody tr').filter({ hasText: DISPOSABLE_PERSON_FORM }).first()
-      .locator('a', { hasText: DISPOSABLE_PERSON_FORM }).click();
+    await page.locator("table tbody tr").filter({ hasText: DISPOSABLE_PERSON_FORM }).first()
+      .locator("a", { hasText: DISPOSABLE_PERSON_FORM }).click();
     await page.waitForURL(/\/forms\/[\w-]+/, { timeout: 10000 });
     await expect(page.locator('button[aria-label="addQuestion"]')).toBeVisible({ timeout: 10000 });
   });
 
-  test('adds a required Email question', async () => {
+  test("adds a required Email question", async () => {
     await openFormsPage(page);
-    await page.locator('table tbody tr').filter({ hasText: DISPOSABLE_PERSON_FORM }).first()
-      .locator('a', { hasText: DISPOSABLE_PERSON_FORM }).click();
+    await page.locator("table tbody tr").filter({ hasText: DISPOSABLE_PERSON_FORM }).first()
+      .locator("a", { hasText: DISPOSABLE_PERSON_FORM }).click();
     await page.waitForURL(/\/forms\/[\w-]+/, { timeout: 10000 });
     await page.locator('button[aria-label="addQuestion"]').click();
-    await page.locator('[data-testid="question-title-input"] input').waitFor({ state: 'visible', timeout: 10000 });
+    await page.locator('[data-testid="question-title-input"] input').waitFor({ state: "visible", timeout: 10000 });
 
-    // Switch provider to Email — the FormControl wraps the Select; click the label-bearing combobox.
-    const providerSelect = page.locator('#questionBox').getByLabel('Provider');
-    await selectMuiOption(page, providerSelect, 'Email');
+    const providerSelect = page.locator("#questionBox").getByLabel("Provider");
+    await selectMuiOption(page, providerSelect, "Email");
 
-    await page.locator('[data-testid="question-title-input"] input').fill('Email Address');
+    await page.locator('[data-testid="question-title-input"] input').fill("Email Address");
     await page.locator('[data-testid="question-required-checkbox"]').check();
 
-    await page.locator('#questionBox button', { hasText: /^Save$/ }).click();
-    await page.locator('#questionBox').waitFor({ state: 'hidden', timeout: 15000 });
+    await page.locator("#questionBox button", { hasText: /^Save$/ }).click();
+    await page.locator("#questionBox").waitFor({ state: "hidden", timeout: 15000 });
 
-    // Question table should now show our row with type Email and Required = Yes.
-    const qRow = page.locator('table tbody tr').filter({ hasText: 'Email Address' }).first();
+    const qRow = page.locator("table tbody tr").filter({ hasText: "Email Address" }).first();
     await expect(qRow).toBeVisible({ timeout: 10000 });
-    await expect(qRow).toContainText('Email');
+    await expect(qRow).toContainText("Email");
     await expect(qRow).toContainText(/Yes/);
   });
 
-  test('archives, restores, and deletes the form', async () => {
-    // Archive
+  test("archives, restores, and deletes the form", async () => {
     await openFormsPage(page);
-    const row = page.locator('table tbody tr').filter({ hasText: DISPOSABLE_PERSON_FORM }).first();
-    page.once('dialog', async d => { await d.accept(); });
+    const row = page.locator("table tbody tr").filter({ hasText: DISPOSABLE_PERSON_FORM }).first();
+    page.once("dialog", async d => { await d.accept(); });
     await row.locator('[data-testid^="archive-form-button-"]').click();
 
-    // Switch to Archived Forms tab (visible once archivedCount > 0)
-    const archivedTab = page.locator('button[role="tab"]', { hasText: 'Archived Forms' }).first();
-    await archivedTab.waitFor({ state: 'visible', timeout: 10000 });
+    const archivedTab = page.locator('button[role="tab"]', { hasText: "Archived Forms" }).first();
+    await archivedTab.waitFor({ state: "visible", timeout: 10000 });
     await archivedTab.click();
-    const archivedRow = page.locator('table tbody tr').filter({ hasText: DISPOSABLE_PERSON_FORM }).first();
+    const archivedRow = page.locator("table tbody tr").filter({ hasText: DISPOSABLE_PERSON_FORM }).first();
     await expect(archivedRow).toBeVisible({ timeout: 10000 });
 
-    // Restore
     const restoreBtn = archivedRow.locator('[data-testid^="restore-form-button-"]');
-    await restoreBtn.waitFor({ state: 'visible', timeout: 10000 });
-    page.once('dialog', async d => { await d.accept(); });
+    await restoreBtn.waitFor({ state: "visible", timeout: 10000 });
+    page.once("dialog", async d => { await d.accept(); });
     await restoreBtn.click();
 
-    // Re-open Forms page; form should be back on the active tab
     await openFormsPage(page);
-    const activeRow = page.locator('table tbody tr').filter({ hasText: DISPOSABLE_PERSON_FORM }).first();
+    const activeRow = page.locator("table tbody tr").filter({ hasText: DISPOSABLE_PERSON_FORM }).first();
     await expect(activeRow).toBeVisible({ timeout: 10000 });
 
-    // Delete via the FormEdit drawer.
     await activeRow.locator('[data-testid^="edit-form-button-"]').first().click();
-    await page.locator('#formBox').waitFor({ state: 'visible', timeout: 10000 });
-    page.once('dialog', async d => { await d.accept(); });
-    await page.locator('#formBox button', { hasText: /^Delete$/ }).click();
-    await page.locator('#formBox').waitFor({ state: 'hidden', timeout: 15000 });
+    await page.locator("#formBox").waitFor({ state: "visible", timeout: 10000 });
+    page.once("dialog", async d => { await d.accept(); });
+    await page.locator("#formBox button", { hasText: /^Delete$/ }).click();
+    await page.locator("#formBox").waitFor({ state: "hidden", timeout: 15000 });
     await openFormsPage(page);
-    await expect(page.locator('table tbody tr').filter({ hasText: DISPOSABLE_PERSON_FORM }))
+    await expect(page.locator("table tbody tr").filter({ hasText: DISPOSABLE_PERSON_FORM }))
       .toHaveCount(0, { timeout: 10000 });
   });
 });
 
-test.describe.serial('Stand Alone form lifecycle', () => {
+test.describe.serial("Stand Alone form lifecycle", () => {
   let page: Page;
 
   test.beforeAll(async ({ browser }) => {
@@ -182,84 +152,69 @@ test.describe.serial('Stand Alone form lifecycle', () => {
     await page?.context().close();
   });
 
-  test('creates a Stand Alone form with availability dates', async () => {
+  test("creates a Stand Alone form with availability dates", async () => {
     await openFormsPage(page);
     await clickAddForm(page);
     await page.locator('[data-testid="form-name-input"] input').fill(DISPOSABLE_STANDALONE_FORM);
-    await selectMuiOption(page, page.locator('[data-testid="content-type-select"]'), 'Stand Alone');
-    // Once contentType=form, additional dropdowns appear: Access (Public/Restricted) + Available?
-    await selectMuiOption(page, page.locator('[data-testid="access-level-select"]'), 'Public');
-    // Available timeframe select is the 4th combobox in the drawer (after contentType, access, available)
-    // Targeting by FormControl text since MUI Select / InputLabel association doesn't always work with getByLabel
-    const availabilityFormControl = page.locator('#formBox div.MuiFormControl-root', { hasText: 'Set Form Availability Timeframe' });
-    await selectMuiOption(page, availabilityFormControl.locator('[role="combobox"]'), 'Yes');
+    await selectMuiOption(page, page.locator('[data-testid="content-type-select"]'), "Stand Alone");
+    await selectMuiOption(page, page.locator('[data-testid="access-level-select"]'), "Public");
+    const availabilityFormControl = page.locator("#formBox div.MuiFormControl-root", { hasText: "Set Form Availability Timeframe" });
+    await selectMuiOption(page, availabilityFormControl.locator('[role="combobox"]'), "Yes");
 
-    // Fill date range. forms.md step 25 references availability windows.
     const startInput = page.locator('#formBox input[type="date"]').first();
     const endInput = page.locator('#formBox input[type="date"]').nth(1);
-    await startInput.fill('2026-01-01');
-    await endInput.fill('2026-12-31');
+    await startInput.fill("2026-01-01");
+    await endInput.fill("2026-12-31");
 
     await saveFormDrawer(page);
-    const row = page.locator('table tbody tr').filter({ hasText: DISPOSABLE_STANDALONE_FORM }).first();
+    const row = page.locator("table tbody tr").filter({ hasText: DISPOSABLE_STANDALONE_FORM }).first();
     await expect(row).toBeVisible({ timeout: 10000 });
-    // Stand-alone forms render a public URL link in the URL column.
-    await expect(row.locator('td a').filter({ hasText: /\/forms\// }).first()).toBeVisible();
+    await expect(row.locator("td a").filter({ hasText: /\/forms\// }).first()).toBeVisible();
   });
 
-  test('deletes the stand alone form', async () => {
+  test("deletes the stand alone form", async () => {
     await openFormsPage(page);
-    const row = page.locator('table tbody tr').filter({ hasText: DISPOSABLE_STANDALONE_FORM }).first();
+    const row = page.locator("table tbody tr").filter({ hasText: DISPOSABLE_STANDALONE_FORM }).first();
     await row.locator('[data-testid^="edit-form-button-"]').first().click();
-    await page.locator('#formBox').waitFor({ state: 'visible', timeout: 10000 });
-    page.once('dialog', async d => { await d.accept(); });
-    await page.locator('#formBox button', { hasText: /^Delete$/ }).click();
-    await page.locator('#formBox').waitFor({ state: 'hidden', timeout: 15000 });
+    await page.locator("#formBox").waitFor({ state: "visible", timeout: 10000 });
+    page.once("dialog", async d => { await d.accept(); });
+    await page.locator("#formBox button", { hasText: /^Delete$/ }).click();
+    await page.locator("#formBox").waitFor({ state: "hidden", timeout: 15000 });
     await openFormsPage(page);
-    await expect(page.locator('table tbody tr').filter({ hasText: DISPOSABLE_STANDALONE_FORM }))
+    await expect(page.locator("table tbody tr").filter({ hasText: DISPOSABLE_STANDALONE_FORM }))
       .toHaveCount(0, { timeout: 10000 });
   });
 });
 
-// forms.md steps 13-18: person-contentType forms surface as rail items on the
-// person profile; submissions persist and re-render their answers inline.
-// Demo seeds the "Visitor Information Card" form (FRM00000001) with a full
-// submission for Brian Harris (FSB00000001) and none for Donald Clark.
-test.describe('Person form submissions (profile rail)', () => {
-  test('a seeded submission renders its stored answers', async ({ page }) => {
+test.describe("Person form submissions (profile rail)", () => {
+  test("a seeded submission renders its stored answers", async ({ page }) => {
     await navigateToPeople(page);
-    await openPersonRow(page, 'Brian Harris');
-    const railItem = page.getByText('Visitor Information Card', { exact: true }).first();
+    await openPersonRow(page, "Brian Harris");
+    const railItem = page.getByText("Visitor Information Card", { exact: true }).first();
     await expect(railItem).toBeVisible({ timeout: 10000 });
     await railItem.click();
-    // Scope to the form pane — the banner shows the same email for the person.
     const pane = page.locator('[data-testid="display-box-content"]');
-    await expect(pane.getByText('brian.harris@email.com')).toBeVisible({ timeout: 10000 });
-    await expect(pane.getByText('Friend or Family', { exact: true })).toBeVisible();
+    await expect(pane.getByText("brian.harris@email.com")).toBeVisible({ timeout: 10000 });
+    await expect(pane.getByText("Friend or Family", { exact: true })).toBeVisible();
   });
 
-  test('submitting a person form stores and re-renders the answers', async ({ page }) => {
+  test("submitting a person form stores and re-renders the answers", async ({ page }) => {
     await navigateToPeople(page);
     await openPersonRow(page, SEED_PEOPLE.DONALD);
-    const railItem = page.getByText('Visitor Information Card', { exact: true }).first();
+    const railItem = page.getByText("Visitor Information Card", { exact: true }).first();
     await expect(railItem).toBeVisible({ timeout: 10000 });
     await railItem.click();
-    // Selecting a form swaps the whole profile pane for the form's DisplayBox,
-    // so its edit affordance (DisplayBox fallback aria-label "editButton") is
-    // the only one on screen.
     const editBtn = page.locator('button[aria-label="editButton"]').first();
     await expect(editBtn).toBeVisible({ timeout: 10000 });
     await editBtn.click();
-    await expect(page.locator('#formSubmissionBox')).toBeVisible({ timeout: 10000 });
-    await page.getByLabel('First Name', { exact: true }).fill('Donald');
-    await page.getByLabel('Last Name', { exact: true }).fill('Clark');
-    // Distinctive value: Donald's real email also renders in the banner, so it
-    // can't serve as the persistence signal.
-    await page.getByLabel('Email Address', { exact: true }).fill('donald.card@example.com');
-    const post = page.waitForResponse(r => r.url().includes('/formsubmissions') && r.request().method() === 'POST' && r.status() === 200, { timeout: 15000 });
-    await page.locator('#formSubmissionBox button', { hasText: /^Submit$/ }).click();
+    await expect(page.locator("#formSubmissionBox")).toBeVisible({ timeout: 10000 });
+    await page.getByLabel("First Name", { exact: true }).fill("Donald");
+    await page.getByLabel("Last Name", { exact: true }).fill("Clark");
+    await page.getByLabel("Email Address", { exact: true }).fill("donald.card@example.com");
+    const post = page.waitForResponse(r => r.url().includes("/formsubmissions") && r.request().method() === "POST" && r.status() === 200, { timeout: 15000 });
+    await page.locator("#formSubmissionBox button", { hasText: /^Submit$/ }).click();
     await post;
-    await expect(page.locator('#formSubmissionBox')).toHaveCount(0, { timeout: 10000 });
-    await expect(page.getByText('donald.card@example.com').first()).toBeVisible({ timeout: 10000 });
+    await expect(page.locator("#formSubmissionBox")).toHaveCount(0, { timeout: 10000 });
+    await expect(page.getByText("donald.card@example.com").first()).toBeVisible({ timeout: 10000 });
   });
 });

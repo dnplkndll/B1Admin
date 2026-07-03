@@ -24,8 +24,6 @@ interface FormCardProps {
   elevation?: number;
 }
 
-/** Card-based form shell: icon + h6 header, padded content, footer divider with
- * right-aligned Cancel/Save and a destructive Delete alone on the left. */
 export const FormCard: React.FC<FormCardProps> = (props) => {
   const icon = typeof props.icon === "string" ? <Icon sx={{ fontSize: 20, color: "primary.main" }}>{props.icon}</Icon> : props.icon;
   const hasFooter = props.onSave || props.onCancel || props.onDelete;

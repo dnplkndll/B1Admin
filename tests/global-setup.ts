@@ -6,11 +6,6 @@ import { verifyEnv } from "./setup/verify-env.mjs";
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const STORAGE_STATE_PATH = path.join(__dirname, ".auth-state.json");
 
-/**
- * Global setup: verify Api is in demo mode, then log in once as demo@b1.church
- * and save the browser storage state (cookies + localStorage) so every test
- * worker can reuse it instead of logging in again.
- */
 async function globalSetup(config: FullConfig) {
   await verifyEnv({ fullCheck: true });
 
@@ -32,28 +27,22 @@ async function globalSetup(config: FullConfig) {
   const context = await browser.newContext();
   const page = await context.newPage();
 
-  // Login flow
   await page.goto(baseURL + "/");
 
   const emailInput = page.locator('input[type="email"]');
 
-  // Wait for login form
   await emailInput.waitFor({ state: "visible", timeout: 15000 });
 
   await page.fill('input[type="email"]', "demo@b1.church");
   await page.fill('input[type="password"]', "password");
   await page.click('button[type="submit"]');
 
-  // After submit, the login form stays mounted while the church selection dialog is shown.
-  // SelectChurchModal always appears on a fresh session (no lastChurchId cookie).
-  // Wait for either: church selection dialog OR navigation away from /login.
   const churchDialog = page.locator('[role="dialog"]').filter({ hasText: "Select a Church" });
   await Promise.race([
     churchDialog.waitFor({ state: "visible", timeout: 15000 }).catch(() => {}),
     page.waitForURL((url) => !url.pathname.includes("/login"), { timeout: 15000 }).catch(() => {})
   ]);
 
-  // Handle church selection dialog if present
   const dialogVisible = await churchDialog.isVisible().catch(() => false);
   if (dialogVisible) {
     const graceChurch = page
@@ -64,13 +53,9 @@ async function globalSetup(config: FullConfig) {
     await page.waitForURL((url) => !url.pathname.includes("/login"), { timeout: 15000 });
   }
 
-  // Warm up routes that parallel workers will stampede on first run. Vite's
-  // dev server compiles routes on-demand; without this, ~18 workers hitting
-  // /people simultaneously can time out the page.goto call before the bundle
-  // is ready. One hit here primes the dev server's module cache.
+  // Prime Vite dev server's module cache before parallel workers hit it.
   await page.goto(baseURL + "/people").catch(() => {});
 
-  // Save authenticated state
   await context.storageState({ path: STORAGE_STATE_PATH });
   await browser.close();
 }

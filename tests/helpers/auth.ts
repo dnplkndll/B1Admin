@@ -1,10 +1,6 @@
 import type { Page } from "@playwright/test";
 
-// Hide the fixed-position SuperBee chat widget (and any other configured chat
-// widget) before the page renders. The bee covers the bottom-right corner and
-// intercepts clicks on the last row's Edit/Archive buttons in short lists
-// (forms, settings, etc.). addInitScript runs on every navigation, so the
-// rule survives client-side route changes.
+// Hide chat widget (it covers bottom-right corner and intercepts clicks); addInitScript persists across navigation.
 const HIDE_CHAT_CSS = `
   div[aria-label="Open SuperBee chat"],
   div[aria-label="Open Bez chat"],
@@ -36,33 +32,26 @@ export async function login(page: Page) {
   const emailInput = page.locator('input[type="email"]');
   const navButton = page.locator("#primaryNavButton");
 
-  // Race the two terminal states. With cached storageState the dashboard
-  // renders the nav button in <1s; without it the login form's email input
-  // renders in <1s. Whichever appears first tells us what to do — far faster
-  // than waiting out a fixed timeout on one of them.
+  // Race dashboard nav vs login form to detect cached vs fresh session.
   const winner = await Promise.race([
     navButton.waitFor({ state: "visible", timeout: 15000 }).then(() => "authenticated" as const).catch((): null => null),
-    emailInput.waitFor({ state: "visible", timeout: 15000 }).then(() => "login" as const).catch((): null => null),
+    emailInput.waitFor({ state: "visible", timeout: 15000 }).then(() => "login" as const).catch((): null => null)
   ]);
 
   if (winner === "authenticated") return;
   if (winner === null) throw new Error("Neither login form nor authenticated nav appeared within 15s");
 
-  // Full login flow
   await emailInput.fill("demo@b1.church");
   await page.fill('input[type="password"]', "password");
   await page.click('button[type="submit"]');
 
-  // After submit, the login form stays mounted while the church selection dialog is shown.
-  // SelectChurchModal always appears on a fresh session (no lastChurchId cookie).
-  // Wait for either: church selection dialog OR navigation away from /login.
+  // SelectChurchModal appears on fresh session; wait for dialog or nav away from /login.
   const churchDialog = page.locator('[role="dialog"]').filter({ hasText: "Select a Church" });
   await Promise.race([
     churchDialog.waitFor({ state: "visible", timeout: 15000 }).catch(() => { }),
-    page.waitForURL((url) => !url.pathname.includes("/login"), { timeout: 15000 }).catch(() => { }),
+    page.waitForURL((url) => !url.pathname.includes("/login"), { timeout: 15000 }).catch(() => { })
   ]);
 
-  // Handle church selection dialog if present
   const dialogVisible = await churchDialog.isVisible().catch(() => false);
   if (dialogVisible) {
     const graceChurch = page
@@ -73,6 +62,5 @@ export async function login(page: Page) {
     await page.waitForURL((url) => !url.pathname.includes("/login"), { timeout: 15000 });
   }
 
-  // After login, wait for nav to be ready before returning
   await page.locator("#primaryNavButton").waitFor({ state: "visible", timeout: 30000 });
 }

@@ -30,12 +30,10 @@ export function PeopleSearch(props: Props) {
 
   const performSearch = useCallback((term: string, advancedConditions?: SearchCondition[]) => {
     if (advancedConditions && advancedConditions.length > 0) {
-      // Advanced search with conditions
       ApiHelper.post("/people/advancedSearch", advancedConditions, "MembershipApi").then((data: any) => {
         props.updateSearchResults(data.map((d: PersonInterface) => B1AdminPersonHelper.getExpandedPersonObject(d)));
       });
     } else if (term.trim()) {
-      // Simple search by name
       const conditions: SearchCondition[] = [{ field: "displayName", operator: "contains", value: term.trim() }];
       props.onReportCriteria?.(conditions);
       ApiHelper.post("/people/advancedSearch", conditions, "MembershipApi").then((data: any) => {
@@ -51,7 +49,6 @@ export function PeopleSearch(props: Props) {
     const value = e.currentTarget.value;
     setSearchText(value);
 
-    // Debounce the search
     if (debounceTimerRef.current) {
       clearTimeout(debounceTimerRef.current);
     }
@@ -81,7 +78,6 @@ export function PeopleSearch(props: Props) {
       help="docs/b1-admin/people/searching-people"
     >
       <Stack spacing={2}>
-        {/* Quick Search */}
         <Box>
           <TextField
             fullWidth
@@ -101,7 +97,6 @@ export function PeopleSearch(props: Props) {
           </Typography>
         </Box>
 
-        {/* Advanced Filters Toggle */}
         <Box>
           <Typography
             variant="body2"
@@ -119,7 +114,6 @@ export function PeopleSearch(props: Props) {
           </Typography>
         </Box>
 
-        {/* Advanced Search Section */}
         {showAdvanced && (
           <AdvancedPeopleSearch
             updateSearchResults={props.updateSearchResults}

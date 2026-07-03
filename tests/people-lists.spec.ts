@@ -1,21 +1,11 @@
 import type { Page } from "@playwright/test";
 import { peopleTest as test, expect } from "./helpers/test-fixtures";
 
-// Saved Lists (roadmap 1.15/2.1): saving an advanced search stores a rules tree the
-// server can evaluate. Match-all lists re-seed the filter panel client-side; match-any
-// and household-inclusion lists evaluate via GET /lists/:id/people. Each test creates
-// its own uniquely-named list so the file stays safe under fullyParallel.
-
-// The advanced panel is embedded in the #peopleSearch FormCard. Filter rows in the
-// Names accordion (expanded by default): index 0 = First Name, index 1 = Last Name.
 async function openAdvancedPanel(page: Page) {
   await page.locator("p").getByText(/[▶▼] Advanced/).click();
   await expect(page.locator('#peopleSearch input[type="checkbox"]').first()).toBeVisible({ timeout: 10000 });
 }
 
-// Checks the filter at `index` and fills its value (operator left at the default,
-// "contains" for name fields). Returns after the value is typed; the panel auto-runs
-// the search 500ms later.
 async function setNameFilter(page: Page, index: number, value: string, operator?: string) {
   await page.locator('#peopleSearch input[type="checkbox"]').nth(index).click();
   if (operator) {
@@ -65,8 +55,6 @@ test.describe("People Saved Lists", () => {
     const row = savedListRow(page, listName);
     await expect(row).toBeVisible({ timeout: 10000 });
 
-    // Clear the live filters, then re-open the saved list: the panel re-seeds
-    // (1 active chip) and the search re-runs against current data.
     await page.locator("span").getByText("Clear All").click();
     await expect(page.locator("span").getByText("1 active:")).toHaveCount(0);
     const reSearched = page.waitForResponse(
@@ -82,8 +70,6 @@ test.describe("People Saved Lists", () => {
   test("should evaluate a match-any list server-side", async ({ page }) => {
     const listName = `E2E Any ${Date.now()}`;
     await openAdvancedPanel(page);
-    // First name contains "Mar" AND last name contains "Jackson" — non-empty under
-    // the panel's all-match preview (Marcus Jackson), strictly larger under any-match.
     await setNameFilter(page, 0, "Mar");
     await setNameFilter(page, 1, "Jackson");
 
@@ -92,17 +78,14 @@ test.describe("People Saved Lists", () => {
     await page.getByRole("option", { name: "Any filter" }).click();
     await confirmSaveList(page);
 
-    // Opening a match-any list hits the server rules engine, not the filter panel.
     const evaluated = page.waitForResponse(
       (response) => /\/lists\/[^/]+\/people/.test(response.url()) && response.status() === 200,
       { timeout: 10000 }
     );
     await savedListRow(page, listName).locator("button").first().click();
     await evaluated;
-    // Nicole Jackson matches only the last-name condition — present proves union.
     await expect(page.locator("table tbody tr").filter({ hasText: "Nicole Jackson" }).first()).toBeVisible({ timeout: 10000 });
     await expect(page.locator("table tbody tr").filter({ hasText: "Marcus Jackson" }).first()).toBeVisible({ timeout: 10000 });
-    // Donald Clark matches neither condition — absent proves the result set is filtered.
     await expect(page.locator("table tbody tr").filter({ hasText: "Donald Clark" })).toHaveCount(0, { timeout: 10000 });
   });
 
@@ -123,11 +106,9 @@ test.describe("People Saved Lists", () => {
     );
     await savedListRow(page, listName).locator("button").first().click();
     await evaluated;
-    // Marcus matches the filter; Jordan and Grace are Child household members.
     await expect(page.locator("table tbody tr").filter({ hasText: "Marcus Jackson" }).first()).toBeVisible({ timeout: 10000 });
     await expect(page.locator("table tbody tr").filter({ hasText: "Jordan Jackson" }).first()).toBeVisible({ timeout: 10000 });
     await expect(page.locator("table tbody tr").filter({ hasText: "Grace Jackson" }).first()).toBeVisible({ timeout: 10000 });
-    // Spouse (Nicole) and Other (Dorothy) roles are not children — excluded.
     await expect(page.locator("table tbody tr").filter({ hasText: "Nicole Jackson" })).toHaveCount(0, { timeout: 10000 });
     await expect(page.locator("table tbody tr").filter({ hasText: "Dorothy Jackson" })).toHaveCount(0, { timeout: 10000 });
   });

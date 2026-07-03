@@ -48,7 +48,6 @@ export const ChurchSettingsEdit: React.FC<Props> = (props) => {
     setExpanded(isExpanded ? panel : false);
   };
 
-  // Shared accordion styles for a warm, approachable look
   const accordionStyles = {
     mb: 1.5,
     "&&": { borderRadius: "12px" },
@@ -109,7 +108,6 @@ export const ChurchSettingsEdit: React.FC<Props> = (props) => {
     <FormCard id="churchSettingsBox" onCancel={props.updatedFunction} onSave={handleSubmit(onValid)} title={Locale.label("settings.churchSettingsEdit.churchSettings")} icon="business">
       {summaryErrors.length > 0 && <Alert severity="error" sx={{ mb: 2 }}>{summaryErrors.map((msg) => <div key={msg}>{msg}</div>)}</Alert>}
 
-      {/* Church Information Accordion */}
       <Accordion expanded={expanded === "church-info"} onChange={handleAccordionChange("church-info")} sx={accordionStyles}>
         <AccordionSummary expandIcon={<ExpandMoreIcon />} sx={accordionSummaryStyles}>
           <SettingsSectionHeader icon={<BusinessIcon />} color="primary" title={Locale.label("settings.churchSettingsEdit.churchInfo")} subtitle={props.church?.name || Locale.label("settings.churchSettingsEdit.churchInfoSubtitle")} />
@@ -150,7 +148,6 @@ export const ChurchSettingsEdit: React.FC<Props> = (props) => {
         </AccordionDetails>
       </Accordion>
 
-      {/* General Settings Accordion */}
       <Accordion expanded={expanded === "general"} onChange={handleAccordionChange("general")} sx={accordionStyles}>
         <AccordionSummary expandIcon={<ExpandMoreIcon />} sx={accordionSummaryStyles}>
           <SettingsSectionHeader icon={<TuneIcon />} color="secondary" title={Locale.label("settings.churchSettingsEdit.general")} subtitle={Locale.label("settings.churchSettingsEdit.generalSubtitle")} />
@@ -160,7 +157,6 @@ export const ChurchSettingsEdit: React.FC<Props> = (props) => {
         </AccordionDetails>
       </Accordion>
 
-      {/* Giving Settings Accordion */}
       {UserHelper.checkAccess(Permissions.givingApi.settings.edit) && (
         <Accordion expanded={expanded === "giving"} onChange={handleAccordionChange("giving")} sx={accordionStyles}>
           <AccordionSummary expandIcon={<ExpandMoreIcon />} sx={accordionSummaryStyles}>
@@ -172,7 +168,6 @@ export const ChurchSettingsEdit: React.FC<Props> = (props) => {
         </Accordion>
       )}
 
-      {/* Texting Settings Accordion */}
       {UserHelper.checkAccess(Permissions.membershipApi.settings.edit) && (
         <Accordion expanded={expanded === "texting"} onChange={handleAccordionChange("texting")} sx={accordionStyles}>
           <AccordionSummary expandIcon={<ExpandMoreIcon />} sx={accordionSummaryStyles}>
@@ -184,7 +179,6 @@ export const ChurchSettingsEdit: React.FC<Props> = (props) => {
         </Accordion>
       )}
 
-      {/* Domains Accordion */}
       <Accordion expanded={expanded === "domains"} onChange={handleAccordionChange("domains")} sx={accordionStyles}>
         <AccordionSummary expandIcon={<ExpandMoreIcon />} sx={accordionSummaryStyles}>
           <SettingsSectionHeader icon={<LanguageIcon />} color="info" title={Locale.label("settings.domainSettingsEdit.domains")} subtitle={Locale.label("settings.churchSettingsEdit.domainsSubtitle")} />

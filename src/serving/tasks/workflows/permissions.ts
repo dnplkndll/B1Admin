@@ -1,10 +1,7 @@
-// Convenience wrappers around the DoingApi permission tiers. The tier constants
-// live in @churchapps/helpers (Permissions.doingApi); canEditCard's per-card rule
-// is B1Admin-specific so it stays here.
+// Wrappers around DoingApi permission tiers (tier constants in @churchapps/helpers); canEditCard is B1Admin-specific.
 import { Permissions, UserHelper } from "@churchapps/apphelper";
 
-// Guard against a helpers version that predates the doingApi tier: a missing tier
-// degrades to "no access" rather than throwing and white-screening the page.
+// Missing tier degrades to "no access" instead of crashing.
 const check = (perm?: { api: string; contentType: string; action: string }) => !!perm && UserHelper.checkAccess(perm);
 
 export const canViewWorkflows = () => check(Permissions.doingApi?.tasks?.view);

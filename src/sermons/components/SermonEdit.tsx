@@ -66,21 +66,18 @@ export const SermonEdit: React.FC<Props> = (props) => {
     }
   };
 
-  //auto fix common bad formats.
   const getVimeoKey = (input: string) => {
     let result = input.split("&")[0];
     result = result.replace("https://vimeo.com/", "").replace("https://player.vimeo.com/video/", "");
     return result;
   };
 
-  //auto fix common bad formats.
   const getFacebookKey = (input: string) => {
     let result = input.split("&")[0];
     result = result.replace("https://facebook.com/video.php?v=", "");
     return result;
   };
 
-  //auto fix common bad formats.
   const getYouTubeKey = (input: string) => {
     let result = input.split("&")[0];
     result = result

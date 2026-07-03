@@ -36,7 +36,6 @@ export const SpacingHandles: React.FC<Props> = ({ element, onUpdate }) => {
   const [localStyles, setLocalStyles] = useState<any>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
-  // Use refs for all drag-related state
   const draggingRef = useRef<string | null>(null);
   const startPosRef = useRef({ x: 0, y: 0 });
   const startValueRef = useRef(0);
@@ -44,13 +43,11 @@ export const SpacingHandles: React.FC<Props> = ({ element, onUpdate }) => {
   const onUpdateRef = useRef(onUpdate);
   const localStylesRef = useRef<any>(null);
 
-  // Keep refs up to date
   useEffect(() => {
     elementRef.current = element;
     onUpdateRef.current = onUpdate;
   }, [element, onUpdate]);
 
-  // Sync localStyles state to ref
   useEffect(() => {
     localStylesRef.current = localStyles;
   }, [localStyles]);
@@ -239,13 +236,11 @@ export const SpacingHandles: React.FC<Props> = ({ element, onUpdate }) => {
         "& > div": { pointerEvents: "auto" }
       }}
     >
-      {/* Margin handles */}
       {renderHandle("margin", "top")}
       {renderHandle("margin", "right")}
       {renderHandle("margin", "bottom")}
       {renderHandle("margin", "left")}
 
-      {/* Padding handles */}
       {renderHandle("padding", "top")}
       {renderHandle("padding", "right")}
       {renderHandle("padding", "bottom")}

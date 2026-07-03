@@ -1,8 +1,4 @@
-// Kill-switch service worker. Replaces the previous Workbox PWA service
-// worker so existing installs unregister and clear their caches on the
-// next update check. Safe to delete this file (and the s3 cp line in
-// package.json) after enough time has passed that virtually all users
-// have visited at least once post-deploy.
+// Kill-switch: unregisters old Workbox caches on next update check.
 self.addEventListener('install', () => self.skipWaiting());
 
 self.addEventListener('activate', (event) => {

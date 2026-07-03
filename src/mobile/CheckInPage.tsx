@@ -19,8 +19,7 @@ export const CheckInPage: React.FC = () => {
 
   const churchId = UserHelper.currentUserChurch?.church?.id;
   const subDomain = UserHelper.currentUserChurch?.church?.subDomain || "";
-  // The kiosk QR points guests at the public self-registration page; serviceId from the
-  // kiosk is ignored there, so a plain per-church link is enough for flyers/signage.
+  // Plain per-church link suffices for signage (serviceId ignored at guest-register endpoint)
   const registrationUrl = subDomain ? `${EnvironmentHelper.B1Url.replace("{subdomain}", subDomain)}/guest-register` : "";
 
   const loadData = React.useCallback(async () => {

@@ -1,22 +1,15 @@
-import type { Page } from '@playwright/test';
-import { attendanceTest as test, expect } from './helpers/test-fixtures';
-import { login } from './helpers/auth';
-import { navigateToAttendance } from './helpers/navigation';
-import { STORAGE_STATE_PATH } from './global-setup';
+import type { Page } from "@playwright/test";
+import { attendanceTest as test, expect } from "./helpers/test-fixtures";
+import { login } from "./helpers/auth";
+import { navigateToAttendance } from "./helpers/navigation";
+import { STORAGE_STATE_PATH } from "./global-setup";
 
 // ZACCHAEUS/ZEBEDEE are the names used for testing. If you see Zacchaeus or Zebedee entered anywhere, it is a result of these tests.
-test.describe('Attendance Management', () => {
+test.describe("Attendance Management", () => {
 
-  // Setup tests form a single chain: service -> service time -> cleanup.
-  // Each level references the previous (services pick a campus, times pick a service).
-  // Campuses are now managed in Settings (mastered in the membership module), so the
-  // attendance setup screen no longer creates campuses — services attach to the
-  // seeded "Main Campus". The chain shares a single page across all tests — login +
-  // navigation run once in beforeAll instead of per-test, since each step already
-  // leaves the UI in a known state for the next step.
-  test.describe.serial('Setup', () => {
+  test.describe.serial("Setup", () => {
     let page: Page;
-    let createdServiceId = '';
+    let createdServiceId = "";
 
     test.beforeAll(async ({ browser }) => {
       const context = await browser.newContext({ storageState: STORAGE_STATE_PATH });
@@ -29,108 +22,100 @@ test.describe('Attendance Management', () => {
       await page?.context().close();
     });
 
-    // The setup screen lists campuses/services/times in one table with inline "Add"
-    // icon buttons (data-testid add-service-button-<campusId> / add-service-time-button-<serviceId>).
-    // Services attach to the seeded "Main Campus", which is mastered in the membership
-    // module — the attendance.campuses table is intentionally empty in the demo.
-    test('should add a service (campus sourced from membership)', async () => {
+    test("should add a service (campus sourced from membership)", async () => {
       await page.locator('[data-testid^="add-service-button-"]').first().click();
-      const box = page.locator('#serviceBox');
+      const box = page.locator("#serviceBox");
       await expect(box).toBeVisible({ timeout: 10000 });
-      // The campus dropdown is populated from the membership campuses (useCampuses).
       const campusSelect = box.locator('[data-testid="campus-select"]');
       await campusSelect.click();
-      await page.getByRole('option', { name: 'Main Campus' }).click();
-      await box.locator('[data-testid="service-name-input"] input').fill('Zacchaeus Test Service');
-      const resp = page.waitForResponse((r) => r.url().includes('/services') && r.request().method() === 'POST' && r.status() === 200);
-      await box.getByRole('button', { name: 'Save' }).click();
+      await page.getByRole("option", { name: "Main Campus" }).click();
+      await box.locator('[data-testid="service-name-input"] input').fill("Zacchaeus Test Service");
+      const resp = page.waitForResponse((r) => r.url().includes("/services") && r.request().method() === "POST" && r.status() === 200);
+      await box.getByRole("button", { name: "Save" }).click();
       createdServiceId = (await (await resp).json())[0].id;
-      await expect(page.locator('button').getByText('Zacchaeus Test Service')).toHaveCount(1, { timeout: 10000 });
+      await expect(page.locator("button").getByText("Zacchaeus Test Service")).toHaveCount(1, { timeout: 10000 });
     });
 
-    test('should edit the service', async () => {
-      await page.locator('button').getByText('Zacchaeus Test Service').click();
-      const box = page.locator('#serviceBox');
+    test("should edit the service", async () => {
+      await page.locator("button").getByText("Zacchaeus Test Service").click();
+      const box = page.locator("#serviceBox");
       await expect(box).toBeVisible({ timeout: 10000 });
-      await box.locator('[data-testid="service-name-input"] input').fill('Zebedee Test Service');
-      await box.getByRole('button', { name: 'Save' }).click();
-      await expect(page.locator('button').getByText('Zebedee Test Service')).toHaveCount(1, { timeout: 10000 });
+      await box.locator('[data-testid="service-name-input"] input').fill("Zebedee Test Service");
+      await box.getByRole("button", { name: "Save" }).click();
+      await expect(page.locator("button").getByText("Zebedee Test Service")).toHaveCount(1, { timeout: 10000 });
     });
 
-    test('should add a service time (Service dropdown loads despite empty attendance.campuses)', async () => {
+    test("should add a service time (Service dropdown loads despite empty attendance.campuses)", async () => {
       await page.locator(`[data-testid="add-service-time-button-${createdServiceId}"]`).click();
-      const box = page.locator('#serviceTimeBox');
+      const box = page.locator("#serviceTimeBox");
       await expect(box).toBeVisible({ timeout: 10000 });
-      // Regression guard: the Service dropdown reads GET /attendance/services, which used
-      // to INNER JOIN the now-unseeded attendance.campuses and return an empty list.
+      // Service dropdown used to INNER JOIN unseeded attendance.campuses table (now removed).
       const serviceSelect = box.locator('[data-testid="service-select"]');
       await serviceSelect.click();
-      await expect(page.getByRole('option', { name: 'Sunday Morning Service' })).toBeVisible({ timeout: 10000 });
-      await page.getByRole('option', { name: 'Zebedee Test Service' }).click();
-      await box.locator('[data-testid="service-time-name-input"] input').fill('Zacchaeus Test Time');
-      await box.getByRole('button', { name: 'Save' }).click();
-      await expect(page.locator('button').getByText('Zacchaeus Test Time')).toHaveCount(1, { timeout: 10000 });
+      await expect(page.getByRole("option", { name: "Sunday Morning Service" })).toBeVisible({ timeout: 10000 });
+      await page.getByRole("option", { name: "Zebedee Test Service" }).click();
+      await box.locator('[data-testid="service-time-name-input"] input').fill("Zacchaeus Test Time");
+      await box.getByRole("button", { name: "Save" }).click();
+      await expect(page.locator("button").getByText("Zacchaeus Test Time")).toHaveCount(1, { timeout: 10000 });
     });
 
-    test('should edit the service time', async () => {
-      await page.locator('button').getByText('Zacchaeus Test Time').click();
-      const box = page.locator('#serviceTimeBox');
+    test("should edit the service time", async () => {
+      await page.locator("button").getByText("Zacchaeus Test Time").click();
+      const box = page.locator("#serviceTimeBox");
       await expect(box).toBeVisible({ timeout: 10000 });
-      await box.locator('[data-testid="service-time-name-input"] input').fill('Zebedee Test Time');
-      await box.getByRole('button', { name: 'Save' }).click();
-      await expect(page.locator('button').getByText('Zebedee Test Time')).toHaveCount(1, { timeout: 10000 });
+      await box.locator('[data-testid="service-time-name-input"] input').fill("Zebedee Test Time");
+      await box.getByRole("button", { name: "Save" }).click();
+      await expect(page.locator("button").getByText("Zebedee Test Time")).toHaveCount(1, { timeout: 10000 });
     });
 
-    test('should delete the service time', async () => {
-      page.once('dialog', (dialog) => dialog.accept());
-      await page.locator('button').getByText('Zebedee Test Time').click();
-      const box = page.locator('#serviceTimeBox');
+    test("should delete the service time", async () => {
+      page.once("dialog", (dialog) => dialog.accept());
+      await page.locator("button").getByText("Zebedee Test Time").click();
+      const box = page.locator("#serviceTimeBox");
       await expect(box).toBeVisible({ timeout: 10000 });
-      await box.getByRole('button', { name: 'Delete' }).click();
-      await expect(page.locator('button').getByText('Zebedee Test Time')).toHaveCount(0, { timeout: 10000 });
+      await box.getByRole("button", { name: "Delete" }).click();
+      await expect(page.locator("button").getByText("Zebedee Test Time")).toHaveCount(0, { timeout: 10000 });
     });
 
-    test('should delete the service', async () => {
-      page.once('dialog', (dialog) => dialog.accept());
-      await page.locator('button').getByText('Zebedee Test Service').click();
-      const box = page.locator('#serviceBox');
+    test("should delete the service", async () => {
+      page.once("dialog", (dialog) => dialog.accept());
+      await page.locator("button").getByText("Zebedee Test Service").click();
+      const box = page.locator("#serviceBox");
       await expect(box).toBeVisible({ timeout: 10000 });
-      await box.getByRole('button', { name: 'Delete' }).click();
-      await expect(page.locator('button').getByText('Zebedee Test Service')).toHaveCount(0, { timeout: 10000 });
+      await box.getByRole("button", { name: "Delete" }).click();
+      await expect(page.locator("button").getByText("Zebedee Test Service")).toHaveCount(0, { timeout: 10000 });
     });
   });
 
-  // Independent of the Setup chain — uses an unassigned seed group ("Worship")
-  // that no test in the chain mutates.
-  test('should view group from attendance homepage', async ({ page }) => {
-    const groupBtn = page.locator('a').getByText('Worship').first();
+  test("should view group from attendance homepage", async ({ page }) => {
+    const groupBtn = page.locator("a").getByText("Worship").first();
     await groupBtn.click();
     await page.waitForURL(/\/groups\/GRP\w+/, { timeout: 10000 });
   });
 
-  test.describe('Trends', () => {
-    test('should filter attendance trends', async ({ page }) => {
-      const trendTab = page.locator('button[role="tab"]').getByText('Attendance Trend');
+  test.describe("Trends", () => {
+    test("should filter attendance trends", async ({ page }) => {
+      const trendTab = page.locator('button[role="tab"]').getByText("Attendance Trend");
       await trendTab.click();
 
       const campusName = page.locator('[id="mui-component-select-campusId"]');
       await expect(campusName).toBeVisible({ timeout: 10000 });
       await campusName.click();
-      const campusSel = page.locator('li').getByText('Main Campus');
+      const campusSel = page.locator("li").getByText("Main Campus");
       await campusSel.click();
       const serviceName = page.locator('[id="mui-component-select-serviceId"]');
       await serviceName.click();
-      const serviceSel = page.locator('li').getByText('Sunday Morning Service');
+      const serviceSel = page.locator("li").getByText("Sunday Morning Service");
       await serviceSel.click();
       const timeName = page.locator('[id="mui-component-select-serviceTimeId"]');
       await timeName.click();
-      const timeSel = page.locator('li').getByText('10:30 AM Service');
+      const timeSel = page.locator("li").getByText("10:30 AM Service");
       await timeSel.click();
       const groupName = page.locator('[id="mui-component-select-groupId"]');
       await groupName.click();
-      const groupSel = page.locator('li').getByText('Sunday Morning Service');
+      const groupSel = page.locator("li").getByText("Sunday Morning Service");
       await groupSel.click();
-      const runBtn = page.locator('button').getByText('Run Report');
+      const runBtn = page.locator("button").getByText("Run Report");
       await runBtn.click();
 
       // Don't pin to an exact row count — seed visit data evolves. Just verify
@@ -140,96 +125,89 @@ test.describe('Attendance Management', () => {
       expect(await resultsTableRows.count()).toBeGreaterThan(1);
     });
 
-    test('should display group attendance', async ({ page }) => {
-      const trendTab = page.locator('button[role="tab"]').getByText('Group Attendance');
+    test("should display group attendance", async ({ page }) => {
+      const trendTab = page.locator('button[role="tab"]').getByText("Group Attendance");
       await trendTab.click();
 
       const campusName = page.locator('[id="mui-component-select-campusId"]');
       await expect(campusName).toBeVisible({ timeout: 10000 });
       await campusName.click();
-      const campusSel = page.locator('li').getByText('Main Campus');
+      const campusSel = page.locator("li").getByText("Main Campus");
       await campusSel.click();
       const serviceName = page.locator('[id="mui-component-select-serviceId"]');
       await serviceName.click();
-      const serviceSel = page.locator('li').getByText('Sunday Morning Service');
+      const serviceSel = page.locator("li").getByText("Sunday Morning Service");
       await serviceSel.click();
       const weekBox = page.locator('[name="week"]');
-      await weekBox.fill('2024-03-03');
-      const runBtn = page.locator('button').getByText('Run Report');
+      await weekBox.fill("2024-03-03");
+      const runBtn = page.locator("button").getByText("Run Report");
       await runBtn.click();
-      const report = page.locator('td').getByText('10:30 AM Service');
+      const report = page.locator("td").getByText("10:30 AM Service");
       await expect(report).toBeVisible({ timeout: 10000 });
     });
   });
 
-  // Edge-case extensions: report tabs, exporting, default state.
-  test.describe('Reports & navigation extras', () => {
-    test('switching between Attendance Trend and Group Attendance tabs preserves filters', async ({ page }) => {
-      const trendTab = page.locator('button[role="tab"]').getByText('Attendance Trend');
+  test.describe("Reports & navigation extras", () => {
+    test("switching between Attendance Trend and Group Attendance tabs preserves filters", async ({ page }) => {
+      const trendTab = page.locator('button[role="tab"]').getByText("Attendance Trend");
       await trendTab.click();
-      // Each tab provides its own campus filter — verify combobox renders on both tabs.
       await expect(page.locator('[id="mui-component-select-campusId"]')).toBeVisible({ timeout: 10000 });
-      const groupTab = page.locator('button[role="tab"]').getByText('Group Attendance');
+      const groupTab = page.locator('button[role="tab"]').getByText("Group Attendance");
       await groupTab.click();
       await expect(page.locator('[id="mui-component-select-campusId"]')).toBeVisible({ timeout: 10000 });
       await expect(page.locator('[name="week"]')).toBeVisible();
     });
 
-    test('Group Attendance report shows results for a week with seed visits', async ({ page }) => {
-      const groupTab = page.locator('button[role="tab"]').getByText('Group Attendance');
+    test("Group Attendance report shows results for a week with seed visits", async ({ page }) => {
+      const groupTab = page.locator('button[role="tab"]').getByText("Group Attendance");
       await groupTab.click();
       const campusName = page.locator('[id="mui-component-select-campusId"]');
       await campusName.click();
-      await page.locator('li').getByText('Main Campus').click();
+      await page.locator("li").getByText("Main Campus").click();
       const serviceName = page.locator('[id="mui-component-select-serviceId"]');
       await serviceName.click();
-      await page.locator('li').getByText('Sunday Morning Service').click();
+      await page.locator("li").getByText("Sunday Morning Service").click();
       const weekBox = page.locator('[name="week"]');
-      await weekBox.fill('2024-03-03');
-      const runBtn = page.locator('button').getByText('Run Report');
+      await weekBox.fill("2024-03-03");
+      const runBtn = page.locator("button").getByText("Run Report");
       await runBtn.click();
-      // Report should populate at least one row in the report table.
       const reportRows = page.locator('[id="reportsBox"] table tr');
       await expect(reportRows.first()).toBeVisible({ timeout: 10000 });
       expect(await reportRows.count()).toBeGreaterThan(1);
     });
 
-    test('Attendance Trend Run Report enabled only after selecting filters', async ({ page }) => {
-      const trendTab = page.locator('button[role="tab"]').getByText('Attendance Trend');
+    test("Attendance Trend Run Report enabled only after selecting filters", async ({ page }) => {
+      const trendTab = page.locator('button[role="tab"]').getByText("Attendance Trend");
       await trendTab.click();
-      // Filters are presented as MUI Selects; presence is the user-visible signal that
-      // the tab loaded. The Run Report button is present immediately (not gated on
-      // selections in the current UI), so we confirm it's visible and clickable.
-      const runBtn = page.locator('button').getByText('Run Report');
+      // Run Report button is not gated on selections.
+      const runBtn = page.locator("button").getByText("Run Report");
       await expect(runBtn).toBeVisible({ timeout: 10000 });
       await expect(runBtn).toBeEnabled();
     });
   });
 
-  // Kiosk Theme settings moved off the Attendance page in the 2026-06-08
-  // AttendanceSetup redesign; KioskThemeEdit now renders on the B1 CheckIn
-  // page at /mobile/checkin (below the QR guest-registration card).
-  test.describe('Kiosk Theme', () => {
-    test('should open kiosk theme settings', async ({ page }) => {
-      await page.goto('/mobile/checkin');
+  // KioskThemeEdit moved to /mobile/checkin.
+  test.describe("Kiosk Theme", () => {
+    test("should open kiosk theme settings", async ({ page }) => {
+      await page.goto("/mobile/checkin");
 
-      const heading = page.getByText('Kiosk Theme').first();
+      const heading = page.getByText("Kiosk Theme").first();
       await expect(heading).toBeVisible({ timeout: 15000 });
-      await expect(page.getByText('Background Image').first()).toBeVisible();
-      await expect(page.getByText('Idle Screen / Screensaver')).toBeVisible();
+      await expect(page.getByText("Background Image").first()).toBeVisible();
+      await expect(page.getByText("Idle Screen / Screensaver")).toBeVisible();
     });
 
-    test('should expand idle screen accordion and toggle enable', async ({ page }) => {
-      await page.goto('/mobile/checkin');
+    test("should expand idle screen accordion and toggle enable", async ({ page }) => {
+      await page.goto("/mobile/checkin");
 
-      const idleHeader = page.getByText('Idle Screen / Screensaver');
+      const idleHeader = page.getByText("Idle Screen / Screensaver");
       await expect(idleHeader).toBeVisible({ timeout: 15000 });
       await idleHeader.click();
 
-      const enableLabel = page.getByText('Enable idle screen');
+      const enableLabel = page.getByText("Enable idle screen");
       await expect(enableLabel).toBeVisible({ timeout: 10000 });
 
-      const addSlideBtn = page.locator('button').getByText('Add Slide');
+      const addSlideBtn = page.locator("button").getByText("Add Slide");
       await expect(addSlideBtn).toBeVisible();
     });
   });

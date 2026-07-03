@@ -52,9 +52,7 @@ test.describe("Website Management", () => {
       const name = page.locator('[name="title"]');
       await name.fill("Zacchaeus Test Page");
       const saveBtn = page.locator("button").getByText("Save");
-      // Wait for the create-page POST to complete before asserting on the UI;
-      // under load the table refetch can lag behind the dialog close, leaving
-      // a race where toHaveCount(1) hits the empty state.
+      // Wait for POST to avoid race where table refetch lags behind dialog close.
       const pagePost = page.waitForResponse(r => r.url().includes("/content/pages") && r.request().method() === "POST", { timeout: 15000 });
       await saveBtn.click();
       await pagePost;
@@ -128,8 +126,7 @@ test.describe("Website Management", () => {
       const contentBtn = page.locator("button").getByText("Edit Content");
       await contentBtn.click();
       const addBtn = page.locator('[data-testid="content-editor-add-button"]');
-      // Open the elements panel — it's a toggle, so guard against accidental
-      // double-click closing it.
+      // Guard against accidental double-click closing the toggle.
       const ensurePanelOpen = async () => {
         const sectionVisible = await page.locator('[data-testid="draggable-element-section"]')
           .isVisible({ timeout: 500 }).catch(() => false);
@@ -144,13 +141,13 @@ test.describe("Website Management", () => {
       await page.mouse.move(-10, -10);
       await dropzone.hover();
       await page.mouse.up();
-      // Dropping a section now opens the template picker; choose a blank section.
+      // Dropping a section opens template picker; choose blank.
       const blankTemplate = page.locator('[data-testid="template-blank"]');
       await expect(blankTemplate).toBeVisible({ timeout: 10000 });
       await blankTemplate.click();
       const saveBtn = page.locator("button").getByText("Save");
       await saveBtn.click();
-      //add text to confirm
+      // Add text element to confirm content persists.
       await ensurePanelOpen();
       const text = page.locator('[data-testid="draggable-element-text"]');
       await expect(text).toBeVisible({ timeout: 10000 });
@@ -194,7 +191,6 @@ test.describe("Website Management", () => {
       await templateCard.click();
       const treeResponse = await treePost;
       expect(treeResponse.status()).toBe(200);
-      // Template content (heading + the three service-time cards) renders in the canvas.
       await expect(page.getByText("Join Us This Weekend")).toBeVisible({ timeout: 10000 });
       await expect(page.getByText("Sunday 9:00 AM")).toBeVisible({ timeout: 10000 });
       await expect(page.getByText("Wednesday 6:30 PM")).toBeVisible({ timeout: 10000 });
@@ -207,7 +203,6 @@ test.describe("Website Management", () => {
       await contentBtn.click();
       const textElement = page.locator("p").getByText("Zacchaeus Test Text");
       await expect(textElement).toBeVisible({ timeout: 10000 });
-      // Single click selects the element and opens its property panel.
       await textElement.click();
       const hideOnMobile = page.locator('[data-testid="hide-on-mobile-switch"]');
       await expect(hideOnMobile).toBeVisible({ timeout: 10000 });
@@ -225,7 +220,6 @@ test.describe("Website Management", () => {
       // Desktop preview is unaffected.
       await page.locator('[data-testid="device-type-desktop"]').click();
       await expect(page.locator(`#el-${elementId}`)).toHaveCSS("opacity", "1");
-      // The saved flag round-trips into the editor.
       await textElement.click();
       await expect(page.locator('[data-testid="hide-on-mobile-switch"] input')).toBeChecked();
     });
@@ -246,7 +240,6 @@ test.describe("Website Management", () => {
       await expect(statusPill).toHaveAttribute("data-status", "published");
       await expect(publishBtn).toHaveText(/Published/);
 
-      // Make a draft-only edit after publishing.
       const addBtn = page.locator('[data-testid="content-editor-add-button"]');
       const ensurePanelOpen = async () => {
         const textVisible = await page.locator('[data-testid="draggable-element-text"]')
@@ -269,7 +262,6 @@ test.describe("Website Management", () => {
       await expect(page.locator("p").getByText("Draft Only Text")).toBeVisible({ timeout: 10000 });
       await expect(page.locator('[data-testid="publish-status-pill"]')).toHaveAttribute("data-status", "unpublished-changes");
 
-      // Discard restores the editor to the published version.
       page.once("dialog", async dialog => {
         expect(dialog.type()).toBe("confirm");
         await dialog.accept();
@@ -296,7 +288,6 @@ test.describe("Website Management", () => {
       await disableItem.click();
       expect((await unpublishDelete).status()).toBe(200);
       await expect(page.locator('[data-testid="publish-status-pill"]')).toHaveAttribute("data-status", "live-on-save");
-      // Menu items for published pages disappear once publishing is off.
       await page.locator('[data-testid="content-editor-overflow-button"]').click();
       await expect(page.locator('[data-testid="discard-changes-menu-item"]')).toHaveCount(0);
       await page.keyboard.press("Escape");
@@ -396,7 +387,6 @@ test.describe("Website Management", () => {
       const moveBackPost = page.waitForResponse(r => r.url().endsWith("/content/sections") && r.request().method() === "POST", { timeout: 15000 });
       await sectionWrapper.locator('[data-testid="section-toolbar-move-down"]').click();
       expect((await moveBackPost).status()).toBe(200);
-      // Duplicate, then delete the copy.
       await sectionWrapper.hover();
       const duplicatePost = page.waitForResponse(r => r.url().includes("/content/sections/duplicate/") && r.request().method() === "POST", { timeout: 15000 });
       await sectionWrapper.locator('[data-testid="section-toolbar-duplicate"]').click();
@@ -596,7 +586,7 @@ test.describe("Website Management", () => {
       await blankTemplate.click();
       const saveBtn = page.locator("button").getByText("Save");
       await saveBtn.click();
-      //add text to confirm
+      // Add text element to confirm content persists.
       await ensurePanelOpen();
       const text = page.locator('[data-testid="draggable-element-text"]');
       await expect(text).toBeVisible({ timeout: 10000 });
@@ -860,7 +850,6 @@ test.describe("Website Management", () => {
         await dialog.accept();
       });
 
-      // Find the row with logo.png (uploaded by previous test) and click its delete button.
       const targetRow = page.locator("tr", { has: page.locator("td").getByText("logo.png", { exact: true }) }).first();
       const deleteBtn = targetRow.locator("button[aria-label]").last();
       await deleteBtn.click();

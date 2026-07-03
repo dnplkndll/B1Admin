@@ -167,16 +167,13 @@ export const BlocksPage = () => {
         <SitesDialog open={showSites} onClose={() => setShowSites(false)} sites={sites} siteId={siteId} onChanged={reloadSites} onSelectSite={setSiteId} />
       )}
 
-      {/* Main Content */}
       <Box sx={{ p: 3 }}>
-        {/* Edit Block Modal/Form */}
         {editBlock && (
           <Box sx={{ mb: 3 }}>
             <BlockEdit block={editBlock} updatedCallback={() => { setEditBlock(null); loadData(); }} />
           </Box>
         )}
 
-        {/* Main Table Card */}
         <Card sx={{ borderRadius: 2, border: "1px solid", borderColor: "divider" }}>
           <Box sx={{ p: 2, borderBottom: 1, borderColor: "var(--border-light)" }}>
             <Stack direction="row" justifyContent="space-between" alignItems="center">

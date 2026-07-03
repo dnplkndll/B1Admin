@@ -97,7 +97,6 @@ export const PlaylistEdit: React.FC<Props> = (props) => {
         data-testid="edit-playlist-inputbox"
       >
         <Grid container spacing={3}>
-          {/* Basic Information Section */}
           <Grid size={12}>
             <Stack direction="row" spacing={1} alignItems="center" sx={{ mb: 2 }}>
               <TitleIcon sx={{ color: "primary.main", fontSize: 20 }} />
@@ -131,7 +130,6 @@ export const PlaylistEdit: React.FC<Props> = (props) => {
             </Grid>
           </Grid>
 
-          {/* Publishing & Schedule Section */}
           <Grid size={12}>
             <Divider sx={{ my: 2 }} />
 
@@ -147,7 +145,6 @@ export const PlaylistEdit: React.FC<Props> = (props) => {
             )} />
           </Grid>
 
-          {/* Thumbnail Section */}
           <Grid size={12}>
             <Divider sx={{ my: 2 }} />
 

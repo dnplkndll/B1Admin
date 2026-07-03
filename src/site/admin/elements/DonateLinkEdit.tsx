@@ -69,7 +69,6 @@ export function DonateLinkEdit({ parsedData, onRealtimeChange }: Props) {
 
   return (
     <>
-      {/* Link Alignment */}
       {/* <FormControl fullWidth>
         <InputLabel>Link Alignment</InputLabel>
         <Select
@@ -84,12 +83,9 @@ export function DonateLinkEdit({ parsedData, onRealtimeChange }: Props) {
           <MenuItem value="right">Right</MenuItem>
         </Select>
       </FormControl> */}
-      {/* Link Url */}
       <TextField fullWidth size="small" placeholder={Locale.label("site.donateLink.urlPlaceholder")} helperText={Locale.label("site.donateLink.urlHelper")} label={Locale.label("site.donateLink.urlLabel")} name="url" value={parsedData.url || ""} onChange={handleChange} data-testid="donate-link-url-input" aria-label="Donation page URL" />
-      {/* Link Text */}
       <TextField fullWidth size="small" helperText={Locale.label("site.donateLink.textHelper")} label={Locale.label("site.donateLink.textLabel")} name="text" value={parsedData.text || ""} onChange={handleChange} placeholder={Locale.label("placeholders.element.donateText")} data-testid="donate-link-text-input" aria-label="Donation link text" />
 
-      {/* Funds */}
       {!funds || funds.length === 0
         ? (
           <>{Locale.label("site.donateLink.noFunds")}</>
@@ -105,7 +101,6 @@ export function DonateLinkEdit({ parsedData, onRealtimeChange }: Props) {
           </FormControl>
         )}
 
-      {/* Donation Amounts */}
       <Typography marginTop={1.5}>{Locale.label("site.donateLink.donationAmounts")}</Typography>
       <Typography fontSize={12.5} marginTop={1}>
         {Locale.label("site.donateLink.donationAmountsHelper")}

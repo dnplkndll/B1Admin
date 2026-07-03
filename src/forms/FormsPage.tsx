@@ -28,7 +28,6 @@ export const FormsPage = () => {
 
   const getRows = (isArchived: boolean) => {
     const result: JSX.Element[] = [];
-    // Filter forms based on archived status since the API may return all forms
     const rawData = isArchived ? archivedForms.data : forms.data;
     const formData = rawData?.filter(form => isArchived ? form.archived === true : !form.archived);
 
@@ -133,7 +132,6 @@ export const FormsPage = () => {
     </Table>
   );
 
-  // Filter counts to match actual displayed forms
   const formsCount = forms.data?.filter(form => !form.archived)?.length || 0;
   const archivedCount = archivedForms.data?.filter(form => form.archived === true)?.length || 0;
 
@@ -201,7 +199,6 @@ export const FormsPage = () => {
           </Button>
         )}
       </PageHeader>
-      {/* Tab Content */}
       <Box sx={{ p: 3 }}>
         <SmartTabs tabs={tabs} value={selectedTab} onChange={setSelectedTab} ariaLabel="forms-tabs" />
       </Box>

@@ -9,8 +9,7 @@ interface Props {
   customHeaders?: { label: string; key: string }[];
 }
 
-/* ExportLink renders its own text Button and ignores wrapper children, so the
-   outlined toolbar style is applied to it from outside. */
+// ExportLink ignores children; style from wrapper instead of props
 export const ExportButton: React.FC<Props> = (props) => (
   <Box
     sx={{

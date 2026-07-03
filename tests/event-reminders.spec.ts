@@ -4,14 +4,6 @@ import { login } from "./helpers/auth";
 import { STORAGE_STATE_PATH } from "./global-setup";
 import { dismissSendInviteIfPresent } from "./helpers/fixtures";
 
-// Event reminders editor (#930). The EventReminderEdit accordion renders in two
-// places: inline in the New Event modal (saves via an imperative ref AFTER the
-// event is POSTed) and on the Registration Details page (loads via GET, upserts
-// via POST, removes via DELETE). The strongest assertion is round-tripping a
-// saved reminder definition back through the GET — so we create an event with a
-// reminder, then re-open /registrations/:eventId and assert the accordion
-// reflects the persisted values.
-
 const CALENDAR = "Zacchaeus Reminder Calendar";
 const EVENT_TITLE = "Zacchaeus Reminder Event";
 const GROUP = "High School Youth";
@@ -28,9 +20,7 @@ eventEnd.setHours(20, 0, 0, 0);
 const OFFSET_1_DAY = "reminder-offset-1440";
 const OFFSET_7_DAYS = "reminder-offset-10080";
 
-// Calendars / Registrations are top-level routes (their own secondary menu, not
-// nested under Website), so navigate directly rather than through the section
-// nav helper. The page-header Add button renders once /curatedCalendars loads.
+// Top-level routes; navigate directly, not via section nav.
 async function gotoCalendars(page: Page) {
   await page.goto("/calendars");
   await page.locator('[data-testid="add-calendar"]').or(page.locator('[data-testid="empty-state-add-calendar"]'))
@@ -45,8 +35,6 @@ async function selectOption(page: Page, selectTestId: string, optionName: string
   await option.click();
 }
 
-// The reminders editor lives inside a collapsed MUI Accordion. Expand it by
-// clicking the "Reminders" summary unless the enable toggle is already showing.
 async function expandReminders(page: Page) {
   const toggle = page.locator('[data-testid="reminder-enabled-toggle"]');
   if (await toggle.isVisible({ timeout: 500 }).catch(() => false)) return;
@@ -109,24 +97,19 @@ test.describe.serial("Event reminders editor", () => {
     await page.locator('[data-testid="new-event-start-input"] input').fill(toInput(eventStart));
     await page.locator('[data-testid="new-event-end-input"] input').fill(toInput(eventEnd));
 
-    // Configure the reminder inside the modal's accordion.
     await expandReminders(page);
     await setEnabled(page, true);
-    // Default offset is "1 day before" (1440); deselect it and pick a different one
-    // so the saved state is unambiguously what the test chose.
+    // Pick non-default offset so saved state is unambiguously test-chosen.
     const oneDay = page.locator(`[data-testid="${OFFSET_1_DAY}"]`);
     const sevenDays = page.locator(`[data-testid="${OFFSET_7_DAYS}"]`);
     await sevenDays.click();
     await page.locator('[data-testid="reminder-time-input"] input').fill("08:30");
     await selectOption(page, "reminder-recipient-mode-select", "Group members");
-    // Push + email default on; assert and leave them checked.
     await expect(page.locator('[data-testid="reminder-channel-push"] input')).toBeChecked();
     await expect(page.locator('[data-testid="reminder-channel-email"] input')).toBeChecked();
-    // Sanity: both offsets are selected (primary color) before saving.
     await expect(oneDay).toBeVisible();
     await expect(sevenDays).toBeVisible();
 
-    // Capture the POSTed event id so we can re-open its Registration Details page.
     const eventPost = page.waitForResponse((r) => r.url().includes("/events") && r.request().method() === "POST" && r.ok(), { timeout: 15000 });
     await page.locator('[data-testid="new-event-save-button"]').click();
     const resp = await eventPost;
@@ -134,7 +117,6 @@ test.describe.serial("Event reminders editor", () => {
     eventId = (Array.isArray(created) ? created[0]?.id : created?.id) as string;
     expect(eventId, "created event id").toBeTruthy();
 
-    // Modal closes on success.
     await expect(page.locator('[data-testid="new-event-save-button"]')).toHaveCount(0, { timeout: 15000 });
     await dismissSendInviteIfPresent(page).catch(() => { });
   });
@@ -142,12 +124,9 @@ test.describe.serial("Event reminders editor", () => {
   test("round-trips the saved reminder through the Registration Details page (GET)", async () => {
     await openRegistrationDetails(page, eventId);
 
-    // Enabled toggle reflects the persisted state.
     await expect(page.locator('[data-testid="reminder-enabled-toggle"]')).toBeChecked();
 
-    // The two offsets we chose are rendered as selected (primary) chips. We can't
-    // read MUI color directly, but the chips must at least be present and the
-    // saved time/recipient/channels must round-trip.
+    // Can't read MUI color, but chips and saved values must round-trip.
     await expect(page.locator(`[data-testid="${OFFSET_1_DAY}"]`)).toBeVisible();
     await expect(page.locator(`[data-testid="${OFFSET_7_DAYS}"]`)).toBeVisible();
 
@@ -158,39 +137,33 @@ test.describe.serial("Event reminders editor", () => {
   });
 
   test("renders a live preview with a recipient count", async () => {
-    // The accordion is already open from the prior serial step; if not, re-open.
     await expandReminders(page);
     const preview = page.locator('[data-testid="reminder-preview"]');
-    // Debounced (600ms) GET .../preview; the demo group resolves a recipient count.
+    // Debounced GET preview endpoint resolves demo group recipient count.
     await expect(preview).toContainText("will be reminded", { timeout: 15000 });
   });
 
   test("edits and upserts the reminder (POST), then disables it (DELETE)", async () => {
     await openRegistrationDetails(page, eventId);
 
-    // Edit: change the time and uncheck push, then Save (inline button on this page).
     await page.locator('[data-testid="reminder-time-input"] input').fill("07:15");
     await page.locator('[data-testid="reminder-channel-push"] input').uncheck();
     const upsert = page.waitForResponse((r) => /\/messaging\/reminders\/event\//.test(r.url()) && r.request().method() === "POST" && r.ok(), { timeout: 15000 });
     await page.getByRole("button", { name: "Save", exact: true }).click();
     await upsert;
 
-    // Re-load and confirm the edit persisted.
     await openRegistrationDetails(page, eventId);
     await expect(page.locator('[data-testid="reminder-time-input"] input')).toHaveValue("07:15");
     await expect(page.locator('[data-testid="reminder-channel-push"] input')).not.toBeChecked();
     await expect(page.locator('[data-testid="reminder-channel-email"] input')).toBeChecked();
 
-    // Disable + Save → DELETE.
     await setEnabled(page, false);
     const del = page.waitForResponse((r) => /\/messaging\/reminders\//.test(r.url()) && r.request().method() === "DELETE" && r.ok(), { timeout: 15000 });
     await page.getByRole("button", { name: "Save", exact: true }).click();
     await del;
 
-    // Re-load: the definition is gone, so the editor resets to disabled defaults.
     await openRegistrationDetails(page, eventId);
     await expect(page.locator('[data-testid="reminder-enabled-toggle"]')).not.toBeChecked();
-    // With reminders disabled the offset chips/time/channels are not rendered.
     await expect(page.locator('[data-testid="reminder-time-input"]')).toHaveCount(0);
   });
 });

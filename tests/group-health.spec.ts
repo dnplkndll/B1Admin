@@ -4,9 +4,6 @@ import { login } from "./helpers/auth";
 import { navigateToGroups } from "./helpers/navigation";
 import { STORAGE_STATE_PATH } from "./global-setup";
 
-// Roadmap 3.6: group health analytics, bulk event creation with holiday skip,
-// and the attendance-reminder setting. Serial — bulk-add creates an event the
-// later tests read, and the reminder toggle mutates the first group.
 test.describe.serial("Group Health & Calendar", () => {
   let page: Page;
 
@@ -58,14 +55,12 @@ test.describe.serial("Group Health & Calendar", () => {
 
     await page.locator("[data-testid=\"bulk-add-events-button\"]").click();
     await page.locator("[data-testid=\"bulk-events-title-input\"] input").fill("Weekly Gathering");
-    // Fridays 2026-06-19 .. 2026-07-31: seven dates, the first is Juneteenth.
     await page.locator("[data-testid=\"bulk-events-first-date\"] input").fill("2026-06-19");
     await page.locator("[data-testid=\"bulk-events-last-date\"] input").fill("2026-07-31");
 
     const dateList = page.locator("[data-testid=\"bulk-events-date-list\"]");
     await expect(dateList.locator("li")).toHaveCount(7);
     await expect(dateList).toContainText("Juneteenth");
-    // Skip-holidays defaults on, so the Juneteenth row arrives unchecked.
     await expect(dateList.locator("li").first().locator("input[type=\"checkbox\"]")).not.toBeChecked();
 
     const saveButton = page.locator("[data-testid=\"bulk-events-save-button\"]");
@@ -98,7 +93,6 @@ test.describe.serial("Group Health & Calendar", () => {
     await page.getByRole("option", { name: "Yes" }).click();
     await page.getByRole("button", { name: /save/i }).click();
 
-    // Re-enter edit mode and confirm it persisted.
     await page.locator("[data-testid=\"edit-group-button\"]").click();
     await expect(page.locator("[data-testid=\"attendance-reminders-select\"]")).toContainText("Yes");
   });

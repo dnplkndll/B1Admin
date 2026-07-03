@@ -152,7 +152,6 @@ export const PersonBanner = memo((props: Props) => {
       }
     })}>
       <Stack direction={{ xs: "column", lg: "row" }} spacing={{ xs: 2, md: 4 }} alignItems={{ xs: "flex-start", md: "center" }} sx={{ width: "100%", position: "relative", zIndex: 1 }}>
-        {/* Column 1: Avatar + Name + Status */}
         <Stack direction="row" spacing={2} alignItems="center" sx={{ flexShrink: 0 }}>
           <div style={{ border: "3px solid #FFF", borderRadius: "50%" }}>
             <PersonAvatar person={person} size="responsive" onClick={() => canEdit && togglePhotoEditor?.(true)} />
@@ -193,7 +192,6 @@ export const PersonBanner = memo((props: Props) => {
           </Stack>
         </Stack>
 
-        {/* Column 2: Contact Info */}
         <Stack spacing={0.5} sx={{ position: { xs: "static", lg: "absolute" }, left: { lg: "50%" }, top: { lg: "50%" }, transform: { lg: "translateY(-50%)" }, minWidth: 0 }}>
           {contactInfo.map((info: any) => (
             <Stack key={info.value} direction="row" spacing={1} alignItems="center" sx={{ minWidth: 0 }}>

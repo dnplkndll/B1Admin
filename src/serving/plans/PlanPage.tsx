@@ -81,7 +81,6 @@ export const PlanPage = () => {
       </Box>
       <PlanNavigation selectedTab={selectedTab} onTabChange={setSelectedTab} plan={plan} />
 
-      {/* Tab Content */}
       <Box sx={{ p: 3 }}>{getCurrentTab()}</Box>
     </>
   );

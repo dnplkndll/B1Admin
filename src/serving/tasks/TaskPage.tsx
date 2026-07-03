@@ -169,7 +169,6 @@ export const TaskPage = () => {
           </MenuItem>
         </Menu>
 
-        {/* Task Content */}
         <Box sx={{ p: 3 }}>
           {task.data.taskType === "directoryUpdate" && <RequestedChanges task={task.data} />}
           <Box sx={{ mb: 2 }}>

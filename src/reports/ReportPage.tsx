@@ -24,7 +24,6 @@ export const ReportPage = memo(() => {
 
       <Container maxWidth="xl">
         <Box sx={{ py: 3 }}>
-          {/* Report Content */}
           <Card
             elevation={2}
             sx={{

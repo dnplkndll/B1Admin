@@ -101,7 +101,6 @@ export const ServingOverviewPage = () => {
     }
   });
 
-  // Collect unique personIds and fetch their names
   const personIds = React.useMemo(() => {
     const ids = new Set<string>();
     (overviewData.data || []).forEach(r => { if (r.personId) ids.add(r.personId); });
@@ -126,9 +125,7 @@ export const ServingOverviewPage = () => {
     return last ? `${first} ${last.charAt(0)}.` : first;
   };
 
-  // Build the grid: rows = positions (keyed by name), columns = dates.
-  // A cell holds one slot per distinct positionId so two same-named positions in
-  // one plan stay editable independently instead of collapsing to the first.
+  // Slot per distinct positionId keeps same-named positions independently editable.
   const { dates, rows } = React.useMemo(() => {
     const dateSet = new Set<string>();
     const positionMap = new Map<string, GridRow>();
@@ -167,7 +164,6 @@ export const ServingOverviewPage = () => {
     return rows.filter(row => dates.some(d => row.activeDates.has(d) && cellFilled(row.cells[d]) < (row.cells[d]?.needed || 0)));
   }, [rows, dates, gapsOnly]);
 
-  // Build CSV export data
   const csvData = React.useMemo(() => {
     return rows.map(row => {
       const obj: Record<string, string> = { Position: row.position };
@@ -335,7 +331,6 @@ export const ServingOverviewPage = () => {
         )}
       </Box>
 
-      {/* Cell editor: one AssignmentEdit per slot, with remove for current people */}
       <Dialog open={!!editingCell} onClose={() => setEditingKey(null)} maxWidth="xs" fullWidth>
         <DialogTitle>
           {editingRow ? `${editingRow.positionName} — ${editingKey ? formatShortDate(editingKey.date) : ""}` : ""}

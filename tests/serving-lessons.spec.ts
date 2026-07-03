@@ -5,13 +5,7 @@ import { login } from "./helpers/auth";
 import { navigateToServing } from "./helpers/navigation";
 import { STORAGE_STATE_PATH } from "./global-setup";
 
-// "Apollos" names are private to this spec so it runs independently of
-// serving-plans.spec.ts (which owns the "Zebedee" namespace). Setup creates
-// them, Cleanup removes them — no cross-file state dependency.
-test.describe.serial("Serving Management - Lessons", () => {
-  // The whole file is one create→use→cleanup chain; a retry re-runs Setup and
-  // creates a duplicate "Apollos Ministry" tab, strict-violating every
-  // downstream tab lookup. Same policy as serving-plans' Ministry CRUD.
+// "Apollos" names are private to this spec; retries would create duplicate tabs.
   test.describe.configure({ retries: 0 });
   let page: Page;
 
@@ -26,9 +20,7 @@ test.describe.serial("Serving Management - Lessons", () => {
     await page?.context().close();
   });
 
-  // Setup ends on the Apollos Team page (in /groups). Subsequent tests reach
-  // for the "Apollos Ministry" tab on /serving, so navigate back if needed.
-  // Also dismiss any lingering SendInviteDialog from the team-add flow.
+  // Setup ends on /groups; navigate back to /serving/plans if needed.
   test.beforeEach(async () => {
     await dismissSendInviteIfPresent(page, 500);
     // Recover from Vite's "Failed to fetch dynamically imported module" error
@@ -37,17 +29,12 @@ test.describe.serial("Serving Management - Lessons", () => {
     if (await viteError.isVisible({ timeout: 200 }).catch(() => false)) {
       await page.reload();
     }
-    // The ministry tab list lives on /serving/plans (the Serving section
-    // defaults to My Work) — sub-routes like /serving/planTypes/<id> don't
-    // render it.
-    // Exact match: the lesson-plan detail page lives at /serving/plans/<id>,
-    // which must NOT count as "already on the ministries list".
+    // Detail pages live at /serving/plans/<id> (exact match to avoid false positives).
     if (!/^\/serving\/plans\/?$/.test(new URL(page.url()).pathname)) {
       await page.goto("/serving/plans");
       await page.waitForURL(/\/serving\/plans/, { timeout: 15000 });
     }
-    // Ministry tabs render after the groups query resolves; under 4-worker
-    // dev-server load that can outlast a bare 10s click timeout.
+    // Groups query can take >10s under load.
     await page.locator('[role="tab"]').first().waitFor({ state: "visible", timeout: 15000 }).catch(() => { });
   });
 
@@ -76,31 +63,25 @@ test.describe.serial("Serving Management - Lessons", () => {
       const teamLink = page.locator("a").getByText("Apollos Team");
       await expect(teamLink).toHaveCount(1, { timeout: 10000 });
 
-      // Add Dorothy Jackson to the team so the position-assignment test has a
-      // candidate to pick.
+      // Add Dorothy Jackson for position-assignment test.
       await teamLink.click();
       await expect(page).toHaveURL(/\/groups\/[^/]+/);
       const personSearch = page.locator('[name="personAddText"]');
       await expect(personSearch).toBeVisible({ timeout: 10000 });
       await personSearch.fill("Dorothy");
       await page.locator('[data-testid="person-add-search-button"]').click();
-      // Result rows render icon-only AppIconButtons — text "Add" would
-      // substring-match "Add a New Person" instead.
+      // Icon-only buttons; text "Add" would substring-match "Add a New Person".
       const addPerson = page.locator('[data-testid^="add-person-button-"]').first();
       await expect(addPerson).toBeVisible({ timeout: 10000 });
       await addPerson.click();
-      // Dorothy has an email, so the SendInviteDialog opens — dismiss it before
-      // the next test in the chain runs.
+      // SendInviteDialog opens for email addresses; dismiss before next test.
       await dismissSendInviteIfPresent(page);
       await expect(page.locator('[id="groupMembersBox"] a').getByText("Dorothy Jackson")).toHaveCount(1, { timeout: 10000 });
     });
   });
 
   test.describe("Lesson Plans", () => {
-    // Use the regular New Plan flow — the "Schedule Lesson" dropdown item requires
-    // LessonsApi (port 8090) to pick a lesson, which isn't part of the local
-    // dev webServer. The downstream tests (Positions/Times/Service Order)
-    // operate on a plan regardless of whether it was created as a lesson plan.
+    // Use regular Plan flow (Schedule Lesson requires LessonsApi, not in local stack).
     test("should add lesson plan", async () => {
       const minBtn = page.locator('[role="tab"]').getByText("Apollos Ministry");
       await minBtn.click();
@@ -153,15 +134,12 @@ test.describe.serial("Serving Management - Lessons", () => {
       await plansBtn.click();
       await expect(page).toHaveURL(/\/serving\/planTypes\/[^/]+/);
       const lesson = page.locator("a").getByText("Zacchaeus Lesson");
-      // Vite occasionally serves a stale PlanPage chunk on this transition;
-      // race the success state against the error boundary.
+      // Vite may serve stale PlanPage chunk on transition; recover from error boundary.
       await recoverFromViteError(page, lesson);
       await expect(lesson).toBeVisible({ timeout: 10000 });
       await lesson.click();
       const addBtn = page.locator('[data-testid="add-position-button"]');
-      // The lesson detail page lazy-loads PlanPage.tsx; on a stale chunk
-      // (frequent on the second pass through this route), Vite renders the
-      // error boundary. Retry the click+recover cycle until addBtn appears.
+      // Retry click+recover until addBtn appears (stale chunk on second pass).
       for (let i = 0; i < 3; i++) {
         await recoverFromViteError(page, addBtn);
         if (await addBtn.isVisible({ timeout: 1000 }).catch(() => false)) break;
@@ -224,9 +202,7 @@ test.describe.serial("Serving Management - Lessons", () => {
       await expect(verifiedAddition).toHaveCount(1, { timeout: 10000 });
     });
 
-    // Position delete is deferred until after Times tests because the Time form's
-    // "Needed Teams" checkbox list is populated from the lesson's positions —
-    // deleting the sole position would leave the list empty and block Save.
+    // Position delete deferred: Time form's "Needed Teams" populated from positions.
   });
 
   test.describe("Times", () => {
@@ -394,7 +370,7 @@ test.describe.serial("Serving Management - Lessons", () => {
       await expect(servOrder).toBeVisible({ timeout: 10000 });
       await servOrder.click();
 
-      // "Add Item" on the section row opens a menu with Song/Item/Lesson Action/Add-On options.
+      // Section "Add Item" opens menu with Song/Item/Lesson Action/Add-On options.
       const addBtn = page.getByRole("button", { name: "Add Item" }).first();
       await expect(addBtn).toBeVisible({ timeout: 10000 });
       await addBtn.click();
@@ -435,9 +411,7 @@ test.describe.serial("Serving Management - Lessons", () => {
       await expect(verifiedEdit).toHaveCount(1, { timeout: 10000 });
     });
 
-    // "Lesson Action" and "Add-On" pick items from the lessons.church content
-    // library (LessonsApi on port 8090), which is not part of the local
-    // webServer stack. Skip these when LessonsApi isn't available.
+    // Lesson Action and Add-On pick from lessons.church (LessonsApi on port 8090, not in local stack).
     test.skip("should add lesson action to service order", async () => {
       const minBtn = page.locator('[role="tab"]').getByText("Apollos Ministry");
       await minBtn.click();
@@ -479,7 +453,7 @@ test.describe.serial("Serving Management - Lessons", () => {
       await expect(servOrder).toBeVisible({ timeout: 10000 });
       await servOrder.click();
 
-      // "Add Item" on the section row opens a menu with Song/Item/Lesson Action/Add-On options.
+      // Section "Add Item" opens menu with Song/Item/Lesson Action/Add-On options.
       const addBtn = page.getByRole("button", { name: "Add Item" }).first();
       await expect(addBtn).toBeVisible({ timeout: 10000 });
       await addBtn.click();

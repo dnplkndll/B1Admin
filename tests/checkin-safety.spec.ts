@@ -86,7 +86,7 @@ test.describe.serial("Check-Ins child safety", () => {
 
     saved = await getGroup(group.id);
     expect(saved.capacity == null).toBeTruthy();
-    // The other fields survive the clear of a sibling field.
+    // Other fields survive clearing a sibling field.
     expect(saved.guestCapacity).toBe(3);
   });
 
@@ -98,7 +98,6 @@ test.describe.serial("Check-Ins child safety", () => {
     const box = page.locator('[data-testid="pickup-box"]');
     await expect(box).toBeVisible({ timeout: 10000 });
 
-    // Add a trusted person by free name.
     await page.locator('[data-testid="pickup-add-toggle"]').click();
     await page.locator('[data-testid="pickup-name-input"] input').fill(trustedName);
     const add1 = page.waitForResponse((r) => r.url().includes("/householdpickup") && r.request().method() === "POST");
@@ -108,7 +107,6 @@ test.describe.serial("Check-Ins child safety", () => {
     await expect(trustedRow).toBeVisible({ timeout: 10000 });
     await expect(trustedRow.locator('[data-testid="pickup-status-chip"]')).toHaveText("Trusted");
 
-    // Add a not-authorized person.
     await page.locator('[data-testid="pickup-add-toggle"]').click();
     await page.locator('[data-testid="pickup-name-input"] input').fill(flaggedName);
     await page.locator('[data-testid="pickup-status-select"]').click();
@@ -120,13 +118,10 @@ test.describe.serial("Check-Ins child safety", () => {
     await expect(flaggedRow).toBeVisible({ timeout: 10000 });
     await expect(flaggedRow.locator('[data-testid="pickup-status-chip"]')).toHaveText("Not Authorized");
 
-    // Toggle the trusted person to not-authorized via the status chip.
     const toggle = page.waitForResponse((r) => r.url().includes("/householdpickup") && r.request().method() === "POST");
     await trustedRow.locator('[data-testid="pickup-status-chip"]').click();
     await toggle;
     await expect(trustedRow.locator('[data-testid="pickup-status-chip"]')).toHaveText("Not Authorized", { timeout: 10000 });
-
-    // Delete both rows (cleanup + exercises the delete path).
     for (const name of [trustedName, flaggedName]) {
       const row = page.locator('[data-testid="pickup-row"]').filter({ hasText: name });
       const del = page.waitForResponse((r) => r.url().includes("/householdpickup") && r.request().method() === "DELETE");
@@ -151,7 +146,6 @@ test.describe.serial("Check-Ins child safety", () => {
 
     await page.goto(`/groups/${group.id}`);
     await page.getByRole("tab", { name: "Sessions" }).click();
-    // Wait for the session's attendee row to load, then its enriched type chip.
     await expect(page.locator("#groupMemberTable a.personName").first()).toBeVisible({ timeout: 20000 });
     await expect(page.locator('[data-testid="checkin-type-chip"]').first()).toHaveText("Volunteer", { timeout: 20000 });
     await expect(page.locator('[data-testid="volunteer-count-chip"]')).toBeVisible();

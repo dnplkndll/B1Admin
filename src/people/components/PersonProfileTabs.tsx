@@ -58,8 +58,7 @@ export const PersonProfileTabs: React.FC<Props> = (props) => {
     });
   }, [formPermission]);
 
-  // Load questions + answers for each form so its pane renders inline rows. Submitted forms
-  // come back with answers; unsubmitted forms load just the questions (blank values).
+  // Load questions + answers for each form; submitted forms return answers, unsubmitted return blank questions.
   useEffect(() => {
     let cancelled = false;
     const load = async () => {
@@ -162,10 +161,7 @@ export const PersonProfileTabs: React.FC<Props> = (props) => {
 
   const selectedForm = selectedKey === "profile" ? undefined : allForms.find((f) => f.id === selectedKey);
 
-  // Affixed full-height left rail, flush to the content edge — same look as /site/pages.
-  // PersonPage wraps tab content in 24px padding, so break out of it (negative margins) to
-  // butt up against the tabs (mt) and reach the left/bottom edges (mx/mb), and give the row a
-  // viewport-based minHeight so the panel spans the screen even when the selected pane is short.
+  // Full-height left rail: break out of content padding (negative margins) to reach edges; minHeight spans viewport.
   return (
     <Box sx={{ display: "flex", flexDirection: { xs: "column", md: "row" }, mx: -3, mt: -3, mb: -3, minHeight: { md: "calc(100vh - 250px)" } }}>
       <Box

@@ -3,11 +3,8 @@ import { test, expect } from "@playwright/test";
 import { login } from "./helpers/auth";
 import { STORAGE_STATE_PATH } from "./global-setup";
 
-// Editable scheduling matrix (roadmap #5). Drives the demo Sunday
-// Service plan type (PLT00000001 / ministry GRP0000000a): plan PLA00000001 is the
-// upcoming Sunday in the default range, with POS1-9 filled and Hospitality
-// Greeter/Usher as unfilled (red) gap cells to fill, auto-schedule, and email.
-// Each test reloads the page so DB state carries forward but UI toggles don't.
+// Editable scheduling matrix (roadmap #5): demo plan PLA00000001 has filled POS1-9,
+// unfilled (red) Greeter/Usher gaps. Tests reload to isolate UI toggles while persisting DB state.
 test.describe.serial("Serving — Editable Scheduling Matrix", () => {
   let page: Page;
 

@@ -10,7 +10,6 @@ import { useCampuses } from "../hooks/useCampuses";
 
 export const AttendancePage = () => {
   const [selectedTab, setSelectedTab] = React.useState("setup");
-  // Campuses are mastered in the membership module.
   const campuses = useCampuses();
   const [stats, setStats] = React.useState({
     serviceTimes: 0,
@@ -121,7 +120,6 @@ export const AttendancePage = () => {
       </PageHeader>
       <AttendanceNavigation selectedTab={selectedTab} onTabChange={setSelectedTab} />
 
-      {/* Main Content */}
       <PageContainer>
         <Grid container spacing={3}>
           <Grid size={12}>

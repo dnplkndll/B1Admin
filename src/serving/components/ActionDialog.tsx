@@ -21,7 +21,6 @@ interface Props {
 export const ActionDialog: React.FC<Props> = (props) => {
   const [iframeHeight, setIframeHeight] = useState(window.innerHeight * 0.7);
 
-  // Use the hook to fetch content from provider
   const { content, loading, error } = useProviderContent({
     providerId: props.providerId,
     providerPath: props.providerPath,

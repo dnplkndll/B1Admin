@@ -5,22 +5,12 @@ import { navigateToSettings, navigateToPeople, navigateToGroups } from "./helper
 import { openKnownPerson, editIconButton, personDetailsEditButton, SEED_PEOPLE } from "./helpers/fixtures";
 import { STORAGE_STATE_PATH } from "./global-setup";
 
-// Planning-Center-style church-wide Campus feature. Exercises every surface the
-// campus work added: the Settings management page (CRUD), per-person campus
-// assignment + list column + belongs-to-campus search condition + bulk
-// "Assign to Campus", group assignment, the Demographics campus chart, and the
-// plan campus dropdown.
-//
-// "Main Campus" is seeded in membership demo.sql (id CAM00000001). The created
-// "North/South Campus" rows are this suite's own fixtures.
 const MAIN = "Main Campus";
 const NORTH = "North Campus";
 const SOUTH = "South Campus";
 
 test.describe.serial("Campus multi-site", () => {
-  // This suite creates campuses by name. A serial-group retry re-runs the
-  // create test and would leave duplicate "North/South Campus" rows, making the
-  // option selectors ambiguous — so disable retries (same reason as Settings).
+  // Serial retry would duplicate fixtures, making selectors ambiguous.
   test.describe.configure({ retries: 0 });
 
   let page: Page;
@@ -35,7 +25,6 @@ test.describe.serial("Campus multi-site", () => {
     await page?.context().close();
   });
 
-  // Run `action` and wait for the matching API call it triggers (default POST/200).
   const expectResponse = async (urlPart: string, action: () => Promise<void>, method = "POST") => {
     const resp = page.waitForResponse(
       (r) => r.url().includes(urlPart) && r.request().method() === method && r.status() === 200,
@@ -45,7 +34,6 @@ test.describe.serial("Campus multi-site", () => {
     await resp;
   };
 
-  // Open a MUI Select (or any listbox trigger) and click the named option.
   const pickOption = async (trigger: Locator, name: string) => {
     await trigger.click();
     await page.getByRole("option", { name }).click();
@@ -62,7 +50,7 @@ test.describe.serial("Campus multi-site", () => {
 
   const createCampus = async (name: string) => {
     await page.getByTestId("add-campus-button").click();
-    // data-testid sits on the MUI TextField wrapper; the editable element is the inner <input>.
+    // data-testid on wrapper; actual input is a child locator.
     const nameInput = page.getByTestId("campus-name-input").locator("input");
     await expect(nameInput).toBeVisible({ timeout: 10000 });
     await nameInput.fill(name);
@@ -83,7 +71,6 @@ test.describe.serial("Campus multi-site", () => {
     await expect(city).toBeVisible({ timeout: 10000 });
     await city.fill("Northtown");
     await expectResponse("/campuses", saveInputBox("#campusBox"));
-    // Reopen the row and confirm the value round-tripped through the API.
     await page.locator("table tbody tr").filter({ hasText: NORTH }).first().click();
     await expect(page.locator("#city")).toHaveValue("Northtown", { timeout: 10000 });
   });
@@ -95,7 +82,6 @@ test.describe.serial("Campus multi-site", () => {
     await expect(select).toBeVisible({ timeout: 10000 });
     await pickOption(select, NORTH);
     await expectResponse("/people", clickSave);
-    // Reopen the editor; the dropdown should show the saved campus.
     await personDetailsEditButton(page).first().click();
     await expect(page.getByTestId("campus-select")).toContainText(NORTH, { timeout: 10000 });
   });
@@ -103,7 +89,7 @@ test.describe.serial("Campus multi-site", () => {
   test("shows the campus column on the people list", async () => {
     await navigateToPeople(page);
     await page.getByTestId("columns-button").click();
-    // The MUI Checkbox forwards `name` to its inner <input>; target that to .check().
+    // MUI Checkbox: target inner <input> via name attribute.
     const checkbox = page.locator('#fieldsMenu input[name="campus"]');
     await expect(checkbox).toBeVisible({ timeout: 10000 });
     await checkbox.check();
@@ -114,19 +100,16 @@ test.describe.serial("Campus multi-site", () => {
 
   test("filters people by the belongs-to-campus condition", async () => {
     await navigateToPeople(page);
-    // The toggle is "▶ Advanced" / "▼ Advanced"; match the arrow so we don't
-    // also hit the SavedLists "...advanced search..." copy.
+    // Match arrow to avoid SavedLists "advanced search" copy.
     await page.locator("p").getByText(/[▶▼] Advanced/).click();
     const membership = page.locator(".MuiAccordion-root").filter({ hasText: "Membership & Groups" });
     await membership.getByText("Membership & Groups").click();
-    // Enable the Campus filter via the checkbox next to the "Campus" label
-    // (label-relative so it survives field reordering).
+    // Use label-relative xpath to survive field reordering.
     const campusCheckbox = membership.getByText("Campus", { exact: true })
       .locator('xpath=preceding-sibling::span//input[@type="checkbox"]');
     await expect(campusCheckbox).toBeVisible({ timeout: 10000 });
     await campusCheckbox.check();
-    // Checking defaults the value to the first campus (Main); pick North so the
-    // filter matches Donald, who was assigned to North above.
+    // Default is Main; pick North to match Donald's assignment above.
     const valueSelect = membership.locator('[aria-haspopup="listbox"]').first();
     await expect(valueSelect).toBeVisible({ timeout: 10000 });
     await expectResponse("/people/advancedSearch", () => pickOption(valueSelect, NORTH));
@@ -168,11 +151,7 @@ test.describe.serial("Campus multi-site", () => {
   });
 
   test("assigns a plan to a campus", async () => {
-    // The Serving section defaults to My Work; ministries live at /serving/plans.
-    // Uses a test-created ministry: the demo admin's DoingApi JWT carries no
-    // Plans__Edit permission, so PlanAuth only authorizes ministry MEMBERS —
-    // creating the ministry adds the user, while seeded-ministry plans 401
-    // (see the fixme below).
+    // Create test ministry so admin gains Plans__Edit via membership (seeded ones 401).
     await page.goto("/serving/plans");
     await page.waitForURL(/\/serving\/plans/, { timeout: 15000 });
     await page.locator("button").getByText("Add Ministry").click();
@@ -192,8 +171,7 @@ test.describe.serial("Campus multi-site", () => {
     await page.locator('[name="name"]').fill("Campus Assignment Plan");
     await page.locator('[id="serviceDate"]').fill("2030-04-01");
     await expectResponse("/plans", clickSave);
-    // Reopen the plan and assign the campus — the feature under test.
-    // Plan rows expose an icon-only AppIconButton ("Edit"), no text.
+    // Icon-only button, find by aria-label.
     const editBtn = page.locator('button[aria-label="Edit"]').first();
     await expect(editBtn).toBeVisible({ timeout: 10000 });
     await editBtn.click();
@@ -203,10 +181,7 @@ test.describe.serial("Campus multi-site", () => {
     await expectResponse("/plans", clickSave);
   });
 
-  // Regression guard for the 2026-06-09 Plans-permission move: Plans/Edit now
-  // lives under DoingApi in permissionsList (PlanAuth checks the DoingApi
-  // principal), so a Domain Admin can edit seeded-ministry plans without being
-  // a ministry member. History in .notes/B1Admin-test-judgment-log.md.
+  // Regression: Plans/Edit under DoingApi allows Domain Admin to edit seeded-ministry plans.
   test("Domain Admin can edit a seeded ministry plan without being a member", async () => {
     await page.goto("/serving/plans");
     const planType = page.locator("a").getByText("Sunday Service").first();

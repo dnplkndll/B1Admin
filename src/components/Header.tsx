@@ -43,7 +43,6 @@ export const Header: React.FC = () => {
     if (canViewPlans) menuItems.push({ url: "/serving", label: Locale.label("components.wrapper.serving"), icon: "assignment" });
     else menuItems.push({ url: "/serving/tasks", label: Locale.label("components.wrapper.serving"), icon: "assignment" });
 
-    // Temporarily hidden
     if (UserHelper.checkAccess(Permissions.contentApi.streamingServices.edit)) menuItems.push({ url: "/sermons", label: Locale.label("common.sermons"), icon: "live_tv" });
     if (UserHelper.checkAccess(Permissions.contentApi.content.edit)) menuItems.push({ url: "/site/pages", label: Locale.label("common.website"), icon: "language" });
     if (UserHelper.checkAccess(Permissions.contentApi.content.edit)) menuItems.push({ url: "/calendars", label: Locale.label("helpers.secondaryMenuHelper.calendars"), icon: "calendar_month" });
@@ -87,10 +86,8 @@ export const Header: React.FC = () => {
     navigate(url);
   };
 
-  // Add data-testid attributes to navigation elements after render
   useEffect(() => {
     const addTestIds = () => {
-      // Map URLs to test IDs
       const urlToTestId: Record<string, string> = {
         "/": "nav-item-quick-actions",
         "/dashboard": "nav-item-dashboard",
@@ -116,7 +113,6 @@ export const Header: React.FC = () => {
         "/sermons": "nav-item-sermons"
       };
 
-      // Find all navigation links
       const navLinks = document.querySelectorAll('a[href^="/"], button[role="menuitem"]');
       navLinks.forEach((link) => {
         const href = link.getAttribute("href");
@@ -124,7 +120,6 @@ export const Header: React.FC = () => {
           link.setAttribute("data-testid", urlToTestId[href]);
         }
 
-        // Also check for button text content for menu items
         const text = link.textContent?.toLowerCase();
         if (text) {
           const textToTestId: Record<string, string> = {
@@ -159,10 +154,8 @@ export const Header: React.FC = () => {
       });
     };
 
-    // Add test IDs after a short delay to ensure DOM is ready
     const timer = setTimeout(addTestIds, 100);
 
-    // Also add test IDs when menu items change
     const observer = new MutationObserver(addTestIds);
     observer.observe(document.body, { childList: true, subtree: true });
 

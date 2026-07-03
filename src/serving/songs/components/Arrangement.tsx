@@ -57,7 +57,6 @@ export const Arrangement = memo((props: Props) => {
     if (props.arrangement?.songDetailId) {
       const sd: SongDetailInterface = await ApiHelper.get("/songDetails/" + props.arrangement.songDetailId, "ContentApi");
       setSongDetail(sd);
-      // Check if lyrics can be imported
       if (!props.arrangement?.lyrics && sd?.praiseChartsId) setCanImportLyrics(true);
     } else {
       setSongDetail(null);
@@ -136,7 +135,6 @@ export const Arrangement = memo((props: Props) => {
             </Stack>
           )}
 
-          {/* Import Lyrics Alert */}
           {canImportLyrics && canEdit && (
             <Alert
               severity="success"

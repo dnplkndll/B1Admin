@@ -28,8 +28,7 @@ export const FundPage = () => {
     uniqueDonors: 0
   });
   const [currency, setCurrency] = React.useState<string>("usd");
-  // Hoisted: the compiler emits non-optional guard reads (fundDonations.length) for closure
-  // deps, which crash while fundDonations is still null.
+  // Hoisted to avoid compiler emitting non-optional guard reads on null fundDonations
   const donationList = fundDonations || [];
 
   const loadData = () => {
@@ -42,7 +41,6 @@ export const FundPage = () => {
   const loadDonations = () => {
     ApiHelper.get("/funddonations?fundId=" + params.id + "&startDate=" + DateHelper.formatHtml5Date(startDate) + "&endDate=" + DateHelper.formatHtml5Date(endDate), "GivingApi").then(
       (d: FundDonationInterface[]) => {
-        // fetch people who have made donations if any
         const peopleIds = ArrayHelper.getUniqueValues(d, "donation.personId").filter((f) => f !== null);
         if (peopleIds.length > 0) {
           ApiHelper.get("/people/ids?ids=" + peopleIds.join(","), "MembershipApi").then((people: PersonInterface[]) => {
@@ -56,7 +54,6 @@ export const FundPage = () => {
         }
         setFundDonations(d);
 
-        // Calculate statistics
         const totalDonations = d.length;
         const totalAmount = d.reduce((sum, fd) => sum + (fd.amount || 0), 0);
         const uniqueDonors = new Set(d.map((fd) => fd.donation?.personId).filter((id) => id)).size;
@@ -264,9 +261,7 @@ export const FundPage = () => {
         )}
       </PageHeader>
 
-      {/* Main Content */}
       <Box sx={{ p: 3 }}>
-        {/* Date Filter Card */}
         <Card sx={{ mb: 3 }}>
           <Box sx={{ p: 2, borderBottom: 1, borderColor: "var(--border-light)" }}>
             <Stack direction="row" spacing={1} alignItems="center">
@@ -303,7 +298,6 @@ export const FundPage = () => {
           </Box>
         </Card>
 
-        {/* Main donations table */}
         <Card>
           <Box sx={{ p: 2, borderBottom: 1, borderColor: "var(--border-light)" }}>
             <Stack direction="row" justifyContent="space-between" alignItems="center">

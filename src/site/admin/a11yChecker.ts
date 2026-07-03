@@ -13,9 +13,7 @@ export interface A11yIssue {
   params?: Record<string, string>;
 }
 
-// English fallbacks — mirrors the site.a11y.* locale keys. The panel re-localizes
-// via Locale using messageKey + params; keeping the module Locale-free lets
-// assertA11ySelfCheck() run under Node (no apphelper/DOM) like assertRemapSelfCheck.
+// Keep module Locale-free so assertA11ySelfCheck() runs under Node without DOM/apphelper.
 const EN: Record<string, string> = {
   missingAltImage: "Image is missing alt text. Add a description so screen readers can convey it.",
   missingAltGallery: "Gallery image {n} is missing alt text.",
@@ -69,8 +67,7 @@ export const contrastRatio = (fg: string, bg: string): number => {
 
 const CONTRAST_MIN = 4.5;
 
-// Heading levels + empty-anchor count extracted from a text HTML fragment. Uses
-// DOMParser in the browser/editor; falls back to regex under Node (self-check).
+// DOMParser in browser, regex fallback for Node (self-check).
 const extractHtml = (html: string): { headings: number[]; emptyAnchors: number } => {
   if (typeof DOMParser !== "undefined") {
     const doc = new DOMParser().parseFromString(html, "text/html");

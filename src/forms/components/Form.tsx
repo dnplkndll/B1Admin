@@ -15,9 +15,7 @@ export const Form: React.FC<Props> = (props) => {
   const [form, setForm] = React.useState<FormInterface>({} as FormInterface);
   const [questions, setQuestions] = React.useState<QuestionInterface[]>(null);
   const [editQuestionId, setEditQuestionId] = React.useState("notset");
-  // Hoisted: the compiler emits non-optional guard reads (questions.length) for closure deps,
-  // which crash while questions is still null.
-  const questionList = questions || [];
+  const questionList = questions || []; // Hoisted to avoid guard reads on closure deps while questions is undefined
   const formPermission = UserHelper.checkAccess(Permissions.membershipApi.forms.admin) || UserHelper.checkAccess(Permissions.membershipApi.forms.edit);
   const questionUpdated = () => {
     loadQuestions();
@@ -182,12 +180,9 @@ export const Form: React.FC<Props> = (props) => {
     }
     return (
       <>
-        {/* Edit Question Content - Appears above when editing */}
         {getSidebarModules()}
 
-        {/* Main Questions Content - Full Width Card */}
         <Card sx={{ width: "100%" }}>
-          {/* Card Header */}
           <Box sx={{ p: 2, borderBottom: 1, borderColor: "var(--border-light)" }}>
             <Stack direction="row" justifyContent="space-between" alignItems="center">
               <Stack direction="row" spacing={1} alignItems="center">
@@ -210,7 +205,6 @@ export const Form: React.FC<Props> = (props) => {
             </Stack>
           </Box>
 
-          {/* Card Content */}
           <Box sx={{ p: 0 }}>{contents}</Box>
         </Card>
       </>

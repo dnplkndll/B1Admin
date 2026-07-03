@@ -44,7 +44,6 @@ export const LessonPreview = memo((props: Props) => {
 
   return (
     <Box sx={{ position: "relative" }}>
-      {/* Top header with label and Customize button */}
       <Box
         sx={{
           display: "flex",
@@ -70,14 +69,12 @@ export const LessonPreview = memo((props: Props) => {
         </Button>
       </Box>
 
-      {/* Preview explanation banner */}
       <Box sx={{ textAlign: "center", py: 1, px: 2, bgcolor: "info.light", borderRadius: 1, mb: 1 }}>
         <Typography variant="body2" color="info.contrastText">
           {Locale.label("plans.serviceOrder.previewBanner") || "This is a preview of the associated lesson. Click \"Customize\" to edit."}
         </Typography>
       </Box>
 
-      {/* Grayed out preview content */}
       <Box
         sx={{
           opacity: 0.7,

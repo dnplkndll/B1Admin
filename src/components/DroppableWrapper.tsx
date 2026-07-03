@@ -24,7 +24,6 @@ export function DroppableWrapper(props: Props) {
         onDrop(data);
       },
       canDrop: (_item, _monitor) => {
-        // Always allow drop if types match - let the parent handle validation
         const canDropResult = true;
         return canDropResult;
       },
@@ -48,14 +47,7 @@ export function DroppableWrapper(props: Props) {
     if (updateIsDragging) updateIsDragging(isDragging);
   }, [isDragging, updateIsDragging]);
 
-  // Reserve identical box geometry in both states so that flipping canDrop
-  // mid-drag never reflows the page. A reflow shifts the drag source out
-  // from under the user's mouse and breaks the drag — see the equivalent
-  // fix in @churchapps/apphelper's DroppableArea. We use longhand border
-  // properties exclusively because React errors when a shorthand `border`
-  // and longhand `borderColor`/`borderStyle` are set on the same element
-  // across renders ("Updating a style property during rerender ... when a
-  // conflicting property is set").
+  // Reserve identical box geometry to prevent reflow when canDrop changes mid-drag (use longhand border properties to avoid React's conflicting-property error).
   const baseStyle: CSSProperties = {
     display: "block",
     width: "100%",
@@ -66,10 +58,7 @@ export function DroppableWrapper(props: Props) {
     borderRadius: "4px"
   };
 
-  // hideWhenInactive: hide the contents when no compatible drag is active,
-  // but keep the wrapper laid out so its surrounding row doesn't resize
-  // when the drag begins. Use opacity, not visibility, so the wrapper still
-  // participates in pointer hit-testing.
+  // Use opacity not visibility so hit-testing still works when hidden.
   const hidden = hideWhenInactive && !canDrop;
 
   const dropZoneStyle: CSSProperties = canDrop ? {

@@ -54,7 +54,6 @@ export const Section: React.FC<Props> = props => {
     }
   };
 
-  // Helper function to find element by ID in the nested structure
   const findElementById = (elements: ElementInterface[], id: string): ElementInterface | null => {
     for (const el of elements) {
       if (el.id === id) return el;
@@ -186,7 +185,6 @@ export const Section: React.FC<Props> = props => {
     return rawHtmlElements[rawHtmlIndex] || null;
   };
 
-  // Helper to find innermost nested element inside any element that contains children
   const findInnermostNestedElement = (containerEl: HTMLElement, target: HTMLElement, containerId: string): string | null => {
     const element = findElementById(props.section?.elements || [], containerId);
     if (element?.elements && element.elements.length > 0) {
@@ -214,7 +212,6 @@ export const Section: React.FC<Props> = props => {
     return null;
   };
 
-  // Handle clicks on any element in the section (including nested ones in rows)
   const handleSectionClick = (event: React.MouseEvent) => {
     const target = event.target as HTMLElement;
     const rawHtmlWrapper = target.closest(".elementWrapper.rawHTML") as HTMLElement;
@@ -232,10 +229,8 @@ export const Section: React.FC<Props> = props => {
     if (target.closest("button")) return;
     if (target.closest(".MuiDialog-root")) return;
 
-    // Find the closest element wrapper - look for data-element-id attribute or el-{id} pattern
     let elementId: string | null = null;
 
-    // First, try to find element by data-element-id attribute (our wrapper for top-level elements)
     const wrapperWithId = target.closest("[data-element-id]") as HTMLElement;
     if (wrapperWithId) {
       elementId = wrapperWithId.getAttribute("data-element-id");
@@ -249,7 +244,6 @@ export const Section: React.FC<Props> = props => {
       }
     }
 
-    // If not found, try to find by el-{id} pattern (used by elements inside rows)
     if (!elementId) {
       const elDiv = target.closest('[id^="el-"]') as HTMLElement;
       if (elDiv && elDiv.id.startsWith("el-")) {
@@ -276,7 +270,6 @@ export const Section: React.FC<Props> = props => {
     }
   };
 
-  // Handle double-clicks on any element in the section (including nested ones in rows)
   const handleSectionDoubleClick = (event: React.MouseEvent) => {
     if (!props.onElementDoubleClick) return;
 
@@ -293,7 +286,6 @@ export const Section: React.FC<Props> = props => {
     }
     let elementId: string | null = null;
 
-    // First, try to find element by data-element-id attribute (our wrapper)
     const wrapperWithId = target.closest("[data-element-id]") as HTMLElement;
     if (wrapperWithId) {
       elementId = wrapperWithId.getAttribute("data-element-id");
@@ -307,7 +299,6 @@ export const Section: React.FC<Props> = props => {
       }
     }
 
-    // If not found, try to find by el-{id} pattern (from RowElement)
     if (!elementId) {
       const elDiv = target.closest('[id^="el-"]') as HTMLElement;
       if (elDiv && elDiv.id.startsWith("el-")) {
@@ -493,18 +484,14 @@ export const Section: React.FC<Props> = props => {
     return result;
   };
 
-  // Check if the selected element is a nested element (inside a row, not a top-level element)
   const isNestedElementSelected = () => {
     if (!props.selectedElementId || !props.section?.elements) return false;
-    // Check if the selected element is a top-level element
     const isTopLevel = props.section.elements.some(e => e.id === props.selectedElementId);
     if (isTopLevel) return false;
-    // Check if it exists in the nested structure
     const found = findElementById(props.section.elements, props.selectedElementId);
     return !!found;
   };
 
-  // Get the selected nested element
   const getSelectedNestedElement = (): ElementInterface | null => {
     if (!props.selectedElementId || !props.section?.elements) return null;
     return findElementById(props.section.elements, props.selectedElementId);
@@ -521,7 +508,6 @@ export const Section: React.FC<Props> = props => {
     return null;
   };
 
-  // Render floating selection for nested elements
   const renderFloatingSelection = () => {
     if (!isNestedElementSelected() || !props.onElementDelete || !props.onElementDuplicate || !props.onElementMove) return null;
 

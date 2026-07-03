@@ -28,7 +28,6 @@ export const ServingPage = () => {
     return ministries.data && ministries.data.length > 0 ? ArrayHelper.getIds(ministries.data, "id") : [];
   }, [ministries.data]);
 
-  // Only admins need group members (for membership filtering and Show All toggle)
   const groupMembers = useQuery<GroupMemberInterface[]>({
     queryKey: ["/groupMembers", "MembershipApi", groupIds],
     enabled: isAdmin && groupIds.length > 0,
@@ -58,7 +57,6 @@ export const ServingPage = () => {
 
   const selectedMinistry = groups.find((g) => g.id === selectedMinistryId);
 
-  // Auto-select first ministry from filtered groups, or reset if current selection is not in filtered list
   React.useEffect(() => {
     if (groups.length > 0) {
       const isCurrentSelectionValid = groups.some(g => g.id === selectedMinistryId);
@@ -70,7 +68,6 @@ export const ServingPage = () => {
 
   if (ministries.isLoading) return <Loading />;
 
-  // Show add ministry form
   if (showAdd) {
     return (
       <>
@@ -82,7 +79,6 @@ export const ServingPage = () => {
     );
   }
 
-  // No ministries - prompt to create one
   if (groups.length === 0) {
     return (
       <>
@@ -105,7 +101,6 @@ export const ServingPage = () => {
     );
   }
 
-  // Has ministries - show selector and content
   return (
     <>
       <PageHeader title={selectedMinistry?.name || Locale.label("components.wrapper.serving")} subtitle={Locale.label("plans.ministryPage.subtitle")}>
@@ -160,7 +155,6 @@ export const ServingPage = () => {
         )}
       </PageHeader>
 
-      {/* Ministry Tabs */}
       {groups.length > 1 && (
         <Box sx={{ borderBottom: 1, borderColor: "divider", backgroundColor: "background.paper" }}>
           <Tabs

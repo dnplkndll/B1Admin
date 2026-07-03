@@ -11,9 +11,7 @@ interface Props {
   testId?: string;
 }
 
-// Reusable campus dropdown for react-hook-form. Loads the shared campus list and
-// renders an "Unassigned" option (value "") plus one item per campus. Used by
-// the person, group, and plan editors so the dropdown only lives in one place.
+// Reusable campus dropdown for person/group/plan editors.
 export const CampusSelect: React.FC<Props> = ({ control, name = "campusId", label, testId = "campus-select" }) => {
   const campuses = useCampuses();
   const lbl = label ?? Locale.label("person.campus");

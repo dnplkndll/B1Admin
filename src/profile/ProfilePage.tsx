@@ -142,7 +142,6 @@ export const ProfilePage = () => {
 
       <Box sx={{ p: 3 }}>
         <Stack spacing={3}>
-          {/* Display validation errors if any */}
           {errors.length > 0 && (
             <Alert severity="error">
               <ul style={{ margin: 0, paddingLeft: "20px" }}>
@@ -153,15 +152,12 @@ export const ProfilePage = () => {
             </Alert>
           )}
 
-          {/* Display mutation errors if any */}
           {updateProfileMutation.error && <Alert severity="error">{updateProfileMutation.error.message || Locale.label("profile.profilePage.saveError")}</Alert>}
 
           {deleteAccountMutation.error && <Alert severity="error">{deleteAccountMutation.error.message || Locale.label("profile.profilePage.deleteError")}</Alert>}
 
-          {/* Display success message if any */}
           {saveMessage && <Alert severity="success">{saveMessage}</Alert>}
 
-          {/* Profile Information Card */}
           <Card>
             <CardContent>
               <Stack spacing={2}>
@@ -231,7 +227,6 @@ export const ProfilePage = () => {
 
           <LinkedAccounts />
 
-          {/* Theme Preferences Card */}
           <Card>
             <CardContent>
               <Stack spacing={2}>
@@ -259,7 +254,6 @@ export const ProfilePage = () => {
             </CardContent>
           </Card>
 
-          {/* Account Deletion Card */}
           <Card>
             <CardContent>
               <Stack spacing={2}>

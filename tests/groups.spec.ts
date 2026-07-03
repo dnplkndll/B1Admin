@@ -5,9 +5,6 @@ import { login } from "./helpers/auth";
 import { navigateToGroups } from "./helpers/navigation";
 import { STORAGE_STATE_PATH } from "./global-setup";
 
-// Cross-describe chain: Groups 'edit group details' renames first group to
-// 'Elementary (2-5)' which Sessions 'delete group' then deletes. Many tests
-// also mutate the same "first group" row, so the whole file runs serially.
 test.describe.serial("Group Management", () => {
   let page: Page;
 
@@ -22,22 +19,12 @@ test.describe.serial("Group Management", () => {
     await page?.context().close();
   });
 
-  // Each test in the chain re-clicks into a group detail page; reset to the
-  // /groups list before every test so first-group selectors land correctly.
-  // Dismiss any leftover modal/overlay — SendInviteDialog after add-person,
-  // the Messages overlay after "should send a message", or the user-menu
-  // dropdown — they intercept pointer events on the primary nav.
   test.beforeEach(async () => {
     await dismissSendInviteIfPresent(page, 500);
-    // Close any open MuiModal (Popover, Menu, or Dialog). The user-menu
-    // dropdown uses an `MuiBackdrop-invisible` backdrop that still intercepts
-    // clicks, so we explicitly target it. Press Escape (and click off-screen
-    // as a fallback) to dismiss.
     const modal = page.locator(".MuiModal-root .MuiBackdrop-root").first();
     if (await modal.isVisible({ timeout: 200 }).catch(() => false)) {
       await page.keyboard.press("Escape");
       await modal.waitFor({ state: "hidden", timeout: 2000 }).catch(() => { });
-      // If Escape didn't close it, click the backdrop directly.
       if (await modal.isVisible({ timeout: 100 }).catch(() => false)) {
         await modal.click({ force: true }).catch(() => { });
         await modal.waitFor({ state: "hidden", timeout: 5000 }).catch(() => { });
@@ -80,13 +67,9 @@ test.describe.serial("Group Management", () => {
       const searchBtn = page.locator('[data-testid="person-add-search-button"]');
       await searchBtn.click();
 
-      // Pick the icon-only Add button on the search result row — not the
-      // "Add a New Person" link button at the top of the panel, which would
-      // open a creation dialog.
       const addBtn = page.locator('[data-testid^="add-person-button-"]').first();
       await expect(addBtn).toBeVisible({ timeout: 10000 });
       await addBtn.click();
-      // Demo User has an email, so SendInviteDialog opens — dismiss it.
       await dismissSendInviteIfPresent(page);
       const validatedPerson = page.locator('[data-testid="display-box-content"] td').getByText("Demo User");
       await expect(validatedPerson).toHaveCount(1);
@@ -112,17 +95,12 @@ test.describe.serial("Group Management", () => {
 
       await page.waitForResponse(response => response.url().includes("/people") && response.status() === 200, { timeout: 10000 });
 
-      // Result rows render an icon-only AppIconButton (no "Add" text).
       const addBtn = page.locator('[data-testid^="add-person-button-"]').last();
       await expect(addBtn).toBeVisible({ timeout: 10000 });
       await addBtn.click();
-      // Donald has an email → SendInviteDialog opens. Use the helper so the
-      // test still passes if a future build skips the dialog.
       await dismissSendInviteIfPresent(page);
       const validatePerson = page.locator('[id="groupMemberTable"]').getByText("Donald Clark");
       await expect(validatePerson).toHaveCount(1);
-      // Belt-and-suspenders: dialog can re-appear on slow API responses;
-      // dismiss again before the remove click that the dialog would block.
       await dismissSendInviteIfPresent(page, 500);
       const removeBtn = page.locator('[data-testid^="remove-member-button-"]').last();
       await removeBtn.click();
@@ -143,9 +121,6 @@ test.describe.serial("Group Management", () => {
       await filterCheckboxes.nth(1).click();
       const checkTwo = page.locator("span").getByText("2 active:");
       await expect(checkTwo).toHaveCount(1);
-      // Active-filter chips render their delete icon as a span inside the chip
-      // (MUI Chip deleteIcon), not a <button>. Scope to the active filters
-      // paper to avoid matching chat-panel close buttons elsewhere on the page.
       const activeFiltersPaper = page.locator(".MuiPaper-root").filter({ has: checkTwo });
       const chipDeleteIcons = activeFiltersPaper.locator(".MuiChip-deleteIcon");
       await chipDeleteIcons.last().click();
@@ -171,8 +146,6 @@ test.describe.serial("Group Management", () => {
     });
 
     test("should toggle member leader status", async () => {
-      // Documented step: "Use the green key icon to designate group leaders".
-      // Promote a non-leader, verify the row re-renders as a leader, then revert.
       const firstGroup = page.locator("table tbody tr a").first();
       await firstGroup.click();
       await page.waitForURL(/\/groups\/GRP\d+/, { timeout: 10000 });
@@ -204,9 +177,6 @@ test.describe.serial("Group Management", () => {
     });
 
     test("should expose member export link", async () => {
-      // Documented step: "To export your group data, click the download icon".
-      // Verify the export link is rendered on the Members tab; full download
-      // capture is out of scope for this unit (CSV is generated client-side).
       const firstGroup = page.locator("table tbody tr a").first();
       await firstGroup.click();
       await page.waitForURL(/\/groups\/GRP\d+/, { timeout: 10000 });
@@ -223,21 +193,14 @@ test.describe.serial("Group Management", () => {
       await page.waitForURL(/\/groups\/GRP\d+/, { timeout: 10000 });
       await expect(page).toHaveURL(/\/groups\/GRP\d+/);
 
-      // The old single-message button (edit_square icon) was split into
-      // Email + Text affordances. Click the Email tooltip-bearing IconButton.
       const messageBtn = page.locator('button[aria-label="Email this group"]').first();
       await expect(messageBtn).toBeVisible({ timeout: 10000 });
       await messageBtn.click();
-      // SendEmailDialog opens — confirm the dialog renders. Subject field is
-      // a plain input; the body uses an HtmlEditor (no textarea), so we just
-      // fill the subject as a smoke check then close.
       const dialog = page.locator('div[role="dialog"]').filter({ hasText: "Email" }).first();
       await expect(dialog).toBeVisible({ timeout: 10000 });
       const subject = dialog.locator('input[type="text"]').first();
       await expect(subject).toBeVisible({ timeout: 10000 });
       await subject.fill("Test Message Sent.");
-      // Dismiss the dialog rather than asserting on send-side delivery — the
-      // demo backend doesn't have a configured SMTP provider.
       const cancelBtn = dialog.locator("button").getByText("Cancel");
       if (await cancelBtn.isVisible({ timeout: 500 }).catch(() => false)) {
         await cancelBtn.click();
@@ -253,8 +216,6 @@ test.describe.serial("Group Management", () => {
       await page.waitForURL(/\/groups\/GRP\d+/, { timeout: 10000 });
       await expect(page).toHaveURL(/\/groups\/GRP\d+/);
 
-      // The "Send message to members" button (icon-only, EditNoteIcon) opens
-      // the in-page composer that has the templates affordance.
       const messageBtn = page.locator('[data-testid="send-message-button"]').first();
       await expect(messageBtn).toBeVisible({ timeout: 10000 });
       await messageBtn.click();
@@ -439,13 +400,13 @@ test.describe.serial("Group Management", () => {
       await firstGroup.click();
       await page.waitForURL(/\/groups\/GRP\d+/, { timeout: 10000 });
       await expect(page).toHaveURL(/\/groups\/GRP\d+/);
-      //delete
+
       const editBtn = editIconButton(page);
       await expect(editBtn).toBeVisible({ timeout: 10000 });
       await editBtn.click();
       const deleteBtn = page.locator("button").getByText("Delete");
       await deleteBtn.click();
-      //check for group still existing
+
       const deletedGroup = page.locator("table tbody tr a").getByText("Elementary (3-5)");
       const editedDeletedGroup = page.locator("table tbody tr a").getByText("Elementary (2-5)");
       const delGroups = deletedGroup.or(editedDeletedGroup);
@@ -455,14 +416,11 @@ test.describe.serial("Group Management", () => {
 
 });
 
-// Edge-case extensions — coverage gaps from .notes/B1Admin-test-coverage-gaps.md §3.
-// Independent of the lifecycle chain above; opens a known seed group fresh each test.
 test.describe("Group communication and roster controls", () => {
   test("group detail page exposes Send Message affordance", async ({ page }) => {
     const firstGroup = page.locator("table tbody tr a").first();
     await firstGroup.click();
     await page.waitForURL(/\/groups\/GRP\d+/, { timeout: 10000 });
-    // GroupMembers.tsx renders a SmallButton with data-testid="send-message-button"
     await expect(page.locator('[data-testid="send-message-button"]')).toBeVisible({ timeout: 10000 });
   });
 
@@ -470,7 +428,6 @@ test.describe("Group communication and roster controls", () => {
     const firstGroup = page.locator("table tbody tr a").first();
     await firstGroup.click();
     await page.waitForURL(/\/groups\/GRP\d+/, { timeout: 10000 });
-    // ExportLink from apphelper renders an <a download="groupmembers.csv"> anchor
     await expect(page.locator('a[download="groupmembers.csv"]')).toBeVisible({ timeout: 10000 });
   });
 
@@ -479,44 +436,30 @@ test.describe("Group communication and roster controls", () => {
     await firstGroup.click();
     await page.waitForURL(/\/groups\/GRP\d+/, { timeout: 10000 });
     await page.locator('[data-testid="send-message-button"]').click();
-    // Composer surfaces a Templates select + a message textarea (140-char counter shown)
-    // Anchor on the textarea presence.
     await expect(page.locator("#groupMembersBox textarea").first()).toBeVisible({ timeout: 10000 });
   });
 
   test("promotes a group member to leader and back", async ({ page }) => {
-    // Use the Children category groups — they have multiple seed members. Open the first.
     const firstGroup = page.locator("table tbody tr a").first();
     await firstGroup.click();
     await page.waitForURL(/\/groups\/GRP\d+/, { timeout: 10000 });
 
-    // Find a non-leader member (the promote-leader testid is only present for non-leaders).
     const promoteBtn = page.locator('[data-testid^="promote-leader-button-"]').first();
     if (!(await promoteBtn.isVisible().catch(() => false))) {
       test.info().annotations.push({ type: "skip-reason", description: "No non-leader members in seed group" });
       return;
     }
-    // Capture the testid suffix so we can find the matching demote button afterwards.
     const testid = await promoteBtn.getAttribute("data-testid");
     const memberId = testid!.replace("promote-leader-button-", "");
     await promoteBtn.click();
 
     const demoteBtn = page.locator(`[data-testid="remove-leader-button-${memberId}"]`);
     await expect(demoteBtn).toBeVisible({ timeout: 10000 });
-    // Demote back to keep demo data clean for subsequent tests.
     await demoteBtn.click();
     await expect(page.locator(`[data-testid="promote-leader-button-${memberId}"]`)).toBeVisible({ timeout: 10000 });
   });
 });
 
-// Regression coverage for the campus migration: campuses moved from the attendance
-// DB to the membership DB, so the demo no longer seeds attendance.campuses. The
-// group edit "Service Times (optional)" field loads its options from
-// GET /attendance/servicetimes and its assigned-rows list from
-// GET /attendance/groupservicetimes — both of which used to INNER JOIN campuses and
-// returned [] for churches with no attendance.campuses row, blanking the field.
-// "Women's Bible Study" is a standard (non-team) seed group with no service-time
-// assignment, untouched by the lifecycle chain above.
 test.describe("Group service times (optional) field", () => {
   test("lists available service times and assigns one to a group", async ({ page }) => {
     const groupLink = page.locator("table tbody tr a").getByText("Women's Bible Study", { exact: true });
@@ -524,13 +467,10 @@ test.describe("Group service times (optional) field", () => {
     await groupLink.click();
     await page.waitForURL(/\/groups\/GRP\w+/, { timeout: 10000 });
 
-    // Enter edit mode — the "Service Times (optional)" field lives in the group edit box.
     await editIconButton(page).first().click();
     const box = page.locator("#groupDetailsBox");
     await expect(box).toBeVisible({ timeout: 10000 });
 
-    // The dropdown is populated from GET /attendance/servicetimes. Before the fix it
-    // was empty (inner join on the now-unseeded attendance.campuses).
     const chooser = box.locator('[data-cy="choose-service-time"]');
     await expect(chooser).toBeVisible({ timeout: 10000 });
     await chooser.click();
@@ -538,18 +478,14 @@ test.describe("Group service times (optional) field", () => {
     await expect(options.first()).toBeVisible({ timeout: 10000 });
     expect(await options.count()).toBeGreaterThan(0);
 
-    // Pick a known seed service time and add it to the group.
     await options.filter({ hasText: "9:00 AM Service" }).first().click();
     const addResp = page.waitForResponse((r) => r.url().includes("/groupservicetimes") && r.request().method() === "POST");
     await box.locator('[data-cy="add-service-time"]').click();
     await addResp;
 
-    // The assigned-times list (GET /groupservicetimes) now shows the row — this read
-    // path also previously inner-joined campuses.
     const assignedRow = box.locator("table tbody tr").filter({ hasText: "9:00 AM Service" }).first();
     await expect(assignedRow).toBeVisible({ timeout: 10000 });
 
-    // Clean up so the seed group is unchanged for later runs.
     const delResp = page.waitForResponse((r) => r.url().includes("/groupservicetimes") && r.request().method() === "DELETE");
     await assignedRow.locator('button:has(svg[data-testid="PersonRemoveIcon"])').click();
     await delResp;
@@ -557,11 +493,6 @@ test.describe("Group service times (optional) field", () => {
   });
 });
 
-// Duplicate (GroupBanner), Archive (GroupDetailsEdit header), and Show archived + Restore
-// (GroupsPage). Uses its own browser context/serial chain, targeting a seed group untouched
-// by the "Group Management" chain above ("Empty Nesters Group", GRP00000015) so ordering
-// between the two chains doesn't matter. The chain operates on the *duplicate*, not the
-// seed group, and deletes it at the end.
 test.describe.serial("Groups — Duplicate, Archive, Restore", () => {
   let page: Page;
   const SOURCE_GROUP = "Empty Nesters Group";
@@ -593,13 +524,10 @@ test.describe.serial("Groups — Duplicate, Archive, Restore", () => {
     await page.locator('[data-testid="duplicate-group-button"]').click();
     await groupPost;
 
-    // Navigates to the copy's own detail page (a different GRP id).
     await page.waitForURL((url) => /\/groups\/[\w-]+$/.test(url.pathname) && url.href !== originalUrl, { timeout: 15000 });
     await expect(page.getByText(DUPLICATE_NAME).first()).toBeVisible({ timeout: 10000 });
 
-    // Settings were copied (meeting location from the source group)...
     await expect(page.getByText("Various Homes").first()).toBeVisible({ timeout: 10000 });
-    // ...but members were not — the source group has 4 seed members, the copy has none.
     await expect(page.locator("#groupMemberTable tbody tr")).toHaveCount(0, { timeout: 10000 });
   });
 
@@ -615,7 +543,6 @@ test.describe.serial("Groups — Duplicate, Archive, Restore", () => {
       await d.accept();
     });
     await archiveBtn.click();
-    // Archiving redirects back to the groups list.
     await page.waitForURL(/\/groups$/, { timeout: 15000 });
   });
 
@@ -634,7 +561,6 @@ test.describe.serial("Groups — Duplicate, Archive, Restore", () => {
     await row.locator('[data-testid^="restore-group-"]').click();
     await restoreResp;
 
-    // Toggle "Show archived" back off — the restored group now shows in the default list.
     const toggle = page.locator('[data-testid="show-archived-toggle"] input');
     await toggle.click();
     await expect(page.locator("table tbody tr a").getByText(DUPLICATE_NAME)).toBeVisible({ timeout: 10000 });

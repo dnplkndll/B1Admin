@@ -90,9 +90,7 @@ export const PraiseChartsProducts = (props: Props) => {
     let result = <></>;
     if (product.price) {
       if (product.permissions?.can_download) {
-        // Download is a "must carry text" glyph per convention, but it sits in a
-        // tight price-cell column beside Free/$price buttons; rendered as a labeled
-        // download button so the action reads consistently with its siblings.
+        // Labeled button ensures consistent action reading in tight layout.
         result = (
           <Button
             variant="contained"

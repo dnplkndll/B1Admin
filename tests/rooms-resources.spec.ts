@@ -4,12 +4,7 @@ import { navigateToRoomsResources, navigateToApprovals, navigateToCalendars } fr
 import { login } from "./helpers/auth";
 import { STORAGE_STATE_PATH } from "./global-setup";
 
-// Rooms & resources admin (roadmap 2.7/2.8): room/resource/blockout/template
-// CRUD, double-booking conflict warnings, approval-group routing with the
-// approvals inbox, and .ics import. Demo User belongs to no groups, so a room
-// whose approval group is "High School Youth" always queues bookings as
-// pending (the auto-approve-if-member path stays off).
-
+// Rooms & resources admin (roadmap 2.7/2.8): CRUD, double-booking warnings, approval routing, .ics import.
 const HALL = "Zacchaeus Hall";
 const RESTRICTED_ROOM = "Zacchaeus Restricted Room";
 const PROJECTOR = "Zacchaeus Projector";

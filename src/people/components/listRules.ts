@@ -67,8 +67,6 @@ const convertFilter = (filter: ActiveFilter): ListRuleCondition | null => {
   }
 };
 
-// Converts the UI's saved criteria (advanced filter map or flat condition array)
-// into the server-evaluable rules tree.
 export const buildRulesFromCriteria = (criteria: Record<string, ActiveFilter> | SearchCondition[], match: "all" | "any" | "none" = "all"): ListRuleGroup => {
   const conditions: ListRuleCondition[] = [];
   if (Array.isArray(criteria)) {

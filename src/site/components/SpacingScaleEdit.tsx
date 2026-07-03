@@ -40,7 +40,6 @@ export function SpacingScaleEdit(props: Props) {
         setSpacing(defaults);
       }
     } else {
-      // Set default values
       setSpacing(defaults);
     }
   }, [props.globalStyle]);
@@ -129,7 +128,6 @@ export function SpacingScaleEdit(props: Props) {
                 {Locale.label("site.spacingScaleEdit.practicalExamplesDesc")}
               </Typography>
 
-              {/* Icon Row - uses xs */}
               <Typography variant="subtitle2" sx={{ fontWeight: 600, mb: 2 }}>{Locale.label("site.spacingScaleEdit.iconRow")}</Typography>
               <Box sx={{
                 border: "1px solid var(--border-main)",
@@ -148,7 +146,6 @@ export function SpacingScaleEdit(props: Props) {
                 {Locale.label("site.spacingScaleEdit.iconRowDesc").replace("{value}", spacing.xs.toString())}
               </Typography>
 
-              {/* Card Example - uses sm, md */}
               <Typography variant="subtitle2" sx={{ fontWeight: 600, mb: 2 }}>{Locale.label("site.spacingScaleEdit.cardWithContent")}</Typography>
               <Box sx={{
                 border: "1px solid var(--border-main)",
@@ -167,7 +164,6 @@ export function SpacingScaleEdit(props: Props) {
                 </Stack>
               </Box>
 
-              {/* Section Example - uses lg, xl */}
               <Typography variant="subtitle2" sx={{ fontWeight: 600, mb: 2 }}>{Locale.label("site.spacingScaleEdit.pageSection")}</Typography>
               <Box sx={{
                 border: "1px solid var(--border-main)",
@@ -183,7 +179,6 @@ export function SpacingScaleEdit(props: Props) {
                 </Box>
               </Box>
 
-              {/* Full Page Section - uses xxl */}
               <Typography variant="subtitle2" sx={{ fontWeight: 600, mb: 2 }}>{Locale.label("site.spacingScaleEdit.fullWidthBanner")}</Typography>
               <Box sx={{
                 border: "1px solid var(--border-main)",

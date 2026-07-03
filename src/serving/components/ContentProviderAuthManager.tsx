@@ -19,18 +19,15 @@ export const ContentProviderAuthManager: React.FC<Props> = ({ ministryId, onAuth
   const [loading, setLoading] = useState(true);
   const [showProviderSelector, setShowProviderSelector] = useState(false);
 
-  // Auth flow state
   const [authProviderId, setAuthProviderId] = useState<string | null>(null);
   const [authStatus, setAuthStatus] = useState<AuthStatus>("idle");
   const [deviceFlowData, setDeviceFlowData] = useState<DeviceAuthorizationResponse | null>(null);
   const [authError, setAuthError] = useState<string | null>(null);
 
-  // PKCE state
   const [, setCodeVerifier] = useState<string | null>(null);
   const [pkceWindow, setPkceWindow] = useState<Window | null>(null);
 
-  // Polling cancellation: bumping the generation invalidates any outstanding poll closures,
-  // so closing the dialog (or starting a new flow) stops the previous chain.
+  // Bumping generation invalidates outstanding poll closures so closing the dialog stops the previous chain.
   const pollGenerationRef = useRef(0);
   const activePollTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -49,13 +46,11 @@ export const ContentProviderAuthManager: React.FC<Props> = ({ ministryId, onAuth
     []
   );
 
-  // Get implemented providers
   const authProviders = useMemo(
     () => availableProviders.filter(p => p.implemented),
     [availableProviders]
   );
 
-  // Providers not yet linked (for modal)
   const unlinkableProviders = useMemo(() => {
     const linkedIds = new Set(linkedProviders.map(lp => lp.providerId));
     return authProviders.filter(p => !linkedIds.has(p.id));
@@ -83,12 +78,10 @@ export const ContentProviderAuthManager: React.FC<Props> = ({ ministryId, onAuth
     loadLinkedProviders();
   }, [loadLinkedProviders]);
 
-  // Get linked auth record for a provider
   const getLinkedAuth = useCallback((providerId: string): ContentProviderAuthInterface | undefined => {
     return linkedProviders.find(lp => lp.providerId === providerId);
   }, [linkedProviders]);
 
-  // Handle unlinking a provider
   const handleUnlink = useCallback(async (providerId: string) => {
     const auth = getLinkedAuth(providerId);
     if (!auth?.id) return;
@@ -102,7 +95,6 @@ export const ContentProviderAuthManager: React.FC<Props> = ({ ministryId, onAuth
     }
   }, [getLinkedAuth, loadLinkedProviders, onAuthChange]);
 
-  // Start device flow authentication
   const startDeviceFlow = useCallback(async (providerId: string) => {
     const provider = getProvider(providerId);
     if (!provider) return;
@@ -128,7 +120,6 @@ export const ContentProviderAuthManager: React.FC<Props> = ({ ministryId, onAuth
       setDeviceFlowData(deviceResponse);
       setAuthStatus("device_flow");
 
-      // Start polling for token
       pollDeviceFlowToken(provider, deviceResponse.device_code, deviceResponse.interval || 5);
     } catch (error) {
       console.error("Error starting device flow:", error);
@@ -137,7 +128,6 @@ export const ContentProviderAuthManager: React.FC<Props> = ({ ministryId, onAuth
     }
   }, []);
 
-  // Poll for device flow token
   const pollDeviceFlowToken = useCallback(async (
     provider: IProvider,
     deviceCode: string,
@@ -145,9 +135,7 @@ export const ContentProviderAuthManager: React.FC<Props> = ({ ministryId, onAuth
   ) => {
     cancelActivePolls();
     const generation = pollGenerationRef.current;
-    // RFC 8628 §3.5: once the server returns slow_down, the increased interval must persist
-    // for subsequent polls. Storing this in a closure-local `let` instead of recomputing
-    // `interval + 5` each time keeps the bump compounding correctly.
+    // RFC 8628: once slow_down is returned, increased interval must persist for subsequent polls.
     let currentInterval = initialInterval;
 
     const isCancelled = () => generation !== pollGenerationRef.current;
@@ -160,14 +148,12 @@ export const ContentProviderAuthManager: React.FC<Props> = ({ ministryId, onAuth
         if (isCancelled()) return;
 
         if (result && "access_token" in result) {
-          // Success - we have the token
           await ContentProviderAuthHelper.storeAuth(ministryId, provider.id, result);
           if (isCancelled()) return;
           setAuthStatus("success");
           await loadLinkedProviders();
           if (onAuthChange) onAuthChange();
 
-          // Auto-close after success
           activePollTimeoutRef.current = setTimeout(() => {
             if (isCancelled()) return;
             setAuthProviderId(null);
@@ -184,13 +170,11 @@ export const ContentProviderAuthManager: React.FC<Props> = ({ ministryId, onAuth
             return;
           }
 
-          // Other error - stop polling
           setAuthError(result.error_description || result.error);
           setAuthStatus("error");
           return;
         }
 
-        // Null result - expired or failed
         setAuthError(Locale.label("plans.contentProviderAuth.authExpired"));
         setAuthStatus("error");
       } catch (error) {
@@ -204,7 +188,6 @@ export const ContentProviderAuthManager: React.FC<Props> = ({ ministryId, onAuth
     activePollTimeoutRef.current = setTimeout(poll, currentInterval * 1000);
   }, [ministryId, loadLinkedProviders, onAuthChange, cancelActivePolls]);
 
-  // Start PKCE OAuth flow
   const startPKCEFlow = useCallback(async (providerId: string) => {
     const provider = getProvider(providerId);
     if (!provider) return;
@@ -220,7 +203,6 @@ export const ContentProviderAuthManager: React.FC<Props> = ({ ministryId, onAuth
         return;
       }
 
-      // Step 1: Create a relay session on the API
       const relayData = await ApiHelper.post("/oauth/relay/sessions", { provider: providerId }, "MembershipApi");
       if (!relayData?.sessionCode || !relayData?.redirectUri) {
         setAuthError(Locale.label("plans.contentProviderAuth.sessionFailed"));
@@ -230,13 +212,11 @@ export const ContentProviderAuthManager: React.FC<Props> = ({ ministryId, onAuth
 
       const { sessionCode, redirectUri, expiresIn } = relayData;
 
-      // Step 2: Generate code verifier and build auth URL using relay redirect
       const verifier = (provider as any).generateCodeVerifier();
       setCodeVerifier(verifier);
 
       const authResult = await (provider as any).buildAuthUrl(verifier, redirectUri, sessionCode);
 
-      // Step 3: Open popup window
       const width = 600;
       const height = 700;
       const left = window.screenX + (window.outerWidth - width) / 2;
@@ -261,7 +241,6 @@ export const ContentProviderAuthManager: React.FC<Props> = ({ ministryId, onAuth
       const generation = pollGenerationRef.current;
       const isCancelled = () => generation !== pollGenerationRef.current;
 
-      // Step 4: Poll the relay for the auth code
       const expiresAt = Date.now() + (expiresIn || 300) * 1000;
 
       const poll = async () => {
@@ -288,7 +267,6 @@ export const ContentProviderAuthManager: React.FC<Props> = ({ ministryId, onAuth
           if (result?.status === "completed" && result?.authCode) {
             popup.close();
 
-            // Exchange code for tokens
             const tokens = await (provider as any).exchangeCodeForTokens(
               result.authCode,
               verifier,
@@ -316,7 +294,6 @@ export const ContentProviderAuthManager: React.FC<Props> = ({ ministryId, onAuth
             return;
           }
 
-          // Still pending — poll again
           activePollTimeoutRef.current = setTimeout(poll, 3000);
         } catch (error) {
           if (isCancelled()) return;
@@ -333,7 +310,6 @@ export const ContentProviderAuthManager: React.FC<Props> = ({ ministryId, onAuth
     }
   }, [ministryId, loadLinkedProviders, onAuthChange, cancelActivePolls]);
 
-  // Handle link button click
   const handleLink = useCallback(async (providerId: string) => {
     const providerInfo = availableProviders.find(p => p.id === providerId);
     if (!providerInfo) return;
@@ -364,7 +340,6 @@ export const ContentProviderAuthManager: React.FC<Props> = ({ ministryId, onAuth
 
     setShowProviderSelector(false);
 
-    // Prefer device flow if supported
     if (provider.supportsDeviceFlow()) {
       startDeviceFlow(providerId);
     } else {
@@ -372,7 +347,6 @@ export const ContentProviderAuthManager: React.FC<Props> = ({ ministryId, onAuth
     }
   }, [availableProviders, ministryId, loadLinkedProviders, onAuthChange, startDeviceFlow, startPKCEFlow]);
 
-  // Close auth dialog
   const handleCloseDialog = useCallback(() => {
     cancelActivePolls();
     if (pkceWindow && !pkceWindow.closed) {
@@ -386,7 +360,6 @@ export const ContentProviderAuthManager: React.FC<Props> = ({ ministryId, onAuth
     setPkceWindow(null);
   }, [pkceWindow, cancelActivePolls]);
 
-  // Get current provider being authenticated
   const currentProvider = useMemo(() => {
     if (!authProviderId) return null;
     return availableProviders.find(p => p.id === authProviderId) || null;

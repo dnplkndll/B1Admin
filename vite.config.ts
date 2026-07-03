@@ -6,9 +6,7 @@ import path from "path";
 
 // https://vite.dev/config/
 export default defineConfig(({ mode }) => {
-  // loadEnv only reads .env* files. Deploy scripts pass REACT_APP_STAGE etc.
-  // via shell `export`, so merge process.env in (shell wins) — otherwise
-  // every non-dev build bakes in undefined and falls through to staging.
+  // loadEnv doesn't read shell exports; merge process.env so deploy scripts' exports win.
   const env = { ...loadEnv(mode, process.cwd(), ["PORT", "REACT_APP"]), ...process.env };
   return {
     plugins: [
@@ -17,8 +15,7 @@ export default defineConfig(({ mode }) => {
     ],
 
     optimizeDeps: {
-      // Pre-bundle react-dnd so the lazy-loaded Workflows board route doesn't
-      // trigger a mid-session dep re-optimization (which 504s the board chunk).
+      // Pre-bundle react-dnd to prevent mid-session re-optimization on Workflows load.
       include: ["@churchapps/helpers", "react-dnd", "react-dnd-html5-backend"]
     },
 
@@ -42,9 +39,7 @@ export default defineConfig(({ mode }) => {
       open: true
     },
     define: {
-      // Polyfill process.env.* so CommonEnvironmentHelper (which reads process.env)
-      // sees the values in the browser bundle. We expose both REACT_APP_* and
-      // NEXT_PUBLIC_* spellings so the same helper works under any framework.
+      // Expose both REACT_APP_* and NEXT_PUBLIC_* so CommonEnvironmentHelper works cross-framework.
       "process.env.REACT_APP_STAGE": JSON.stringify(env.REACT_APP_STAGE),
       "process.env.REACT_APP_API_BASE": JSON.stringify(env.REACT_APP_API_BASE),
       "process.env.REACT_APP_LESSONS_API": JSON.stringify(env.REACT_APP_LESSONS_API),

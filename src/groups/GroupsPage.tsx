@@ -30,7 +30,6 @@ const formatHeader = (key: string): string => {
     return customMap[key];
   }
 
-  // Programmatic camelCase to spaced Title Case fallback
   const result = key
     .replace(/([A-Z])/g, " $1")
     .replace(/([0-9]+)/g, " $1")
@@ -352,7 +351,6 @@ const GroupsPage = () => {
         </Stack>
       </PageHeader>
 
-      {/* Main Content */}
       <Box sx={{ p: 3 }}>
         {addBox}
         {getTable()}

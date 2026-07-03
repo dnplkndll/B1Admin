@@ -253,12 +253,9 @@ export const DonationBatchesPage = () => {
         </Stack>
       </PageHeader>
 
-      {/* Main Content */}
       <Box sx={{ p: 3 }}>
-        {/* Edit content appears above when editing */}
         {editBatchId !== "notset" && <Box sx={{ mb: 3 }}>{getSidebarModules()}</Box>}
 
-        {/* Main table */}
         <Card>
           <Box sx={{ p: 2, borderBottom: 1, borderColor: "var(--border-light)" }}>
             <Stack direction="row" justifyContent="space-between" alignItems="center">
@@ -275,12 +272,10 @@ export const DonationBatchesPage = () => {
           <Box>{getTable()}</Box>
         </Card>
 
-        {/* Events section */}
         <Box sx={{ mt: 3 }}>
           <DonationEvents />
         </Box>
 
-        {/* Stripe Import link */}
         {UserHelper.checkAccess(Permissions.givingApi.donations.edit) && (
           <Box sx={{ mt: 4, textAlign: "center" }}>
             <Link to="/donations/stripe-import" style={{ color: "var(--text-muted)", fontSize: "0.85rem", textDecoration: "none" }}>

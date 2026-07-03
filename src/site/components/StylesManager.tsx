@@ -32,8 +32,7 @@ export function StylesManager(props: Props) {
     fetch(b1Url + "/api/revalidate/" + subDomain, { method: "POST" }).catch(() => { /* best-effort */ });
   };
 
-  // Editing a secondary site that still inherits the primary row must fork a new
-  // row (drop the primary's id, stamp this site) so the primary is never overwritten.
+  // Fork inherited rows to avoid overwriting primary.
   const prepareForSave = (gs: GlobalStyleInterface): GlobalStyleInterface => {
     if ((gs.siteId || "") !== siteId) {
       const copy = { ...gs };

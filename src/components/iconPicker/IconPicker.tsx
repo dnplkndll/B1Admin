@@ -72,12 +72,10 @@ export const IconPicker: React.FC<Props> = (props) => {
     setPage(value);
   };
 
-  // Filter icons based on search
   const filteredIcons = searchText
     ? IconNamesList.filter((icon) => icon.includes(searchText))
     : defaultIcons;
 
-  // Paginate icons
   const totalPages = Math.ceil(filteredIcons.length / ICONS_PER_PAGE);
   const startIndex = (page - 1) * ICONS_PER_PAGE;
   const paginatedIcons = filteredIcons.slice(startIndex, startIndex + ICONS_PER_PAGE);
@@ -123,7 +121,6 @@ export const IconPicker: React.FC<Props> = (props) => {
 
       <DialogContent sx={{ p: 2, pt: 3, marginTop: 2 }}>
         <Stack spacing={2}>
-          {/* Search Field */}
           <TextField
             fullWidth
             label={Locale.label("common.iconPicker.searchLabel")}
@@ -134,7 +131,6 @@ export const IconPicker: React.FC<Props> = (props) => {
             autoFocus
           />
 
-          {/* Icon Grid */}
           <Box sx={{ minHeight: "300px" }}>
             {paginatedIcons.length > 0 ? (
               <Grid container spacing={0.75}>
@@ -205,7 +201,6 @@ export const IconPicker: React.FC<Props> = (props) => {
             )}
           </Box>
 
-          {/* Pagination */}
           {totalPages > 1 && (
             <Box sx={{ display: "flex", justifyContent: "center", pt: 1 }}>
               <Pagination
@@ -217,7 +212,6 @@ export const IconPicker: React.FC<Props> = (props) => {
             </Box>
           )}
 
-          {/* Helper Text */}
           <Box sx={{ pt: 0.5 }}>
             <Stack direction="row" spacing={0.5} alignItems="center">
               <Icon sx={{ fontSize: 14, color: "text.secondary" }}>info</Icon>

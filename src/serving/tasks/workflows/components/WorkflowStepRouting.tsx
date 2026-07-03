@@ -14,9 +14,6 @@ interface Props {
   workflows?: WorkflowInterface[];
 }
 
-// Routing editor shown inside WorkflowStepEdit. Manages a step's conditional exits:
-// "outcome" routes (buttons shown when completing) and "personMatch" routes
-// (auto-advance on entry when the card's person matches a condition tree).
 export const WorkflowStepRouting = (props: Props) => {
   const { step, steps, workflows = [] } = props;
   const [routes, setRoutes] = React.useState<WorkflowStepRouteInterface[]>([]);
@@ -29,7 +26,6 @@ export const WorkflowStepRouting = (props: Props) => {
     if (!step.id) return;
     const data: WorkflowStepRouteInterface[] = await ApiHelper.get("/workflowStepRoutes/step/" + step.id, "DoingApi");
     setRoutes(data);
-    // Load conditions for each personMatch route so we can show/edit them.
     const map: { [routeId: string]: ConditionInterface[] } = {};
     await Promise.all(
       data.filter((r) => r.kind === "personMatch" && r.id).map(async (r) => {
@@ -54,11 +50,10 @@ export const WorkflowStepRouting = (props: Props) => {
   const addOutcome = () => saveRoute({ workflowId: step.workflowId, stepId: step.id, trigger: "onComplete", kind: "outcome", sort: routes.length + 1, label: Locale.label("tasks.workflowRouting.addOutcome") });
   const addAuto = () => saveRoute({ workflowId: step.workflowId, stepId: step.id, trigger: "onEnter", kind: "personMatch", sort: routes.length + 1, targetStepId: otherSteps[0]?.id });
 
-  // "" sentinel in the target select means "complete/close the card" (null target).
   const targetValue = (route: WorkflowStepRouteInterface) => route.targetStepId || "";
   const setTarget = (route: WorkflowStepRouteInterface, value: string) => saveRoute({ ...route, targetStepId: value || undefined });
 
-  // Outcome target can be a step or a "wf:<id>" hand-off; the two fields are mutually exclusive.
+  // Empty string sentinel means "complete/close the card"; outcome targets are either steps or "wf:<id>" workflows.
   const outcomeTargetValue = (route: WorkflowStepRouteInterface) => (route.targetWorkflowId ? WF_PREFIX + route.targetWorkflowId : route.targetStepId || "");
   const setOutcomeTarget = (route: WorkflowStepRouteInterface, value: string) => {
     if (value.startsWith(WF_PREFIX)) saveRoute({ ...route, targetWorkflowId: value.slice(WF_PREFIX.length), targetStepId: undefined });
@@ -66,7 +61,6 @@ export const WorkflowStepRouting = (props: Props) => {
   };
 
   const addCondition = async (route: WorkflowStepRouteInterface) => {
-    // The route's root conjunction is created server-side; fetch it to attach the condition.
     const conj: { id?: string }[] = await ApiHelper.get("/conjunctions/stepRoute/" + route.id, "DoingApi");
     if (conj[0]?.id) setEditCondition({ conjunctionId: conj[0].id, field: "" });
   };
@@ -122,7 +116,6 @@ export const WorkflowStepRouting = (props: Props) => {
         <Typography variant="subtitle2" sx={{ fontWeight: 600 }}>{Locale.label("tasks.workflowRouting.title")}</Typography>
       </Stack>
 
-      {/* Outcomes (onComplete) */}
       <Typography variant="caption" color="text.secondary">{Locale.label("tasks.workflowRouting.outcomesHelp")}</Typography>
       <Stack spacing={1} sx={{ mt: 1 }}>
         {outcomes.map((route) => (
@@ -139,7 +132,6 @@ export const WorkflowStepRouting = (props: Props) => {
 
       <Divider sx={{ my: 2 }} />
 
-      {/* Automatic routing (onEnter / personMatch) */}
       <Typography variant="subtitle2" sx={{ fontWeight: 600 }}>{Locale.label("tasks.workflowRouting.automatic")}</Typography>
       <Typography variant="caption" color="text.secondary">{Locale.label("tasks.workflowRouting.automaticHelp")}</Typography>
       <Stack spacing={1} sx={{ mt: 1 }}>

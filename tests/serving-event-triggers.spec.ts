@@ -6,10 +6,7 @@ import { navigateToServing } from "./helpers/navigation";
 import { recoverFromViteError } from "./helpers/fixtures";
 import { STORAGE_STATE_PATH } from "./global-setup";
 
-// Event-driven workflow triggers, managed per-workflow from the board. Seed
-// (Api/tools/dbScripts/doing/demo.sql) on WFL00000001 "New Visitor Follow-up":
-//   WKT1 person.created + WKT2 person.updated (Visitor), WKT3 form.submission.created.
-// The engine taps WebhookDispatcher.emit, so any back-end mutation triggers it.
+// Event-driven workflow triggers fire on back-end mutations via WebhookDispatcher.
 const API_BASE = "http://localhost:8084";
 
 // Open the triggers manager for the seeded workflow's board.
@@ -72,7 +69,6 @@ test.describe.serial("Serving Management - Event Triggers", () => {
     await page.locator('[data-testid="trigger-event-select"]').click();
     await page.getByRole("option", { name: /Form.*Submitted/ }).click();
 
-    // The form field's value list is populated from MembershipApi /forms.
     await page.locator('[data-testid="add-condition-button"]').click();
     await page.locator('[data-testid="condition-value-0"]').click();
     await page.getByRole("option", { name: "Visitor Information Card" }).click();
@@ -102,9 +98,7 @@ test.describe.serial("Serving Management - Event Triggers", () => {
     await expect(page.getByText("Zacchaeus Schedule")).toHaveCount(0, { timeout: 10000 });
   });
 
-  // The point of the feature: a back-end mutation from ANY front-end fires the
-  // trigger. We create a Visitor person through the membership API and assert a
-  // card lands on the seeded workflow — no UI path involved.
+  // The feature: back-end mutation from ANY front-end fires the trigger.
   test("creating a Visitor person via the API drops a card on the workflow", async () => {
     const ctx = await request.newContext();
     const loginRes = await ctx.post(`${API_BASE}/membership/users/login`, { data: { email: "demo@b1.church", password: "password" } });
@@ -133,9 +127,7 @@ test.describe.serial("Serving Management - Event Triggers", () => {
     await ctx.dispose();
   });
 
-  // Execution-history lifecycle, all API-driven on a throwaway workflow: a firing
-  // records an execution; failures (no steps yet) park pending with the error; run-now
-  // bulk-applies; retry succeeds once a step exists; pause-all parks queued retries.
+  // Execution lifecycle: record on fire, park on failure, run-now bulk-applies, retry after step exists, pause-all parks queued.
   test("executions record, retry, run-now and pause-all on a temp workflow", async () => {
     const ctx = await request.newContext();
     const loginRes = await ctx.post(`${API_BASE}/membership/users/login`, { data: { email: "demo@b1.church", password: "password" } });
@@ -156,7 +148,6 @@ test.describe.serial("Serving Management - Event Triggers", () => {
     expect(mine.status).toBe("pending");
     expect(mine.lastError).toContain("no steps");
 
-    // Bulk-apply-on-create against the current matching set.
     const runResult = await (await ctx.post(`${API_BASE}/doing/workflowTriggers/${trigger.id}/runNow`, { ...auth, data: {} })).json();
     expect(runResult.created).toBeGreaterThanOrEqual(1);
 
@@ -167,7 +158,6 @@ test.describe.serial("Serving Management - Event Triggers", () => {
     const board = await (await ctx.get(`${API_BASE}/doing/tasks/board/${wf.id}`, auth)).json();
     expect((board.cards || []).some((c: any) => c.associatedWithId === person.id)).toBeTruthy();
 
-    // Pause-all deactivates the trigger and parks its queued retries; resume reverses.
     const pausedTrigger = await (await ctx.post(`${API_BASE}/doing/workflowTriggers/${trigger.id}/pauseAll`, { ...auth, data: {} })).json();
     expect(pausedTrigger.active).toBeFalsy();
     executions = await (await ctx.get(`${API_BASE}/doing/workflowTriggers/${trigger.id}/executions`, auth)).json();

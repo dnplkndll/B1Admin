@@ -15,9 +15,7 @@ interface Props {
   children?: React.ReactNode;
 }
 
-/**
- * Renders a section header row with drag handle, label, action buttons, and duration.
- */
+/** Section header row with drag handle, label, action buttons, and duration. */
 export const PlanItemHeader: React.FC<Props> = ({
   planItem,
   startTime = 0,

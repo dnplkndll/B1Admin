@@ -5,19 +5,6 @@ import { login } from "./helpers/auth";
 import { navigateToRegistrations } from "./helpers/navigation";
 import { STORAGE_STATE_PATH } from "./global-setup";
 
-// Registrations feature additions:
-//   - RegistrationSettingsEdit: "Registration Questions" form dropdown (formId).
-//   - RegistrationDetailsPage: "Add Attendee" (PersonAdd dialog -> /registrations/register,
-//     handles capacity-full), "Unanswered questions only" filter chip (only when the event
-//     has a form), and a per-row "View Answers" (FormSubmission) dialog.
-//
-// Demo data already ships a standalone public form (FRM00000004 "VBS Registration (Public)",
-// contentType='form', GET /forms?contentType=form) — no need to create one. This spec creates
-// its own disposable registration-enabled event (via the New Event modal + a direct API call
-// to flip registrationEnabled/capacity) so it doesn't disturb the seeded VBS/Missions
-// Conference registration counts other tests might rely on. Two registrations are seeded via
-// the public (anon) /content/registrations/register endpoint — one with a real form
-// submission attached (to drive the Unanswered filter + View Answers dialog), one without.
 
 const API_BASE = "http://localhost:8084";
 const CALENDAR = "Zacchaeus Registrations Calendar";
@@ -63,7 +50,6 @@ test.describe.serial("Registrations — Registration Questions, Add Attendee, fi
     page = await context.newPage();
     await login(page);
 
-    // Create a disposable calendar + event through the real UI (mirrors event-reminders.spec.ts).
     await gotoCalendars(page);
     await page.locator('[data-testid="add-calendar"]').or(page.locator('[data-testid="empty-state-add-calendar"]')).first().click();
     await page.locator('[data-testid="calendar-name-input"] input').fill(CALENDAR);
@@ -85,7 +71,6 @@ test.describe.serial("Registrations — Registration Questions, Add Attendee, fi
     expect(eventId, "created event id").toBeTruthy();
     await expect(page.locator('[data-testid="new-event-save-button"]')).toHaveCount(0, { timeout: 15000 });
 
-    // Log in via the raw API to get a staff JWT (Domain Admin) for setup/cleanup calls.
     const ctx = await request.newContext();
     const loginRes = await ctx.post(`${API_BASE}/membership/users/login`, { data: { email: "demo@b1.church", password: "password" } });
     expect(loginRes.ok()).toBeTruthy();
@@ -95,11 +80,10 @@ test.describe.serial("Registrations — Registration Questions, Add Attendee, fi
     expect(staffJwt, "staff jwt").toBeTruthy();
     const auth = { headers: { Authorization: "Bearer " + staffJwt } };
 
-    // Enable registration, capacity 3 (existing pre-shipped fields, not the new UI under test).
+    // Not using new registration UI to avoid interference with feature tests.
     const enableRes = await ctx.post(`${API_BASE}/content/events`, { ...auth, data: [{ id: eventId, groupId: created[0].groupId, title: EVENT_TITLE, start: eventStart, end: eventEnd, allDay: false, visibility: "public", registrationEnabled: true, capacity: 3 }] });
     expect(enableRes.ok()).toBeTruthy();
 
-    // A real form submission for FRM00000004 (VBS Registration (Public)) with answers.
     const submissionRes = await ctx.post(`${API_BASE}/membership/formsubmissions`, {
       ...auth,
       data: [
@@ -119,9 +103,7 @@ test.describe.serial("Registrations — Registration Questions, Add Attendee, fi
     formSubmissionId = (await submissionRes.json())[0]?.id;
     expect(formSubmissionId, "form submission id").toBeTruthy();
 
-    // Two guest registrations via the public register endpoint — one with the submission attached.
-    // "members" gives each row a display name (RegistrationDetailsPage falls back to the raw
-    // personId when a registration has no attached registrationMembers).
+    // "members" field lets rows display attendee name (else falls back to personId).
     const answeredRes = await ctx.post(`${API_BASE}/content/registrations/register`, { data: { churchId: CHURCH_ID, eventId, guestInfo: { firstName: "Zacchaeus", lastName: "AnsweredGuest", email: "zacchaeus.answered.guest@example.com" }, members: [{ firstName: "Zacchaeus", lastName: "AnsweredGuest" }], formSubmissionId } });
     expect(answeredRes.ok()).toBeTruthy();
     answeredRegId = (await answeredRes.json())?.id;
@@ -134,7 +116,6 @@ test.describe.serial("Registrations — Registration Questions, Add Attendee, fi
   });
 
   test.afterAll(async () => {
-    // Best-effort cleanup via API, then delete the disposable calendar through the UI.
     try {
       const ctx = await request.newContext();
       const auth = { headers: { Authorization: "Bearer " + staffJwt } };
@@ -165,7 +146,6 @@ test.describe.serial("Registrations — Registration Questions, Add Attendee, fi
     await eventRow.click();
     await page.waitForURL(new RegExp(`/registrations/${eventId}`), { timeout: 10000 });
     await expect(page.getByText(EVENT_TITLE, { exact: false }).first()).toBeVisible({ timeout: 10000 });
-    // Both seeded registrations are listed; no form assigned yet so no filter chip.
     await expect(page.getByText("Zacchaeus AnsweredGuest")).toBeVisible({ timeout: 10000 });
     await expect(page.getByText("Zacchaeus UnansweredGuest")).toBeVisible();
     await expect(page.getByText("Unanswered questions only")).toHaveCount(0);
@@ -213,14 +193,12 @@ test.describe.serial("Registrations — Registration Questions, Add Attendee, fi
     await dialog.getByRole("button", { name: "Close" }).click();
     await expect(dialog).toHaveCount(0, { timeout: 5000 });
 
-    // The unanswered row has no submission, so no View Answers affordance.
     const unansweredRow = page.locator("tr").filter({ hasText: "Zacchaeus UnansweredGuest" });
     await expect(unansweredRow.locator('button[aria-label="View Answers"]')).toHaveCount(0);
   });
 
   test("Add Attendee successfully registers a person when capacity allows", async () => {
-    // handleAddAttendee only sends personId (no "members"), so the new row displays the raw
-    // personId rather than "Demo User" — assert on row count instead of row text.
+    // Only personId sent (no members) so row shows ID not name; test by count.
     const registrationsCard = page.locator(".MuiCard-root").filter({ has: page.getByRole("button", { name: "Add Attendee" }) });
     const rowCountBefore = await registrationsCard.locator("table tbody tr").count();
     expect(rowCountBefore).toBe(2);
@@ -256,7 +234,6 @@ test.describe.serial("Registrations — Registration Questions, Add Attendee, fi
     await addBtn.click();
 
     await expect(dialog.getByText("This event is at capacity.")).toBeVisible({ timeout: 10000 });
-    // Dialog stays open on error.
     await expect(dialog).toBeVisible();
     await dialog.getByRole("button", { name: "Cancel" }).click();
     await expect(dialog).toHaveCount(0, { timeout: 5000 });

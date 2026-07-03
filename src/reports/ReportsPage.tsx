@@ -47,7 +47,6 @@ export const ReportsPage = () => {
 
       <Container maxWidth="lg">
         <Box sx={{ py: 3 }}>
-          {/* Reports Grid */}
           <Card
             elevation={2}
             sx={{
@@ -122,7 +121,6 @@ export const ReportsPage = () => {
             </CardContent>
           </Card>
 
-          {/* Help Text */}
           <Paper
             sx={{
               mt: 3,

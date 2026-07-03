@@ -9,11 +9,7 @@ interface PageSkeletonProps {
   rows?: number;
 }
 
-/**
- * Skeletal placeholder for pages while their lazy chunks or initial data load.
- * Layout mirrors the typical PageHeader + content shell so the page doesn't jump
- * when the real content arrives.
- */
+/** Skeletal placeholder while lazy chunks/initial data load. Mirrors PageHeader + content shell to prevent jumping. */
 export const PageSkeleton: React.FC<PageSkeletonProps> = ({ showHeader = true, rows = 4 }) => (
   <>
     {showHeader && <Skeleton variant="rectangular" height={140} sx={{ width: "100%" }} />}

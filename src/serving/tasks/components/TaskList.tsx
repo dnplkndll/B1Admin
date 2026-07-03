@@ -39,7 +39,6 @@ export const TaskList = memo((props: Props) => {
   const [tab, setTab] = React.useState(0);
   const context = React.useContext(UserContext);
 
-  // React Query hooks for data fetching
   const tasks = useQuery<TaskInterface[]>({
     queryKey: props.status === Locale.label("tasks.taskPage.closed") ? ["/tasks/closed", "DoingApi"] : ["/tasks", "DoingApi"],
     placeholderData: []
@@ -86,7 +85,6 @@ export const TaskList = memo((props: Props) => {
     </Button>
   );
 
-  // Refetch function for all queries
   const refetch = useCallback(() => {
     tasks.refetch();
     groupMembers.refetch();
@@ -112,7 +110,6 @@ export const TaskList = memo((props: Props) => {
           "&:last-child": { mb: 0 }
         }}>
         <Stack spacing={2}>
-          {/* Task Header */}
           <Box
             sx={{
               display: "flex",
@@ -158,7 +155,6 @@ export const TaskList = memo((props: Props) => {
             />
           </Box>
 
-          {/* Task Details */}
           {!props.compact && (
             <>
               <Divider />
@@ -258,7 +254,6 @@ export const TaskList = memo((props: Props) => {
 
   const hasAnyTasks = assignedToMe.length > 0 || assignedToMyGroups.length > 0 || createdByMe.length > 0;
 
-  // Show loading state if any query is loading
   if (tasks.isLoading || groupMembers.isLoading) {
     return (
       <Card
@@ -297,7 +292,6 @@ export const TaskList = memo((props: Props) => {
           marginTop: 4
         }}>
         <CardContent>
-          {/* Header */}
           <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ mb: 3 }}>
             <Stack direction="row" alignItems="center" spacing={1}>
               <TaskIcon sx={{ color: "primary.main", fontSize: 20 }} />
@@ -340,7 +334,6 @@ export const TaskList = memo((props: Props) => {
             </Stack>
           </Stack>
 
-          {/* Content */}
           {props.compact ? (
             <>
               <Tabs value={tab} onChange={(_e, v) => setTab(v)} variant="scrollable" scrollButtons="auto" sx={{ borderBottom: 1, borderColor: "divider", mb: 2, minHeight: 40 }}>

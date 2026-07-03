@@ -1,17 +1,11 @@
-// Node.js script to generate SVG avatars for demo people
-// Usage: node generate_avatars.js
-// This script parses the demo.mysql file and creates SVG avatars for each person in the avatars directory
-
 const fs = require("fs");
 const path = require("path");
 
-// Path to the demo.mysql file
 const DEMO_MYSQL =
   "E:/LCS/CoreApis/MembershipApi/tools/dbScripts/demo.mysql";
 const OUTPUT_DIR =
   __dirname;
 
-// Helper: Calculate age group from birthdate
 function getAgeGroup(
   birthDate
 ) {
@@ -60,7 +54,6 @@ function getAgeGroup(
   return "senior";
 }
 
-// Helper: Generate a random color from a palette
 function randomFrom(
   arr
 ) {
@@ -113,7 +106,6 @@ const shirtColors =
     "#4834D4"
   ];
 
-// Helper: SVG avatar generator (simple, flat, faceless)
 function makeAvatar({
   gender,
   ageGroup,
@@ -122,7 +114,6 @@ function makeAvatar({
   bg,
   shirt
 }) {
-  // Basic shapes for different age/gender
   let hairShape =
     "";
   if (

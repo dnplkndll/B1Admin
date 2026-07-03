@@ -282,8 +282,6 @@ export const AttendanceSetup = memo(() => {
       </TableRow>
     );
 
-    // Group the attendance tree's services/service-times by campus id. Campus
-    // names come from the membership master, not the (frozen) tree payload.
     const servicesByCampus: { [campusId: string]: { [serviceName: string]: { service: any; serviceTimes: any[] } } } = {};
     attendance.data.forEach((a) => {
       if (!a.service) return; // campus-only tree row; the campus comes from the membership list below
@@ -326,12 +324,10 @@ export const AttendanceSetup = memo(() => {
             }
           });
 
-          // Add "Add Service Time" button after each service
           rows.push(getAddServiceTimeRow(serviceGroup.service, `add-st-${campusIdx}-${serviceIdx}`));
         });
       }
 
-      // Add "Add Service" button after each campus
       rows.push(getAddServiceRow(campus, `add-svc-${campusIdx}`));
     });
 
@@ -366,7 +362,6 @@ export const AttendanceSetup = memo(() => {
       <ServiceEdit service={selectedService} updatedFunction={handleUpdated} />
       <ServiceTimeEdit serviceTime={selectedServiceTime} updatedFunction={handleUpdated} />
 
-      {/* Modern Header Section */}
       <Box sx={{ p: 2, borderBottom: 1, borderColor: "var(--border-light)" }}>
         <Stack direction="row" justifyContent="space-between" alignItems="center">
           <Stack direction="row" spacing={1} alignItems="center">
@@ -378,7 +373,6 @@ export const AttendanceSetup = memo(() => {
         </Stack>
       </Box>
 
-      {/* Table Section */}
       <Box sx={{ p: 0 }}>{table}</Box>
     </>
   );

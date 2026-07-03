@@ -19,14 +19,7 @@ interface ExpandResult {
   handleExpandToActions: () => Promise<void>;
 }
 
-/**
- * Expand a section plan item into its child action items.
- *
- * Two expansion paths:
- * 1. Item-level provider fields (providerId / providerPath / providerContentPath on the item itself)
- * 2. Plan-level provider association — used when the item only has a relatedId and the
- *    plan carries the providerId + content path
- */
+/** Expand a section plan item into its child action items via provider or plan-level association. */
 export function usePlanItemExpand(options: ExpandOptions): ExpandResult {
   const { planItem, associatedProviderId, associatedContentPath, ministryId, onChange, onError } = options;
   const [isExpanding, setIsExpanding] = useState(false);
@@ -35,7 +28,6 @@ export function usePlanItemExpand(options: ExpandOptions): ExpandResult {
   const canExpandViaPlan = !!(associatedProviderId && associatedContentPath && planItem.relatedId);
   const canExpand = canExpandViaProvider || canExpandViaPlan;
 
-  // Shared logic for creating action items from a section's children
   const createActionItems = useCallback((
     section: InstructionItem,
     pathPrefix: string,
@@ -60,7 +52,6 @@ export function usePlanItemExpand(options: ExpandOptions): ExpandResult {
     }));
   }, [planItem.planId, planItem.parentId]);
 
-  // Expand via provider fields (providerId, providerPath, providerContentPath)
   const expandViaProvider = useCallback(async () => {
     const { providerId, providerPath, providerContentPath, sort } = planItem;
     if (!providerId || !providerPath || !providerContentPath || !ministryId) return;
@@ -85,8 +76,7 @@ export function usePlanItemExpand(options: ExpandOptions): ExpandResult {
     );
 
     if (actionItems.length > 0) {
-      // Post the replacement items first; only delete the original section once the post has
-      // succeeded. If the post fails, the original section stays and nothing is lost.
+      // Post replacement items first to preserve original if post fails.
       await ApiHelper.post("/planItems", actionItems, "DoingApi");
       await ApiHelper.delete(`/planItems/${planItem.id}`, "DoingApi");
     }
@@ -130,8 +120,7 @@ export function usePlanItemExpand(options: ExpandOptions): ExpandResult {
     );
 
     if (actionItems.length > 0) {
-      // Post the replacement items first; only delete the original section once the post has
-      // succeeded. If the post fails, the original section stays and nothing is lost.
+      // Post replacement items first to preserve original if post fails.
       await ApiHelper.post("/planItems", actionItems, "DoingApi");
       await ApiHelper.delete(`/planItems/${planItem.id}`, "DoingApi");
     }

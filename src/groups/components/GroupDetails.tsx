@@ -66,13 +66,12 @@ export const GroupDetails = memo((props: Props) => {
       <Card elevation={0} sx={{ backgroundColor: "transparent" }}>
         <CardContent sx={{ p: 0 }}>
           <Grid container spacing={3}>
-            {/* Group Photo and Basic Info */}
             <Grid size={{ xs: 12, md: 4 }}>
               <Box sx={{ textAlign: "center" }}>
                 <Box
                   sx={{
                     width: { xs: 280, md: 320 },
-                    height: { xs: 158, md: 180 }, // 16:9 aspect ratio
+                    height: { xs: 158, md: 180 },
                     borderRadius: 3,
                     overflow: "hidden",
                     mx: "auto",
@@ -118,10 +117,8 @@ export const GroupDetails = memo((props: Props) => {
               </Box>
             </Grid>
 
-            {/* Group Details */}
             <Grid size={{ xs: 12, md: 8 }}>
               <Stack spacing={3}>
-                {/* Meeting Info */}
                 {isStandard && (
                   <Box>
                     <Typography variant="h6" gutterBottom sx={{ color: "primary.main" }}>
@@ -154,7 +151,6 @@ export const GroupDetails = memo((props: Props) => {
                   </Box>
                 )}
 
-                {/* Attendance Settings */}
                 {isStandard && (
                   <Box>
                     <Typography variant="h6" gutterBottom sx={{ color: "primary.main" }}>
@@ -183,7 +179,6 @@ export const GroupDetails = memo((props: Props) => {
                   </Box>
                 )}
 
-                {/* Labels */}
                 {labelChips.length > 0 && (
                   <Box>
                     <Stack direction="row" spacing={1} alignItems="center" sx={{ mb: 1 }}>
@@ -196,7 +191,6 @@ export const GroupDetails = memo((props: Props) => {
                   </Box>
                 )}
 
-                {/* About Section */}
                 {isStandard && group.about && (
                   <Box>
                     <Typography variant="h6" gutterBottom sx={{ color: "primary.main" }}>
@@ -209,7 +203,6 @@ export const GroupDetails = memo((props: Props) => {
             </Grid>
           </Grid>
 
-          {/* Service Times */}
           {isStandard && (
             <Box sx={{ mt: 4 }}>
               <Divider sx={{ mb: 3 }} />

@@ -83,7 +83,6 @@ export function ContentEditor(props: Props) {
   const initialSnapshotSavedRef = React.useRef(false);
   const [showScrollHelpers, setShowScrollHelpers] = useState(false);
 
-  // Undo/Redo system
   const { canUndo, canRedo, undo, redo, saveSnapshot, history, currentHistoryIndex, restoreToIndex } = useUndoRedo({
     pageId: props.pageId,
     blockId: props.blockId
@@ -141,8 +140,7 @@ export function ContentEditor(props: Props) {
   const [pendingPanelAction, setPendingPanelAction] = useState<PanelAction | null>(null);
   const [pendingDeleteSection, setPendingDeleteSection] = useState<SectionInterface | null>(null);
 
-  // Items hidden on the previewed device render dimmed in the canvas (instead of display:none)
-  // so they stay selectable; selectors cover sections, top-level wrappers and nested el-{id} divs.
+  // Render hidden items dimmed instead of display:none so they stay selectable.
   const getEditorVisibilityCss = (sections: SectionInterface[], device: string) => {
     const selectors: string[] = [`.elementWrapper.${device === "mobile" ? "hiddenOnMobile" : "hiddenOnDesktop"}`];
     const collectElement = (e: ElementInterface) => {
@@ -216,9 +214,7 @@ export function ContentEditor(props: Props) {
           });
         }
         setContainer(p);
-        // Save snapshot after data loads if description provided
         if (snapshotDescription && p) {
-          // Use setTimeout to ensure state is updated before saving snapshot
           setTimeout(() => {
             saveSnapshot(p, snapshotDescription);
           }, 100);
@@ -229,7 +225,6 @@ export function ContentEditor(props: Props) {
 
   useEffect(loadDataInternal, [props.pageId, props.blockId]);
 
-  // Save initial snapshot when container loads
   useEffect(() => {
     if (container && !initialSnapshotSavedRef.current) {
       saveSnapshot(container, "Initial state");
@@ -237,7 +232,6 @@ export function ContentEditor(props: Props) {
     }
   }, [container, saveSnapshot]);
 
-  // Listen for undo/redo restore events - just update UI state (server restore is handled by the hook)
   useEffect(() => {
     const handleRestore = (e: CustomEvent) => {
       const snapshot = e.detail;
@@ -313,9 +307,7 @@ export function ContentEditor(props: Props) {
     });
   };
 
-  // Re-pour a section's content into another template: build the replacement just
-  // ahead of the original, save it, then delete the original. The gap between the
-  // two writes is non-atomic, but a pre-change snapshot lets undo recover it.
+  // Non-atomic create-then-delete swap is undo-recoverable via pre-change snapshot.
   const handleSwitchLayout = (template: SectionTemplateDef) => {
     const source = switchSection;
     if (!source) return;
@@ -335,10 +327,7 @@ export function ContentEditor(props: Props) {
     });
   };
 
-  // AI rewrite: ask AskApi to rewrite the section's text-bearing fields, then
-  // (only when the model kept the structure) re-pour the result into a fresh
-  // section just ahead of the original and delete the original — same non-atomic
-  // create-then-delete swap the layout switcher uses, undo-recoverable.
+  // Non-atomic create-then-delete swap (same as layout switcher), undo-recoverable.
   const openAiRewrite = (section: SectionInterface) => {
     setRewriteError("");
     setRewriteSection(section);
@@ -793,7 +782,6 @@ export function ContentEditor(props: Props) {
     return () => contentEl.removeEventListener("scroll", onScroll);
   }, []);
 
-  // Debounce timer ref for realtime changes
   const realtimeDebounceRef = useRef<NodeJS.Timeout | null>(null);
 
   const handleRealtimeChange = useCallback((element: ElementInterface) => {

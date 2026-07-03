@@ -5,10 +5,7 @@ import { login } from "./helpers/auth";
 import { navigateToServing } from "./helpers/navigation";
 import { STORAGE_STATE_PATH } from "./global-setup";
 
-// ZACCHAEUS/ZEBEDEE are the names used for testing. If you see Zacchaeus or Zebedee entered anywhere, it is a result of these tests.
-// Entire file is one chain: create Zacchaeus Ministry -> rename to Zebedee ->
-// add plan types/teams under it -> tear down in reverse. Every test pivots on
-// the shared Zebedee Ministry tab.
+// ZACCHAEUS/ZEBEDEE are test marker names; the file is one serial chain to avoid state conflicts.
 test.describe.serial("Serving Management - Plans", () => {
   let page: Page;
 
@@ -23,10 +20,7 @@ test.describe.serial("Serving Management - Plans", () => {
     await page?.context().close();
   });
 
-  // Plans now live at /serving/plans (the Serving section defaults to My Work).
-  // Edit Ministry / Edit Plan Type flows navigate off to /groups or
-  // /serving/planTypes, so re-enter the plans page before each test. Also
-  // dismiss any leftover SendInviteDialog (e.g. from adding Dorothy with an email).
+  // Edit/Plan Type flows navigate off-page; re-enter /serving/plans before each test.
   test.beforeEach(async () => {
     await dismissSendInviteIfPresent(page, 500);
     if (!/\/serving\/plans/.test(page.url())) {
@@ -36,8 +30,7 @@ test.describe.serial("Serving Management - Plans", () => {
   });
 
   test.describe("Ministry CRUD", () => {
-    // Ministry tests share data — a retry would create duplicate "Zacchaeus
-    // Ministry"/"Zebedee Ministry" tabs and break subsequent assertions.
+    // Retries would create duplicate tabs and break downstream lookups.
     test.describe.configure({ retries: 0 });
 
     test("should add ministry", async () => {
@@ -74,8 +67,7 @@ test.describe.serial("Serving Management - Plans", () => {
       await expect(minName).toBeVisible({ timeout: 10000 });
       await minName.fill("Zebedee Ministry");
       const saveBtn = page.locator("button").getByText("Save");
-      // Wait for the group save POST so the cache invalidation has a chance
-      // to update the banner before we assert on it.
+      // Wait for cache invalidation before asserting on the banner.
       const groupPost = page.waitForResponse(
         r => r.url().includes("/membership/groups") && r.request().method() === "POST",
         { timeout: 15000 }
@@ -113,8 +105,7 @@ test.describe.serial("Serving Management - Plans", () => {
       await personSearch.fill("Dorothy");
       const searchBtn = page.locator('[data-testid="person-add-search-button"]');
       await searchBtn.click();
-      // Result rows render icon-only AppIconButtons; a text "Add" locator would
-      // substring-match the "Add a New Person" button and open the wrong dialog.
+      // Icon-only buttons; text "Add" would substring-match "Add a New Person".
       const addBtn = page.locator('[data-testid^="add-person-button-"]').first();
       await expect(addBtn).toBeVisible({ timeout: 10000 });
       const memberPost = page.waitForResponse(r => r.url().includes("/groupmembers") && r.request().method() === "POST", { timeout: 15000 }).catch((): null => null);
@@ -140,7 +131,7 @@ test.describe.serial("Serving Management - Plans", () => {
       const equalsCondition = page.locator('li[data-value="equals"]');
       await equalsCondition.click();
       const firstName = page.locator('input[type="text"]');
-      // Advanced search fires automatically as conditions change — no Search button.
+      // Auto-search on condition change; no Search button.
       const searched = page.waitForResponse(r => r.url().includes("/people") && r.status() === 200, { timeout: 10000 }).catch((): null => null);
       await firstName.fill("Grace");
       await searched;
@@ -180,8 +171,7 @@ test.describe.serial("Serving Management - Plans", () => {
   });
 
   test.describe("Plan Types", () => {
-    // Plan Type tests share data — a retry would create duplicate "Zacchaeus
-    // Plans" rows and break subsequent assertions.
+    // Retries would create duplicate rows and break downstream assertions.
     test.describe.configure({ retries: 0 });
 
     test("should create plan type", async () => {
@@ -208,7 +198,7 @@ test.describe.serial("Serving Management - Plans", () => {
       await editBtn.click();
       const typeName = page.locator('[name="name"]');
       await typeName.fill("Zebedee Plans");
-      // exact: the reminder editor inside this dialog has its own "Save Reminder" button
+      // Reminder editor inside dialog has its own "Save Reminder" button.
       const saveBtn = page.getByRole("button", { name: "Save", exact: true });
       await saveBtn.click();
       const verifiedType = page.locator("a").getByText("Zebedee Plans");
@@ -258,7 +248,7 @@ test.describe.serial("Serving Management - Plans", () => {
       await plansBtn.click();
       await expect(page).toHaveURL(/\/serving\/planTypes\/[^/]+/);
 
-      // Plan rows expose an icon-only AppIconButton ("Edit"), no text.
+      // Icon-only Edit button; use aria-label.
       const editBtn = page.locator('button[aria-label="Edit"]').first();
       await expect(editBtn).toBeVisible({ timeout: 10000 });
       await editBtn.click();
@@ -379,7 +369,7 @@ test.describe.serial("Serving Management - Plans", () => {
       const equalsCondition = page.locator('li[data-value="equals"]');
       await equalsCondition.click();
       const firstName = page.locator('input[type="text"]');
-      // Advanced search fires automatically as conditions change — no Search button.
+      // Auto-search on condition change; no Search button.
       const searched = page.waitForResponse(r => r.url().includes("/people") && r.status() === 200, { timeout: 10000 }).catch((): null => null);
       await firstName.fill("Grace");
       await searched;
@@ -470,7 +460,6 @@ test.describe.serial("Serving Management - Plans", () => {
   });
 });
 
-// Edge-case extensions: Plans page navigation surface (independent of Zebedee chain).
 test.describe("Plans page navigation", () => {
   test("Add Ministry button is visible on the Serving Plans page", async ({ page }) => {
     await page.goto("/serving/plans");
@@ -479,7 +468,6 @@ test.describe("Plans page navigation", () => {
   });
 
   test("Plans subnavigation reveals secondary entries (Songs, My Work)", async ({ page }) => {
-    // SecondaryMenu surfaces entries based on the active primary section.
     await expect(page.locator('[id="secondaryMenu"]').getByText("Songs").first()).toBeVisible({ timeout: 15000 });
     await expect(page.locator('[id="secondaryMenu"]').getByText("My Work").first()).toBeVisible({ timeout: 15000 });
   });

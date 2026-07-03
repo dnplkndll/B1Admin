@@ -16,32 +16,13 @@ export function findThumbnailRecursive(item: InstructionItem): string | undefine
   return undefined;
 }
 
-/**
- * Safely calculates the next sort value for children.
- * Handles undefined/null children arrays without producing NaN.
- */
+/** Handles undefined/null children arrays to avoid NaN. */
 export function getNextChildSort(children: PlanItemInterface[] | undefined | null): number {
   return (children?.length ?? 0) + 1;
 }
 
-/**
- * Plan item type constants.
- *
- * Current (always emit these):
- * - "header"              - Top-level section header in a plan
- * - "item"                - Generic custom item
- * - "arrangementKey"      - Song with arrangement/key info
- * - "providerSection"     - Section from content provider (has children)
- * - "providerPresentation"- Action/slide from provider (leaf node)
- * - "providerFile"        - Downloadable file from provider
- *
- * Legacy values that may still appear on existing rows in the database. Reads must accept them;
- * writes must only emit the current values above.
- *   "lessonSection" / "section"          → treated as providerSection
- *   "lessonAction"  / "action"           → treated as providerPresentation
- *   "lessonAddOn"   / "addon" / "file"   → treated as providerFile
- *   "song"                               → treated as arrangementKey
- */
+/** Item types: reads accept legacy aliases; writes emit current types only.
+ * Mappings: lessonSection/section→providerSection, lessonAction/action→providerPresentation, lessonAddOn/addon/file→providerFile, song→arrangementKey. */
 export const ITEM_TYPES = {
   // Current types
   HEADER: "header",
@@ -63,7 +44,6 @@ export const ITEM_TYPES = {
   }
 } as const;
 
-// Types that should show label field in edit dialog
 const LABEL_TYPES = new Set([
   "header",
   "item",
@@ -78,7 +58,6 @@ const LABEL_TYPES = new Set([
   "providerFile"
 ]);
 
-// Types that should show description field in edit dialog
 const DESC_TYPES = new Set([
   "item",
   "lessonAction",
@@ -92,7 +71,6 @@ const DESC_TYPES = new Set([
   "providerFile"
 ]);
 
-// Types that should show duration field in edit dialog
 const DURATION_TYPES = new Set([
   "item",
   "lessonAction",
@@ -103,54 +81,33 @@ const DURATION_TYPES = new Set([
   "providerSection"
 ]);
 
-/**
- * Item types that should show label in edit dialog.
- */
 export function shouldShowLabel(itemType: string | undefined, hasRelatedId: boolean): boolean {
   if (!itemType) return false;
   return LABEL_TYPES.has(itemType) || (itemType === "arrangementKey" && hasRelatedId);
 }
 
-/**
- * Item types that should show description in edit dialog.
- */
 export function shouldShowDescription(itemType: string | undefined, hasRelatedId: boolean): boolean {
   if (!itemType) return false;
   return DESC_TYPES.has(itemType) || (itemType === "arrangementKey" && hasRelatedId);
 }
 
-/**
- * Item types that should show duration in edit dialog.
- */
 export function shouldShowDuration(itemType: string | undefined, hasRelatedId: boolean): boolean {
   if (!itemType) return false;
   return DURATION_TYPES.has(itemType) || (itemType === "arrangementKey" && hasRelatedId);
 }
 
-/**
- * Checks if an item type represents a section (has children).
- */
 export function isSectionType(itemType: string | undefined): boolean {
   return ["providerSection", "lessonSection", "section"].includes(itemType || "");
 }
 
-/**
- * Checks if an item type represents a presentation/action (leaf).
- */
 export function isPresentationType(itemType: string | undefined): boolean {
   return ["providerPresentation", "lessonAction", "action"].includes(itemType || "");
 }
 
-/**
- * Checks if an item type represents a file/add-on.
- */
 export function isFileType(itemType: string | undefined): boolean {
   return ["providerFile", "lessonAddOn", "addon", "file"].includes(itemType || "");
 }
 
-/**
- * Checks if an item type represents a song/music item.
- */
 export function isSongType(itemType: string | undefined): boolean {
   return ["song", "arrangementKey"].includes(itemType || "");
 }

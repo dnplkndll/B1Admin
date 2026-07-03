@@ -205,9 +205,7 @@ export const GroupBanner = memo((props: Props) => {
       }
     })}>
       <Stack spacing={2} sx={{ width: "100%", position: "relative", zIndex: 1 }}>
-        {/* Main Layout: Photo on left, Content on right */}
         <Stack direction={{ xs: "column", md: "row" }} spacing={{ xs: 3, md: 4 }} alignItems={{ xs: "center", md: "flex-start" }} sx={{ width: "100%" }}>
-          {/* Left: Photo */}
           <Box
             sx={{
               width: { xs: 120, md: 160 },
@@ -236,9 +234,7 @@ export const GroupBanner = memo((props: Props) => {
             )}
           </Box>
 
-          {/* Right: Content Area */}
           <Stack spacing={1.5} sx={{ flex: 1, width: "100%" }}>
-            {/* Row 1: Group Name, Category, Edit - Full Width */}
             <Stack direction="row" spacing={2} alignItems="center" justifyContent="space-between" flexWrap="wrap" sx={{ width: "100%" }}>
               <Stack direction="row" spacing={2} alignItems="center" flexWrap="wrap">
                 <Typography
@@ -271,9 +267,7 @@ export const GroupBanner = memo((props: Props) => {
               </Stack>
             </Stack>
 
-            {/* Row 2: Three Columns */}
             <Stack direction={{ xs: "column", md: "row" }} spacing={{ xs: 1.5, md: 2 }} sx={{ width: "100%" }}>
-              {/* Column 1: Time/Place */}
               <Stack spacing={1} sx={{ flex: 1 }}>
                 {quickStats.length > 0 && (
                   <Typography
@@ -304,7 +298,6 @@ export const GroupBanner = memo((props: Props) => {
                 ))}
               </Stack>
 
-              {/* Column 2: Settings and Labels */}
               <Stack spacing={1.5} sx={{ flex: 1 }}>
                 {attendanceInfo.length > 0 && (
                   <Box>
@@ -340,9 +333,7 @@ export const GroupBanner = memo((props: Props) => {
                   </Box>
                 )}
 
-                {/* Labels */}
                 {(() => {
-                  // Filter out empty, null, or whitespace-only labels
                   const validLabels = group.labelArray?.filter((label) => label && typeof label === "string" && label.trim() !== "") || [];
 
                   if (validLabels.length === 0) return null;
@@ -397,7 +388,6 @@ export const GroupBanner = memo((props: Props) => {
           </Stack>
         </Stack>
 
-        {/* Services Row - Full Width */}
         {groupServiceTimes.length > 0 && (
           <Box sx={{ borderTop: "1px solid rgba(255,255,255,0.2)", pt: 1.5 }}>
             <Typography
@@ -432,7 +422,6 @@ export const GroupBanner = memo((props: Props) => {
           </Box>
         )}
 
-        {/* Bottom Row: Description - Spans All Columns */}
         {isStandard && group.about && (
           <Box sx={{ borderTop: "1px solid rgba(255,255,255,0.2)", pt: 1.5, mt: groupServiceTimes.length > 0 ? 0 : 0 }}>
             <Typography

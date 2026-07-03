@@ -5,16 +5,11 @@ import { login } from "./helpers/auth";
 import { navigateToServing } from "./helpers/navigation";
 import { STORAGE_STATE_PATH } from "./global-setup";
 
-// Reminder config for a plan type now lives on a scope-level reminder definition
-// (MessagingApi: GET/POST /messaging/reminders/scope/plan/{planTypeId}, DELETE
-// /messaging/reminders/{defId}) rather than raw reminderOffsets/reminderMessage
-// columns on the plan type itself. We edit the seeded "Sunday Service" plan type
-// (Worship ministry, GRP0000000a) rather than creating a throwaway one, since the
-// reminder editor only renders once a plan type has an id.
+// Use scope-level reminders (API: /messaging/reminders/scope/plan/{planTypeId})
+// rather than plan-type columns; editor needs plan type to have an id.
 const API_BASE = "http://localhost:8084";
 const WORSHIP_MINISTRY_ID = "GRP0000000a";
-// Own plan type: the seeded "Sunday Service" carries a seeded reminder definition
-// (RMD00000001) and is edited by other specs — sharing it makes offsets assertions racy.
+// Use a new plan type to avoid offset assertion races with other specs.
 const PLAN_TYPE_NAME = "Zephaniah Reminder Plans";
 
 async function apiAuth(ctx: APIRequestContext) {
@@ -30,8 +25,7 @@ async function createPlanType(ctx: APIRequestContext, auth: { headers: { Authori
   return (Array.isArray(body) ? body[0] : body)?.id as string | undefined;
 }
 
-// The reminders editor lives inside a collapsed MUI Accordion. Expand it by
-// clicking the "Reminders" summary unless the enable toggle is already showing.
+// Reminders editor is in a collapsed Accordion; expand via "Reminders" summary.
 async function expandReminders(page: Page) {
   const toggle = page.locator('[data-testid="plan-type-reminder-enabled-toggle"]');
   if (await toggle.isVisible({ timeout: 500 }).catch(() => false)) return;
@@ -78,7 +72,6 @@ test.describe.serial("Serving Reminders", () => {
   });
 
   test.afterAll(async () => {
-    // Delete the definition and the spec-owned plan type so demo data is left clean.
     try {
       const ctx = await request.newContext();
       const auth = await apiAuth(ctx);
@@ -87,7 +80,7 @@ test.describe.serial("Serving Reminders", () => {
       if (defId) await ctx.delete(`${API_BASE}/messaging/reminders/${defId}`, auth);
       await ctx.delete(`${API_BASE}/doing/planTypes/${planTypeId}`, auth);
       await ctx.dispose();
-    } catch { /* best-effort cleanup */ }
+    } catch { /* ignore */ }
     await page?.context().close();
   });
 
@@ -100,8 +93,7 @@ test.describe.serial("Serving Reminders", () => {
     await expandReminders(page);
     await setEnabled(page, true);
 
-    // Default preset (1 day before) is pre-selected; add "7 days before" so the
-    // saved offsets are unambiguous.
+    // Add "7 days before" to disambiguate from default 1-day preset.
     await page.locator('[data-testid="plan-type-reminder-offset-10080"]').click();
     await page.locator('[data-testid="plan-type-reminder-time-input"] input').fill("08:15");
     await page.locator('[data-testid="plan-type-reminder-message-input"] textarea').first().fill("Come prepared and warmed up!");

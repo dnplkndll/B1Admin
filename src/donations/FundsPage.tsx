@@ -211,12 +211,9 @@ export const FundsPage = () => {
         )}
       </PageHeader>
 
-      {/* Main Content */}
       <Box sx={{ p: 3 }}>
-        {/* Edit content appears above when editing */}
         {editFundId !== "notset" && <Box sx={{ mb: 3 }}>{getSidebarModules()}</Box>}
 
-        {/* Main table */}
         <Card>
           <Box sx={{ p: 2, borderBottom: 1, borderColor: "var(--border-light)" }}>
             <Stack direction="row" justifyContent="space-between" alignItems="center">

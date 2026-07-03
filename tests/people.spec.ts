@@ -5,7 +5,7 @@ import { personDetailsEditButton, SEED_PEOPLE, openPersonRow } from "./helpers/f
 import { login } from "./helpers/auth";
 import { STORAGE_STATE_PATH } from "./global-setup";
 
-// ZACCHAEUS/ZEBEDEE are the names used for testing. If you see Zacchaeus/Zebedee entered anywhere, it is a result of these tests.
+// ZACCHAEUS/ZEBEDEE are test marker names.
 
 test.describe("People Management", () => {
 
@@ -28,9 +28,7 @@ test.describe("People Management", () => {
     });
 
     test("should advance search for people", async ({ page }) => {
-      // Match the "▶ Advanced" / "▼ Advanced" toggle specifically — a plain
-      // getByText('Advanced') also matches the SavedLists "...advanced search..."
-      // copy that shows when no saved lists exist (strict-mode violation).
+      // Match specific "▶ Advanced" / "▼ Advanced" toggle (avoid SavedLists copy).
       const advBtn = page.locator("p").getByText(/[▶▼] Advanced/);
       await advBtn.click();
       // Names accordion is expanded by default; first filter is First Name.
@@ -55,9 +53,7 @@ test.describe("People Management", () => {
     });
 
     test("should delete advance search conditions", async ({ page }) => {
-      // Match the "▶ Advanced" / "▼ Advanced" toggle specifically — a plain
-      // getByText('Advanced') also matches the SavedLists "...advanced search..."
-      // copy that shows when no saved lists exist (strict-mode violation).
+      // Match specific "▶ Advanced" / "▼ Advanced" toggle (avoid SavedLists copy).
       const advBtn = page.locator("p").getByText(/[▶▼] Advanced/);
       await advBtn.click();
       const firstCheck = page.locator('div input[type="checkbox"]').first();
@@ -67,10 +63,7 @@ test.describe("People Management", () => {
       await secondCheck.click();
       const checkTwo = page.locator("span").getByText("2 active:");
       await expect(checkTwo).toHaveCount(1);
-      // MUI Chip deleteIcon renders as an <svg> inside the Chip root (which
-      // Playwright sees as a button-role element). The svg has the click
-      // handler with stopPropagation; force-click to bypass the chip-level
-      // actionability check.
+      // SVG inside Chip has stopPropagation; force-click to bypass chip actionability.
       const chipDeleteIcons = page.locator(".MuiChip-deleteIcon");
       await chipDeleteIcons.last().click({ force: true });
       const checkOne = page.locator("span").getByText("1 active:");
@@ -82,10 +75,7 @@ test.describe("People Management", () => {
       await expect(checkTwo).toHaveCount(0);
     });
 
-    // Skipped: AI Search depends on AskApi (separate service not launched by this
-    // project's webServer config). The UI renders an error banner when AskApi is
-    // unreachable, and the feature can only be exercised end-to-end when AskApi
-    // is running locally.
+    // Skipped: AI Search requires AskApi (separate service, not in local stack).
     test.skip("should AI search for people", async ({ page }) => {
       const searchInput = page.locator('[id="display-box"] textarea').first();
       await searchInput.fill("Show me married men");
@@ -147,15 +137,12 @@ test.describe("People Management", () => {
       await openPersonRow(page, SEED_PEOPLE.DONALD);
       const notesBtn = page.locator("button").getByText("Notes");
       await notesBtn.click();
-      // Notes panel renders the AddNote textarea (name="noteText") once the
-      // initial messages load resolves.
+      // AddNote textarea renders once initial messages load.
       const seekNotes = page.locator('[name="noteText"]');
       await expect(seekNotes).toBeVisible({ timeout: 10000 });
     });
 
-    // Notes tests each seed their own note on Donald and target it via `.last()`.
-    // With fullyParallel, concurrent runs would race on the "last note" locator —
-    // keep them serial so each test owns the most recent note when it acts.
+    // Serial: each test owns the most recent note via .last() (avoid race with fullyParallel).
     test.describe.serial("Donald notes lifecycle", () => {
       let page: Page;
 
@@ -170,9 +157,7 @@ test.describe("People Management", () => {
         await page?.context().close();
       });
 
-      // Each test starts by re-opening Donald, but openPersonRow expects the
-      // /people list view. The previous test in the chain leaves us on
-      // Donald's detail page — navigate back to the list first.
+      // openPersonRow expects /people list; return if on detail page.
       test.beforeEach(async () => {
         if (!/\/people\/?$/.test(new URL(page.url()).pathname)) {
           await navigateToPeople(page);
@@ -201,10 +186,7 @@ test.describe("People Management", () => {
         // Add a note first so the edit affordance definitely exists for this person.
         const seekNotes = page.locator('[name="noteText"]');
         await expect(seekNotes).toBeVisible({ timeout: 10000 });
-        // AddNote runs a useEffect on mount that resets `message` to empty
-        // *after* the conversation is loaded — wait for the prior note to
-        // render (proxy for "conversation load done") and a short tick so the
-        // reset has fired before we fill.
+        // AddNote useEffect resets message after conversation loads; wait for prior note + tick.
         await expect(page.locator("p").getByText("Zacchaeus Test Note").first()).toBeVisible({ timeout: 10000 });
         await page.waitForTimeout(500);
         await seekNotes.fill("Zacchaeus Pre-edit Note");
@@ -213,11 +195,9 @@ test.describe("People Management", () => {
         await expect(page.locator("p").getByText("Zacchaeus Pre-edit Note").first()).toBeVisible({ timeout: 15000 });
 
         const editBtn = page.locator('button[aria-label="editNote"]').filter({ has: page.locator("text=edit") });
-        // Edit the note we just added (last in the list).
+        // Edit the most recent note via .last().
         await editBtn.last().click();
-        // AddNote fetches the message content asynchronously and then calls
-        // setMessage — wait for the form to show the original content before
-        // replacing it, otherwise the fill gets overwritten by the response.
+        // AddNote fetches async; wait for form to show original content before fill.
         await expect(seekNotes).toHaveValue("Zacchaeus Pre-edit Note", { timeout: 10000 });
         await seekNotes.fill("Zebedee Test Note");
         await page.locator("button").getByText("send").click();
@@ -229,7 +209,7 @@ test.describe("People Management", () => {
         await openPersonRow(page, SEED_PEOPLE.DONALD);
         const notesBtn = page.locator("button").getByText("Notes");
         await notesBtn.click();
-        // Seed a note to guarantee a delete target.
+        // Seed a note for delete target.
         const seekNotes = page.locator('[name="noteText"]');
         await expect(seekNotes).toBeVisible({ timeout: 10000 });
         await seekNotes.fill("Zacchaeus Delete Target");
@@ -237,11 +217,11 @@ test.describe("People Management", () => {
         const target = page.locator("p").getByText("Zacchaeus Delete Target");
         await expect(target.first()).toBeVisible({ timeout: 15000 });
 
-        // Click edit on the note we just added (last in the list).
+        // Edit the most recent note via .last().
         await page.locator('button[aria-label="editNote"]').last().click();
-        // Wait for edit mode to load this note's content before clicking delete.
+        // Wait for edit mode before clicking delete.
         await expect(seekNotes).toHaveValue("Zacchaeus Delete Target", { timeout: 10000 });
-        // In edit mode, an extra IconButton with material-icon text "delete" appears.
+        // Edit mode shows material-icon delete button.
         const deleteBtn = page.locator("button").getByText("delete", { exact: true });
         await deleteBtn.click();
         await expect(target).toHaveCount(0, { timeout: 15000 });
@@ -252,8 +232,7 @@ test.describe("People Management", () => {
       await openPersonRow(page, SEED_PEOPLE.DONALD);
       const groupsBtn = page.locator("button").getByText("Groups");
       await groupsBtn.click();
-      // Group rows render as ListItemButton component={Link} — an <a> directly
-      // inside the <ul>, with no <li> wrapper.
+      // ListItemButton component={Link}; no <li> wrapper.
       const seekText = page.locator("p").getByText("Not currently a member of any groups.");
       const seekGroup = page.locator('ul a[href^="/groups/"]').first();
       await expect(seekText.or(seekGroup)).toBeVisible({ timeout: 10000 });
@@ -274,20 +253,18 @@ test.describe("People Management", () => {
       const attBtn = page.locator("button").getByText("Attendance");
       await expect(attBtn).toBeVisible({ timeout: 10000 });
       await attBtn.click();
-      // PersonAttendance renders a Table of visits, or an EmptyState (an <h6>,
-      // not a <p>) when there are none — match on text, not a specific tag.
+      // Renders Table or EmptyState <h6>; match on text, not tag.
       const seekText = page.getByText(/No attendance records/i);
       const seekRow = page.locator("table tbody tr").first();
       await expect(seekText.or(seekRow)).toBeVisible({ timeout: 10000 });
     });
 
     test("should open group from people attendance", async ({ page }) => {
-      // Donald Clark has seeded attendance records (see attendance demo.sql).
+      // Donald Clark has seeded attendance records (demo.sql).
       await openPersonRow(page, SEED_PEOPLE.DONALD);
       const attBtn = page.locator("button").getByText("Attendance");
       await attBtn.click();
-      // Attendance rows render as a Table; the group navigates via a Link
-      // inside the row's Group cell (no <li> wrapper).
+      // Link inside row's Group cell navigates to group.
       const seekGroup = page.locator('table a[href^="/groups/"]').first();
       await expect(seekGroup).toBeVisible({ timeout: 10000 });
       await seekGroup.click();
@@ -299,13 +276,13 @@ test.describe("People Management", () => {
       const donationBtn = page.locator("button").getByText("Donations");
       await expect(donationBtn).toBeVisible({ timeout: 10000 });
       await donationBtn.click();
-      // Donald has no seeded donations; the apphelper "willAppear" copy renders.
+      // No seeded donations; apphelper "willAppear" copy renders.
       const seekText = page.locator("td").getByText("Donations will appear once a donation has been entered.");
       const donationRow = page.locator("td").getByText(/\$\d/).first();
       await expect(seekText.or(donationRow)).toBeVisible({ timeout: 10000 });
     });
 
-    // Skipped: Stripe payment fields are in a secure iframe that Playwright cannot access
+    // Skipped: Stripe fields in iframe inaccessible to Playwright.
     test.skip("should add card from people donations tab", async ({ page }) => {
       await openPersonRow(page, SEED_PEOPLE.DONALD);
       const donationBtn = page.locator("button").getByText("Donations");
@@ -334,14 +311,12 @@ test.describe("People Management", () => {
       const addCardMenuItem = page.locator('[aria-labelledby="addBtnGroup"] li[aria-label="add-card"]');
       await expect(addCardMenuItem).toBeVisible({ timeout: 10000 });
       await addCardMenuItem.click();
-      // The page always shows the quick-donate box's own Cancel button (id="donation-form")
-      // alongside the card-edit form's (id="input-box") — scope to the latter, not .first()/.last(),
-      // since DOM order isn't a reliable signal.
+      // Both donation-form and input-box show Cancel; scope to input-box (not DOM order).
       await page.locator("#input-box").getByRole("button", { name: "Cancel" }).click();
       await expect(addBtn).toBeVisible({ timeout: 10000 });
     });
 
-    // Skipped: Stripe payment fields are in a secure iframe that Playwright cannot access
+    // Skipped: Stripe fields in iframe inaccessible to Playwright.
     test.skip("should add bank account from people donations tab", async ({ page }) => {
       await openPersonRow(page, SEED_PEOPLE.DONALD);
       const donationBtn = page.locator("button").getByText("Donations");
@@ -367,8 +342,7 @@ test.describe("People Management", () => {
       const addBankMenuItem = page.locator('[aria-labelledby="addBtnGroup"] li[aria-label="add-bank"]');
       await expect(addBankMenuItem).toBeVisible({ timeout: 10000 });
       await addBankMenuItem.click();
-      // Scope to the bank-edit form's own Cancel (id="input-box"), not the quick-donate
-      // box's (id="donation-form") — both render "Cancel" simultaneously on this page.
+      // Scope to bank-edit form's Cancel (id="input-box"), not donation-form.
       const cancelBtn = page.locator("#input-box").getByRole("button", { name: "Cancel" });
       await expect(cancelBtn).toBeVisible({ timeout: 10000 });
       await cancelBtn.click();
@@ -376,14 +350,12 @@ test.describe("People Management", () => {
     });
 
     test("should open a person form from the profile rail", async ({ page }) => {
-      // The Forms dropdown was replaced (2026-06-06) by the PersonProfileTabs
-      // left rail: person-contentType forms render as rail items under
-      // "Profile & Forms". Demo seeds the "Visitor Information Card" form.
+      // PersonProfileTabs left rail replaced Forms dropdown; renders person-contentType forms.
       await openPersonRow(page, SEED_PEOPLE.DONALD);
       const railItem = page.getByText("Visitor Information Card", { exact: true }).first();
       await expect(railItem).toBeVisible({ timeout: 10000 });
       await railItem.click();
-      // Selecting a form swaps the profile pane for the form's DisplayBox.
+      // Form selection swaps profile pane for DisplayBox.
       await expect(page.locator("h2").getByText("Visitor Information Card")).toBeVisible({ timeout: 10000 });
       await expect(page.locator('[name="name.first"]')).toHaveCount(0);
     });
@@ -402,7 +374,7 @@ test.describe("People Management", () => {
 
     test("should cancel editing person household", async ({ page }) => {
       await openPersonRow(page, SEED_PEOPLE.DONALD);
-      // The household DisplayBox edit affordance is an icon-only AppIconButton.
+      // Icon-only Edit button in DisplayBox.
       const editBtn = page.locator('#householdBox button[aria-label="Edit"]');
       await editBtn.first().click();
       const cancelBtn = page.locator("button").getByText("Cancel");
@@ -410,8 +382,7 @@ test.describe("People Management", () => {
       await expect(editBtn.first()).toBeVisible({ timeout: 10000 });
     });
 
-    // Remove then add the same household member — the row-count assertion after
-    // removal depends on remove running before add puts Carol back.
+    // Remove then add same member; row-count asserts remove runs before re-add.
     test.describe.serial("Donald household membership", () => {
       let page: Page;
 
@@ -426,7 +397,7 @@ test.describe("People Management", () => {
         await page?.context().close();
       });
 
-      // openPersonRow expects /people; previous test ended on Donald's detail.
+      // openPersonRow expects /people list; return if on detail page.
       test.beforeEach(async () => {
         if (!/\/people\/?$/.test(new URL(page.url()).pathname)) {
           await navigateToPeople(page);
@@ -458,8 +429,7 @@ test.describe("People Management", () => {
         await addBtn.click();
         await page.locator('input[name="personAddText"]').fill("Carol");
         await page.locator('[data-testid="search-button"]').click();
-        // The result-row add affordance is an icon-only AppIconButton
-        // (data-testid="add-person-<id>") inside the results table.
+        // Icon-only add button in results; data-testid="add-person-<id>".
         const selBtn = page.locator('#householdMemberAddTable [data-testid^="add-person-"]').first();
         await expect(selBtn).toBeVisible({ timeout: 10000 });
         await selBtn.click();
@@ -482,7 +452,7 @@ test.describe("People Management", () => {
       await editBtn.click();
       const addBtn = page.locator('[data-testid="add-household-member-button"]');
       await addBtn.click();
-      // The add-member panel closes via an icon-only AppIconButton ("Close").
+      // Icon-only Close button closes add-member panel.
       const closeBtn = page.locator('#householdBox button[aria-label="Close"]');
       await expect(closeBtn).toBeVisible({ timeout: 10000 });
       await closeBtn.click();
@@ -531,28 +501,23 @@ test.describe("People Management", () => {
       const mergeBtn = page.locator("button").getByText("merge");
       await mergeBtn.click();
       const mergeSearch = page.locator('[name="personAddText"]');
-      // Search by full name — "Robert Moore" disambiguates from Robert Johnson
-      // and other Roberts that exist in the seed data.
+      // Full name "Robert Moore" disambiguates from other Roberts in seed data.
       await mergeSearch.fill("Robert Moore");
       const searchResponse = page.waitForResponse(
         (response) => response.url().includes("/people/search") && response.status() === 200,
         { timeout: 20000 }
       );
-      // Merge box renders its own Search button inside InputBox; scope to the merge box.
+      // Merge box has its own Search button; scope to #mergeBox.
       await page.locator("#mergeBox").getByRole("button", { name: "Search" }).click();
       await searchResponse;
-      // The Search component renders one select-person-button per result row.
-      // Anchor on the household member we expect to merge.
+      // Anchor on expected household member result row.
       const robertRow = page.locator("#searchResults tr").filter({ hasText: "Robert Moore" }).first();
       await expect(robertRow).toBeVisible({ timeout: 20000 });
       await robertRow.locator('[data-testid="select-person-button"]').click();
-      // MergeModal renders inside data-cy="merge-modal"; the Confirm button has
-      // data-cy="confirm-merge". Wait for the modal to mount before clicking.
+      // Wait for modal to mount before clicking confirm.
       const confirmBtn = page.locator('[data-cy="confirm-merge"]');
       await expect(confirmBtn).toBeVisible({ timeout: 20000 });
-      // Listen for the /people DELETE that removes the merged-out person, plus
-      // the internal navigate("/people") fired by Merge.tsx after Promise.all
-      // resolves. Both must complete before we re-search.
+      // Wait for DELETE + navigate("/people") after Promise.all resolves.
       const deleteResponse = page.waitForResponse(
         (response) => response.url().match(/\/people\/PER\d+/) !== null
           && response.request().method() === "DELETE"
@@ -567,8 +532,7 @@ test.describe("People Management", () => {
       // After merge, one of the two should no longer show in search results.
       await navigateToPeople(page);
       const searchInput = page.locator('input[name="searchText"]');
-      // Register the listener before the fill that triggers the request,
-      // otherwise a fast response slips past the waiter.
+      // Register listener before fill (fast response may slip past waiter).
       const searched = page.waitForResponse(
         (response) => response.url().includes("/people/advancedSearch") && response.status() === 200,
         { timeout: 20000 }
@@ -586,7 +550,7 @@ test.describe("People Management", () => {
         await dialog.accept();
       });
 
-      // Create a disposable person first so the delete target is deterministic.
+      // Create disposable person for deterministic delete target.
       await page.locator('[name="first"]').fill("Zacchaeus");
       await page.locator('[name="last"]').fill("Disposable");
       await page.locator('[name="email"]').fill("disposable@example.com");
@@ -789,11 +753,10 @@ test.describe("People Management", () => {
     });
   });
 
-  // Edge-case extensions: targeted gaps from .notes/B1Admin-test-coverage-gaps.md §3 (people).
   test.describe("People — edge-case affordances", () => {
     test("person profile exposes a top-level Edit button for contact info", async ({ page }) => {
       await openPersonRow(page, SEED_PEOPLE.DONALD);
-      // The Personal Details box exposes an Edit button for people with edit permission.
+      // Personal Details box exposes Edit button for people with edit permission.
       await expect(personDetailsEditButton(page).first()).toBeVisible({ timeout: 10000 });
     });
 
@@ -804,7 +767,7 @@ test.describe("People Management", () => {
         (response) => response.url().includes("/people/advancedSearch") && response.status() === 200,
         { timeout: 10000 }
       );
-      // Result table should have zero rows (or render an explicit no-match state).
+      // Result table shows zero rows or explicit no-match state.
       await expect(page.locator("table tbody tr").filter({ hasText: "Zzzzz" })).toHaveCount(0);
     });
 
@@ -812,7 +775,7 @@ test.describe("People Management", () => {
       await openPersonRow(page, SEED_PEOPLE.DONALD);
       const attBtn = page.locator("button").getByText("Attendance");
       await attBtn.click();
-      // The container renders either a Table (with visits) or an empty-state (an <h6>).
+      // Renders Table or empty-state <h6>.
       const rows = page.locator("table tbody tr").first();
       const empty = page.getByText(/No attendance/i);
       await expect(rows.or(empty)).toBeVisible({ timeout: 10000 });

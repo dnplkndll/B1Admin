@@ -64,7 +64,6 @@ export const FormSubmission: React.FC<Props> = memo((props) => {
 
   return (
     <Box sx={{ position: "relative" }}>
-      {/* Edit Button */}
       {formPermission && (
         <Box
           sx={{
@@ -77,7 +76,6 @@ export const FormSubmission: React.FC<Props> = memo((props) => {
         </Box>
       )}
 
-      {/* Form Submission Content */}
       <Box sx={{ pr: formPermission ? 5 : 0 }}>
         {questions.length > 0 ? (
           <Grid container spacing={3}>

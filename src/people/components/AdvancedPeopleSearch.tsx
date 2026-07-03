@@ -45,11 +45,9 @@ interface Props {
   toggleFunction?: () => void;
   updatedFunction?: () => void;
   embedded?: boolean;
-  // When provided, seeds the search with a saved List's filter spec and re-runs it live.
+  // Seeds search with saved List filter spec.
   initialFilters?: Record<string, ActiveFilter>;
-  // Reports the current high-level filter spec (or null when cleared) so a parent can
-  // offer "Save as List". We report activeFilters — not the converted conditions — so
-  // saved lists re-resolve live each time they are opened.
+  // Reports activeFilters (not converted conditions) so saved lists re-resolve live on reopen.
   onReportCriteria?: (filters: Record<string, ActiveFilter> | null) => void;
 }
 
@@ -157,9 +155,7 @@ export const AdvancedPeopleSearch = memo(function AdvancedPeopleSearch(props: Pr
   // Lazy-loaded options
   const [groups, setGroups] = useState<GroupInterface[]>([]);
   const [funds, setFunds] = useState<FundInterface[]>([]);
-  // Church-wide (Membership) campuses — used both for the "belongs to campus"
-  // condition and the "attended a campus" complex filter. Campuses are mastered
-  // in the membership module (the attendance copy is frozen/deprecated).
+  // Membership campuses mastered in membership module; attendance copy is deprecated.
   const membershipCampuses = useCampuses();
   const [services, setServices] = useState<ServiceInterface[]>([]);
   const [serviceTimes, setServiceTimes] = useState<ServiceTimeInterface[]>([]);
@@ -275,7 +271,6 @@ export const AdvancedPeopleSearch = memo(function AdvancedPeopleSearch(props: Pr
       customFields: customFieldQuestions
         .filter((q) => q.fieldType !== "Heading" && q.fieldType !== "Payment")
         .map((q) => {
-          // Map field types to appropriate input types and operators
           let type: "text" | "select" | "number" | "date" = "text";
           let operators: string[] = ["contains", "equals", "startsWith", "endsWith"];
           let options: Array<{ value: string; label: string }> | undefined;
@@ -455,8 +450,7 @@ export const AdvancedPeopleSearch = memo(function AdvancedPeopleSearch(props: Pr
     }
   };
 
-  // Auto-search when filters change, and report the active spec so the parent can
-  // offer "Save as List" (or clear the offer when no filters remain).
+  // Auto-search on filter change; report spec for "Save as List" offer.
   useEffect(() => {
     if (Object.keys(activeFilters).length > 0) {
       props.onReportCriteria?.(activeFilters);
@@ -781,10 +775,7 @@ export const AdvancedPeopleSearch = memo(function AdvancedPeopleSearch(props: Pr
     loadCategoryData("demographics");
   }, []);
 
-  // Seed the search from a saved List. Only the option-backed filter keys need their
-  // category preloaded so convertConditions() can resolve them; derive that set from
-  // the seeded keys (rather than loading all categories) and let the auto-search
-  // effect re-run the query live against current data.
+  // Seed from saved List: preload only option-backed categories; let auto-search re-run live.
   useEffect(() => {
     if (!props.initialFilters) return;
     const categories = new Set<string>();
@@ -808,7 +799,6 @@ export const AdvancedPeopleSearch = memo(function AdvancedPeopleSearch(props: Pr
   const renderContent = () => (
     <>
 
-      {/* Active Filters Summary */}
       {Object.keys(activeFilters).length > 0 && (
         <Paper elevation={0} sx={styles.activeFiltersPaper}>
           <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap alignItems="center">
@@ -848,7 +838,6 @@ export const AdvancedPeopleSearch = memo(function AdvancedPeopleSearch(props: Pr
 
       <Box>
         {Object.entries(filterCategories).map(([categoryKey, fields]) => {
-          // Skip empty categories, except customFields which loads dynamically
           if (fields.length === 0 && categoryKey !== "customFields") return null;
           const activeCount = getActiveFilterCount(categoryKey);
 
@@ -1105,7 +1094,6 @@ export const AdvancedPeopleSearch = memo(function AdvancedPeopleSearch(props: Pr
         {renderContent()}
       </FormCard>
 
-      {/* Complex Filter Dialog */}
       <Dialog open={complexFilterDialog.open} onClose={() => setComplexFilterDialog({ open: false, field: null })} maxWidth="sm" fullWidth>
         <DialogTitle>
           {complexFilterDialog.field === "memberDonations" ? Locale.label("people.editCondition.memDon") : Locale.label("people.editCondition.memAtt")}

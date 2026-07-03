@@ -12,9 +12,7 @@ interface Props {
   "data-testid"?: string;
 }
 
-// View↔edit wrapper for sections whose editors save via the shared `saveTrigger`
-// pattern (set a Date, the child saves in an effect). Mirrors the save flow that
-// ChurchSettingsEdit used to run for all sections at once.
+// View↔edit wrapper for sections that save via shared `saveTrigger` pattern.
 export const SettingsToggleSection: React.FC<Props> = (props) => {
   const [editing, setEditing] = React.useState(false);
   const [saveTrigger, setSaveTrigger] = React.useState<Date | null>(null);

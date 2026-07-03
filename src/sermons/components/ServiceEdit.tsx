@@ -80,21 +80,18 @@ export const ServiceEdit: React.FC<Props> = (props) => {
     }
   };
 
-  //auto fix common bad formats.
   const getVimeoKey = (input: string) => {
     let result = input.split("&")[0];
     result = result.replace("https://vimeo.com/", "").replace("https://player.vimeo.com/video/", "");
     return result;
   };
 
-  //auto fix common bad formats.
   const getFacebookKey = (input: string) => {
     let result = input.split("&")[0];
     result = result.replace("https://facebook.com/video.php?v=", "");
     return result;
   };
 
-  //auto fix common bad formats.
   const getYouTubeKey = (input: string) => {
     let result = input.split("&")[0];
     result = result
@@ -196,7 +193,6 @@ export const ServiceEdit: React.FC<Props> = (props) => {
         data-testid="edit-service-inputbox"
       >
         <Stack spacing={3}>
-          {/* Validation Errors */}
           {summaryErrors.length > 0 && (
             <Alert severity="error">
               <Typography variant="body2" sx={{ fontWeight: 600, mb: 1 }}>
@@ -212,7 +208,6 @@ export const ServiceEdit: React.FC<Props> = (props) => {
             </Alert>
           )}
 
-          {/* Basic Information Section */}
           <Box>
             <Stack direction="row" spacing={1} alignItems="center" sx={{ mb: 2 }}>
               <VideoCallIcon sx={{ color: "primary.main", fontSize: 20 }} />
@@ -290,7 +285,6 @@ export const ServiceEdit: React.FC<Props> = (props) => {
 
           <Divider />
 
-          {/* Chat Settings Section */}
           <Box>
             <Stack direction="row" spacing={1} alignItems="center" sx={{ mb: 2 }}>
               <ChatIcon sx={{ color: "primary.main", fontSize: 20 }} />
@@ -355,7 +349,6 @@ export const ServiceEdit: React.FC<Props> = (props) => {
 
           <Divider />
 
-          {/* Video Settings Section */}
           <Box>
             <Stack direction="row" spacing={1} alignItems="center" sx={{ mb: 2 }}>
               <PlayCircleIcon sx={{ color: "primary.main", fontSize: 20 }} />

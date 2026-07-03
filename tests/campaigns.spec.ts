@@ -1,15 +1,9 @@
-﻿import { type Page } from "@playwright/test";
+import { type Page } from "@playwright/test";
 import { donationsTest as test, expect } from "./helpers/test-fixtures";
 import { fillFundForm } from "./helpers/donations";
 import { login } from "./helpers/auth";
 import { navigateToDonations } from "./helpers/navigation";
 import { STORAGE_STATE_PATH } from "./global-setup";
-
-// campaigns.spec.ts:
-//   Pledge Campaigns (serial) â€” create a dedicated fund, create a campaign against it,
-//   add/edit/delete an admin-entered pledge on the campaign detail page (verifying the
-//   pledge status chip), then delete the campaign and fund. Covers the admin half of
-//   master-roadmap item 2.5 (pledge campaigns).
 
 const TEST_FUND = "Zacchaeus Building Fund";
 const TEST_CAMPAIGN = "Zacchaeus Capital Campaign";
@@ -48,7 +42,6 @@ test.describe.serial("Pledge Campaigns", () => {
     await page?.context().close();
   });
 
-  // The chain shares created entities â€” a retry would duplicate them.
   test.describe.configure({ retries: 0 });
 
   test("should create fund for campaign", async () => {
@@ -103,7 +96,6 @@ test.describe.serial("Pledge Campaigns", () => {
 
     const pledgeRow = page.locator("tr").filter({ hasText: TEST_PERSON });
     await expect(pledgeRow).toHaveCount(1, { timeout: 10000 });
-    // The campaign fund is brand new, so nothing has been given against the pledge yet.
     await expect(pledgeRow.getByText("Not Started")).toBeVisible({ timeout: 10000 });
     await expect(pledgeRow.getByText(/\$\s?500\.00/)).toBeVisible({ timeout: 10000 });
   });

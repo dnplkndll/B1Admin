@@ -121,14 +121,12 @@ test.describe.serial("Registrations Commerce — settings panels, paid roster, w
     camperTypeId = savedTypes.find((t: any) => t.name === "Camper")?.id;
     expect(generalTypeId && camperTypeId, "type ids").toBeTruthy();
 
-    // Reg #1 (free General) confirms and fills the single capacity slot.
     const reg1 = await ctx.post(`${API_BASE}/content/registrations/register`, { data: { churchId: CHURCH_ID, eventId: eventBId, guestInfo: { firstName: "Zacchaeus", lastName: "Confirmed", email: "zacchaeus.commerce.confirmed@example.com" }, members: [{ firstName: "Zacchaeus", lastName: "Confirmed", registrationTypeId: generalTypeId }] } });
     expect(reg1.ok()).toBeTruthy();
     const reg1Body = await reg1.json();
     regIds.push(reg1Body?.id);
     expect(reg1Body.status, "reg1 confirmed").toBe("confirmed");
 
-    // Reg #2 (priced Camper) hits the full event and lands on the waitlist WITHOUT a charge.
     const reg2 = await ctx.post(`${API_BASE}/content/registrations/register`, { data: { churchId: CHURCH_ID, eventId: eventBId, guestInfo: { firstName: "Zacchaeus", lastName: "Waitlisted", email: "zacchaeus.commerce.waitlisted@example.com" }, members: [{ firstName: "Zacchaeus", lastName: "Waitlisted", registrationTypeId: camperTypeId }] } });
     expect(reg2.ok()).toBeTruthy();
     const reg2Body = await reg2.json();
@@ -162,7 +160,6 @@ test.describe.serial("Registrations Commerce — settings panels, paid roster, w
     await page.goto(`/registrations/${eventAId}`);
     await expect(page.getByText(EVENT_A, { exact: false }).first()).toBeVisible({ timeout: 15000 });
 
-    // Attendee Types: add two.
     await page.getByRole("button", { name: "Attendee Types", exact: true }).click();
     await page.locator('[data-testid="add-registration-type"]').click();
     await page.locator('[data-testid="add-registration-type"]').click();
@@ -176,7 +173,6 @@ test.describe.serial("Registrations Commerce — settings panels, paid roster, w
     await page.locator('[data-testid="save-registration-types"]').click();
     await typesPost;
 
-    // Selections: add one.
     await page.getByRole("button", { name: "Selections", exact: true }).click();
     await page.locator('[data-testid="add-registration-selection"]').click();
     await page.locator('[data-testid="selection-name"] input').first().fill("Commemorative T-Shirt");
@@ -185,7 +181,6 @@ test.describe.serial("Registrations Commerce — settings panels, paid roster, w
     await page.locator('[data-testid="save-registration-selections"]').click();
     await selPost;
 
-    // Discount Codes: add one.
     await page.getByRole("button", { name: "Discount Codes", exact: true }).click();
     await page.locator('[data-testid="add-registration-coupon"]').click();
     await page.locator('[data-testid="coupon-code"] input').first().fill("EARLYBIRD");
@@ -193,8 +188,6 @@ test.describe.serial("Registrations Commerce — settings panels, paid roster, w
     const couponPost = page.waitForResponse((r) => r.url().includes("/registrations/coupons") && r.request().method() === "POST" && r.ok(), { timeout: 15000 });
     await page.locator('[data-testid="save-registration-coupons"]').click();
     await couponPost;
-
-    // Reload and confirm every panel round-tripped from the server.
     await page.reload();
     await expect(page.getByText(EVENT_A, { exact: false }).first()).toBeVisible({ timeout: 15000 });
 
@@ -215,7 +208,6 @@ test.describe.serial("Registrations Commerce — settings panels, paid roster, w
     const toggle = page.locator('[data-testid="waitlist-enabled-switch"] input');
     await expect(toggle).toBeVisible({ timeout: 15000 });
 
-    // Turn ON, save, verify persisted via the API.
     await toggle.check();
     let save = page.waitForResponse((r) => r.url().includes("/events") && r.request().method() === "POST" && r.ok(), { timeout: 15000 });
     await page.getByRole("button", { name: "Save Settings" }).click();
@@ -243,16 +235,13 @@ test.describe.serial("Registrations Commerce — settings panels, paid roster, w
     const rosterCard = page.locator(".MuiCard-root").filter({ has: page.getByRole("button", { name: "Export CSV" }) });
     await expect(rosterCard).toBeVisible({ timeout: 15000 });
 
-    // Type column values.
     await expect(rosterCard.getByRole("cell", { name: "General" })).toBeVisible({ timeout: 10000 });
     await expect(rosterCard.getByRole("cell", { name: "Camper" })).toBeVisible();
 
-    // Per-type header counts.
     const counts = page.locator('[data-testid="type-counts"]');
     await expect(counts).toContainText("General: 1");
     await expect(counts).toContainText("Camper: 1");
 
-    // Priced waitlisted row shows Paid/Total with a balance.
     await expect(rosterCard.getByText("$0.00 / $45.00")).toBeVisible();
 
     // Waitlisted row exposes the Promote action.

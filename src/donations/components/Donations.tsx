@@ -119,7 +119,6 @@ export const Donations: React.FC<Props> = ({ currency = "usd", ...props }) => {
       return rows;
     }
 
-    // Add donation rows
     for (let i = 0; i < donations.length; i++) {
       const d = donations[i];
       const editButton = canEdit ? (
@@ -163,7 +162,6 @@ export const Donations: React.FC<Props> = ({ currency = "usd", ...props }) => {
       );
     }
 
-    // Add total row
     rows.push(
       <TableRow key="total" sx={{ borderTop: 2, backgroundColor: "grey.50" }}>
         <TableCell sx={{ fontWeight: "bold", fontSize: 15 }}>
@@ -201,7 +199,6 @@ export const Donations: React.FC<Props> = ({ currency = "usd", ...props }) => {
 
     return (
       <>
-        {/* Header with actions */}
         <Box sx={{ p: 2, borderBottom: 1, borderColor: "var(--border-light)" }}>
           <Stack direction="row" justifyContent="space-between" alignItems="center">
             <Stack direction="row" spacing={1} alignItems="center">
@@ -213,7 +210,6 @@ export const Donations: React.FC<Props> = ({ currency = "usd", ...props }) => {
           </Stack>
         </Box>
 
-        {/* Table */}
         <Table sx={{ minWidth: 650 }}>
           {getTableHeader()}
           <TableBody>{getRows()}</TableBody>

@@ -218,7 +218,6 @@ export const Keys = memo((props: Props) => {
     <>
       <Card sx={{ borderRadius: 2, border: "1px solid", borderColor: "divider" }}>
         <CardContent>
-          {/* Header */}
           <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 2 }}>
             <Stack direction="row" spacing={2} alignItems="center">
               <KeyIcon sx={{ color: "primary.main", fontSize: 20 }} />
@@ -231,7 +230,6 @@ export const Keys = memo((props: Props) => {
             )}
           </Stack>
 
-          {/* Tabs */}
           <Box sx={{ borderBottom: 1, borderColor: "divider", mb: 2 }}>
             <Tabs value={selectedKey?.id || ""} onChange={handleTabChange} variant="scrollable" scrollButtons="auto" aria-label={Locale.label("songs.keys.keysTabsAria")}>
               {tabsComponent}
@@ -249,14 +247,11 @@ export const Keys = memo((props: Props) => {
             </Tabs>
           </Box>
 
-          {/* Content */}
           {selectedKey ? (
             <Box>
-              {/* Products and Links */}
               {productsList}
               {linksList}
 
-              {/* Add Files Button */}
               {canEdit && (
                 <Box
                   sx={{
@@ -287,7 +282,6 @@ export const Keys = memo((props: Props) => {
         </CardContent>
       </Card>
 
-      {/* Menu */}
       <Menu id="add-menu" anchorEl={anchorEl} open={open} onClose={handleClose} MenuListProps={{ "aria-labelledby": "addBtnGroup" }}>
         <MenuItem
           onClick={() => {
@@ -313,7 +307,6 @@ export const Keys = memo((props: Props) => {
         </MenuItem>
       </Menu>
 
-      {/* Dialogs */}
       {editLink && canEdit && (
         <LinkEdit
           link={editLink}
