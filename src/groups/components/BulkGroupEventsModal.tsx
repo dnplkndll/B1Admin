@@ -23,6 +23,7 @@ export function BulkGroupEventsModal(props: Props) {
   const [interval, setInterval] = useState("1");
   const [visibility, setVisibility] = useState("public");
   const [skipHolidays, setSkipHolidays] = useState(true);
+  const [allowRsvps, setAllowRsvps] = useState(true);
   const [holidays, setHolidays] = useState<{ date: string; name: string }[]>([]);
   const [excluded, setExcluded] = useState<string[]>([]);
   const [saving, setSaving] = useState(false);
@@ -72,6 +73,8 @@ export function BulkGroupEventsModal(props: Props) {
         visibility,
         recurrenceRule: dates.length > 1 ? `FREQ=WEEKLY;INTERVAL=${interval};UNTIL=${lastDate.replace(/-/g, "")}T235959Z` : undefined
       } as EventInterface;
+      // Explicit boolean (never undefined) so Kysely persists the disabled flag on the created event.
+      (event as any).rsvpDisabled = !allowRsvps;
       const saved = await ApiHelper.post("/events", [event], "ContentApi");
       if (excluded.length > 0) {
         // Noon keeps the calendar date stable across client/server timezones.
@@ -115,6 +118,10 @@ export function BulkGroupEventsModal(props: Props) {
           <FormControlLabel
             control={<Checkbox checked={skipHolidays} onChange={(e) => setSkipHolidays(e.target.checked)} data-testid="bulk-events-skip-holidays" />}
             label={Locale.label("groups.groupCalendar.skipHolidays")}
+          />
+          <FormControlLabel
+            control={<Checkbox checked={allowRsvps} onChange={(e) => setAllowRsvps(e.target.checked)} data-testid="bulk-events-allow-rsvps" />}
+            label={Locale.label("groups.groupCalendar.allowRsvps")}
           />
           {dates.length > 0 && (
             <>

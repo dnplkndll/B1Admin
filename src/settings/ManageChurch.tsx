@@ -4,7 +4,7 @@ import { UserHelper, Permissions, Locale, ApiHelper, Loading, PageHeader } from 
 import { useNavigate, useLocation } from "react-router-dom";
 import { PermissionDenied } from "../components";
 import { Box, Button, Grid, Stack, Typography } from "@mui/material";
-import { PlayArrow as PlayArrowIcon, History as HistoryIcon, Business as BusinessIcon, Tune as TuneIcon, VolunteerActivism as VolunteerActivismIcon, Sms as SmsIcon, Language as LanguageIcon, Link as LinkIcon, Code as CodeIcon, School as SchoolIcon } from "@mui/icons-material";
+import { PlayArrow as PlayArrowIcon, History as HistoryIcon, Business as BusinessIcon, Tune as TuneIcon, VolunteerActivism as VolunteerActivismIcon, Sms as SmsIcon, Language as LanguageIcon, Link as LinkIcon, Code as CodeIcon, School as SchoolIcon, HowToReg as HowToRegIcon } from "@mui/icons-material";
 import { useQuery } from "@tanstack/react-query";
 import { SettingsConfigList, type ConfigSection } from "./components/SettingsConfigList";
 import { ChurchInfoSection } from "./components/ChurchInfoSection";
@@ -16,9 +16,10 @@ import { GivingSettingsEdit } from "./components/GivingSettingsEdit";
 import { TextingSettingsEdit } from "./components/TextingSettingsEdit";
 import { DomainSettingsEdit } from "./components/DomainSettingsEdit";
 import { GradePromotionSettingsEdit } from "./components/GradePromotionSettingsEdit";
+import { CheckinSettingsEdit } from "./components/CheckinSettingsEdit";
 
 const SECTION_KEYS = [
-  "church-info", "general", "giving", "texting", "domains", "grade-promotion", "campuses", "developer"
+  "church-info", "general", "giving", "texting", "domains", "grade-promotion", "check-ins", "campuses", "developer"
 ];
 
 const headerButtonSx = {
@@ -76,6 +77,8 @@ export const ManageChurch = () => {
   const domainList = domains.data || [];
   const campusCount = (campuses.data || []).length;
   const gradePromotionDate = (settingsQ.data || []).find((s) => s.keyName === "gradePromotionDate")?.value;
+  const ratioEnforcement = (settingsQ.data || []).find((s) => s.keyName === "ratioEnforcement")?.value === "block" ? "block" : "warn";
+  const checkinsSubtitle = Locale.label("settings.checkinSettingsEdit." + ratioEnforcement);
   const gradePromotionSubtitle = gradePromotionDate
     ? Locale.label("settings.landing.gradePromotionOn").replace("{date}", new Date(2000, Number(gradePromotionDate.split("-")[0]) - 1, Number(gradePromotionDate.split("-")[1])).toLocaleDateString(undefined, { month: "long", day: "numeric" }))
     : Locale.label("settings.landing.gradePromotionOff");
@@ -102,6 +105,7 @@ export const ManageChurch = () => {
     { key: "texting", title: Locale.label("settings.churchSettingsEdit.textingTitle"), subtitle: textingSubtitle, icon: <SmsIcon />, color: "warning" },
     { key: "domains", title: Locale.label("settings.domainSettingsEdit.domains"), subtitle: domainsSubtitle, icon: <LanguageIcon />, color: "info" },
     { key: "grade-promotion", title: Locale.label("settings.gradePromotionSettingsEdit.title"), subtitle: gradePromotionSubtitle, icon: <SchoolIcon />, color: "secondary" },
+    { key: "check-ins", title: Locale.label("settings.checkinSettingsEdit.title"), subtitle: checkinsSubtitle, icon: <HowToRegIcon />, color: "info" },
     { key: "campuses", title: Locale.label("settings.campuses.campuses"), subtitle: campusesSubtitle, icon: <BusinessIcon />, color: "primary" },
     { key: "developer", title: Locale.label("settings.developer.title"), subtitle: Locale.label("settings.landing.developerSubtitle"), icon: <CodeIcon />, color: "secondary" }
   ];
@@ -186,6 +190,17 @@ export const ManageChurch = () => {
             data-testid="settings-grade-promotion"
             view={<SummaryRow label={Locale.label("settings.gradePromotionSettingsEdit.title")} value={gradePromotionSubtitle} />}
             renderEdit={(saveTrigger) => <GradePromotionSettingsEdit churchId={churchId} saveTrigger={saveTrigger} />}
+            onSaved={handleSaved}
+          />
+        );
+      case "check-ins":
+        return (
+          <SettingsToggleSection
+            headerText={Locale.label("settings.checkinSettingsEdit.title")}
+            headerIcon="how_to_reg"
+            data-testid="settings-check-ins"
+            view={<SummaryRow label={Locale.label("settings.checkinSettingsEdit.ratioEnforcement")} value={checkinsSubtitle} />}
+            renderEdit={(saveTrigger) => <CheckinSettingsEdit churchId={churchId} saveTrigger={saveTrigger} />}
             onSaved={handleSaved}
           />
         );

@@ -1,5 +1,6 @@
 import React, { memo } from "react";
 import { Household, Merge, PersonEdit, PersonExportDialog, PersonProfileTabs, PersonView } from "./";
+import { PickupPeople } from "./PickupPeople";
 import { type PersonInterface } from "@churchapps/helpers";
 import { ImageEditor, Locale, Permissions, PersonHelper, UserHelper } from "@churchapps/apphelper";
 import { Button } from "@mui/material";
@@ -84,6 +85,7 @@ export const PersonDetails = memo((props: Props) => {
                 ) : undefined}
               />
               <Household person={person} reload={person?.photoUpdated} />
+              <PickupPeople person={person} />
             </>
           )}
         />

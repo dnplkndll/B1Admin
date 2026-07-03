@@ -113,6 +113,12 @@
       "attTrend": "Attendance Trend",
       "groupAtt": "Group Attendance",
       "setup": "Setup"
+    },
+    "checkinType": {
+      "header": "Type",
+      "volunteer": "Volunteer",
+      "guest": "Guest",
+      "volunteers": "volunteers"
     }
   },
   "calendars": {
@@ -1026,6 +1032,7 @@
     },
     "groupCalendar": {
       "addEvents": "Add Events",
+      "allowRsvps": "Allow RSVPs",
       "bulkAddTitle": "Add Recurring Events",
       "confirmDelete": "Delete \"{title}\" and all of its occurrences?",
       "datesPreview": "{count} meetings will be created. Uncheck any dates to skip.",
@@ -1035,7 +1042,15 @@
       "lastMeeting": "Last Meeting",
       "noDates": "No meeting dates fall in the selected range.",
       "noEvents": "No events yet. Use Add Events to schedule this group's meetings.",
+      "noResponses": "No responses yet.",
       "oneTime": "One time",
+      "response_maybe": "Maybe",
+      "response_no": "No",
+      "response_yes": "Yes",
+      "rosterTitle": "RSVP Responses",
+      "rsvpSummary": "{yes} yes · {maybe} maybe · {no} no",
+      "rsvps": "RSVPs",
+      "rsvpsDisabled": "Disabled",
       "skipHolidays": "Skip holidays",
       "skippedDates": "Skipped Dates",
       "until": "until"
@@ -1067,6 +1082,8 @@
       "catNameMsg": "Please enter a category name.",
       "changePhotoAria": "Change group photo",
       "clickToAddPhoto": "Click to add photo",
+      "confidential": "Confidential group",
+      "confidentialHelp": "Hide this group and its roster from public pages, the group finder, and non-members.",
       "confirmArchive": "Are you sure you wish to archive this group? It will be hidden from the groups list until restored.",
       "confirmMsg": "Are you sure you wish to permanently delete this group?",
       "enrollment": "Enrollment",
@@ -1091,7 +1108,13 @@
       "prinName": "Print Nametag",
       "publicRoster": "Show roster on website",
       "slug": "Slug (key name used for urls)",
-      "years": "Years"
+      "years": "Years",
+      "checkinCapacity": "Check-In Capacity",
+      "capacity": "Capacity",
+      "guestCapacity": "Guest Capacity",
+      "volunteerRatio": "Children per Volunteer",
+      "minVolunteers": "Minimum Volunteers",
+      "checkinClosed": "Closed for Check-In"
     },
     "groupHealth": {
       "attendance": "Attendance",
@@ -1688,6 +1711,17 @@
     },
     "updateHouseHold": {
       "update": "Update Address"
+    },
+    "pickup": {
+      "title": "Pickup",
+      "add": "Add",
+      "none": "No pickup people added.",
+      "name": "Name",
+      "relationship": "Relationship",
+      "status": "Status",
+      "trusted": "Trusted",
+      "notAuthorized": "Not Authorized",
+      "orAddByName": "Or add someone who is not in the system:"
     }
   },
   "person": {
@@ -2376,6 +2410,44 @@
     }
   },
   "registrations": {
+    "commerce": {
+      "addCoupon": "Add Discount Code",
+      "addSelection": "Add Selection",
+      "addType": "Add Type",
+      "amount": "Amount",
+      "attendeeTypes": "Attendee Types",
+      "balance": "Balance",
+      "capacity": "Capacity",
+      "code": "Code",
+      "description": "Description",
+      "discountCodes": "Discount Codes",
+      "discountType": "Type",
+      "endDate": "End Date",
+      "kind": "Kind",
+      "maxQuantity": "Max Qty",
+      "maxUses": "Max Uses",
+      "method": "Method",
+      "minMembers": "Min Members",
+      "name": "Name",
+      "noCoupons": "No discount codes yet.",
+      "noPayments": "No payments recorded.",
+      "noSelections": "No selections yet.",
+      "noTypes": "No attendee types yet.",
+      "paid": "Paid",
+      "paidTotal": "Paid / Total",
+      "payments": "Payments",
+      "percent": "Percent",
+      "price": "Price",
+      "promote": "Promote",
+      "registrationDetails": "Registration Details",
+      "selections": "Selections",
+      "sort": "Sort",
+      "startDate": "Start Date",
+      "total": "Total",
+      "type": "Type",
+      "usesSoFar": "Uses: {count}",
+      "value": "Value"
+    },
     "registrationDetailsPage": {
       "addAttendee": "Add Attendee",
       "addAttendeeError": "Failed to register attendee",
@@ -2406,6 +2478,7 @@
       "capacity": "Capacity",
       "capacityPlaceholder": "Leave empty for unlimited",
       "enableRegistration": "Enable Registration",
+      "enableWaitlist": "Enable Waitlist",
       "none": "None",
       "registrationCloses": "Registration Closes",
       "registrationOpens": "Registration Opens",
@@ -3217,6 +3290,13 @@
       "status": "Status",
       "title": "Webhooks",
       "url": "URL"
+    },
+    "checkinSettingsEdit": {
+      "title": "Check-In",
+      "help": "Choose how check-in responds when a room is over its volunteer-to-child ratio or below its minimum volunteers.",
+      "ratioEnforcement": "Volunteer Ratio Enforcement",
+      "warn": "Warn (allow with confirmation)",
+      "block": "Block (prevent check-in)"
     }
   },
   "site": {
