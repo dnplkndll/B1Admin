@@ -1,5 +1,5 @@
 import { TableHead, Table, TableCell, TableRow, TableBody } from "@mui/material";
-import { Add as AddIcon } from "@mui/icons-material";
+import { Add as AddIcon, Edit as EditIcon } from "@mui/icons-material";
 import React, { useState } from "react";
 import { ApiHelper, ErrorMessages, DisplayBox, DateHelper, Locale, PageHeader } from "@churchapps/apphelper";
 import { Box } from "@mui/material";
@@ -67,21 +67,23 @@ export const DevicesPage = () => {
                 <TableCell>{Locale.label("profile.devices.label")}</TableCell>
                 <TableCell>{Locale.label("profile.devices.registrationDate")}</TableCell>
                 <TableCell>{Locale.label("profile.devices.lastActiveDate")}</TableCell>
+                <TableCell align="right"></TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
               {devices.map((device) => (
                 <TableRow key={device.id}>
-                  <TableCell>
-                    <button
-                      type="button"
-                      onClick={() => setEditDevice(device)}
-                      style={{ background: "none", border: 0, padding: 0, color: "var(--link)", fontWeight: 500, cursor: "pointer" }}>
-                      {device.label || Locale.label("profile.devices.device")}
-                    </button>
-                  </TableCell>
+                  <TableCell>{device.label || Locale.label("profile.devices.device")}</TableCell>
                   <TableCell>{DateHelper.toDate(device.registrationDate).toLocaleDateString()}</TableCell>
                   <TableCell>{DateHelper.toDate(device.lastActiveDate).toLocaleDateString()}</TableCell>
+                  <TableCell align="right">
+                    <AppIconButton
+                      label={Locale.label("common.edit")}
+                      icon={<EditIcon />}
+                      onClick={() => setEditDevice(device)}
+                      data-testid={`edit-device-button-${device.id}`}
+                    />
+                  </TableCell>
                 </TableRow>
               ))}
             </TableBody>

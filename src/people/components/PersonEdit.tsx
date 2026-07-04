@@ -6,6 +6,7 @@ import { type PersonInterface } from "@churchapps/helpers";
 import { PersonHelper, DateHelper, ApiHelper, Loading, ErrorMessages, Locale, PersonAvatar } from "@churchapps/apphelper";
 import { QuestionEdit } from "@churchapps/apphelper/forms";
 import { type QuestionInterface, type AnswerInterface } from "@churchapps/helpers";
+import { GdprActions } from "./GdprActions";
 import { FormCard } from "../../components/ui";
 import { Navigate } from "react-router-dom";
 import UserContext from "../../UserContext";
@@ -378,6 +379,9 @@ export const PersonEdit = memo((props: Props) => {
               );
             })}
           </Grid>
+        )}
+        {props.person?.id && (
+          <GdprActions personId={props.person.id} personName={props.person.name?.display || Locale.label("people.personPage.thisPerson")} onAnonymized={props.updatedFunction} />
         )}
       </FormCard>
       {redirect !== "" && <Navigate to={redirect} />}

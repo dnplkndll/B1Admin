@@ -62,7 +62,6 @@ const RegistrationsPage = React.lazy(() => import("./registrations/Registrations
 const RegistrationDetailsPage = React.lazy(() => import("./registrations/RegistrationDetailsPage").then((module) => ({ default: module.RegistrationDetailsPage })));
 const Site = React.lazy(() => import("./site").then((module) => ({ default: module.Site })));
 const Mobile = React.lazy(() => import("./mobile").then((module) => ({ default: module.Mobile })));
-const EmailTemplatesPage = React.lazy(() => import("./settings/EmailTemplatesPage").then((module) => ({ default: module.EmailTemplatesPage })));
 
 const LoadingFallback: React.FC = () => <PageSkeleton />;
 
@@ -127,7 +126,7 @@ export const Authenticated: React.FC = () => {
           <Route path="/forms" element={<FormsPage />} />
           <Route path="/reports/:keyName" element={<ReportPage />} />
           <Route path="/reports" element={<ReportsPage />} />
-          <Route path="/email-templates" element={<EmailTemplatesPage />} />
+          <Route path="/email-templates" element={<Navigate to="/settings/email-templates" replace />} />
           <Route path="/settings/*" element={<Settings />} />
           <Route path="/serving/tasks/workflows/:id/reports" element={<WorkflowReportsPage />} />
           <Route path="/serving/tasks/workflows/:id" element={<WorkflowBoardPage />} />

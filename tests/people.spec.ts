@@ -349,13 +349,16 @@ test.describe("People Management", () => {
       await expect(addBtn).toBeVisible({ timeout: 10000 });
     });
 
-    test("should open a person form from the profile rail", async ({ page }) => {
-      // PersonProfileTabs left rail replaced Forms dropdown; renders person-contentType forms.
+    test("should open a person form from the Forms tab", async ({ page }) => {
+      // Person-contentType forms now live under a dedicated "Forms" navigation tab.
       await openPersonRow(page, SEED_PEOPLE.DONALD);
-      const railItem = page.getByText("Visitor Information Card", { exact: true }).first();
-      await expect(railItem).toBeVisible({ timeout: 10000 });
-      await railItem.click();
-      // Form selection swaps profile pane for DisplayBox.
+      const formsTab = page.locator("button").getByText("Forms", { exact: true });
+      await expect(formsTab).toBeVisible({ timeout: 10000 });
+      await formsTab.click();
+      const formItem = page.getByText("Visitor Information Card", { exact: true }).first();
+      await expect(formItem).toBeVisible({ timeout: 10000 });
+      await formItem.click();
+      // Form selection shows the DisplayBox form pane.
       await expect(page.locator("h2").getByText("Visitor Information Card")).toBeVisible({ timeout: 10000 });
       await expect(page.locator('[name="name.first"]')).toHaveCount(0);
     });
@@ -369,7 +372,7 @@ test.describe("People Management", () => {
       await page.locator('[type="submit"]').click();
 
       await page.waitForURL(/\/people\/[^/]+/, { timeout: 10000 });
-      await expect(page.locator("p").getByText("Zacchaeus").first()).toBeVisible({ timeout: 10000 });
+      await expect(page.locator("#page-header-title")).toContainText("Zacchaeus", { timeout: 10000 });
     });
 
     test("should cancel editing person household", async ({ page }) => {

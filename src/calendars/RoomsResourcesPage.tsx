@@ -1,11 +1,12 @@
 import { useState, useEffect, useCallback } from "react";
 import { ApiHelper, UserHelper, Loading, PageHeader, Locale } from "@churchapps/apphelper";
 import { Permissions, type GroupInterface } from "@churchapps/helpers";
-import { Box, Button, Grid, Tab, Tabs, Table, TableBody, TableCell, TableHead, TableRow, TableContainer, Paper } from "@mui/material";
+import { Box, Button, Grid, Table, TableBody, TableCell, TableHead, TableRow, TableContainer, Paper } from "@mui/material";
 import { Add as AddIcon, Edit as EditIcon, MeetingRoom as RoomIcon } from "@mui/icons-material";
 import { PermissionDenied } from "../components";
 import { EmptyState } from "../components/ui/EmptyState";
 import { AppIconButton } from "../components/ui/AppIconButton";
+import { NavigationTabs } from "../components/ui/NavigationTabs";
 import { RoomEdit } from "./components/RoomEdit";
 import { ResourceEdit } from "./components/ResourceEdit";
 import { BlockoutEdit } from "./components/BlockoutEdit";
@@ -177,13 +178,17 @@ export const RoomsResourcesPage = () => {
           {Locale.label("common.add")}
         </Button>
       </PageHeader>
+      <NavigationTabs
+        selectedTab={tab}
+        onTabChange={(v) => { setTab(v as TabKey); setEditing(null); }}
+        tabs={[
+          { value: "rooms", label: Locale.label("calendars.rooms.rooms"), testId: "tab-rooms" },
+          { value: "resources", label: Locale.label("calendars.rooms.resources"), testId: "tab-resources" },
+          { value: "blockouts", label: Locale.label("calendars.rooms.blockouts"), testId: "tab-blockouts" },
+          { value: "templates", label: Locale.label("calendars.rooms.templates"), testId: "tab-templates" }
+        ]}
+      />
       <Box sx={{ p: 3 }}>
-        <Tabs value={tab} onChange={(_e, v) => { setTab(v); setEditing(null); }} sx={{ mb: 2 }}>
-          <Tab label={Locale.label("calendars.rooms.rooms")} value="rooms" data-testid="tab-rooms" />
-          <Tab label={Locale.label("calendars.rooms.resources")} value="resources" data-testid="tab-resources" />
-          <Tab label={Locale.label("calendars.rooms.blockouts")} value="blockouts" data-testid="tab-blockouts" />
-          <Tab label={Locale.label("calendars.rooms.templates")} value="templates" data-testid="tab-templates" />
-        </Tabs>
         {loading ? <Loading /> : (
           <Grid container spacing={3}>
             <Grid size={{ xs: 12, md: editing ? 8 : 12 }}>{getTable()}</Grid>

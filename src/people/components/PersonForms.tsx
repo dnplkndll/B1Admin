@@ -1,23 +1,16 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { Box, Grid, Stack, Typography } from "@mui/material";
+import { Card, Grid, List, ListItemButton, Stack, Typography } from "@mui/material";
 import {
   CheckCircle as CheckCircleIcon,
   RadioButtonUnchecked as EmptyCircleIcon,
-  Person as PersonIcon,
   Description as DescriptionIcon
 } from "@mui/icons-material";
 import { type PersonInterface, type FormSubmissionInterface, type QuestionInterface, type AnswerInterface } from "@churchapps/helpers";
-import { ApiHelper, DisplayBox, Loading, Locale, Permissions, UserHelper } from "@churchapps/apphelper";
+import { ApiHelper, DisplayBox, Loading, Locale } from "@churchapps/apphelper";
 import { FormSubmissionEdit } from "@churchapps/apphelper/forms";
 import { Question } from "../../components";
 
-interface Props {
-  person: PersonInterface;
-  updatedFunction: () => void;
-  profileContent: React.ReactNode;
-}
-
-interface PersonFormOption {
+export interface PersonFormOption {
   id: string;
   name?: string;
   archived?: boolean;
@@ -29,20 +22,24 @@ interface FormDetail {
   answers: AnswerInterface[];
 }
 
-// The person record's "Profile" view plus a vertical side rail with one entry per person-form.
-// Profile is selected by default; each form shows a completion dot
-// (filled = submitted, hollow = not). The selected entry renders inline on the right and edits in place.
-export const PersonProfileTabs: React.FC<Props> = (props) => {
-  const [allForms, setAllForms] = useState<PersonFormOption[]>([]);
+interface Props {
+  person: PersonInterface;
+  forms: PersonFormOption[];
+  updatedFunction: () => void;
+}
+
+// The "Forms" tab: a list of the person's person-contentType forms with a completion
+// dot each, plus the selected form's view/edit pane. Replaces the old profile left rail.
+export const PersonForms: React.FC<Props> = (props) => {
+  const { person, forms } = props;
   const [details, setDetails] = useState<Record<string, FormDetail>>({});
-  const [selectedKey, setSelectedKey] = useState<string>("profile");
+  const [selectedFormId, setSelectedFormId] = useState<string>("");
   const [editingFormId, setEditingFormId] = useState<string>("");
-  const formPermission = UserHelper.checkAccess(Permissions.membershipApi.forms.admin) || UserHelper.checkAccess(Permissions.membershipApi.forms.edit);
-  const contentId = props.person?.id;
+  const contentId = person?.id;
 
   const personFormSubmissions = useMemo(
-    () => (props.person?.formSubmissions || []).filter((fs) => fs.form?.contentType === "person" || fs.contentType === "person"),
-    [props.person?.formSubmissions]
+    () => (person?.formSubmissions || []).filter((fs) => fs.form?.contentType === "person" || fs.contentType === "person"),
+    [person?.formSubmissions]
   );
 
   const submissionByFormId = useMemo(() => {
@@ -52,21 +49,18 @@ export const PersonProfileTabs: React.FC<Props> = (props) => {
   }, [personFormSubmissions]);
 
   useEffect(() => {
-    if (!formPermission) return;
-    ApiHelper.get("/forms", "MembershipApi").then((data: PersonFormOption[]) => {
-      setAllForms((data || []).filter((form) => !form.archived && form.contentType === "person"));
-    });
-  }, [formPermission]);
+    if (forms.length > 0 && !forms.some((f) => f.id === selectedFormId)) setSelectedFormId(forms[0].id);
+  }, [forms, selectedFormId]);
 
   // Load questions + answers for each form; submitted forms return answers, unsubmitted return blank questions.
   useEffect(() => {
     let cancelled = false;
     const load = async () => {
-      if (allForms.length === 0) {
+      if (forms.length === 0) {
         setDetails({});
         return;
       }
-      const entries = await Promise.all(allForms.map(async (form): Promise<[string, FormDetail]> => {
+      const entries = await Promise.all(forms.map(async (form): Promise<[string, FormDetail]> => {
         const submission = submissionByFormId[form.id];
         if (submission) {
           const detail = await ApiHelper.get(`/formsubmissions/${submission.id}/?include=questions,answers`, "MembershipApi");
@@ -82,7 +76,7 @@ export const PersonProfileTabs: React.FC<Props> = (props) => {
     };
     void load();
     return () => { cancelled = true; };
-  }, [allForms, submissionByFormId]);
+  }, [forms, submissionByFormId]);
 
   const handleSaved = () => {
     setEditingFormId("");
@@ -154,88 +148,31 @@ export const PersonProfileTabs: React.FC<Props> = (props) => {
     );
   };
 
-  // No forms (or no permission) → just the profile, no rail.
-  if (!formPermission || allForms.length === 0) {
-    return <>{props.profileContent}</>;
-  }
+  if (forms.length === 0) return null;
+  const selectedForm = forms.find((f) => f.id === selectedFormId) || forms[0];
 
-  const renderRightPane = () => {
-    const form = allForms.find((f) => f.id === selectedKey);
-    return form ? renderFormPane(form) : props.profileContent;
-  };
-
-  // Full-height left rail: break out of content padding (negative margins) to reach edges; minHeight spans viewport.
   return (
-    <Box sx={{ display: "flex", flexDirection: { xs: "column", md: "row" }, mx: -3, mt: -3, mb: -3, minHeight: { md: "calc(100vh - 250px)" } }}>
-      <Box
-        sx={(theme) => ({
-          width: { xs: "100%", md: 280 },
-          flexShrink: 0,
-          py: 2,
-          backgroundColor: theme.palette.background.paper,
-          borderRight: `1px solid ${theme.palette.divider}`,
-          position: "relative",
-          zIndex: 1
-        })}>
-        <Typography sx={{ px: 2.5, py: 1, fontSize: "0.75rem", fontWeight: 700, letterSpacing: "0.06em", textTransform: "uppercase", color: "text.secondary" }}>
-          {Locale.label("people.personProfile.railLabel") || "Profile & Forms"}
-        </Typography>
-
-        <RailItem
-          icon={<PersonIcon sx={{ fontSize: 20 }} />}
-          label={Locale.label("people.personNavigation.profile") || "Profile"}
-          active={selectedKey === "profile"}
-          onClick={() => setSelectedKey("profile")}
-        />
-        {allForms.map((form) => (
-          <RailItem
-            key={form.id}
-            icon={<DescriptionIcon sx={{ fontSize: 20 }} />}
-            label={form.name || Locale.label("people.personForm.form") || "Form"}
-            active={selectedKey === form.id}
-            submitted={!!submissionByFormId[form.id]}
-            onClick={() => setSelectedKey(form.id)}
-          />
-        ))}
-      </Box>
-
-      <Box sx={{ flex: 1, minWidth: 0, p: 3 }}>
-        {selectedKey === "profile" ? props.profileContent : renderRightPane()}
-      </Box>
-    </Box>
+    <Grid container spacing={2}>
+      <Grid size={{ xs: 12, md: 8 }}>
+        {renderFormPane(selectedForm)}
+      </Grid>
+      <Grid size={{ xs: 12, md: 4 }}>
+        <Card>
+          <List disablePadding>
+            {forms.map((form) => (
+              <ListItemButton key={form.id} selected={form.id === selectedForm.id} onClick={() => setSelectedFormId(form.id)}>
+                <DescriptionIcon sx={{ fontSize: 20, mr: 1.5, color: "text.secondary" }} />
+                <Typography sx={{ flex: 1, fontSize: "0.9rem", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                  {form.name || Locale.label("people.personForm.form") || "Form"}
+                </Typography>
+                {submissionByFormId[form.id]
+                  ? <CheckCircleIcon sx={{ fontSize: 18, color: "success.main" }} />
+                  : <EmptyCircleIcon sx={{ fontSize: 18, color: "text.disabled" }} />}
+              </ListItemButton>
+            ))}
+          </List>
+        </Card>
+      </Grid>
+    </Grid>
   );
 };
-
-interface RailItemProps {
-  icon: React.ReactNode;
-  label: string;
-  active: boolean;
-  submitted?: boolean;
-  onClick: () => void;
-}
-
-const RailItem: React.FC<RailItemProps> = ({ icon, label, active, submitted, onClick }) => (
-  <Box
-    onClick={onClick}
-    sx={(theme) => ({
-      display: "flex",
-      alignItems: "center",
-      gap: 1.5,
-      px: 2.5,
-      py: 1.5,
-      cursor: "pointer",
-      borderLeft: "3px solid",
-      borderColor: active ? theme.palette.primary.main : "transparent",
-      backgroundColor: active ? theme.palette.action.selected : "transparent",
-      color: active ? theme.palette.primary.main : theme.palette.text.primary,
-      fontWeight: active ? 500 : 400,
-      "&:hover": { backgroundColor: active ? theme.palette.action.selected : theme.palette.action.hover }
-    })}>
-    {icon}
-    <Typography sx={{ flex: 1, fontSize: "0.9rem", fontWeight: "inherit", color: "inherit", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-      {label}
-    </Typography>
-    {submitted === true && <CheckCircleIcon sx={{ fontSize: 18, color: "success.main" }} />}
-    {submitted === false && <EmptyCircleIcon sx={{ fontSize: 18, color: "text.disabled" }} />}
-  </Box>
-);

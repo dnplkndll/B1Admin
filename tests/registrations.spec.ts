@@ -56,7 +56,7 @@ test.describe.serial("Registrations — Registration Questions, Add Attendee, fi
     await page.locator('[data-testid="save-calendar-button"]').click();
     const row = page.locator("table tbody tr").filter({ hasText: CALENDAR }).first();
     await expect(row).toBeVisible({ timeout: 15000 });
-    await row.click();
+    await row.getByRole("link").first().click();
     await page.waitForURL(/\/calendars\/[\w-]+/, { timeout: 10000 });
 
     await page.locator('[data-testid="new-event-button"]').click();
@@ -143,7 +143,7 @@ test.describe.serial("Registrations — Registration Questions, Add Attendee, fi
     await navigateToRegistrations(page);
     const eventRow = page.locator("table tbody tr").filter({ hasText: EVENT_TITLE });
     await expect(eventRow).toBeVisible({ timeout: 15000 });
-    await eventRow.click();
+    await eventRow.getByRole("link").first().click();
     await page.waitForURL(new RegExp(`/registrations/${eventId}`), { timeout: 10000 });
     await expect(page.getByText(EVENT_TITLE, { exact: false }).first()).toBeVisible({ timeout: 10000 });
     await expect(page.getByText("Zacchaeus AnsweredGuest")).toBeVisible({ timeout: 10000 });

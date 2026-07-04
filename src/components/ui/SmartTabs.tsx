@@ -1,5 +1,6 @@
 import React from "react";
-import { Box, Tabs as MuiTabs, Tab } from "@mui/material";
+import { Box, Tabs as MuiTabs, Tab, useTheme } from "@mui/material";
+import { navigationTabsSx } from "./NavigationTabs";
 
 export interface SmartTabItem {
   key: string;
@@ -17,6 +18,7 @@ interface SmartTabsProps {
 }
 
 export const SmartTabs: React.FC<SmartTabsProps> = ({ tabs, value, onChange, ariaLabel }) => {
+  const theme = useTheme();
   const visibleTabs = React.useMemo(() => tabs.filter((t) => !t.hidden), [tabs]);
 
   const defaultKey = React.useMemo(() => visibleTabs[0]?.key ?? "", [visibleTabs]);
@@ -48,11 +50,13 @@ export const SmartTabs: React.FC<SmartTabsProps> = ({ tabs, value, onChange, ari
 
   return (
     <Box>
-      <MuiTabs value={selectedIndex} onChange={handleChange} aria-label={ariaLabel} sx={{ borderBottom: 1, borderColor: "divider" }}>
-        {visibleTabs.map((t) => (
-          <Tab key={t.key} label={t.label} disabled={t.disabled} />
-        ))}
-      </MuiTabs>
+      <div style={{ backgroundColor: theme.palette.background.paper, borderBottom: `1px solid ${theme.palette.divider}` }}>
+        <MuiTabs value={selectedIndex} onChange={handleChange} aria-label={ariaLabel} variant="fullWidth" sx={navigationTabsSx}>
+          {visibleTabs.map((t) => (
+            <Tab key={t.key} label={t.label} disabled={t.disabled} />
+          ))}
+        </MuiTabs>
+      </div>
       <Box sx={{ mt: 2 }}>{current?.content}</Box>
     </Box>
   );

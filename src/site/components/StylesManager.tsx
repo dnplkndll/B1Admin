@@ -1,11 +1,11 @@
 import { useState, useEffect } from "react";
-import { Box, Grid, Card, CardContent, Stack, Typography } from "@mui/material";
-import { Palette as PaletteIcon, TextFields as TextFieldsIcon, Code as CodeIcon, Image as ImageIcon, SmartButton as SmartButtonIcon, Style as StyleIcon, SpaceBar as SpaceBarIcon, FormatSize as FormatSizeIcon, Menu as MenuIcon } from "@mui/icons-material";
+import { Box, Grid, Typography } from "@mui/material";
+import { Palette as PaletteIcon, TextFields as TextFieldsIcon, Code as CodeIcon, Image as ImageIcon, SmartButton as SmartButtonIcon, SpaceBar as SpaceBarIcon, FormatSize as FormatSizeIcon, Menu as MenuIcon } from "@mui/icons-material";
 import { ApiHelper, UserHelper, Locale } from "@churchapps/apphelper";
 import type { GlobalStyleInterface, BlockInterface, GenericSettingInterface, SiteInterface } from "../../helpers/Interfaces";
 import { PaletteEdit, FontEdit, CssEdit, Preview, AppearanceEdit, TypographyEdit, SpacingScaleEdit, NavStyleEdit } from "./";
 import { useNavigate, useLocation } from "react-router-dom";
-import { CardWithHeader } from "../../components/ui";
+import { SettingsConfigList, type ConfigSection } from "../../settings/components/SettingsConfigList";
 import React from "react";
 import { EnvironmentHelper } from "../../helpers/EnvironmentHelper";
 
@@ -129,68 +129,84 @@ export function StylesManager(props: Props) {
     }
   };
 
-  const styleOptions = [
+  const styleOptions: (ConfigSection & { action: () => void })[] = [
     {
-      id: "palette",
+      key: "palette",
       icon: <PaletteIcon />,
       title: Locale.label("site.stylesManager.color"),
-      description: Locale.label("site.stylesManager.colorDesc"),
+      subtitle: Locale.label("site.stylesManager.colorDesc"),
+      color: "primary",
       action: () => setSection("palette")
     },
     {
-      id: "fonts",
+      key: "fonts",
       icon: <TextFieldsIcon />,
       title: Locale.label("site.stylesManager.fonts"),
-      description: Locale.label("site.stylesManager.fontsDesc"),
+      subtitle: Locale.label("site.stylesManager.fontsDesc"),
+      color: "secondary",
       action: () => setSection("fonts")
     },
     {
-      id: "typography",
+      key: "typography",
       icon: <FormatSizeIcon />,
       title: Locale.label("site.stylesManager.typography"),
-      description: Locale.label("site.stylesManager.typographyDesc"),
+      subtitle: Locale.label("site.stylesManager.typographyDesc"),
+      color: "info",
       action: () => setSection("typography")
     },
     {
-      id: "spacing",
+      key: "spacing",
       icon: <SpaceBarIcon />,
       title: Locale.label("site.stylesManager.spacing"),
-      description: Locale.label("site.stylesManager.spacingDesc"),
+      subtitle: Locale.label("site.stylesManager.spacingDesc"),
+      color: "warning",
       action: () => setSection("spacing")
     },
     {
-      id: "nav",
+      key: "nav",
       icon: <MenuIcon />,
       title: Locale.label("site.stylesManager.nav"),
-      description: Locale.label("site.stylesManager.navDesc"),
+      subtitle: Locale.label("site.stylesManager.navDesc"),
+      color: "success",
       action: () => setSection("nav")
     },
     {
-      id: "css",
+      key: "css",
       icon: <CodeIcon />,
       title: Locale.label("site.stylesManager.css"),
-      description: Locale.label("site.stylesManager.cssDesc"),
+      subtitle: Locale.label("site.stylesManager.cssDesc"),
+      color: "secondary",
       action: () => setSection("css")
     },
     {
-      id: "logo",
+      key: "logo",
       icon: <ImageIcon />,
       title: Locale.label("site.stylesManager.logo"),
-      description: Locale.label("site.stylesManager.logoDesc"),
+      subtitle: Locale.label("site.stylesManager.logoDesc"),
+      color: "primary",
       action: () => setSection("logo")
     },
     {
-      id: "footer",
+      key: "footer",
       icon: <SmartButtonIcon />,
       title: Locale.label("site.stylesManager.footer"),
-      description: Locale.label("site.stylesManager.footerDesc"),
+      subtitle: Locale.label("site.stylesManager.footerDesc"),
+      color: "warning",
       action: getFooter
     }
   ];
 
+  const handleSelect = (key: string) => {
+    styleOptions.find((o) => o.key === key)?.action();
+  };
+
   return (
     <Box>
       <Grid container spacing={3}>
+        <Grid size={{ xs: 12, md: 4 }}>
+          <SettingsConfigList sections={styleOptions} selected={section} onSelect={handleSelect} testIdPrefix="style-option" headerLabel={Locale.label("site.stylesManager.styleSettings")} />
+        </Grid>
+
         <Grid size={{ xs: 12, md: 8 }}>
           {section === "palette" && <PaletteEdit globalStyle={globalStyle} updatedFunction={handlePaletteUpdate} />}
           {section === "fonts" && <FontEdit globalStyle={globalStyle} updatedFunction={handleFontsUpdate} />}
@@ -206,62 +222,6 @@ export function StylesManager(props: Props) {
                 <Typography color="text.secondary">{Locale.label("site.stylesManager.loadingPreview")}</Typography>
               </Box>)
           )}
-        </Grid>
-
-        <Grid size={{ xs: 12, md: 4 }}>
-          <CardWithHeader title={Locale.label("site.stylesManager.styleSettings")} icon={<StyleIcon sx={{ color: "primary.main", fontSize: 20 }} />}>
-            <Stack spacing={2}>
-              {styleOptions.map((option) => (
-                <Card
-                  key={option.id}
-                  sx={{
-                    cursor: "pointer",
-                    transition: "all 0.2s ease-in-out",
-                    border: "1px solid",
-                    borderColor: section === option.id ? "primary.main" : "grey.200",
-                    backgroundColor: section === option.id ? "primary.50" : "transparent",
-                    "&:hover": {
-                      transform: "translateY(-2px)",
-                      boxShadow: 2,
-                      borderColor: "primary.main"
-                    }
-                  }}
-                  onClick={option.action}
-                  data-testid={`style-option-${option.id}`}>
-                  <CardContent sx={{ p: 2 }}>
-                    <Stack direction="row" spacing={2} alignItems="center">
-                      <Box
-                        sx={{
-                          backgroundColor: section === option.id ? "primary.main" : "rgba(25, 118, 210, 0.1)",
-                          borderRadius: "8px",
-                          p: 1,
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "center",
-                          minWidth: 40,
-                          height: 40
-                        }}>
-                        {React.cloneElement(option.icon, {
-                          sx: {
-                            fontSize: 20,
-                            color: section === option.id ? "#FFF" : "primary.main"
-                          }
-                        })}
-                      </Box>
-                      <Box sx={{ flex: 1 }}>
-                        <Typography variant="subtitle1" sx={{ fontWeight: 600, color: section === option.id ? "primary.main" : "text.primary" }}>
-                          {option.title}
-                        </Typography>
-                        <Typography variant="body2" sx={{ color: "text.secondary", fontSize: "0.875rem" }}>
-                          {option.description}
-                        </Typography>
-                      </Box>
-                    </Stack>
-                  </CardContent>
-                </Card>
-              ))}
-            </Stack>
-          </CardWithHeader>
         </Grid>
       </Grid>
     </Box>

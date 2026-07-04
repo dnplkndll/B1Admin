@@ -6,6 +6,7 @@ export interface NavigationTab {
   value: string;
   label: string;
   icon?: string | React.ReactElement;
+  testId?: string;
 }
 
 export interface NavigationDropdown<T = any> {
@@ -22,10 +23,22 @@ interface Props {
   onTabChange: (tab: string) => void;
   tabs: NavigationTab[];
   dropdown?: NavigationDropdown;
+  testId?: string;
 }
 
+// Shared with SmartTabs so every page/local tab bar renders identically.
+export const navigationTabsSx = {
+  minHeight: 48,
+  "& .MuiTab-root": {
+    minHeight: 48,
+    textTransform: "none",
+    fontSize: "0.95rem",
+    fontWeight: 700
+  }
+};
+
 export const NavigationTabs = memo((props: Props) => {
-  const { selectedTab, onTabChange, tabs, dropdown } = props;
+  const { selectedTab, onTabChange, tabs, dropdown, testId } = props;
   const [dropdownAnchor, setDropdownAnchor] = useState<null | HTMLElement>(null);
   const theme = useTheme();
 
@@ -53,15 +66,8 @@ export const NavigationTabs = memo((props: Props) => {
         value={selectedTab}
         onChange={handleTabChange}
         variant="fullWidth"
-        sx={{
-          minHeight: 48,
-          "& .MuiTab-root": {
-            minHeight: 48,
-            textTransform: "none",
-            fontSize: "0.95rem",
-            fontWeight: 700
-          }
-        }}>
+        sx={navigationTabsSx}
+        data-testid={testId}>
         {tabs.map((tab) => (
           <Tab
             key={tab.value}
@@ -70,6 +76,7 @@ export const NavigationTabs = memo((props: Props) => {
             icon={tab.icon}
             iconPosition="start"
             sx={{ gap: 1 }}
+            data-testid={tab.testId}
           />
         ))}
 

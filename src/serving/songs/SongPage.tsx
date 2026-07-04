@@ -242,9 +242,9 @@ export const SongPage = memo(() => {
           />
         ) : (
           <Grid container spacing={3}>
-            <Grid size={{ xs: 12, md: 3 }}>{arrangementNavigation}</Grid>
-
             <Grid size={{ xs: 12, md: 9 }}>{currentContent}</Grid>
+
+            <Grid size={{ xs: 12, md: 3 }}>{arrangementNavigation}</Grid>
           </Grid>
         )}
       </Box>

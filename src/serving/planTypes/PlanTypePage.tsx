@@ -7,7 +7,7 @@ import { type GroupInterface } from "@churchapps/helpers";
 import { type PlanTypeInterface } from "../../helpers";
 import { PlanList } from "../components/PlanList";
 import { PlanTypeGroups } from "../components/PlanTypeGroups";
-import { Breadcrumbs } from "../../components/ui";
+import { Breadcrumbs, type BreadcrumbItem } from "../../components/ui";
 
 export const PlanTypePage = () => {
   const params = useParams();
@@ -36,42 +36,28 @@ export const PlanTypePage = () => {
     );
   }
 
-  const breadcrumbItems = [
+  const breadcrumbItems: BreadcrumbItem[] = [
     { label: Locale.label("components.wrapper.plans") || "Plans", path: "/serving" },
     { label: planType.data.name }
   ];
 
   return (
     <>
-      <Box sx={{ position: "relative", "& #page-header > div": { paddingTop: "5.5rem" } }}>
-        <PageHeader
-          title={planType.data.name || Locale.label("plans.planTypePage.planType")}
-          subtitle={Locale.label("plans.planTypePage.subtitle")}
+      <PageHeader
+        title={planType.data.name || Locale.label("plans.planTypePage.planType")}
+        subtitle={Locale.label("plans.planTypePage.subtitle")}
+        breadcrumbs={<Breadcrumbs items={breadcrumbItems} showHome={true} />}
+      >
+        <Button
+          component={Link}
+          to={`/serving/overview?planTypeId=${planType.data.id}&ministryId=${planType.data.ministryId}`}
+          variant="outlined"
+          startIcon={<GridOnIcon />}
+          sx={{ color: "#FFF", borderColor: "rgba(255,255,255,0.5)", "&:hover": { borderColor: "#FFF", backgroundColor: "rgba(255,255,255,0.1)" } }}
         >
-          <Button
-            component={Link}
-            to={`/serving/overview?planTypeId=${planType.data.id}&ministryId=${planType.data.ministryId}`}
-            variant="outlined"
-            startIcon={<GridOnIcon />}
-            sx={{ color: "#FFF", borderColor: "rgba(255,255,255,0.5)", "&:hover": { borderColor: "#FFF", backgroundColor: "rgba(255,255,255,0.1)" } }}
-          >
-            {Locale.label("plans.planTypePage.overview")}
-          </Button>
-        </PageHeader>
-        <Box sx={{
-          position: "absolute",
-          top: 0,
-          left: "50%",
-          transform: "translateX(-50%)",
-          width: "100vw",
-          zIndex: 2,
-          paddingTop: 1.5
-        }}>
-          <Container maxWidth="xl">
-            <Breadcrumbs items={breadcrumbItems} showHome={true} />
-          </Container>
-        </Box>
-      </Box>
+          {Locale.label("plans.planTypePage.overview")}
+        </Button>
+      </PageHeader>
 
       <Box sx={{ p: 3 }}>
         <PlanList key="plans" ministry={ministry.data} planTypeId={planType.data.id} />

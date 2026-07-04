@@ -144,6 +144,7 @@ export const Sermons = () => {
       v.videoData = Locale.label("sermons.sermonEdit.channelIdPlaceholder");
       v.title = Locale.label("sermons.sermonEdit.currentLiveService");
     }
+    setCurrentPlaylist(null);
     setCurrentSermon(v);
     loadData();
   };
@@ -171,6 +172,7 @@ export const Sermons = () => {
 
   const handleAddPlaylist = () => {
     const v: PlaylistInterface = { churchId: UserHelper.currentUserChurch.church.id, title: Locale.label("sermons.playlists.playlistEdit.newPlaylist"), description: "", publishDate: new Date(), thumbnail: "" };
+    setCurrentSermon(null);
     setCurrentPlaylist(v);
   };
 
@@ -210,7 +212,7 @@ export const Sermons = () => {
             <AppIconButton
               label={Locale.label("common.edit")}
               icon={<EditIcon />}
-              onClick={() => { setCurrentSermon(video); }}
+              onClick={() => { setCurrentPlaylist(null); setCurrentSermon(video); }}
               data-testid={`edit-sermon-${video.id}`}
             />
           </TableCell>
@@ -321,7 +323,7 @@ export const Sermons = () => {
             label={Locale.label("common.edit")}
             icon={<EditIcon />}
             tone="card"
-            onClick={() => setCurrentPlaylist(playlist)}
+            onClick={() => { setCurrentSermon(null); setCurrentPlaylist(playlist); }}
           />
         </TableCell>
       </TableRow>
@@ -349,28 +351,6 @@ export const Sermons = () => {
     </div>
   );
 
-  if (currentSermon !== null) {
-    return (
-      <Box sx={{ p: 3 }}>
-        <SermonEdit currentSermon={currentSermon} updatedFunction={handleUpdated} />
-      </Box>
-    );
-  }
-
-  if (currentPlaylist !== null) {
-    return (
-      <Box sx={{ p: 3 }}>
-        {imageEditor}
-        <PlaylistEdit
-          currentPlaylist={currentPlaylist}
-          updatedFunction={handlePlaylistUpdated}
-          showPhotoEditor={showPhotoEditor}
-          updatedPhoto={(photoType === "playlist" && photoUrl) || null}
-        />
-      </Box>
-    );
-  }
-
   return (
     <>
       <Box sx={{ mb: 3 }}>
@@ -396,6 +376,11 @@ export const Sermons = () => {
       <Box sx={{ px: 3 }}>
         <Grid container spacing={3}>
           <Grid size={{ xs: 12, md: 8 }}>
+            {currentSermon !== null && (
+              <Box sx={{ mb: 3 }}>
+                <SermonEdit currentSermon={currentSermon} updatedFunction={handleUpdated} />
+              </Box>
+            )}
             <Card sx={{
               borderRadius: 2,
               border: "1px solid",
@@ -448,6 +433,17 @@ export const Sermons = () => {
           </Grid>
 
           <Grid size={{ xs: 12, md: 4 }}>
+            {currentPlaylist !== null && (
+              <Box sx={{ mb: 3 }}>
+                {imageEditor}
+                <PlaylistEdit
+                  currentPlaylist={currentPlaylist}
+                  updatedFunction={handlePlaylistUpdated}
+                  showPhotoEditor={showPhotoEditor}
+                  updatedPhoto={(photoType === "playlist" && photoUrl) || null}
+                />
+              </Box>
+            )}
             <Card data-testid="playlists-panel" sx={{
               borderRadius: 2,
               border: "1px solid",

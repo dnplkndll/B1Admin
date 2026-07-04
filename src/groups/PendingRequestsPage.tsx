@@ -1,4 +1,4 @@
-import { Loading, PageHeader } from "@churchapps/apphelper";
+import { Loading, Locale, PageHeader } from "@churchapps/apphelper";
 import { useQuery } from "@tanstack/react-query";
 import { Box, Paper } from "@mui/material";
 import type { GroupJoinRequestInterface } from "@churchapps/helpers";
@@ -14,7 +14,7 @@ const PendingRequestsPage = () => {
 
   return (
     <>
-      <PageHeader title="Pending Join Requests" subtitle="Approve or decline member-initiated requests across all groups." />
+      <PageHeader title={Locale.label("groups.pendingRequestsPage.title")} subtitle={Locale.label("groups.pendingRequestsPage.subtitle")} />
       <Box sx={{ p: 3 }} data-testid="pending-requests-page">
         <Paper sx={{ p: 2 }}>
           {requests.data && requests.data.length > 0 ? (
@@ -25,7 +25,7 @@ const PendingRequestsPage = () => {
             />
           ) : (
             <Box sx={{ textAlign: "center", py: 4, color: "text.secondary" }} data-testid="pending-requests-empty">
-              No pending requests.
+              {Locale.label("groups.pendingRequestsPage.empty")}
             </Box>
           )}
         </Paper>

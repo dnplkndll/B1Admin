@@ -1,5 +1,5 @@
 import React from "react";
-import { Grid, Icon, Card, CardContent, Stack, Typography } from "@mui/material";
+import { Grid, Icon, Card, CardContent } from "@mui/material";
 import { CalendarMonth as CalendarIcon, Group as GroupIcon } from "@mui/icons-material";
 import { Locale, ApiHelper, PageHeader } from "@churchapps/apphelper";
 import { AttendanceSetup } from "./components/AttendanceSetup";
@@ -67,57 +67,14 @@ export const AttendancePage = () => {
       <PageHeader
         title={Locale.label("attendance.attendancePage.att")}
         subtitle={Locale.label("attendance.attendancePage.subtitle")}
-      >
-        <Stack
-          direction={{ xs: "column", sm: "row" }}
-          spacing={{ xs: 2, sm: 2, md: 4 }}
-          sx={{
-            position: { xs: "static", md: "absolute" },
-            left: { md: "50%" },
-            top: { md: "50%" },
-            transform: { md: "translateY(-50%)" },
-            right: { md: "24px" },
-            justifyContent: { md: "space-between" },
-            flexWrap: "wrap"
-          }}
-        >
-          <Stack spacing={0.5} alignItems="center" sx={{ minWidth: 80 }}>
-            <Stack direction="row" spacing={1} alignItems="center">
-              <Icon sx={{ color: "#FFF", fontSize: 24 }}>church</Icon>
-              <Typography variant="h5" sx={{ color: "#FFF", fontWeight: 700 }}>{campuses.length}</Typography>
-            </Stack>
-            <Typography variant="caption" sx={{ color: "rgba(255,255,255,0.85)", fontSize: "0.75rem", textTransform: "uppercase", letterSpacing: 0.5 }}>{Locale.label("attendance.attendancePage.campuses")}</Typography>
-          </Stack>
-          <Stack spacing={0.5} alignItems="center" sx={{ minWidth: 80 }}>
-            <Stack direction="row" spacing={1} alignItems="center">
-              <CalendarIcon sx={{ color: "#FFF", fontSize: 24 }} />
-              <Typography variant="h5" sx={{ color: "#FFF", fontWeight: 700 }}>{stats.serviceTimes}</Typography>
-            </Stack>
-            <Typography variant="caption" sx={{ color: "rgba(255,255,255,0.85)", fontSize: "0.75rem", textTransform: "uppercase", letterSpacing: 0.5 }}>{Locale.label("attendance.attendancePage.services")}</Typography>
-          </Stack>
-          <Stack spacing={0.5} alignItems="center" sx={{ minWidth: 80 }}>
-            <Stack direction="row" spacing={1} alignItems="center">
-              <Icon sx={{ color: "#FFF", fontSize: 24 }}>schedule</Icon>
-              <Typography variant="h5" sx={{ color: "#FFF", fontWeight: 700 }}>{stats.scheduledGroups}</Typography>
-            </Stack>
-            <Typography variant="caption" sx={{ color: "rgba(255,255,255,0.85)", fontSize: "0.75rem", textTransform: "uppercase", letterSpacing: 0.5 }}>{Locale.label("attendance.attendancePage.scheduled")}</Typography>
-          </Stack>
-          <Stack spacing={0.5} alignItems="center" sx={{ minWidth: 80 }}>
-            <Stack direction="row" spacing={1} alignItems="center">
-              <Icon sx={{ color: "#FFF", fontSize: 24 }}>groups</Icon>
-              <Typography variant="h5" sx={{ color: "#FFF", fontWeight: 700 }}>{stats.unscheduledGroups}</Typography>
-            </Stack>
-            <Typography variant="caption" sx={{ color: "rgba(255,255,255,0.85)", fontSize: "0.75rem", textTransform: "uppercase", letterSpacing: 0.5 }}>{Locale.label("attendance.attendancePage.unscheduled")}</Typography>
-          </Stack>
-          <Stack spacing={0.5} alignItems="center" sx={{ minWidth: 80 }}>
-            <Stack direction="row" spacing={1} alignItems="center">
-              <GroupIcon sx={{ color: "#FFF", fontSize: 24 }} />
-              <Typography variant="h5" sx={{ color: "#FFF", fontWeight: 700 }}>{stats.totalGroups}</Typography>
-            </Stack>
-            <Typography variant="caption" sx={{ color: "rgba(255,255,255,0.85)", fontSize: "0.75rem", textTransform: "uppercase", letterSpacing: 0.5 }}>{Locale.label("attendance.attendancePage.totalGroups")}</Typography>
-          </Stack>
-        </Stack>
-      </PageHeader>
+        statistics={[
+          { icon: <Icon>church</Icon>, value: campuses.length.toString(), label: Locale.label("attendance.attendancePage.campuses") },
+          { icon: <CalendarIcon />, value: stats.serviceTimes.toString(), label: Locale.label("attendance.attendancePage.services") },
+          { icon: <Icon>schedule</Icon>, value: stats.scheduledGroups.toString(), label: Locale.label("attendance.attendancePage.scheduled") },
+          { icon: <Icon>groups</Icon>, value: stats.unscheduledGroups.toString(), label: Locale.label("attendance.attendancePage.unscheduled") },
+          { icon: <GroupIcon />, value: stats.totalGroups.toString(), label: Locale.label("attendance.attendancePage.totalGroups") }
+        ]}
+      />
       <AttendanceNavigation selectedTab={selectedTab} onTabChange={setSelectedTab} />
 
       <PageContainer>

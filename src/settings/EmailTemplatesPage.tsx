@@ -69,47 +69,47 @@ export const EmailTemplatesPage: React.FC = () => {
       </PageHeader>
 
       <Box sx={{ p: 2 }}>
-        {editTemplate !== null ? (
-          <EmailTemplateEdit template={editTemplate} onSave={handleSaved} onCancel={() => setEditTemplate(null)} onDelete={editTemplate.id ? () => { handleDelete(editTemplate); setEditTemplate(null); } : undefined} />
+        {editTemplate !== null && (
+          <Box sx={{ mb: 3 }}>
+            <EmailTemplateEdit template={editTemplate} onSave={handleSaved} onCancel={() => setEditTemplate(null)} onDelete={editTemplate.id ? () => { handleDelete(editTemplate); setEditTemplate(null); } : undefined} />
+          </Box>
+        )}
+
+        {templates.length === 0 ? (
+          <Box sx={{ textAlign: "center", py: 6 }}>
+            <EmailIcon sx={{ fontSize: 48, color: "text.secondary", mb: 2 }} />
+            <Typography variant="h6" color="text.secondary">{Locale.label("settings.emailTemplatesPage.emptyTitle")}</Typography>
+            <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>{Locale.label("settings.emailTemplatesPage.emptyDescription")}</Typography>
+            <Button variant="contained" startIcon={<AddIcon />} onClick={handleNew}>{Locale.label("settings.emailTemplatesPage.createTemplate")}</Button>
+          </Box>
         ) : (
-          <>
-            {templates.length === 0 ? (
-              <Box sx={{ textAlign: "center", py: 6 }}>
-                <EmailIcon sx={{ fontSize: 48, color: "text.secondary", mb: 2 }} />
-                <Typography variant="h6" color="text.secondary">{Locale.label("settings.emailTemplatesPage.emptyTitle")}</Typography>
-                <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>{Locale.label("settings.emailTemplatesPage.emptyDescription")}</Typography>
-                <Button variant="contained" startIcon={<AddIcon />} onClick={handleNew}>{Locale.label("settings.emailTemplatesPage.createTemplate")}</Button>
-              </Box>
-            ) : (
-              <Table>
-                <TableHead>
-                  <TableRow>
-                    <TableCell>{Locale.label("settings.emailTemplatesPage.name")}</TableCell>
-                    <TableCell>{Locale.label("settings.emailTemplatesPage.subject")}</TableCell>
-                    <TableCell>{Locale.label("settings.emailTemplatesPage.category")}</TableCell>
-                    <TableCell>{Locale.label("settings.emailTemplatesPage.modified")}</TableCell>
-                    <TableCell align="right"></TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {templates.map((t) => (
-                    <TableRow key={t.id} hover sx={{ cursor: "pointer" }} onClick={() => handleEdit(t)}>
-                      <TableCell><Typography fontWeight={600}>{t.name}</Typography></TableCell>
-                      <TableCell>{t.subject}</TableCell>
-                      <TableCell>{t.category && <Chip label={t.category} size="small" />}</TableCell>
-                      <TableCell>{formatDate(t.dateModified)}</TableCell>
-                      <TableCell align="right" className="rowActions">
-                        <Stack direction="row" spacing={0.5} justifyContent="flex-end">
-                          <AppIconButton label={Locale.label("common.edit")} icon={<EditIcon />} onClick={(e) => { e.stopPropagation(); handleEdit(t); }} />
-                          <AppIconButton label={Locale.label("common.delete")} icon={<DeleteIcon />} intent="remove" onClick={(e) => { e.stopPropagation(); handleDelete(t); }} />
-                        </Stack>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            )}
-          </>
+          <Table>
+            <TableHead>
+              <TableRow>
+                <TableCell>{Locale.label("settings.emailTemplatesPage.name")}</TableCell>
+                <TableCell>{Locale.label("settings.emailTemplatesPage.subject")}</TableCell>
+                <TableCell>{Locale.label("settings.emailTemplatesPage.category")}</TableCell>
+                <TableCell>{Locale.label("settings.emailTemplatesPage.modified")}</TableCell>
+                <TableCell align="right"></TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {templates.map((t) => (
+                <TableRow key={t.id} hover>
+                  <TableCell><Typography fontWeight={600}>{t.name}</Typography></TableCell>
+                  <TableCell>{t.subject}</TableCell>
+                  <TableCell>{t.category && <Chip label={t.category} size="small" />}</TableCell>
+                  <TableCell>{formatDate(t.dateModified)}</TableCell>
+                  <TableCell align="right" className="rowActions">
+                    <Stack direction="row" spacing={0.5} justifyContent="flex-end">
+                      <AppIconButton label={Locale.label("common.edit")} icon={<EditIcon />} onClick={() => handleEdit(t)} />
+                      <AppIconButton label={Locale.label("common.delete")} icon={<DeleteIcon />} intent="remove" onClick={() => handleDelete(t)} />
+                    </Stack>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
         )}
       </Box>
     </>

@@ -229,7 +229,7 @@ export const SendEmailDialog: React.FC<Props> = (props) => {
                         </Select>
                       </FormControl>
                     )}
-                    <a href="/email-templates" style={{ whiteSpace: "nowrap" }}>{Locale.label("groups.sendEmailDialog.manageTemplates")}</a>
+                    <a href="/settings/email-templates" style={{ whiteSpace: "nowrap" }}>{Locale.label("groups.sendEmailDialog.manageTemplates")}</a>
                   </Box>
                 )}
 

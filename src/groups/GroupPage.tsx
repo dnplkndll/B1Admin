@@ -47,7 +47,7 @@ export const GroupPage = () => {
   return (
     <>
       <GroupBanner group={group.data} onEdit={handleEdit} editMode={editMode} />
-      {!editMode && <GroupNavigation selectedTab={selectedTab} onTabChange={setSelectedTab} group={group.data} />}
+      <GroupNavigation selectedTab={selectedTab} onTabChange={setSelectedTab} group={group.data} />
       <Grid container spacing={2}>
         <Grid size={{ xs: 12 }}>
           <div id="mainContent">{editMode ? <GroupDetailsEdit id="groupDetailsBox" group={group.data} updatedFunction={handleUpdated} /> : getCurrentTab()}</div>

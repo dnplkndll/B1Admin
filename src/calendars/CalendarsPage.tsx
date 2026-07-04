@@ -1,13 +1,12 @@
 import { useState, useEffect } from "react";
 import { ApiHelper, UserHelper, Loading, PageHeader, Locale } from "@churchapps/apphelper";
 import { Permissions, type CuratedCalendarInterface } from "@churchapps/helpers";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import {
   Box,
   Typography,
   Stack,
   Button,
-  Grid,
   Card,
   CardContent,
   Table,
@@ -51,13 +50,9 @@ export const CalendarsPage = () => {
     <TableRow
       key={calendar.id}
       sx={{
-        "&:hover": {
-          backgroundColor: "action.hover",
-          cursor: "pointer"
-        },
+        "&:hover": { backgroundColor: "action.hover" },
         transition: "background-color 0.2s ease"
       }}
-      onClick={() => navigate("/calendars/" + calendar.id)}
     >
       <TableCell>
         <Stack direction="row" spacing={2} alignItems="center">
@@ -77,7 +72,7 @@ export const CalendarsPage = () => {
             <CalendarIcon sx={{ fontSize: 20 }} />
           </Box>
           <Box>
-            <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>
+            <Typography component={Link} to={"/calendars/" + calendar.id} variant="subtitle1" sx={{ fontWeight: 600, textDecoration: "none", color: "var(--link)" }}>
               {calendar.name}
             </Typography>
             <Typography variant="body2" color="text.secondary">
@@ -104,10 +99,7 @@ export const CalendarsPage = () => {
             tone="card"
             label={Locale.label("calendars.calendarList.manageEvents")}
             icon={<EventIcon />}
-            onClick={(e) => {
-              e.stopPropagation();
-              navigate("/calendars/" + calendar.id);
-            }}
+            onClick={() => navigate("/calendars/" + calendar.id)}
             data-testid={`manage-calendar-${calendar.id}`}
           />
           {UserHelper.checkAccess(Permissions.contentApi.content.edit) && (
@@ -115,10 +107,7 @@ export const CalendarsPage = () => {
               tone="card"
               label={Locale.label("common.edit")}
               icon={<EditIcon />}
-              onClick={(e) => {
-                e.stopPropagation();
-                setCurrentCalendar(calendar);
-              }}
+              onClick={() => setCurrentCalendar(calendar)}
               data-testid={`edit-calendar-${calendar.id}`}
             />
           )}
@@ -164,88 +153,55 @@ export const CalendarsPage = () => {
       </PageHeader>
 
       <Box sx={{ p: 3 }}>
-        {!currentCalendar ? (
-          <>
-            {loading ? (
-              <Loading data-testid="calendars-loading" />
-            ) : calendars.length === 0 ? (
-              <EmptyState
-                icon={<CalendarIcon />}
-                title={Locale.label("calendars.calendarList.noCalendars")}
-                description={Locale.label("calendars.calendarList.createFirstCalendar")}
-                action={UserHelper.checkAccess(Permissions.contentApi.content.edit) && (
-                  <Button variant="contained" startIcon={<AddIcon />} onClick={() => setCurrentCalendar({} as CuratedCalendarInterface)} data-testid="empty-state-add-calendar">
-                    {Locale.label("calendars.calendarList.createCalendar")}
-                  </Button>
-                )}
-              />
-            ) : (
-              <TableContainer
-                component={Paper}
-                sx={{
-                  borderRadius: 2,
-                  border: "1px solid",
-                  borderColor: "divider"
-                }}
-              >
-                <Table>
-                  <TableHead sx={{ backgroundColor: "background.paper" }}>
-                    <TableRow>
-                      <TableCell sx={{ fontWeight: 600, color: "text.secondary" }}>
-                        {Locale.label("calendars.calendarList.calendar")}
-                      </TableCell>
-                      <TableCell sx={{ fontWeight: 600, color: "text.secondary" }}>
-                        {Locale.label("calendars.calendarList.status")}
-                      </TableCell>
-                      <TableCell align="right" />
-                    </TableRow>
-                  </TableHead>
-                  <TableBody>{getRows()}</TableBody>
-                </Table>
-              </TableContainer>
+        {currentCalendar && (
+          <Box sx={{ mb: 3 }}>
+            <CalendarEdit
+              calendar={currentCalendar}
+              updatedCallback={() => {
+                setCurrentCalendar(null);
+                loadData();
+              }}
+            />
+          </Box>
+        )}
+
+        {loading ? (
+          <Loading data-testid="calendars-loading" />
+        ) : calendars.length === 0 ? (
+          <EmptyState
+            icon={<CalendarIcon />}
+            title={Locale.label("calendars.calendarList.noCalendars")}
+            description={Locale.label("calendars.calendarList.createFirstCalendar")}
+            action={UserHelper.checkAccess(Permissions.contentApi.content.edit) && (
+              <Button variant="contained" startIcon={<AddIcon />} onClick={() => setCurrentCalendar({} as CuratedCalendarInterface)} data-testid="empty-state-add-calendar">
+                {Locale.label("calendars.calendarList.createCalendar")}
+              </Button>
             )}
-          </>
+          />
         ) : (
-          <Grid container spacing={3} sx={{ width: "100%" }}>
-            <Grid size={{ xs: 12, md: 8 }}>
-              {loading ? (
-                <Loading data-testid="calendars-loading" />
-              ) : (
-                <TableContainer
-                  component={Paper}
-                  sx={{
-                    borderRadius: 2,
-                    border: "1px solid",
-                    borderColor: "divider"
-                  }}
-                >
-                  <Table>
-                    <TableHead sx={{ backgroundColor: "background.paper" }}>
-                      <TableRow>
-                        <TableCell sx={{ fontWeight: 600, color: "text.secondary" }}>
-                          {Locale.label("calendars.calendarList.calendar")}
-                        </TableCell>
-                        <TableCell sx={{ fontWeight: 600, color: "text.secondary" }}>
-                          {Locale.label("calendars.calendarList.status")}
-                        </TableCell>
-                        <TableCell align="right" />
-                      </TableRow>
-                    </TableHead>
-                    <TableBody>{getRows()}</TableBody>
-                  </Table>
-                </TableContainer>
-              )}
-            </Grid>
-            <Grid size={{ xs: 12, md: 4 }}>
-              <CalendarEdit
-                calendar={currentCalendar}
-                updatedCallback={() => {
-                  setCurrentCalendar(null);
-                  loadData();
-                }}
-              />
-            </Grid>
-          </Grid>
+          <TableContainer
+            component={Paper}
+            sx={{
+              borderRadius: 2,
+              border: "1px solid",
+              borderColor: "divider"
+            }}
+          >
+            <Table>
+              <TableHead sx={{ backgroundColor: "background.paper" }}>
+                <TableRow>
+                  <TableCell sx={{ fontWeight: 600, color: "text.secondary" }}>
+                    {Locale.label("calendars.calendarList.calendar")}
+                  </TableCell>
+                  <TableCell sx={{ fontWeight: 600, color: "text.secondary" }}>
+                    {Locale.label("calendars.calendarList.status")}
+                  </TableCell>
+                  <TableCell align="right" />
+                </TableRow>
+              </TableHead>
+              <TableBody>{getRows()}</TableBody>
+            </Table>
+          </TableContainer>
         )}
 
         {calendars.length > 0 && !currentCalendar && (

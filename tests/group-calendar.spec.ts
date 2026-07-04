@@ -88,7 +88,7 @@ test.describe.serial("Curated calendar lifecycle", () => {
   test("navigates to the calendar detail page when row is clicked", async () => {
     await openCalendarsPage(page);
     const row = await findCalendarRow(page, DISPOSABLE_CALENDAR);
-    await row.click();
+    await row.getByRole("link").first().click();
     await page.waitForURL(/\/calendars\/[\w-]+/, { timeout: 10000 });
     await expect(page.locator("text=Calendar Events").first()).toBeVisible({ timeout: 10000 });
     await expect(page.locator("text=Groups in Calendar").first()).toBeVisible({ timeout: 10000 });
@@ -97,7 +97,7 @@ test.describe.serial("Curated calendar lifecycle", () => {
   test("detail page renders an empty state when no groups have been added", async () => {
     await openCalendarsPage(page);
     const row = await findCalendarRow(page, DISPOSABLE_CALENDAR);
-    await row.click();
+    await row.getByRole("link").first().click();
     await page.waitForURL(/\/calendars\/[\w-]+/, { timeout: 10000 });
     await expect(page.getByText(/No groups have been added|No groups added/i).first())
       .toBeVisible({ timeout: 10000 });
@@ -157,7 +157,7 @@ test.describe.serial("New Event modal — Recurring", () => {
     await page.locator('[data-testid="save-calendar-button"]').click();
     const row = page.locator("table tbody tr").filter({ hasText: RECURRING_CALENDAR }).first();
     await expect(row).toBeVisible({ timeout: 15000 });
-    await row.click();
+    await row.getByRole("link").first().click();
     await page.waitForURL(/\/calendars\/[\w-]+/, { timeout: 10000 });
   });
 

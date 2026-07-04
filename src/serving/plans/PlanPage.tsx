@@ -7,7 +7,7 @@ import { Assignment } from "../components/Assignment";
 import { PlanNavigation } from "../components/PlanNavigation";
 import { Box, Container, Typography } from "@mui/material";
 import { ServiceOrder } from "../components/ServiceOrder";
-import { Breadcrumbs } from "../../components/ui";
+import { Breadcrumbs, type BreadcrumbItem } from "../../components/ui";
 
 export const PlanPage = () => {
   const params = useParams();
@@ -53,7 +53,7 @@ export const PlanPage = () => {
     );
   }
 
-  const breadcrumbItems: { label: string; path?: string }[] = [{ label: Locale.label("components.wrapper.plans") || "Plans", path: "/serving" }];
+  const breadcrumbItems: BreadcrumbItem[] = [{ label: Locale.label("components.wrapper.plans") || "Plans", path: "/serving" }];
 
   if (planType) {
     breadcrumbItems.push({ label: planType.name, path: `/serving/planTypes/${planType.id}` });
@@ -63,22 +63,11 @@ export const PlanPage = () => {
 
   return (
     <>
-      <Box sx={{ position: "relative", "& #page-header > div": { paddingTop: "5.5rem" } }}>
-        <PageHeader title={plan.name || Locale.label("plans.planPage.servicePlan")} subtitle={Locale.label("plans.planPage.subtitle")} />
-        <Box sx={{
-          position: "absolute",
-          top: 0,
-          left: "50%",
-          transform: "translateX(-50%)",
-          width: "100vw",
-          zIndex: 2,
-          paddingTop: 1.5
-        }}>
-          <Container maxWidth="xl">
-            <Breadcrumbs items={breadcrumbItems} showHome={true} />
-          </Container>
-        </Box>
-      </Box>
+      <PageHeader
+        title={plan.name || Locale.label("plans.planPage.servicePlan")}
+        subtitle={Locale.label("plans.planPage.subtitle")}
+        breadcrumbs={<Breadcrumbs items={breadcrumbItems} showHome={true} />}
+      />
       <PlanNavigation selectedTab={selectedTab} onTabChange={setSelectedTab} plan={plan} />
 
       <Box sx={{ p: 3 }}>{getCurrentTab()}</Box>

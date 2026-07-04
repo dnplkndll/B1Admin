@@ -117,7 +117,7 @@ export const FormsPage = () => {
     setSelectedFormId("notset");
   };
 
-  const getSidebar = () => {
+  const getEditSlot = () => {
     if (selectedFormId === "notset" || selectedTab === "archived") return <></>;
     if (selectedTab === "forms") return <FormEdit formId={selectedFormId} updatedFunction={handleUpdate}></FormEdit>;
   };
@@ -136,7 +136,7 @@ export const FormsPage = () => {
   const archivedCount = archivedForms.data?.filter(form => form.archived === true)?.length || 0;
 
   const formsCard = (
-    <Card sx={{ mt: getSidebar() ? 2 : 0 }}>
+    <Card sx={{ mt: getEditSlot() ? 2 : 0 }}>
       <Box sx={{ p: 2, borderBottom: 1, borderColor: "var(--border-light)" }}>
         <Stack direction="row" justifyContent="space-between" alignItems="center">
           <Stack direction="row" spacing={1} alignItems="center">
@@ -171,7 +171,7 @@ export const FormsPage = () => {
       label: Locale.label("forms.formsPage.forms"),
       content: (
         <>
-          {getSidebar()}
+          {getEditSlot()}
           {formsCard}
         </>
       )
@@ -184,15 +184,15 @@ export const FormsPage = () => {
       <PageHeader title={Locale.label("forms.formsPage.forms")} subtitle={Locale.label("forms.formsPage.subtitleManage")}>
         {formPermission && selectedTab !== "archived" && (
           <Button
-            variant="contained"
+            variant="outlined"
             startIcon={<AddIcon />}
             onClick={() => {
               setSelectedFormId("");
             }}
             sx={{
-              backgroundColor: "#FFF",
-              color: "primary.light",
-              "&:hover": { backgroundColor: "rgba(255,255,255,0.9)" }
+              color: "#FFF",
+              borderColor: "rgba(255,255,255,0.5)",
+              "&:hover": { borderColor: "#FFF", backgroundColor: "rgba(255,255,255,0.1)" }
             }}
             data-testid="add-form-button">
             {Locale.label("forms.formsPage.addForm")}

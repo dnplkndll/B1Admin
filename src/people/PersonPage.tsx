@@ -1,7 +1,7 @@
 import React, { useContext, useCallback, useMemo } from "react";
-import { Groups, PersonAttendance, PersonNotes, PersonDonations, GdprActions } from "./components";
+import { Groups, PersonAttendance, PersonNotes, PersonDonations, PersonForms, type PersonFormOption } from "./components";
 import { type PersonInterface, type ConversationInterface } from "@churchapps/helpers";
-import { ApiHelper, Locale, SocketHelper, SubscriptionManager, UserHelper } from "@churchapps/apphelper";
+import { ApiHelper, Locale, Permissions, SocketHelper, SubscriptionManager, UserHelper } from "@churchapps/apphelper";
 import { useParams } from "react-router-dom";
 import { PersonBanner } from "./components/PersonBanner";
 import { PersonNavigation } from "./components/PersonNavigation";
@@ -15,6 +15,18 @@ export const PersonPage = () => {
   const params = useParams();
   const [inPhotoEditMode, setInPhotoEditMode] = React.useState<boolean>(false);
   const [editMode, setEditMode] = React.useState<string>("display");
+  const [personForms, setPersonForms] = React.useState<PersonFormOption[]>([]);
+
+  const formPermission = useMemo(() => UserHelper.checkAccess(Permissions.membershipApi.forms.admin) || UserHelper.checkAccess(Permissions.membershipApi.forms.edit), []);
+
+  React.useEffect(() => {
+    if (!formPermission) return;
+    ApiHelper.get("/forms", "MembershipApi").then((data: PersonFormOption[]) => {
+      setPersonForms((data || []).filter((form) => !form.archived && form.contentType === "person"));
+    }).catch(() => setPersonForms([]));
+  }, [formPermission]);
+
+  const showForms = formPermission && personForms.length > 0;
 
   const personData = useQuery<PersonInterface>({
     queryKey: ["/people/" + params.id, "MembershipApi"],
@@ -134,6 +146,7 @@ export const PersonPage = () => {
       case "notes": currentTab = <PersonNotes key={`notes-${person?.conversationId || "new"}`} context={context} conversationId={person?.conversationId} createConversation={handleCreateConversation} />; break;
       case "attendance": currentTab = <PersonAttendance key="attendance" personId={person.id} personName={person.name?.display} updatedFunction={refetch} />; break;
       case "donations": currentTab = <PersonDonations key="donations" personId={person.id} />; break;
+      case "forms": currentTab = <PersonForms key="forms" person={person} forms={personForms} updatedFunction={refetch} />; break;
       case "groups": currentTab = <Groups key="groups" personId={person?.id} updatedFunction={refetch} />; break;
       default: currentTab = <div key="default">{Locale.label("people.tabs.noImplement")}</div>; break;
     }
@@ -149,12 +162,10 @@ export const PersonPage = () => {
       <PersonNavigation
         selectedTab={selectedTab}
         onTabChange={setSelectedTab}
+        showForms={showForms}
       />
       <div style={{ padding: "24px" }}>
         {getCurrentTab()}
-        {selectedTab === "details" && editMode === "edit" && person?.id && (
-          <GdprActions personId={person.id} personName={person.name?.display || Locale.label("people.personPage.thisPerson")} onAnonymized={refetch} />
-        )}
       </div>
     </>
   );

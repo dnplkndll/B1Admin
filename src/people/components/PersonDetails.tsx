@@ -1,5 +1,5 @@
 import React, { memo } from "react";
-import { Household, Merge, PersonEdit, PersonExportDialog, PersonProfileTabs, PersonView } from "./";
+import { Household, Merge, PersonEdit, PersonExportDialog, PersonView } from "./";
 import { PickupPeople } from "./PickupPeople";
 import { type PersonInterface } from "@churchapps/helpers";
 import { ImageEditor, Locale, Permissions, PersonHelper, UserHelper } from "@churchapps/apphelper";
@@ -68,27 +68,21 @@ export const PersonDetails = memo((props: Props) => {
       {editMode === "edit" ? (
         <PersonEdit id="personDetailsBox" person={person} updatedFunction={handleUpdated} togglePhotoEditor={togglePhotoEditor} showMergeSearch={handleShowSearch} />
       ) : (
-        <PersonProfileTabs
-          person={person}
-          updatedFunction={props.updatedFunction}
-          profileContent={(
-            <>
-              <PersonView
-                person={person}
-                editFunction={() => setEditMode("edit")}
-                updatedFunction={props.updatedFunction}
-                showForms={false}
-                headerActions={formPermission ? (
-                  <Button size="small" variant="outlined" startIcon={<ExportIcon />} onClick={() => setShowExportDialog(true)} sx={{ minWidth: "auto" }}>
-                    {Locale.label("people.peoplePage.export") || "Export"}
-                  </Button>
-                ) : undefined}
-              />
-              <Household person={person} reload={person?.photoUpdated} />
-              <PickupPeople person={person} />
-            </>
-          )}
-        />
+        <>
+          <PersonView
+            person={person}
+            editFunction={() => setEditMode("edit")}
+            updatedFunction={props.updatedFunction}
+            showForms={false}
+            headerActions={formPermission ? (
+              <Button size="small" variant="outlined" startIcon={<ExportIcon />} onClick={() => setShowExportDialog(true)} sx={{ minWidth: "auto" }}>
+                {Locale.label("people.peoplePage.export") || "Export"}
+              </Button>
+            ) : undefined}
+          />
+          <Household person={person} reload={person?.photoUpdated} />
+          <PickupPeople person={person} />
+        </>
       )}
     </>
   );

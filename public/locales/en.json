@@ -1021,7 +1021,9 @@
       "duplicateTooltip": "Duplicate this group",
       "emailTooltip": "Email this group",
       "labels": "Labels",
+      "location": "Location",
       "meetingInfo": "Meeting Information",
+      "meetingTime": "Meeting Time",
       "moreLabels": "More Labels",
       "parentPickup": "Parent Pickup",
       "printNametag": "Print Nametag",
@@ -1195,6 +1197,8 @@
       "groups": "Groups",
       "labels": "Labels",
       "noGroupMsg": "No groups found. Please create a group.",
+      "pendingRequestSingular": "{count} pending request",
+      "pendingRequests": "{count} pending requests",
       "pers": "1 person",
       "ppl": "People",
       "restore": "Restore",
@@ -1210,6 +1214,11 @@
       "availableMem": "Available Group Members",
       "noMem": "No group members available.",
       "unknown": "Unknown"
+    },
+    "pendingRequestsPage": {
+      "empty": "No pending requests.",
+      "subtitle": "Approve or decline member-initiated requests across all groups.",
+      "title": "Pending Join Requests"
     },
     "sendEmailDialog": {
       "bodyMergeFieldHint": "Insert merge field into body:",
@@ -1645,6 +1654,7 @@
     "personBanner": {
       "addToWorkflow": "Add to Workflow",
       "age": "Age",
+      "emailPerson": "Email this person",
       "gender": "Gender",
       "hasLogin": "Has login",
       "maritalStatus": "Marital Status",
@@ -2779,6 +2789,8 @@
       "church": "Church",
       "churchName": "Church Name",
       "churches": "Churches",
+      "churchesSubtitle": "Search and manage all churches",
+      "impersonateSubtitle": "Log in as another user for support",
       "impersonateUser": "Impersonate User",
       "location": "Location",
       "noChurch": "No churches found.  Please search for a different name.",
@@ -2792,8 +2804,11 @@
       "searchResults": "Search Results",
       "servAdmin": "Server Admin",
       "serverHealth": "Server Health",
+      "serverHealthSubtitle": "Check the health of backend services",
       "subtitle": "Manage server-wide settings and churches",
       "translationLookups": "Translation Lookups",
+      "translationSubtitle": "Look up translated locale strings",
+      "usageSubtitle": "View trends in server usage",
       "usageTrends": "Usage Trends",
       "valueNotes": "Notes on How Values are Calculated"
     },

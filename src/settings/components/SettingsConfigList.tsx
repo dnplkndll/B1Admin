@@ -15,13 +15,17 @@ interface Props {
   sections: ConfigSection[];
   selected: string;
   onSelect: (key: string) => void;
+  /** Prefix for each row's data-testid (defaults to "settings-section" for the ManageChurch pattern). */
+  testIdPrefix?: string;
+  /** Overrides the header label above the list (defaults to "Configuration"). */
+  headerLabel?: string;
 }
 
-export const SettingsConfigList: React.FC<Props> = ({ sections, selected, onSelect }) => (
+export const SettingsConfigList: React.FC<Props> = ({ sections, selected, onSelect, testIdPrefix = "settings-section", headerLabel }) => (
   <Card sx={{ borderRadius: 2, overflow: "hidden", border: "1px solid", borderColor: "grey.200" }}>
     <Box sx={{ px: 2.5, py: 2, borderBottom: 1, borderColor: "divider" }}>
       <Typography variant="overline" sx={{ fontWeight: 700, letterSpacing: 1, color: "text.secondary" }}>
-        {Locale.label("settings.landing.configuration")}
+        {headerLabel || Locale.label("settings.landing.configuration")}
       </Typography>
     </Box>
     <List disablePadding>
@@ -32,7 +36,7 @@ export const SettingsConfigList: React.FC<Props> = ({ sections, selected, onSele
             key={s.key}
             selected={isSelected}
             onClick={() => onSelect(s.key)}
-            data-testid={`settings-section-${s.key}`}
+            data-testid={`${testIdPrefix}-${s.key}`}
             sx={{
               px: 2.5,
               py: 1.75,

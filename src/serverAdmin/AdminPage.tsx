@@ -1,7 +1,7 @@
 import React from "react";
 import { Locale, UserHelper, Permissions } from "@churchapps/apphelper";
 import { PermissionDenied } from "../components";
-import { Grid, Box, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Card, CardContent } from "@mui/material";
+import { Grid, Box } from "@mui/material";
 import { Church as ChurchIcon, ShowChart as UsageIcon, Book as TranslationIcon, HealthAndSafety as HealthIcon, SwitchAccount as ImpersonateIcon } from "@mui/icons-material";
 import { PageHeader } from "@churchapps/apphelper";
 import { UsageTrendsTab } from "./components/UsageTrendTab";
@@ -9,6 +9,7 @@ import { ChurchesTab } from "./components/ChurchesTab";
 import { TranslationTab } from "./components/TranslationTab";
 import { ImpersonateTab } from "./components/ImpersonateTab";
 import { ServerHealthTab } from "./components/ServerHealthTab";
+import { SettingsConfigList, type ConfigSection } from "../settings/components/SettingsConfigList";
 
 export const AdminPage = () => {
   const [selectedTab, setSelectedTab] = React.useState("churches");
@@ -26,32 +27,12 @@ export const AdminPage = () => {
     }
   };
 
-  const navigationItems = [
-    {
-      key: "churches",
-      icon: <ChurchIcon />,
-      label: Locale.label("serverAdmin.adminPage.churches")
-    },
-    {
-      key: "impersonate",
-      icon: <ImpersonateIcon />,
-      label: Locale.label("serverAdmin.adminPage.impersonateUser")
-    },
-    {
-      key: "usage",
-      icon: <UsageIcon />,
-      label: Locale.label("serverAdmin.adminPage.usageTrends")
-    },
-    {
-      key: "translation",
-      icon: <TranslationIcon />,
-      label: Locale.label("serverAdmin.adminPage.translationLookups")
-    },
-    {
-      key: "serverHealth",
-      icon: <HealthIcon />,
-      label: Locale.label("serverAdmin.adminPage.serverHealth")
-    }
+  const sections: ConfigSection[] = [
+    { key: "churches", title: Locale.label("serverAdmin.adminPage.churches"), subtitle: Locale.label("serverAdmin.adminPage.churchesSubtitle"), icon: <ChurchIcon />, color: "primary" },
+    { key: "impersonate", title: Locale.label("serverAdmin.adminPage.impersonateUser"), subtitle: Locale.label("serverAdmin.adminPage.impersonateSubtitle"), icon: <ImpersonateIcon />, color: "secondary" },
+    { key: "usage", title: Locale.label("serverAdmin.adminPage.usageTrends"), subtitle: Locale.label("serverAdmin.adminPage.usageSubtitle"), icon: <UsageIcon />, color: "info" },
+    { key: "translation", title: Locale.label("serverAdmin.adminPage.translationLookups"), subtitle: Locale.label("serverAdmin.adminPage.translationSubtitle"), icon: <TranslationIcon />, color: "warning" },
+    { key: "serverHealth", title: Locale.label("serverAdmin.adminPage.serverHealth"), subtitle: Locale.label("serverAdmin.adminPage.serverHealthSubtitle"), icon: <HealthIcon />, color: "success" }
   ];
 
   return (
@@ -60,33 +41,10 @@ export const AdminPage = () => {
 
       <Box sx={{ p: 3 }}>
         <Grid container spacing={3}>
-          <Grid size={{ xs: 12, md: 3 }}>
-            <Card>
-              <CardContent sx={{ p: 0 }}>
-                <List sx={{ py: 0 }}>
-                  {navigationItems.map((item) => (
-                    <ListItem key={item.key} disablePadding>
-                      <ListItemButton
-                        selected={selectedTab === item.key}
-                        onClick={() => setSelectedTab(item.key)}
-                        sx={{
-                          "&.Mui-selected": {
-                            backgroundColor: "primary.main",
-                            color: "primary.contrastText",
-                            "&:hover": { backgroundColor: "primary.dark" },
-                            "& .MuiListItemIcon-root": { color: "primary.contrastText" }
-                          }
-                        }}>
-                        <ListItemIcon>{item.icon}</ListItemIcon>
-                        <ListItemText primary={item.label} />
-                      </ListItemButton>
-                    </ListItem>
-                  ))}
-                </List>
-              </CardContent>
-            </Card>
+          <Grid size={{ xs: 12, md: 4 }}>
+            <SettingsConfigList sections={sections} selected={selectedTab} onSelect={setSelectedTab} />
           </Grid>
-          <Grid size={{ xs: 12, md: 9 }}>
+          <Grid size={{ xs: 12, md: 8 }}>
             <Box>{getCurrentTab()}</Box>
           </Grid>
         </Grid>

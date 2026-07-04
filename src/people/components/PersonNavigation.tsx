@@ -3,7 +3,8 @@ import {
   VolunteerActivism as DonationIcon,
   CalendarMonth as AttendanceIcon,
   Notes as NotesIcon,
-  Person as PersonIcon
+  Person as PersonIcon,
+  Description as DescriptionIcon
 } from "@mui/icons-material";
 import { memo, useMemo } from "react";
 import { Locale } from "@churchapps/apphelper";
@@ -12,18 +13,23 @@ import { NavigationTabs, type NavigationTab } from "../../components/ui";
 interface Props {
   selectedTab: string;
   onTabChange: (tab: string) => void;
+  showForms?: boolean;
 }
 
 export const PersonNavigation = memo((props: Props) => {
-  const { selectedTab, onTabChange } = props;
+  const { selectedTab, onTabChange, showForms } = props;
 
-  const tabs: NavigationTab[] = useMemo(() => [
-    { value: "details", label: Locale.label("people.personNavigation.details"), icon: <PersonIcon /> },
-    { value: "notes", label: Locale.label("people.personNavigation.notes"), icon: <NotesIcon /> },
-    { value: "groups", label: Locale.label("people.personNavigation.groups"), icon: <GroupIcon /> },
-    { value: "attendance", label: Locale.label("people.personNavigation.attendance"), icon: <AttendanceIcon /> },
-    { value: "donations", label: Locale.label("people.personNavigation.donations"), icon: <DonationIcon /> }
-  ], []);
+  const tabs: NavigationTab[] = useMemo(() => {
+    const list: NavigationTab[] = [
+      { value: "details", label: Locale.label("people.personNavigation.details"), icon: <PersonIcon /> },
+      { value: "notes", label: Locale.label("people.personNavigation.notes"), icon: <NotesIcon /> },
+      { value: "groups", label: Locale.label("people.personNavigation.groups"), icon: <GroupIcon /> },
+      { value: "attendance", label: Locale.label("people.personNavigation.attendance"), icon: <AttendanceIcon /> },
+      { value: "donations", label: Locale.label("people.personNavigation.donations"), icon: <DonationIcon /> }
+    ];
+    if (showForms) list.splice(1, 0, { value: "forms", label: Locale.label("people.personNavigation.forms"), icon: <DescriptionIcon /> });
+    return list;
+  }, [showForms]);
 
   return (
     <NavigationTabs

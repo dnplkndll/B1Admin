@@ -1,15 +1,18 @@
 import React from "react";
-import { Tabs, FormNavigation } from "./components";
+import { Tabs, FormNavigation, FormEdit } from "./components";
 import { type FormInterface, type MemberPermissionInterface } from "@churchapps/helpers";
 import { UserHelper, Permissions, Locale, Loading, PageHeader } from "@churchapps/apphelper";
-import { useParams } from "react-router-dom";
-import { Box } from "@mui/material";
+import { useParams, useNavigate } from "react-router-dom";
+import { Box, Button } from "@mui/material";
+import { Description as DescriptionIcon, Edit as EditIcon } from "@mui/icons-material";
 
 import { useQuery } from "@tanstack/react-query";
 
 export const FormPage = () => {
   const params = useParams();
+  const navigate = useNavigate();
   const [selectedTab, setSelectedTab] = React.useState("");
+  const [editingSettings, setEditingSettings] = React.useState(false);
 
   const form = useQuery<FormInterface>({
     queryKey: ["/forms/" + params.id, "MembershipApi"],
@@ -22,14 +25,16 @@ export const FormPage = () => {
     placeholderData: {} as MemberPermissionInterface
   });
 
+  const formType = form.data?.contentType;
+  const formMemberAction = memberPermission.data?.action;
+  const formAdmin = UserHelper.checkAccess(Permissions.membershipApi.forms.admin);
+  const formEdit = UserHelper.checkAccess(Permissions.membershipApi.forms.edit) && formType !== undefined && formType !== "form";
+  const formMemberAdmin = formMemberAction === "admin" && formType !== undefined && formType === "form";
+  const formMemberView = formMemberAction === "view" && formType !== undefined && formType === "form";
+  const canEditSettings = formAdmin || formEdit || formMemberAdmin;
+
   const getAvailableTabs = () => {
     const tabs = [];
-    const formType = form.data?.contentType;
-    const formMemberAction = memberPermission.data?.action;
-    const formAdmin = UserHelper.checkAccess(Permissions.membershipApi.forms.admin);
-    const formEdit = UserHelper.checkAccess(Permissions.membershipApi.forms.edit) && formType !== undefined && formType !== "form";
-    const formMemberAdmin = formMemberAction === "admin" && formType !== undefined && formType === "form";
-    const formMemberView = formMemberAction === "view" && formType !== undefined && formType === "form";
 
     if (formAdmin || formEdit || formMemberAdmin) {
       tabs.push({ key: "questions", label: Locale.label("forms.tabs.questions") });
@@ -52,21 +57,49 @@ export const FormPage = () => {
     }
   }, [availableTabs, selectedTab]);
 
+  const handleSettingsSaved = async () => {
+    setEditingSettings(false);
+    const result = await form.refetch();
+    if (!result.data?.id) navigate("/forms");
+  };
+
   if (form.isLoading) return <Loading />;
 
   return form.data?.id ? (
     <>
-      <PageHeader title={form.data.name} subtitle={Locale.label("forms.formPage.subtitleConfig")} />
+      <PageHeader title={form.data.name} subtitle={Locale.label("forms.formPage.subtitleConfig")} icon={<DescriptionIcon />}>
+        {canEditSettings && (
+          <Button
+            variant="outlined"
+            startIcon={<EditIcon />}
+            onClick={() => setEditingSettings(true)}
+            data-testid="edit-form-settings-button"
+            sx={{
+              color: "#FFF",
+              borderColor: "rgba(255,255,255,0.5)",
+              "&:hover": {
+                borderColor: "#FFF",
+                backgroundColor: "rgba(255,255,255,0.1)"
+              }
+            }}>
+            {Locale.label("forms.formEdit.editForm")}
+          </Button>
+        )}
+      </PageHeader>
       <FormNavigation selectedTab={selectedTab} onTabChange={setSelectedTab} form={form.data} memberPermission={memberPermission.data} />
 
       <Box sx={{ p: 3 }}>
-        <Box
-          sx={{
-            "& > *:first-of-type": { mb: 2 },
-            "& > *:not(:first-of-type)": { mt: 0 }
-          }}>
-          <Tabs form={form.data} memberPermission={memberPermission.data} selectedTab={selectedTab} onTabChange={setSelectedTab} />
-        </Box>
+        {editingSettings ? (
+          <FormEdit formId={form.data.id} updatedFunction={handleSettingsSaved} />
+        ) : (
+          <Box
+            sx={{
+              "& > *:first-of-type": { mb: 2 },
+              "& > *:not(:first-of-type)": { mt: 0 }
+            }}>
+            <Tabs form={form.data} memberPermission={memberPermission.data} selectedTab={selectedTab} onTabChange={setSelectedTab} />
+          </Box>
+        )}
       </Box>
     </>
   ) : (

@@ -253,7 +253,7 @@ test.describe.serial("Group Management", () => {
       await nameEdit.fill("Elementary (2-5)");
       const saveBtn = page.locator("button").getByText("Save");
       await saveBtn.click();
-      const title = page.locator("p").first();
+      const title = page.locator("#page-header-title");
       await expect(title).toContainText("Elementary (2-5)", { timeout: 10000 });
     });
   });

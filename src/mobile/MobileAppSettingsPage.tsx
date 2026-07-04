@@ -4,7 +4,7 @@ import { Add as AddIcon } from "@mui/icons-material";
 import { useSearchParams } from "react-router-dom";
 import { UserHelper, Permissions, PageHeader, Locale } from "@churchapps/apphelper";
 import type { LinkInterface } from "@churchapps/helpers";
-import { AppTabs, AppEdit } from "./components";
+import { AppTabs, AppEdit } from "../settings/components";
 import { PermissionDenied } from "../components";
 
 const ICON_FOR_LINK_TYPE: Record<string, string> = {

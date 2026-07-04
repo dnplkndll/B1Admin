@@ -11,6 +11,7 @@ import {
   Typography
 } from "@mui/material";
 import { ApiHelper, UserHelper, Locale } from "@churchapps/apphelper";
+import { AuthShell } from "../components/AuthShell";
 
 interface DeviceInfo {
   userCode: string;
@@ -266,31 +267,12 @@ export const DeviceAuthPage: React.FC = () => {
   };
 
   return (
-    <Box sx={{ display: "flex", backgroundColor: "background.default", minHeight: "100vh" }}>
-      <div style={{ marginLeft: "auto", marginRight: "auto", paddingTop: 20 }}>
-        <Box
-          sx={{
-            width: 500,
-            minHeight: 100,
-            backgroundColor: "background.paper",
-            border: "1px solid",
-            borderColor: "divider",
-            borderRadius: "5px",
-            padding: "10px"
-          }}
-          px="16px"
-          mx="auto"
-        >
-          <div style={{ textAlign: "center", margin: 50 }}>
-            <img src={"/images/logo-login.png"} alt={Locale.label("device.deviceAuthPage.altLogo")} />
-          </div>
-          <Alert severity="info" style={{ fontWeight: "bold" }}>
-            {success ? Locale.label("device.deviceAuthPage.deviceAuthorizedAlert") : Locale.label("device.deviceAuthPage.authorizationRequired")}
-          </Alert>
-          {renderContent()}
-        </Box>
-      </div>
-    </Box>
+    <AuthShell logoAlt={Locale.label("device.deviceAuthPage.altLogo")}>
+      <Alert severity="info" style={{ fontWeight: "bold" }}>
+        {success ? Locale.label("device.deviceAuthPage.deviceAuthorizedAlert") : Locale.label("device.deviceAuthPage.authorizationRequired")}
+      </Alert>
+      {renderContent()}
+    </AuthShell>
   );
 };
 

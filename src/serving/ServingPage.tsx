@@ -4,11 +4,12 @@ import { TeamList } from "./components/TeamList";
 import { ContentProviderAuthManager } from "./components/ContentProviderAuthManager";
 import { GroupAdd } from "../groups/components";
 import { Locale, PageHeader, Loading, ArrayHelper, UserHelper, Permissions } from "@churchapps/apphelper";
-import { Box, Button, Grid, Tabs, Tab, FormControlLabel, Switch } from "@mui/material";
+import { Box, Button, Grid, FormControlLabel, Switch } from "@mui/material";
 import { Assignment as AssignmentIcon, Add as AddIcon, Edit as EditIcon } from "@mui/icons-material";
 import { useQuery } from "@tanstack/react-query";
 import { type GroupInterface, type GroupMemberInterface } from "@churchapps/helpers";
 import { EmptyState } from "../components/ui";
+import { NavigationTabs } from "../components/ui/NavigationTabs";
 import UserContext from "../UserContext";
 import { Link } from "react-router-dom";
 
@@ -156,26 +157,11 @@ export const ServingPage = () => {
       </PageHeader>
 
       {groups.length > 1 && (
-        <Box sx={{ borderBottom: 1, borderColor: "divider", backgroundColor: "background.paper" }}>
-          <Tabs
-            value={selectedMinistryId || false}
-            onChange={(_e, value) => setSelectedMinistryId(value)}
-            variant="fullWidth"
-            sx={{
-              minHeight: 48,
-              "& .MuiTab-root": {
-                textTransform: "none",
-                fontSize: "0.95rem",
-                fontWeight: 700,
-                minHeight: 48
-              }
-            }}
-          >
-            {groups.map((g) => (
-              <Tab key={g.id} value={g.id} label={g.name} />
-            ))}
-          </Tabs>
-        </Box>
+        <NavigationTabs
+          selectedTab={selectedMinistryId || ""}
+          onTabChange={setSelectedMinistryId}
+          tabs={groups.map((g) => ({ value: g.id, label: g.name }))}
+        />
       )}
 
       <Box sx={{ p: 3 }}>

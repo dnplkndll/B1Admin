@@ -1,6 +1,7 @@
 import * as React from "react";
 import { ApiHelper, UserHelper, Locale } from "@churchapps/apphelper";
 import { Alert, Box, Button, Grid, Icon } from "@mui/material";
+import { AuthShell } from "./components/AuthShell";
 
 export const OAuthPage: React.FC = () => {
   const [clientName, setClientName] = React.useState<string>("");
@@ -41,66 +42,48 @@ export const OAuthPage: React.FC = () => {
   };
 
   return (
-    <Box sx={{ display: "flex", backgroundColor: "background.default", minHeight: "100vh" }}>
-      <div style={{ marginLeft: "auto", marginRight: "auto", paddingTop: 20 }}>
-        <Box
-          sx={{
-            width: 500,
-            minHeight: 100,
-            backgroundColor: "background.paper",
-            border: "1px solid",
-            borderColor: "divider",
-            borderRadius: "5px",
-            padding: "10px"
-          }}
-          px="16px"
-          mx="auto">
-          <div style={{ textAlign: "center", margin: 50 }}>
-            <img src={"/images/logo-login.png"} alt={Locale.label("app.oauth.logoAlt")} />
-          </div>
-          <Alert severity="info" style={{ fontWeight: "bold" }}>
-            {Locale.label("app.oauth.authorizationRequired")}
-          </Alert>
-          <div style={{ marginLeft: 50, marginRight: 50 }}>
-            <div style={{ textAlign: "center" }}>
-              <Icon sx={{ fontSize: 120, mt: 3.75, color: "text.secondary" }}>lock</Icon>
-              <h2>{clientName || Locale.label("app.oauth.loading")}</h2>
-              <p>
-                {Locale.label("app.oauth.promptAccess").split("{churchName}").map((part, i, arr) => (
-                  <React.Fragment key={i}>{part}{i < arr.length - 1 && <b>{UserHelper.currentUserChurch.church.name}</b>}</React.Fragment>
-                ))}
-              </p>
-            </div>
+    <AuthShell logoAlt={Locale.label("app.oauth.logoAlt")}>
+      <Alert severity="info" style={{ fontWeight: "bold" }}>
+        {Locale.label("app.oauth.authorizationRequired")}
+      </Alert>
+      <div style={{ marginLeft: 50, marginRight: 50 }}>
+        <div style={{ textAlign: "center" }}>
+          <Icon sx={{ fontSize: 120, mt: 3.75, color: "text.secondary" }}>lock</Icon>
+          <h2>{clientName || Locale.label("app.oauth.loading")}</h2>
+          <p>
+            {Locale.label("app.oauth.promptAccess").split("{churchName}").map((part, i, arr) => (
+              <React.Fragment key={i}>{part}{i < arr.length - 1 && <b>{UserHelper.currentUserChurch.church.name}</b>}</React.Fragment>
+            ))}
+          </p>
+        </div>
 
-            <ul>
-              <li>{Locale.label("app.oauth.permissionPlans")}</li>
-            </ul>
-          </div>
-          <Box sx={{ backgroundColor: "action.hover", padding: "10px" }}>
-            <Grid container spacing={2}>
-              <Grid size={{ xs: 6 }} style={{ textAlign: "center" }}>
-                <Button
-                  fullWidth
-                  variant="contained"
-                  onClick={() => {
-                    const target = redirectUri || "/";
-                    const isSafeRelative = target.startsWith("/") && !target.startsWith("//");
-                    window.location.href = isSafeRelative ? target : "/";
-                  }}
-                  data-testid="oauth-deny-button"
-                  aria-label={Locale.label("app.oauth.denyAria")}>
-                  {Locale.label("app.oauth.deny")}
-                </Button>
-              </Grid>
-              <Grid size={{ xs: 6 }} style={{ textAlign: "center" }}>
-                <Button fullWidth variant="contained" color="primary" onClick={handleAllow} data-testid="oauth-allow-button" aria-label={Locale.label("app.oauth.allowAria")}>
-                  {Locale.label("app.oauth.allow")}
-                </Button>
-              </Grid>
-            </Grid>
-          </Box>
-        </Box>
+        <ul>
+          <li>{Locale.label("app.oauth.permissionPlans")}</li>
+        </ul>
       </div>
-    </Box>
+      <Box sx={{ backgroundColor: "action.hover", padding: "10px" }}>
+        <Grid container spacing={2}>
+          <Grid size={{ xs: 6 }} style={{ textAlign: "center" }}>
+            <Button
+              fullWidth
+              variant="contained"
+              onClick={() => {
+                const target = redirectUri || "/";
+                const isSafeRelative = target.startsWith("/") && !target.startsWith("//");
+                window.location.href = isSafeRelative ? target : "/";
+              }}
+              data-testid="oauth-deny-button"
+              aria-label={Locale.label("app.oauth.denyAria")}>
+              {Locale.label("app.oauth.deny")}
+            </Button>
+          </Grid>
+          <Grid size={{ xs: 6 }} style={{ textAlign: "center" }}>
+            <Button fullWidth variant="contained" color="primary" onClick={handleAllow} data-testid="oauth-allow-button" aria-label={Locale.label("app.oauth.allowAria")}>
+              {Locale.label("app.oauth.allow")}
+            </Button>
+          </Grid>
+        </Grid>
+      </Box>
+    </AuthShell>
   );
 };

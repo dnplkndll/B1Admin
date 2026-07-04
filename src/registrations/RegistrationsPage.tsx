@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import {
   Typography,
   Table,
@@ -20,7 +20,6 @@ import { PermissionDenied } from "../components";
 import { CountChip } from "../components/ui";
 
 export const RegistrationsPage = () => {
-  const navigate = useNavigate();
   const [events, setEvents] = useState<EventInterface[]>([]);
   const [counts, setCounts] = useState<Record<string, number>>({});
   const [loading, setLoading] = useState(true);
@@ -59,8 +58,12 @@ export const RegistrationsPage = () => {
   };
 
   const getRows = () => events.map((event) => (
-    <TableRow key={event.id} hover sx={{ cursor: "pointer" }} onClick={() => navigate("/registrations/" + event.id)}>
-      <TableCell><Typography variant="body2" fontWeight={500}>{event.title}</Typography></TableCell>
+    <TableRow key={event.id} hover>
+      <TableCell>
+        <Typography component={Link} to={"/registrations/" + event.id} variant="body2" fontWeight={500} sx={{ textDecoration: "none", color: "var(--link)" }}>
+          {event.title}
+        </Typography>
+      </TableCell>
       <TableCell>{event.start ? new Date(event.start).toLocaleDateString() : ""}</TableCell>
       <TableCell>{getCapacityDisplay(event)}</TableCell>
       <TableCell>
