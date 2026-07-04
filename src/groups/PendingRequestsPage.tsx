@@ -1,4 +1,5 @@
 import { Loading, Locale, PageHeader } from "@churchapps/apphelper";
+import { GroupAdd as GroupAddIcon } from "@mui/icons-material";
 import { useQuery } from "@tanstack/react-query";
 import { Box, Paper } from "@mui/material";
 import type { GroupJoinRequestInterface } from "@churchapps/helpers";
@@ -14,7 +15,7 @@ const PendingRequestsPage = () => {
 
   return (
     <>
-      <PageHeader title={Locale.label("groups.pendingRequestsPage.title")} subtitle={Locale.label("groups.pendingRequestsPage.subtitle")} />
+      <PageHeader icon={<GroupAddIcon />} title={Locale.label("groups.pendingRequestsPage.title")} subtitle={Locale.label("groups.pendingRequestsPage.subtitle")} />
       <Box sx={{ p: 3 }} data-testid="pending-requests-page">
         <Paper sx={{ p: 2 }}>
           {requests.data && requests.data.length > 0 ? (

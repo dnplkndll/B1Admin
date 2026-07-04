@@ -73,7 +73,7 @@ export const LabelsPage = () => {
 
   return (
     <>
-      <PageHeader title={Locale.label("attendance.labels.title")} subtitle={Locale.label("attendance.labels.subtitle")}>
+      <PageHeader icon={<LabelIcon />} title={Locale.label("attendance.labels.title")} subtitle={Locale.label("attendance.labels.subtitle")}>
         {!editing && (
           <HeaderPrimaryButton
             startIcon={<AddIcon />}

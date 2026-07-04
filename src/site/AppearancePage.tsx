@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Box } from "@mui/material";
 import { UserHelper, Permissions, PageHeader, Locale } from "@churchapps/apphelper";
 import { StylesManager, SiteWidgetsEdit, RedirectsEdit, SiteSwitcher, SitesDialog, useSiteSelection } from "./components";
+import { Palette as PaletteIcon } from "@mui/icons-material";
 import { PermissionDenied } from "../components";
 
 export const AppearancePage = () => {
@@ -13,6 +14,7 @@ export const AppearancePage = () => {
   return (
     <>
       <PageHeader
+        icon={<PaletteIcon />}
         title={Locale.label("site.appearancePage.title")}
         subtitle={Locale.label("site.appearancePage.subtitle")}
       >

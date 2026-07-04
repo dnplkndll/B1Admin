@@ -5,7 +5,7 @@ import {
   TextField, Select, MenuItem, FormControl, InputLabel, Button, Card, Stack, Chip, Typography,
   IconButton, Collapse, CircularProgress
 } from "@mui/material";
-import { Search as SearchIcon, KeyboardArrowDown as ExpandIcon, KeyboardArrowUp as CollapseIcon } from "@mui/icons-material";
+import { Search as SearchIcon, KeyboardArrowDown as ExpandIcon, KeyboardArrowUp as CollapseIcon, History as HistoryIcon } from "@mui/icons-material";
 import { ExportButton } from "../components/ui";
 
 interface AuditLog {
@@ -261,7 +261,7 @@ export const AuditLogPage: React.FC = () => {
 
   return (
     <>
-      <PageHeader title={Locale.label("settings.auditLogPage.title")} subtitle={Locale.label("settings.auditLogPage.subtitle")} />
+      <PageHeader icon={<HistoryIcon />} title={Locale.label("settings.auditLogPage.title")} subtitle={Locale.label("settings.auditLogPage.subtitle")} />
 
       <Box sx={{ p: 3 }}>
         <Card sx={{ mb: 3, p: 2 }}>

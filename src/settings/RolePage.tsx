@@ -4,6 +4,7 @@ import { type RoleInterface, type RoleMemberInterface } from "@churchapps/helper
 import { ApiHelper, UserHelper, Permissions, DisplayBox, Locale, PageHeader } from "@churchapps/apphelper";
 import { useParams } from "react-router-dom";
 import { Box, Grid } from "@mui/material";
+import { Security as SecurityIcon } from "@mui/icons-material";
 
 export const RolePage = () => {
   const params = useParams();
@@ -69,7 +70,7 @@ export const RolePage = () => {
   else {
     return (
       <>
-        <PageHeader title={`${Locale.label("settings.rolePage.roleEdit")} ${role?.name || ""}`} />
+        <PageHeader icon={<SecurityIcon />} title={`${Locale.label("settings.rolePage.roleEdit")} ${role?.name || ""}`} />
         <Box id="mainContent" sx={{ p: 3 }}>
           <Grid container spacing={3}>
             <Grid size={{ xs: 12, md: 8 }}>

@@ -212,6 +212,7 @@ const GroupsPage = () => {
   return (
     <>
       <PageHeader
+        icon={<GroupIcon />}
         title={Locale.label("groups.groupsPage.groups")}
         subtitle={groups.length > 0 ? Locale.label("groups.groupsPage.subtitle.manage").replace("{count}", groups.length.toString()) : Locale.label("groups.groupsPage.subtitle.create")}
       >

@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useContext } from "react";
 import { useParams, useNavigate, useSearchParams } from "react-router-dom";
 import { Box, Chip, Stack, Typography, Paper } from "@mui/material";
-import { Edit as EditIcon, Settings as SettingsIcon } from "@mui/icons-material";
+import { Edit as EditIcon, Settings as SettingsIcon, Web as WebIcon } from "@mui/icons-material";
 import { ApiHelper, PageHeader, Locale } from "@churchapps/apphelper";
 import UserContext from "../UserContext";
 import { EnvironmentHelper } from "../helpers/EnvironmentHelper";
@@ -85,7 +85,7 @@ export const PagePreview: React.FC = () => {
 
   return (
     <>
-      <PageHeader title={Locale.label("site.pagePreview.title")} subtitle={Locale.label("site.pagePreview.subtitle").replace("{title}", pageData.title)}>
+      <PageHeader icon={<WebIcon />} title={Locale.label("site.pagePreview.title")} subtitle={Locale.label("site.pagePreview.subtitle").replace("{title}", pageData.title)}>
         <Stack direction={{ xs: "column", sm: "row" }} spacing={1} sx={{ width: { xs: "100%", sm: "auto" } }}>
           <HeaderSecondaryButton startIcon={<EditIcon />} onClick={handleEditContent}>{Locale.label("site.pagePreview.editContent")}</HeaderSecondaryButton>
           <HeaderPrimaryButton startIcon={<SettingsIcon />} onClick={() => setShowSettings(true)}>{Locale.label("site.pagePreview.pageSettings")}</HeaderPrimaryButton>

@@ -218,7 +218,7 @@ export const ManageChurch = () => {
 
   return (
     <>
-      <PageHeader title={church.data.name || Locale.label("settings.manageChurch.title")} subtitle={church.data.subDomain ? `${church.data.subDomain}.b1.church` : Locale.label("settings.manageChurch.subtitle")}>
+      <PageHeader icon={<BusinessIcon />} title={church.data.name || Locale.label("settings.manageChurch.title")} subtitle={church.data.subDomain ? `${church.data.subDomain}.b1.church` : Locale.label("settings.manageChurch.subtitle")}>
         <Stack direction="row" spacing={1}>
           {UserHelper.checkAccess(Permissions.membershipApi.settings.edit) && (
             <HeaderSecondaryButton startIcon={<HistoryIcon />} onClick={() => navigate("/settings/audit-log")}>

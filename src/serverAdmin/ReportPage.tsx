@@ -1,6 +1,7 @@
 import React from "react";
 import { useParams } from "react-router-dom";
 import { ApiHelper, Locale, PageHeader, UserHelper, Permissions } from "@churchapps/apphelper";
+import { BarChart as BarChartIcon } from "@mui/icons-material";
 import { PermissionDenied } from "../components";
 import { Box, Container, Card, CardContent, Skeleton, Chip, Stack } from "@mui/material";
 import { ReportWithFilter } from "../components/reporting/ReportWithFilter";
@@ -32,6 +33,7 @@ export const ReportPage = () => {
   return (
     <>
       <PageHeader
+        icon={<BarChartIcon />}
         title={report?.displayName || Locale.label("serverAdmin.reportPage.report")}
         subtitle={!loading && report?.description ? report.description : undefined}>
         <Chip

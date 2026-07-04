@@ -1,6 +1,7 @@
 import React from "react";
 import { useParams } from "react-router-dom";
 import { ApiHelper, Locale, PageHeader } from "@churchapps/apphelper";
+import { Assignment as AssignmentIcon } from "@mui/icons-material";
 import { type PlanInterface, type PlanTypeInterface } from "../../helpers";
 import { type GroupInterface } from "@churchapps/helpers";
 import { Assignment } from "../components/Assignment";
@@ -64,6 +65,7 @@ export const PlanPage = () => {
   return (
     <>
       <PageHeader
+        icon={<AssignmentIcon />}
         title={plan.name || Locale.label("plans.planPage.servicePlan")}
         subtitle={Locale.label("plans.planPage.subtitle")}
         breadcrumbs={<Breadcrumbs items={breadcrumbItems} showHome={true} />}

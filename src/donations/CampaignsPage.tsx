@@ -142,7 +142,7 @@ export const CampaignsPage = () => {
 
   return (
     <>
-      <PageHeader title={Locale.label("donations.campaignsPage.campaigns")} subtitle={Locale.label("donations.campaignsPage.subtitle")}>
+      <PageHeader icon={<CampaignIcon />} title={Locale.label("donations.campaignsPage.campaigns")} subtitle={Locale.label("donations.campaignsPage.subtitle")}>
         {stats.totalCampaigns > 0 && (
           <Stack
             direction={{ xs: "column", sm: "row" }}

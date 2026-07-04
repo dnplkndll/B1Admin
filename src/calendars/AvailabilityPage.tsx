@@ -5,7 +5,7 @@ import { Calendar, dayjsLocalizer } from "react-big-calendar";
 import { ApiHelper, UserHelper, EventHelper, Loading, PageHeader, Locale } from "@churchapps/apphelper";
 import { Permissions } from "@churchapps/helpers";
 import { Box, MenuItem, Stack, TextField } from "@mui/material";
-import { Add as AddIcon } from "@mui/icons-material";
+import { Add as AddIcon, EventAvailable as AvailabilityIcon } from "@mui/icons-material";
 import { PermissionDenied } from "../components";
 import { NewEventModal } from "./components/NewEventModal";
 import { HeaderPrimaryButton } from "../components/ui/headerButtons";
@@ -112,7 +112,7 @@ export const AvailabilityPage = () => {
 
   return (
     <>
-      <PageHeader title={Locale.label("calendars.availability.title")} subtitle={Locale.label("calendars.availability.subtitle")}>
+      <PageHeader icon={<AvailabilityIcon />} title={Locale.label("calendars.availability.title")} subtitle={Locale.label("calendars.availability.subtitle")}>
         <HeaderPrimaryButton
           startIcon={<AddIcon />}
           onClick={() => setShowBook(true)}

@@ -14,7 +14,7 @@ export const BulkImportPage = memo(() => {
   return (
     <>
       <Box sx={{ mb: 3 }}>
-        <PageHeader title={Locale.label("sermons.bulkImport.title")} subtitle={Locale.label("sermons.bulkImport.subtitle")}>
+        <PageHeader icon={<CloudUploadIcon />} title={Locale.label("sermons.bulkImport.title")} subtitle={Locale.label("sermons.bulkImport.subtitle")}>
           {importType && (
             <AppIconButton
               label={Locale.label("common.back")}

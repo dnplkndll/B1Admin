@@ -1,6 +1,6 @@
 import { useParams, Link } from "react-router-dom";
 import { Box, Container, Typography } from "@mui/material";
-import { GridOn as GridOnIcon } from "@mui/icons-material";
+import { GridOn as GridOnIcon, Assignment as AssignmentIcon } from "@mui/icons-material";
 import { Loading, PageHeader, Locale } from "@churchapps/apphelper";
 import { useQuery } from "@tanstack/react-query";
 import { type GroupInterface } from "@churchapps/helpers";
@@ -44,6 +44,7 @@ export const PlanTypePage = () => {
   return (
     <>
       <PageHeader
+        icon={<AssignmentIcon />}
         title={planType.data.name || Locale.label("plans.planTypePage.planType")}
         subtitle={Locale.label("plans.planTypePage.subtitle")}
         breadcrumbs={<Breadcrumbs items={breadcrumbItems} showHome={true} />}

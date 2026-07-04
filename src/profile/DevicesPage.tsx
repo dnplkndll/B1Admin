@@ -1,5 +1,5 @@
 import { TableHead, Table, TableCell, TableRow, TableBody } from "@mui/material";
-import { Add as AddIcon, Edit as EditIcon } from "@mui/icons-material";
+import { Add as AddIcon, Edit as EditIcon, Devices as DevicesIcon } from "@mui/icons-material";
 import React, { useState } from "react";
 import { ApiHelper, ErrorMessages, DisplayBox, DateHelper, Locale, PageHeader } from "@churchapps/apphelper";
 import { Box } from "@mui/material";
@@ -40,7 +40,7 @@ export const DevicesPage = () => {
 
   return (
     <>
-      <PageHeader title={Locale.label("profile.devices.title")} />
+      <PageHeader icon={<DevicesIcon />} title={Locale.label("profile.devices.title")} />
       <Box id="mainContent" sx={{ p: 3 }}>
         {showAdd && (
           <PairScreen

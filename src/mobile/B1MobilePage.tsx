@@ -1,6 +1,7 @@
 import React from "react";
 import { Box, FormControl, Grid, Icon, InputLabel, MenuItem, Select, Stack, Tooltip, Typography } from "@mui/material";
 import { ApiHelper, Locale, PageHeader, UniqueIdHelper, UserHelper, Permissions } from "@churchapps/apphelper";
+import { PhoneIphone as PhoneIphoneIcon } from "@mui/icons-material";
 import type { GenericSettingInterface, GroupInterface, VisibilityPreferenceInterface } from "@churchapps/helpers";
 import { PermissionDenied } from "../components";
 import { FormCard } from "../components/ui/FormCard";
@@ -82,7 +83,7 @@ export const B1MobilePage: React.FC = () => {
 
   return (
     <>
-      <PageHeader title={Locale.label("mobile.b1MobilePage.title")} subtitle={Locale.label("mobile.b1MobilePage.subtitle")} />
+      <PageHeader icon={<PhoneIphoneIcon />} title={Locale.label("mobile.b1MobilePage.title")} subtitle={Locale.label("mobile.b1MobilePage.subtitle")} />
       <Box sx={{ p: 3 }}>
         <FormCard title={Locale.label("mobile.b1MobilePage.title")} icon="phone_iphone" onSave={handleSave} isSubmitting={saving}>
           <Stack direction="row" alignItems="center" sx={{ mb: 2 }}>

@@ -164,7 +164,7 @@ export const CampaignPage = () => {
 
   return (
     <>
-      <PageHeader title={campaign?.name || ""} subtitle={Locale.label("donations.campaignPage.subtitle")}>
+      <PageHeader icon={<CampaignIcon />} title={campaign?.name || ""} subtitle={Locale.label("donations.campaignPage.subtitle")}>
         {progress.data && (
           <Stack
             direction={{ xs: "column", sm: "row" }}

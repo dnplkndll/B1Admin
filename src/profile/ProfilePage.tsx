@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ApiHelper, UserHelper, Locale } from "@churchapps/apphelper";
 import { LinkedAccounts } from "./components/LinkedAccounts";
-import { DarkMode, LightMode } from "@mui/icons-material";
+import { DarkMode, LightMode, Person as PersonIcon } from "@mui/icons-material";
 import { PageHeader } from "@churchapps/apphelper";
 import { LoadingButton } from "../components";
 import { AppIconButton } from "../components/ui/AppIconButton";
@@ -129,7 +129,7 @@ export const ProfilePage = () => {
   if (isDemo) {
     return (
       <>
-        <PageHeader title={Locale.label("profile.profilePage.profEdit")} subtitle={Locale.label("profile.profilePage.subtitle")} />
+        <PageHeader icon={<PersonIcon />} title={Locale.label("profile.profilePage.profEdit")} subtitle={Locale.label("profile.profilePage.subtitle")} />
         <Box sx={{ p: 3 }}>
           <Alert severity="info">{Locale.label("profile.profilePage.demoModeAlert")}</Alert>
         </Box>
@@ -139,7 +139,7 @@ export const ProfilePage = () => {
 
   return (
     <>
-      <PageHeader title={Locale.label("profile.profilePage.profEdit")} subtitle={Locale.label("profile.profilePage.subtitle")} />
+      <PageHeader icon={<PersonIcon />} title={Locale.label("profile.profilePage.profEdit")} subtitle={Locale.label("profile.profilePage.subtitle")} />
 
       <Box sx={{ p: 3 }}>
         <Stack spacing={3}>

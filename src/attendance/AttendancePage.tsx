@@ -1,6 +1,6 @@
 import React from "react";
 import { Grid, Icon, Card, CardContent } from "@mui/material";
-import { CalendarMonth as CalendarIcon, Group as GroupIcon } from "@mui/icons-material";
+import { CalendarMonth as CalendarIcon, Group as GroupIcon, EventNote as EventNoteIcon } from "@mui/icons-material";
 import { Locale, ApiHelper, PageHeader } from "@churchapps/apphelper";
 import { AttendanceSetup } from "./components/AttendanceSetup";
 import { AttendanceNavigation } from "./components/AttendanceNavigation";
@@ -65,6 +65,7 @@ export const AttendancePage = () => {
   return (
     <>
       <PageHeader
+        icon={<EventNoteIcon />}
         title={Locale.label("attendance.attendancePage.att")}
         subtitle={Locale.label("attendance.attendancePage.subtitle")}
         statistics={[

@@ -2,7 +2,7 @@ import React from "react";
 import { ApiHelper, ArrayHelper, DateHelper, Loading, Locale, PageHeader, type PersonInterface } from "@churchapps/apphelper";
 import { type AssignmentInterface, type PositionInterface } from "@churchapps/helpers";
 import { Alert, Box, Button, Card, Dialog, DialogContent, DialogTitle, FormControl, FormControlLabel, IconButton, InputLabel, MenuItem, Select, Snackbar, Stack, Switch, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, Tooltip } from "@mui/material";
-import { Close as CloseIcon, Clear as ClearIcon, Email as EmailIcon, PublishedWithChanges as AutoScheduleIcon } from "@mui/icons-material";
+import { Close as CloseIcon, Clear as ClearIcon, Email as EmailIcon, PublishedWithChanges as AutoScheduleIcon, Assignment as AssignmentIcon } from "@mui/icons-material";
 import { ExportButton } from "../components/ui";
 import { hasPlansEditAccess } from "../helpers";
 import { AssignmentEdit } from "./components/AssignmentEdit";
@@ -246,7 +246,7 @@ export const ServingOverviewPage = () => {
 
   return (
     <>
-      <PageHeader title={planType.data?.name ? `${planType.data.name} ${Locale.label("plans.servingOverviewPage.overviewSuffix")}` : Locale.label("plans.servingOverviewPage.title")} subtitle={Locale.label("plans.servingOverviewPage.subtitle")} />
+      <PageHeader icon={<AssignmentIcon />} title={planType.data?.name ? `${planType.data.name} ${Locale.label("plans.servingOverviewPage.overviewSuffix")}` : Locale.label("plans.servingOverviewPage.title")} subtitle={Locale.label("plans.servingOverviewPage.subtitle")} />
       <Box sx={{ p: 3 }}>
         {/* Filters */}
         <Card sx={{ mb: 3, p: 2 }}>

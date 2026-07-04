@@ -185,6 +185,7 @@ export const StripeImportPage = () => {
   return (
     <>
       <PageHeader
+        icon={<ImportIcon />}
         title={Locale.label("donations.stripeImportPage.title")}
         subtitle={Locale.label("donations.stripeImportPage.subtitle")}
       />

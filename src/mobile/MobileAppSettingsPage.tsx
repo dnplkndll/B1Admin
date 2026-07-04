@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Box } from "@mui/material";
-import { Add as AddIcon } from "@mui/icons-material";
+import { Add as AddIcon, PhoneIphone as PhoneIphoneIcon } from "@mui/icons-material";
 import { useSearchParams } from "react-router-dom";
 import { UserHelper, Permissions, PageHeader, Locale } from "@churchapps/apphelper";
 import type { LinkInterface } from "@churchapps/helpers";
@@ -72,6 +72,7 @@ export const MobileAppSettingsPage = () => {
   return (
     <>
       <PageHeader
+        icon={<PhoneIphoneIcon />}
         title={Locale.label("settings.mobileAppSettings.title")}
         subtitle={Locale.label("settings.mobileAppSettings.subtitle")}
       >

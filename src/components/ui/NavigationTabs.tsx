@@ -31,7 +31,6 @@ interface Props {
 // Shared with SmartTabs so every page/local tab bar renders identically.
 export const navigationTabsSx = {
   minHeight: 48,
-  "& .MuiTabs-flexContainer": { paddingLeft: "16px" },
   "& .MuiTab-root": {
     minHeight: 48,
     textTransform: "none",
@@ -40,9 +39,10 @@ export const navigationTabsSx = {
   }
 };
 
+// First tab flush left so its label shares the banner's left edge with the title/stats.
 const headerTabsSx = {
   minHeight: 44,
-  "& .MuiTabs-flexContainer": { paddingLeft: "16px" },
+  "& .MuiTab-root:first-of-type": { paddingLeft: 0, minWidth: "auto" },
   "& .MuiTab-root": {
     minHeight: 44,
     textTransform: "none",

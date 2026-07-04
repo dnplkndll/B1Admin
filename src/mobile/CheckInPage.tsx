@@ -2,6 +2,7 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import { Box, Button, Icon, Stack, Switch, TextField, Typography } from "@mui/material";
 import { ApiHelper, Locale, PageHeader, UniqueIdHelper, UserHelper, Permissions } from "@churchapps/apphelper";
+import { HowToReg as CheckInIcon } from "@mui/icons-material";
 import type { GenericSettingInterface } from "@churchapps/helpers";
 import { QRCodeCanvas } from "qrcode.react";
 import { PermissionDenied } from "../components";
@@ -69,7 +70,7 @@ export const CheckInPage: React.FC = () => {
 
   return (
     <>
-      <PageHeader title={Locale.label("mobile.checkInPage.title")} subtitle={Locale.label("mobile.checkInPage.subtitle")} />
+      <PageHeader icon={<CheckInIcon />} title={Locale.label("mobile.checkInPage.title")} subtitle={Locale.label("mobile.checkInPage.subtitle")} />
       <Box sx={{ p: 3 }}>
         <FormCard title={Locale.label("mobile.checkInPage.qrGuestRegistration")} icon="qr_code_2" onSave={handleSave} isSubmitting={saving}>
           <Typography variant="body2" color="text.secondary">{Locale.label("mobile.checkInPage.qrTooltip")}</Typography>

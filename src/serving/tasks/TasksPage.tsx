@@ -7,7 +7,7 @@ import { CardWithHeader } from "../../components/ui/CardWithHeader";
 import { type TaskInterface } from "@churchapps/helpers";
 import { useQuery } from "@tanstack/react-query";
 import { Box, Grid, Stack } from "@mui/material";
-import { ViewKanban as WorkflowsIcon } from "@mui/icons-material";
+import { ViewKanban as WorkflowsIcon, Checklist as ChecklistIcon } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
 
 // My Work = the dashboard tasks module (left) beside the user's workflow cards (right).
@@ -33,7 +33,7 @@ export const TasksPage = () => {
 
   return (
     <>
-      <PageHeader title={Locale.label("tasks.myWork.title")} subtitle={Locale.label("tasks.myWork.subtitle")} />
+      <PageHeader icon={<ChecklistIcon />} title={Locale.label("tasks.myWork.title")} subtitle={Locale.label("tasks.myWork.subtitle")} />
 
       <Box sx={{ p: 3 }}>
         <Grid container spacing={3} alignItems="flex-start">

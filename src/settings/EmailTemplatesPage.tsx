@@ -63,7 +63,7 @@ export const EmailTemplatesPage: React.FC = () => {
 
   return (
     <>
-      <PageHeader title={Locale.label("settings.emailTemplatesPage.title")} subtitle={Locale.label("settings.emailTemplatesPage.subtitle")}>
+      <PageHeader icon={<EmailIcon />} title={Locale.label("settings.emailTemplatesPage.title")} subtitle={Locale.label("settings.emailTemplatesPage.subtitle")}>
         <HeaderPrimaryButton startIcon={<AddIcon />} onClick={handleNew}>
           {Locale.label("settings.emailTemplatesPage.newTemplate")}
         </HeaderPrimaryButton>

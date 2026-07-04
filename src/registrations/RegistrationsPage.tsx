@@ -76,7 +76,7 @@ export const RegistrationsPage = () => {
 
   return (
     <>
-      <PageHeader title={Locale.label("registrations.registrationsPage.title")} subtitle={Locale.label("registrations.registrationsPage.subtitle")} />
+      <PageHeader icon={<RegIcon />} title={Locale.label("registrations.registrationsPage.title")} subtitle={Locale.label("registrations.registrationsPage.subtitle")} />
       <Box sx={{ p: 3 }}>
         <Card sx={{ borderRadius: 2, border: "1px solid", borderColor: "grey.200" }}>
           <Box sx={{ p: 2, borderBottom: 1, borderColor: "var(--border-light)" }}>

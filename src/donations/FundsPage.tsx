@@ -5,7 +5,7 @@ import { Link } from "react-router-dom";
 import { Permissions } from "@churchapps/apphelper";
 import { type FundInterface } from "@churchapps/helpers";
 import { Chip, Icon, Table, TableBody, TableCell, TableRow, Box, Typography, Card, Stack } from "@mui/material";
-import { VolunteerActivism as FundIcon, Add as AddIcon, Edit as EditIcon } from "@mui/icons-material";
+import { VolunteerActivism as FundIcon, Add as AddIcon, Edit as EditIcon, AccountBalance as AccountBalanceIcon } from "@mui/icons-material";
 import { useQuery } from "@tanstack/react-query";
 import { AppIconButton } from "../components/ui/AppIconButton";
 import { CountChip, EmptyState, ExportButton, SortableTableHead, HeaderPrimaryButton, type SortDirection } from "../components/ui";
@@ -164,6 +164,7 @@ export const FundsPage = () => {
   return (
     <>
       <PageHeader
+        icon={<AccountBalanceIcon />}
         title={Locale.label("donations.donations.funds")}
         subtitle={Locale.label("donations.fundsPage.subtitle")}
       >

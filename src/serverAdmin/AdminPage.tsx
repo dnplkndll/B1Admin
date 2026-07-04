@@ -2,7 +2,7 @@ import React from "react";
 import { Locale, UserHelper, Permissions } from "@churchapps/apphelper";
 import { PermissionDenied } from "../components";
 import { Grid, Box } from "@mui/material";
-import { Church as ChurchIcon, ShowChart as UsageIcon, Book as TranslationIcon, HealthAndSafety as HealthIcon, SwitchAccount as ImpersonateIcon } from "@mui/icons-material";
+import { Church as ChurchIcon, ShowChart as UsageIcon, Book as TranslationIcon, HealthAndSafety as HealthIcon, SwitchAccount as ImpersonateIcon, AdminPanelSettings as AdminIcon } from "@mui/icons-material";
 import { PageHeader } from "@churchapps/apphelper";
 import { UsageTrendsTab } from "./components/UsageTrendTab";
 import { ChurchesTab } from "./components/ChurchesTab";
@@ -37,7 +37,7 @@ export const AdminPage = () => {
 
   return (
     <>
-      <PageHeader title={Locale.label("serverAdmin.adminPage.servAdmin")} subtitle={Locale.label("serverAdmin.adminPage.subtitle")} />
+      <PageHeader icon={<AdminIcon />} title={Locale.label("serverAdmin.adminPage.servAdmin")} subtitle={Locale.label("serverAdmin.adminPage.subtitle")} />
 
       <Box sx={{ p: 3 }}>
         <Grid container spacing={3}>

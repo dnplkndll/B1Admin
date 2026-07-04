@@ -4,7 +4,7 @@ import {
   Box, Table, TableBody, TableCell, TableContainer, TableHead, TableRow,
   Button, Card, Chip, Typography, Dialog, DialogTitle, DialogContent, DialogActions, Alert
 } from "@mui/material";
-import { Undo as UndoIcon, Visibility as VisibilityIcon } from "@mui/icons-material";
+import { Undo as UndoIcon, Visibility as VisibilityIcon, Receipt as ReceiptIcon } from "@mui/icons-material";
 import { PermissionDenied } from "../components";
 
 interface Batch {
@@ -117,7 +117,7 @@ export const BatchesPage: React.FC = () => {
 
   return (
     <>
-      <PageHeader title={Locale.label("settings.batches.title")} subtitle={Locale.label("settings.batches.subtitle")} />
+      <PageHeader icon={<ReceiptIcon />} title={Locale.label("settings.batches.title")} subtitle={Locale.label("settings.batches.subtitle")} />
 
       <Box sx={{ p: 3 }}>
         <Card>

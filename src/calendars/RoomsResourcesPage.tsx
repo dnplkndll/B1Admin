@@ -168,6 +168,7 @@ export const RoomsResourcesPage = () => {
   return (
     <>
       <PageHeader
+        icon={<RoomIcon />}
         title={Locale.label("calendars.rooms.title")}
         subtitle={Locale.label("calendars.rooms.subtitle")}
         tabs={(

@@ -44,7 +44,7 @@ export const ApprovalsPage = () => {
 
   return (
     <>
-      <PageHeader title={Locale.label("calendars.approvals.title")} subtitle={Locale.label("calendars.approvals.subtitle")} />
+      <PageHeader icon={<ApprovalsIcon />} title={Locale.label("calendars.approvals.title")} subtitle={Locale.label("calendars.approvals.subtitle")} />
       <Box sx={{ p: 3 }}>
         {loading ? <Loading /> : (
           <Grid container spacing={3}>

@@ -93,7 +93,7 @@ export const WorkflowsPage = () => {
 
   return (
     <>
-      <PageHeader title={Locale.label("tasks.workflowsPage.title")} subtitle={Locale.label("tasks.workflowsPage.subtitle")}>
+      <PageHeader icon={<WorkflowsIcon />} title={Locale.label("tasks.workflowsPage.title")} subtitle={Locale.label("tasks.workflowsPage.subtitle")}>
         <Stack direction="row" spacing={1}>
           <HeaderSecondaryButton startIcon={<MyCardsIcon />} onClick={() => navigate("/serving/tasks")}>
             {Locale.label("tasks.myCards.title")}

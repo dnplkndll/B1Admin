@@ -11,7 +11,8 @@ import {
   AutoAwesomeMosaic as AutoAwesomeMosaicIcon,
   Public as PublicIcon,
   Transform as TransformIcon,
-  Visibility as VisibilityIcon
+  Visibility as VisibilityIcon,
+  Web as WebIcon
 } from "@mui/icons-material";
 import { ApiHelper, ErrorMessages, PageHeader, UserHelper, Locale, Permissions } from "@churchapps/apphelper";
 import { useWindowWidth } from "@react-hook/window-size";
@@ -274,6 +275,7 @@ export const PagesPage = () => {
         />
       )}
       <PageHeader
+        icon={<WebIcon />}
         title={Locale.label("site.pagesPage.websitePages")}
         subtitle={Locale.label("site.pagesPage.subtitle")}
         statistics={[

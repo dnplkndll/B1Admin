@@ -57,6 +57,7 @@ export const DemographicsPage = memo(() => {
     <>
       <GlobalStyles styles={googleChartTooltipStyles} />
       <PageHeader
+        icon={<BarChartIcon />}
         title={Locale.label("people.demographics.title")}
         subtitle={data ? `${Locale.label("people.demographics.total")}: ${data.total.toLocaleString()}` : Locale.label("people.demographics.subtitle")}>
         <BarChartIcon sx={{ fontSize: 32, color: "rgba(255,255,255,0.8)", mr: 2 }} />

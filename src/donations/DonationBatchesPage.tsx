@@ -6,7 +6,7 @@ import { Permissions } from "@churchapps/apphelper";
 import { type DonationBatchInterface } from "@churchapps/helpers";
 import { useQuery } from "@tanstack/react-query";
 import { Icon, Table, TableBody, TableCell, TableRow, Box, Typography, Card, Stack } from "@mui/material";
-import { VolunteerActivism as DonationIcon, Add as AddIcon, CalendarMonth as DateIcon, Edit as EditIcon } from "@mui/icons-material";
+import { VolunteerActivism as DonationIcon, Add as AddIcon, CalendarMonth as DateIcon, Edit as EditIcon, Receipt as ReceiptIcon } from "@mui/icons-material";
 import { AppIconButton } from "../components/ui/AppIconButton";
 import { CountChip, EmptyState, ExportButton, SortableTableHead, HeaderPrimaryButton, type SortDirection } from "../components/ui";
 
@@ -184,6 +184,7 @@ export const DonationBatchesPage = () => {
   return (
     <>
       <PageHeader
+        icon={<ReceiptIcon />}
         title={Locale.label("donations.donations.batches")}
         subtitle={Locale.label("donations.donationBatchesPage.subtitle")}
       >

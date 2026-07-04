@@ -1,6 +1,7 @@
 import { memo } from "react";
 import { useParams } from "react-router-dom";
 import { Locale, PageHeader } from "@churchapps/apphelper";
+import { BarChart as BarChartIcon } from "@mui/icons-material";
 import { Box, Container, Card, CardContent, Skeleton, Stack } from "@mui/material";
 import { useQuery } from "@tanstack/react-query";
 import { ReportWithFilter } from "../components/reporting/ReportWithFilter";
@@ -18,6 +19,7 @@ export const ReportPage = memo(() => {
   return (
     <>
       <PageHeader
+        icon={<BarChartIcon />}
         title={report.data?.displayName || Locale.label("reports.reportPage.report")}
         subtitle={!report.isLoading && report.data?.description ? report.data.description : undefined}
       />

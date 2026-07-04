@@ -197,7 +197,7 @@ export const SongsPage = memo(() => {
 
   return (
     <>
-      <PageHeader title={Locale.label("songs.title") || Locale.label("songs.songsPage.songs")} subtitle={Locale.label("songs.songsPage.subtitle")}>
+      <PageHeader icon={<MusicIcon />} title={Locale.label("songs.title") || Locale.label("songs.songsPage.songs")} subtitle={Locale.label("songs.songsPage.subtitle")}>
         <HeaderSecondaryButton startIcon={<SearchIcon />} onClick={() => setShowSearchField(!showSearchField)}>
           {Locale.label("songs.songsPage.search")}
         </HeaderSecondaryButton>

@@ -77,6 +77,7 @@ export const DonationBatchPage = () => {
   return (
     <>
       <PageHeader
+        icon={<ReceiptIcon />}
         title={batch.data?.name || Locale.label("donations.donationBatchPage.title")}
         subtitle={batch.data?.batchDate ? `${Locale.label("donations.donationBatchPage.batchDate")} ${DateHelper.prettyDate(new Date(batch.data.batchDate.split("T")[0] + "T00:00:00"))}` : Locale.label("donations.donationBatchPage.subtitle")}
       >

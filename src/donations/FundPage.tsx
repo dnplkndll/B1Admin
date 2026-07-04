@@ -8,7 +8,8 @@ import {
   FilterAlt as FilterIcon,
   CalendarMonth as DateIcon,
   Person as PersonIcon,
-  Receipt as ReceiptIcon
+  Receipt as ReceiptIcon,
+  AccountBalance as AccountBalanceIcon
 } from "@mui/icons-material";
 import { CountChip, ExportButton } from "../components/ui";
 
@@ -191,6 +192,7 @@ export const FundPage = () => {
   return (
     <>
       <PageHeader
+        icon={<AccountBalanceIcon />}
         title={`${fund.name} ${Locale.label("donations.fundsPage.don")}`}
         subtitle={Locale.label("donations.fundPage.subtitle")}
       >

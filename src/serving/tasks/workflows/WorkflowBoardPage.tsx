@@ -5,7 +5,7 @@ import { HTML5Backend } from "react-dnd-html5-backend";
 import { ApiHelper, Locale, Loading, PageHeader } from "@churchapps/apphelper";
 import { useNavigate, useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { Add as AddIcon, BarChart as ReportIcon, ArrowBack as BackIcon, Bolt as TriggerIcon, CheckCircle as CompleteIcon, Snooze as SnoozeIcon, Person as PersonIcon, Close as ClearIcon, Edit as EditIcon } from "@mui/icons-material";
+import { Add as AddIcon, BarChart as ReportIcon, ArrowBack as BackIcon, Bolt as TriggerIcon, CheckCircle as CompleteIcon, Snooze as SnoozeIcon, Person as PersonIcon, Close as ClearIcon, Edit as EditIcon, ViewKanban as WorkflowsIcon } from "@mui/icons-material";
 import { WorkflowStepColumn } from "./components/WorkflowStepColumn";
 import { WorkflowStepEdit } from "./components/WorkflowStepEdit";
 import { WorkflowEdit } from "./components/WorkflowEdit";
@@ -103,6 +103,7 @@ export const WorkflowBoardPage = () => {
   return (
     <>
       <PageHeader
+        icon={<WorkflowsIcon />}
         title={board.data?.workflow?.name || Locale.label("tasks.workflowsPage.title")}
         subtitle={Locale.label("tasks.workflowBoard.subtitle")}
         tabs={(

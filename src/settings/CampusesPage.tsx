@@ -1,6 +1,7 @@
 import React from "react";
 import { UserHelper, Permissions, Locale, PageHeader } from "@churchapps/apphelper";
 import { Box } from "@mui/material";
+import { Church as ChurchIcon } from "@mui/icons-material";
 import { PermissionDenied } from "../components";
 import { CampusesSection } from "./components/CampusesSection";
 
@@ -11,7 +12,7 @@ export const CampusesPage: React.FC = () => {
 
   return (
     <>
-      <PageHeader title={Locale.label("settings.campuses.campuses")} subtitle={Locale.label("settings.campuses.subtitle")} />
+      <PageHeader icon={<ChurchIcon />} title={Locale.label("settings.campuses.campuses")} subtitle={Locale.label("settings.campuses.subtitle")} />
       <Box sx={{ p: 3 }}>
         <CampusesSection />
       </Box>

@@ -46,7 +46,7 @@ export const BlogPage = () => {
         onConfirm={handleDelete}
         onCancel={() => setDeletePost(null)}
       />
-      <PageHeader title={Locale.label("site.blog.title")} subtitle={Locale.label("site.blog.subtitle")} statistics={[{ icon: <RssFeedIcon />, value: posts.length.toString(), label: Locale.label("site.blog.posts") }]}>
+      <PageHeader icon={<ArticleIcon />} title={Locale.label("site.blog.title")} subtitle={Locale.label("site.blog.subtitle")} statistics={[{ icon: <RssFeedIcon />, value: posts.length.toString(), label: Locale.label("site.blog.posts") }]}>
         <HeaderPrimaryButton startIcon={<AddIcon />} onClick={() => setEditPost({})} data-testid="add-post-button">
           {Locale.label("site.blog.addPost")}
         </HeaderPrimaryButton>

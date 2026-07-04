@@ -67,7 +67,7 @@ const GroupsHealthPage = () => {
 
   return (
     <>
-      <PageHeader title={Locale.label("groups.groupHealth.title")} subtitle={Locale.label("groups.groupHealth.subtitle")}>
+      <PageHeader icon={<HealthIcon />} title={Locale.label("groups.groupHealth.title")} subtitle={Locale.label("groups.groupHealth.subtitle")}>
         <HealthIcon sx={{ fontSize: 32, color: "rgba(255,255,255,0.8)", mr: 2 }} />
       </PageHeader>
       <Box sx={{ p: 3 }}>

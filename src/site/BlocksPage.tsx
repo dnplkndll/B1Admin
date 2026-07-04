@@ -147,6 +147,7 @@ export const BlocksPage = () => {
     return (
       <>
         <PageHeader
+          icon={<BlockIcon />}
           title={Locale.label("site.blocksPage.reusableBlocks")}
           subtitle={Locale.label("site.blocksPage.subtitle")}
         />
@@ -159,7 +160,7 @@ export const BlocksPage = () => {
 
   return (
     <>
-      <PageHeader title={Locale.label("site.blocksPage.reusableBlocks")} subtitle={Locale.label("site.blocksPage.subtitle")} statistics={[{ icon: <BlockIcon />, value: stats.totalBlocks.toString(), label: Locale.label("site.blocksPage.totalBlocks") }]}>
+      <PageHeader icon={<BlockIcon />} title={Locale.label("site.blocksPage.reusableBlocks")} subtitle={Locale.label("site.blocksPage.subtitle")} statistics={[{ icon: <BlockIcon />, value: stats.totalBlocks.toString(), label: Locale.label("site.blocksPage.totalBlocks") }]}>
         <SiteSwitcher siteId={siteId} onChange={setSiteId} sites={sites} onManage={() => setShowSites(true)} />
         <HeaderPrimaryButton startIcon={<AddIcon />} onClick={() => setEditBlock({ blockType: "elementBlock", siteId })} data-testid="add-block-button">{Locale.label("site.blocksPage.addBlock")}</HeaderPrimaryButton>
       </PageHeader>

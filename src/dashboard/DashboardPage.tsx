@@ -1,5 +1,5 @@
 import { Stack, Grid, Box } from "@mui/material";
-import { FlashOn } from "@mui/icons-material";
+import { FlashOn, Home as HomeIcon } from "@mui/icons-material";
 import { TaskList } from "../serving/tasks/components/TaskList";
 import { PeopleSearch, AdminWelcome, MemberWelcome } from "./components";
 import { Groups } from "../people/components";
@@ -26,7 +26,7 @@ export const DashboardPage = () => {
 
   return (
     <>
-      <PageHeader title={headerTitle} subtitle={headerSubtitle} />
+      <PageHeader icon={<HomeIcon />} title={headerTitle} subtitle={headerSubtitle} />
       <PageContainer>
         <Box sx={{ mb: 3 }}>
           <CardWithHeader title={Locale.label("helpers.secondaryMenuHelper.quickActions")} icon={<FlashOn sx={{ color: "primary.main", fontSize: 20 }} />}>

@@ -273,7 +273,7 @@ export const RegistrationDetailsPage = () => {
 
   return (
     <>
-      <PageHeader title={event.title || Locale.label("registrations.registrationDetailsPage.eventRegistrations")} subtitle={Locale.label("registrations.registrationDetailsPage.subtitle")} />
+      <PageHeader icon={<RegIcon />} title={event.title || Locale.label("registrations.registrationDetailsPage.eventRegistrations")} subtitle={Locale.label("registrations.registrationDetailsPage.subtitle")} />
       <Box sx={{ p: 3 }}>
         <Grid container spacing={3}>
           <Grid size={{ xs: 12, md: 8 }}>

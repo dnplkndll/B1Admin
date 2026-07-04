@@ -175,6 +175,7 @@ export const FormsPage = () => {
   return (
     <>
       <PageHeader
+        icon={<DescriptionIcon />}
         title={Locale.label("forms.formsPage.forms")}
         subtitle={Locale.label("forms.formsPage.subtitleManage")}
         tabs={<NavigationTabs selectedTab={selectedTab} onTabChange={setSelectedTab} tabs={headerTabs} onHeader />}>
