@@ -4,6 +4,8 @@ import { MuiTelInput, matchIsValidTel } from "mui-tel-input";
 import { B1AdminPersonHelper, UpdateHouseHold } from ".";
 import { type PersonInterface } from "@churchapps/helpers";
 import { PersonHelper, DateHelper, ApiHelper, Loading, ErrorMessages, Locale, PersonAvatar } from "@churchapps/apphelper";
+import { QuestionEdit } from "@churchapps/apphelper/forms";
+import { type QuestionInterface, type AnswerInterface } from "@churchapps/helpers";
 import { FormCard } from "../../components/ui";
 import { Navigate } from "react-router-dom";
 import UserContext from "../../UserContext";
@@ -11,6 +13,8 @@ import { Button, FormControl, Grid, InputLabel, MenuItem, Select, TextField, Box
 import { getMembershipStatusOptions } from "../helpers/MembershipStatusOptions";
 import { CampusSelect } from "../../components/CampusSelect";
 import { GRADE_OPTIONS } from "../../helpers/GradeOptions";
+import { type PersonFieldInterface, type PersonFieldValueInterface } from "../../helpers/Interfaces";
+import { parseFieldChoices } from "../../helpers/PersonFieldHelper";
 
 // PersonInterface has typed subfields; RHF nested paths require looser typing
 type AnyRecord = Record<string, any>;
@@ -71,6 +75,8 @@ export const PersonEdit = memo((props: Props) => {
   const [modalText, setModalText] = useState("");
   const [members, setMembers] = useState<PersonInterface[]>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [customFields, setCustomFields] = useState<PersonFieldInterface[]>([]);
+  const [customValues, setCustomValues] = useState<Record<string, string>>({});
 
   const { control, register, handleSubmit, reset, getValues } = useForm<AnyRecord>({ defaultValues: buildFormDefaults(props.person) });
 
@@ -79,6 +85,29 @@ export const PersonEdit = memo((props: Props) => {
   React.useEffect(() => {
     if (props.person) reset(buildFormDefaults(props.person));
   }, [props.person, reset]);
+
+  React.useEffect(() => {
+    ApiHelper.get("/personfields", "MembershipApi")
+      .then((data: PersonFieldInterface[]) => setCustomFields(data || []))
+      .catch(() => setCustomFields([]));
+  }, []);
+
+  React.useEffect(() => {
+    if (!props.person?.id) return;
+    ApiHelper.get(`/personfieldvalues/person/${props.person.id}`, "MembershipApi")
+      .then((data: PersonFieldValueInterface[]) => {
+        const map: Record<string, string> = {};
+        (data || []).forEach((v) => { if (v.fieldId) map[v.fieldId] = v.value || ""; });
+        setCustomValues(map);
+      })
+      .catch(() => setCustomValues({}));
+  }, [props.person?.id]);
+
+  const saveCustomFields = useCallback(async () => {
+    if (customFields.length === 0 || !props.person?.id) return;
+    const payload = customFields.map((f) => ({ personId: props.person.id, fieldId: f.id, value: customValues[f.id || ""] || "" }));
+    await ApiHelper.post("/personfieldvalues", payload, "MembershipApi");
+  }, [customFields, customValues, props.person?.id]);
 
   const e = errors as any;
   const summaryErrors: string[] = React.useMemo(() => {
@@ -113,12 +142,13 @@ export const PersonEdit = memo((props: Props) => {
   const updatePerson = useCallback(async (p: PersonInterface) => {
     try {
       await ApiHelper.post("/people/", [p], "MembershipApi");
+      await saveCustomFields();
       props.updatedFunction();
     } catch (error) {
       console.error("Error updating person:", error);
     }
     setIsSubmitting(false);
-  }, [props.updatedFunction]);
+  }, [props.updatedFunction, saveCustomFields]);
 
   const onValid = useCallback(async (values: AnyRecord) => {
     setIsSubmitting(true);
@@ -155,8 +185,9 @@ export const PersonEdit = memo((props: Props) => {
       member.contactInfo = PersonHelper.changeOnlyAddress(member.contactInfo, p.contactInfo);
       try { await ApiHelper.post("/people", [member], "MembershipApi"); } catch (error) { console.log(`error in updating ${p.name.display}"s address`, error); }
     }));
+    await saveCustomFields();
     props.updatedFunction();
-  }, [members, getValues, buildPerson, props.updatedFunction]);
+  }, [members, getValues, buildPerson, props.updatedFunction, saveCustomFields]);
 
   const handleNo = useCallback(() => {
     setShowUpdateAddressModal(false);
@@ -168,7 +199,7 @@ export const PersonEdit = memo((props: Props) => {
   return (
     <>
       <UpdateHouseHold show={showUpdateAddressModal} text={modalText} onHide={() => setShowUpdateAddressModal(false)} handleNo={handleNo} handleYes={handleYes} />
-      <FormCard icon="person" title={Locale.label("people.personEdit.persDet")} onCancel={props.updatedFunction} onDelete={handleDelete} onSave={handleSubmit(onValid)} isSubmitting={isSubmitting}
+      <FormCard id={props.id} icon="person" title={Locale.label("people.personEdit.persDet")} onCancel={props.updatedFunction} onDelete={handleDelete} onSave={handleSubmit(onValid)} isSubmitting={isSubmitting}
         headerActions={
           <Button id="mergeButton" size="small" onClick={props.showMergeSearch} data-testid="merge-person-button" aria-label={Locale.label("people.personEdit.mergePersonAria")}>
             {Locale.label("people.personEdit.merge")}
@@ -331,6 +362,23 @@ export const PersonEdit = memo((props: Props) => {
             )} />
           </Grid>
         </Grid>
+
+        {customFields.length > 0 && (
+          <Grid container spacing={3} sx={{ mt: 1 }} data-testid="person-custom-fields">
+            <Grid size={12}>
+              <div className="section">{Locale.label("people.personEdit.customFields")}</div>
+            </Grid>
+            {customFields.map((f) => {
+              const question = { id: f.id, title: f.name, fieldType: f.fieldType, choices: parseFieldChoices(f.choices) } as QuestionInterface;
+              const answer = { questionId: f.id, value: customValues[f.id || ""] || "" } as AnswerInterface;
+              return (
+                <Grid key={f.id} size={{ xs: 12, md: 4 }}>
+                  <QuestionEdit question={question} answer={answer} changeFunction={(id, value) => setCustomValues((prev) => ({ ...prev, [id]: value }))} />
+                </Grid>
+              );
+            })}
+          </Grid>
+        )}
       </FormCard>
       {redirect !== "" && <Navigate to={redirect} />}
     </>

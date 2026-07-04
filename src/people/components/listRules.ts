@@ -5,7 +5,7 @@ import { type ActiveFilter } from "./AdvancedPeopleSearch";
 // stores instead of resolved person-id snapshots, so cross-product filters
 // (donations, attendance, groups, custom fields) stay live when the list re-runs.
 export interface ListRuleCondition {
-  provider: "person" | "group" | "form" | "giving" | "attendance" | "serving" | "list";
+  provider: "person" | "group" | "form" | "field" | "giving" | "attendance" | "serving" | "list";
   field?: string;
   operator?: string;
   value?: string;
@@ -60,6 +60,9 @@ const convertFilter = (filter: ActiveFilter): ListRuleCondition | null => {
       return condition;
     }
     default:
+      if (filter.field.startsWith("personField_")) {
+        return { provider: "field", entityId: filter.field.replace("personField_", ""), operator: filter.operator, value: filter.value };
+      }
       if (filter.field.startsWith("customField_")) {
         return { provider: "form", field: "answer", entityId: filter.field.replace("customField_", ""), operator: filter.operator, value: filter.value };
       }

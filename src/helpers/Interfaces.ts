@@ -48,6 +48,30 @@ export interface CampaignProgressInterface {
   rows?: PledgeProgressRowInterface[];
 }
 
+export interface PersonFieldChoice {
+  value: string;
+  text: string;
+}
+
+// First-class custom-field definitions/values, independent of the Forms module.
+// Temporary local interfaces; move to @churchapps/helpers when published.
+export interface PersonFieldInterface {
+  id?: string;
+  churchId?: string;
+  name?: string;
+  fieldType?: string;
+  choices?: string | null; // JSON string of [{ value, text }]
+  sort?: number;
+}
+
+export interface PersonFieldValueInterface {
+  id?: string;
+  churchId?: string;
+  personId?: string;
+  fieldId?: string;
+  value?: string;
+}
+
 export interface PaymentGatewaysInterface {
   id?: string;
   churchId?: string;

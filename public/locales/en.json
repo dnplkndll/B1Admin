@@ -1654,6 +1654,7 @@
       "applyQuestion": "Would you like to apply that to the entire",
       "cannotDeleteSelf": "You cannot delete your own person record.",
       "confirmMsg": "Are you sure you wish to permanently delete this person record?",
+      "customFields": "Custom Fields",
       "donorNumber": "Donor Number",
       "exten": "Extension",
       "family": "family",
@@ -2964,6 +2965,21 @@
     "church": {
       "subdomainHelper": "Your church's unique web address"
     },
+    "customFieldEdit": {
+      "confirmDelete": "Are you sure you wish to delete this custom field? Its stored values will also be removed.",
+      "fieldType": "Field Type",
+      "name": "Name",
+      "validate": {
+        "name": "Please enter a field name."
+      }
+    },
+    "customFields": {
+      "addField": "Add Field",
+      "customFields": "Custom Fields",
+      "field": "Custom Field",
+      "none": "No custom fields have been added yet.",
+      "subtitle": "Define custom fields to track on people"
+    },
     "churchSettingsEdit": {
       "address1": "Address Line 1",
       "address2": "Address Line 2",
@@ -3125,6 +3141,8 @@
       "campusesOne": "1 location",
       "campusesSubtitle": "Physical locations",
       "configuration": "Configuration",
+      "customFieldsCount": "{count} custom fields",
+      "customFieldsSubtitle": "No custom fields yet",
       "developerSubtitle": "API keys, webhooks, connected apps",
       "domainsCount": "{count} connected",
       "domainsNone": "No custom domains",

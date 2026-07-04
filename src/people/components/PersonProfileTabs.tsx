@@ -159,7 +159,10 @@ export const PersonProfileTabs: React.FC<Props> = (props) => {
     return <>{props.profileContent}</>;
   }
 
-  const selectedForm = selectedKey === "profile" ? undefined : allForms.find((f) => f.id === selectedKey);
+  const renderRightPane = () => {
+    const form = allForms.find((f) => f.id === selectedKey);
+    return form ? renderFormPane(form) : props.profileContent;
+  };
 
   // Full-height left rail: break out of content padding (negative margins) to reach edges; minHeight spans viewport.
   return (
@@ -197,7 +200,7 @@ export const PersonProfileTabs: React.FC<Props> = (props) => {
       </Box>
 
       <Box sx={{ flex: 1, minWidth: 0, p: 3 }}>
-        {selectedForm ? renderFormPane(selectedForm) : props.profileContent}
+        {selectedKey === "profile" ? props.profileContent : renderRightPane()}
       </Box>
     </Box>
   );

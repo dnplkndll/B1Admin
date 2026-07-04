@@ -51,6 +51,7 @@ export class SecondaryMenuHelper {
 
     if (path.startsWith("/settings/roles") || path.startsWith("/settings/role")) label = Locale.label("settings.roles.roles");
     else if (path.startsWith("/settings/campuses")) label = Locale.label("settings.campuses.campuses");
+    else if (path.startsWith("/settings/custom-fields")) label = Locale.label("settings.customFields.customFields");
     else if (path.startsWith("/settings")) label = Locale.label("components.wrapper.set");
     else if (path.startsWith("/admin")) label = Locale.label("components.wrapper.servAdmin");
 

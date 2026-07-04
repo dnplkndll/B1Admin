@@ -4,12 +4,13 @@ import { UserHelper, Permissions, Locale, ApiHelper, Loading, PageHeader } from 
 import { useNavigate, useLocation } from "react-router-dom";
 import { PermissionDenied } from "../components";
 import { Box, Button, Grid, Stack, Typography } from "@mui/material";
-import { PlayArrow as PlayArrowIcon, History as HistoryIcon, Business as BusinessIcon, Tune as TuneIcon, VolunteerActivism as VolunteerActivismIcon, Sms as SmsIcon, Language as LanguageIcon, Link as LinkIcon, Code as CodeIcon, School as SchoolIcon, HowToReg as HowToRegIcon } from "@mui/icons-material";
+import { PlayArrow as PlayArrowIcon, History as HistoryIcon, Business as BusinessIcon, Tune as TuneIcon, VolunteerActivism as VolunteerActivismIcon, Sms as SmsIcon, Language as LanguageIcon, Link as LinkIcon, Code as CodeIcon, School as SchoolIcon, HowToReg as HowToRegIcon, ListAlt as ListAltIcon } from "@mui/icons-material";
 import { useQuery } from "@tanstack/react-query";
 import { SettingsConfigList, type ConfigSection } from "./components/SettingsConfigList";
 import { ChurchInfoSection } from "./components/ChurchInfoSection";
 import { SettingsToggleSection } from "./components/SettingsToggleSection";
 import { CampusesSection } from "./components/CampusesSection";
+import { CustomFieldsSection } from "./components/CustomFieldsSection";
 import { DeveloperSection } from "./components/DeveloperSection";
 import { SupportContactSettingsEdit } from "./components/SupportContactSettingsEdit";
 import { GivingSettingsEdit } from "./components/GivingSettingsEdit";
@@ -19,7 +20,7 @@ import { GradePromotionSettingsEdit } from "./components/GradePromotionSettingsE
 import { CheckinSettingsEdit } from "./components/CheckinSettingsEdit";
 
 const SECTION_KEYS = [
-  "church-info", "general", "giving", "texting", "domains", "grade-promotion", "check-ins", "campuses", "developer"
+  "church-info", "general", "giving", "texting", "domains", "grade-promotion", "check-ins", "campuses", "custom-fields", "developer"
 ];
 
 const headerButtonSx = {
@@ -58,6 +59,7 @@ export const ManageChurch = () => {
   const texting = useQuery<any[]>({ queryKey: ["/texting/providers", "MessagingApi"], placeholderData: [], enabled: hasAccess });
   const domains = useQuery<any[]>({ queryKey: ["/domains", "MembershipApi"], placeholderData: [], enabled: hasAccess });
   const campuses = useQuery<any[]>({ queryKey: ["/campuses", "MembershipApi"], placeholderData: [], enabled: hasAccess });
+  const personFields = useQuery<any[]>({ queryKey: ["/personfields", "MembershipApi"], placeholderData: [], enabled: hasAccess });
 
   const handleSaved = useCallback(() => {
     church.refetch();
@@ -76,6 +78,7 @@ export const ManageChurch = () => {
   const textingProvider = (texting.data || [])[0]?.provider;
   const domainList = domains.data || [];
   const campusCount = (campuses.data || []).length;
+  const personFieldCount = (personFields.data || []).length;
   const gradePromotionDate = (settingsQ.data || []).find((s) => s.keyName === "gradePromotionDate")?.value;
   const ratioEnforcement = (settingsQ.data || []).find((s) => s.keyName === "ratioEnforcement")?.value === "block" ? "block" : "warn";
   const checkinsSubtitle = Locale.label("settings.checkinSettingsEdit." + ratioEnforcement);
@@ -93,6 +96,9 @@ export const ManageChurch = () => {
     : campusCount === 1
       ? Locale.label("settings.landing.campusesOne")
       : Locale.label("settings.landing.campusesCount").replace("{count}", String(campusCount));
+  const customFieldsSubtitle = personFieldCount === 0
+    ? Locale.label("settings.landing.customFieldsSubtitle")
+    : Locale.label("settings.landing.customFieldsCount").replace("{count}", String(personFieldCount));
   const givingSubtitle = gateway
     ? Locale.label("settings.landing.givingProvider").replace("{provider}", gateway.provider || "").replace("{currency}", (gateway.currency || "").toUpperCase())
     : Locale.label("settings.landing.notConfigured");
@@ -107,6 +113,7 @@ export const ManageChurch = () => {
     { key: "grade-promotion", title: Locale.label("settings.gradePromotionSettingsEdit.title"), subtitle: gradePromotionSubtitle, icon: <SchoolIcon />, color: "secondary" },
     { key: "check-ins", title: Locale.label("settings.checkinSettingsEdit.title"), subtitle: checkinsSubtitle, icon: <HowToRegIcon />, color: "info" },
     { key: "campuses", title: Locale.label("settings.campuses.campuses"), subtitle: campusesSubtitle, icon: <BusinessIcon />, color: "primary" },
+    { key: "custom-fields", title: Locale.label("settings.customFields.customFields"), subtitle: customFieldsSubtitle, icon: <ListAltIcon />, color: "info" },
     { key: "developer", title: Locale.label("settings.developer.title"), subtitle: Locale.label("settings.landing.developerSubtitle"), icon: <CodeIcon />, color: "secondary" }
   ];
 
@@ -206,6 +213,8 @@ export const ManageChurch = () => {
         );
       case "campuses":
         return <CampusesSection />;
+      case "custom-fields":
+        return <CustomFieldsSection />;
       case "developer":
         return <DeveloperSection />;
       default:

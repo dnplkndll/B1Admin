@@ -6,6 +6,8 @@ import { Grid, Icon, Stack, Table, TableBody, TableRow, TableCell, Chip } from "
 import { Edit as EditIcon } from "@mui/icons-material";
 import { AppIconButton } from "../../components/ui/AppIconButton";
 import { formattedPhoneNumber } from "./PersonEdit";
+import { type PersonFieldInterface, type PersonFieldValueInterface } from "../../helpers/Interfaces";
+import { formatFieldValue } from "../../helpers/PersonFieldHelper";
 
 interface Props {
   id?: string;
@@ -18,6 +20,8 @@ interface Props {
 
 export const PersonView = memo(({ person, editFunction, updatedFunction, showForms = true, headerActions }: Props) => {
   const [userEmail, setUserEmail] = useState<string>("");
+  const [customFields, setCustomFields] = useState<PersonFieldInterface[]>([]);
+  const [customValues, setCustomValues] = useState<Record<string, string>>({});
 
   useEffect(() => {
     if (person?.id) {
@@ -28,6 +32,35 @@ export const PersonView = memo(({ person, editFunction, updatedFunction, showFor
         .catch(() => setUserEmail(""));
     }
   }, [person?.id]);
+
+  useEffect(() => {
+    ApiHelper.get("/personfields", "MembershipApi")
+      .then((data: PersonFieldInterface[]) => setCustomFields(data || []))
+      .catch(() => setCustomFields([]));
+  }, []);
+
+  useEffect(() => {
+    if (!person?.id) return;
+    ApiHelper.get(`/personfieldvalues/person/${person.id}`, "MembershipApi")
+      .then((data: PersonFieldValueInterface[]) => {
+        const map: Record<string, string> = {};
+        (data || []).forEach((v) => { if (v.fieldId) map[v.fieldId] = v.value || ""; });
+        setCustomValues(map);
+      })
+      .catch(() => setCustomValues({}));
+  }, [person?.id]);
+
+  const customFieldAttributes = useMemo(
+    () => customFields
+      .map((f) => ({ f, text: formatFieldValue(f, customValues[f.id || ""]) }))
+      .filter((x) => x.text)
+      .map((x) => (
+        <div key={x.f.id}>
+          <label>{x.f.name}</label> <b>{x.text}</b>
+        </div>
+      )),
+    [customFields, customValues]
+  );
 
   const leftAttributes = useMemo(() => {
     if (!person) return [];
@@ -201,6 +234,7 @@ export const PersonView = memo(({ person, editFunction, updatedFunction, showFor
           <Grid container spacing={3}>
             <Grid size={{ xs: 12, md: 6 }}>
               {leftAttributes}
+              {customFieldAttributes}
               {userEmail && (
                 <div key="hasLogin">
                   <Chip label={Locale.label("people.personView.hasLoginLabel").replace("{email}", userEmail)} size="small" color="primary" icon={<Icon>person</Icon>} />
@@ -216,7 +250,7 @@ export const PersonView = memo(({ person, editFunction, updatedFunction, showFor
         </Grid>
       </Grid>
     );
-  }, [person, leftAttributes, contactMethods, userEmail]);
+  }, [person, leftAttributes, contactMethods, userEmail, customFieldAttributes]);
 
   return (
     <DisplayBox
