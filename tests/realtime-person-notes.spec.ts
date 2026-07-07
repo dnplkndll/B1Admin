@@ -1,24 +1,9 @@
 import { test, expect, type BrowserContext, type Page } from "@playwright/test";
-import { login } from "./helpers/auth";
 
-/**
- * Cross-user realtime test for person notes — the exact manual scenario the
- * project owner reported as broken: two staff each viewing the same person's
- * Notes tab; one posts a note; the other should see it instantly.
- *
- * Both demo@b1.church and tester@b1.church are Domain Admins in Grace Community
- * Church (per the membership demo seed), so both can open /people/PER00000081
- * (Carol Clark) and reach the Notes tab.
- */
-
+// Cross-user realtime test: notes posted by one user appear instantly on another's open tab.
 const TARGET_PERSON_ID = "PER00000081"; // Carol Clark — neutral target neither tester is
-const API_BASE = "http://localhost:8084";
 
 async function signIn(page: Page, email: string) {
-  // Use the same login helper the rest of the suite uses. It accepts any seeded
-  // user as long as the auth form is on the default email/password mode.
-  // We override the cached storageState in the calling test by passing a fresh
-  // context with `storageState: undefined`.
   await page.goto("/", { timeout: 60000 });
 
   const emailInput = page.locator('input[type="email"]');
@@ -28,11 +13,10 @@ async function signIn(page: Page, email: string) {
   await page.fill('input[type="password"]', "password");
   await page.click('button[type="submit"]');
 
-  // SelectChurchModal appears for users with no lastChurchId cookie
   const churchDialog = page.locator('[role="dialog"]').filter({ hasText: "Select a Church" });
   await Promise.race([
     churchDialog.waitFor({ state: "visible", timeout: 15000 }).catch(() => {}),
-    page.waitForURL((url) => !url.pathname.includes("/login"), { timeout: 15000 }).catch(() => {}),
+    page.waitForURL((url) => !url.pathname.includes("/login"), { timeout: 15000 }).catch(() => {})
   ]);
 
   if (await churchDialog.isVisible().catch(() => false)) {
@@ -59,30 +43,8 @@ async function postNote(page: Page, content: string) {
   const composer = notesBox.locator('textarea[name="noteText"]').first();
   await composer.waitFor({ state: "visible", timeout: 15000 });
   await composer.fill(content);
-  // Send is the IconButton wrapping <Icon>send</Icon> (MUI font icon, not SVG).
   const sendButton = notesBox.locator("button").filter({ has: page.locator('text="send"') }).last();
   await sendButton.click();
-}
-
-/**
- * Block until the server-side connections table reports at least `expected`
- * sockets joined to (churchId, conversationId). Used to remove the timing race
- * between "Notes mounted" and "POST /connections completed".
- */
-async function waitForRoomJoinCount(page: Page, churchId: string, conversationId: string, expected: number) {
-  const apiBase = "http://localhost:8084";
-  await page.waitForFunction(
-    async ([base, ch, cv, want]) => {
-      try {
-        const res = await fetch(`${base}/messaging/connections/${ch}/${cv}`);
-        if (!res.ok) return false;
-        const list = await res.json();
-        return Array.isArray(list) && list.length >= (want as number);
-      } catch { return false; }
-    },
-    [apiBase, churchId, conversationId, expected],
-    { timeout: 20000, polling: 250 }
-  );
 }
 
 test.describe("Realtime — cross-user person notes", () => {
@@ -94,10 +56,7 @@ test.describe("Realtime — cross-user person notes", () => {
   let testerPage: Page;
 
   test.beforeAll(async ({ browser }) => {
-    // No pre-seed — both tabs land on a person with no prior conversation. The first
-    // post creates the conversation; the server's `conversationActivity` broadcast
-    // (sent to a content-scoped room that PersonPage subscribes to) tells the second
-    // tab to refetch the person, picking up the new conversationId.
+    // First note creates conversation; server broadcast tells other tab to refetch.
     demoContext = await browser.newContext({ storageState: undefined });
     testerContext = await browser.newContext({ storageState: undefined });
     demoPage = await demoContext.newPage();
@@ -105,12 +64,12 @@ test.describe("Realtime — cross-user person notes", () => {
 
     await Promise.all([
       signIn(demoPage, "demo@b1.church"),
-      signIn(testerPage, "tester@b1.church"),
+      signIn(testerPage, "tester@b1.church")
     ]);
 
     await Promise.all([
       openPersonNotes(demoPage),
-      openPersonNotes(testerPage),
+      openPersonNotes(testerPage)
     ]);
 
     // Both tabs need a moment to open their socket and join the content-scoped room.

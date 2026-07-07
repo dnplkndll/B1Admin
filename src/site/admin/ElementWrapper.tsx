@@ -7,17 +7,12 @@ interface Props {
   element: ElementInterface;
   church?: ChurchInterface;
   churchSettings: any;
-  textColor?: string;
+  textColor: string;
   onEdit?: (section: any, element: ElementInterface) => void;
   onMove?: () => void;
 }
 
-/**
- * Wrapper component for Element that handles dragging and double-click editing.
- * All element types now use the package's Element component with the enhanced
- * DroppableArea styling that was integrated into the AppHelper package.
- */
+/** Wrapper component for Element that handles dragging and double-click editing. */
 export const ElementWrapper: React.FC<Props> = (props) => {
-  // Simply pass all props through to Element and let it handle drag/drop
   return <Element {...props} />;
 };

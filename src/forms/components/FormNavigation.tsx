@@ -1,6 +1,6 @@
 import { type FormInterface, type MemberPermissionInterface } from "@churchapps/helpers";
 import { Assignment as FormIcon, Group as GroupIcon, Description as DescriptionIcon } from "@mui/icons-material";
-import React, { memo, useMemo } from "react";
+import { memo, useMemo } from "react";
 import { NavigationTabs, type NavigationTab } from "../../components/ui";
 import { UserHelper, Permissions, Locale } from "@churchapps/apphelper";
 
@@ -9,10 +9,11 @@ interface Props {
   onTabChange: (tab: string) => void;
   form: FormInterface;
   memberPermission: MemberPermissionInterface;
+  onHeader?: boolean;
 }
 
 export const FormNavigation = memo((props: Props) => {
-  const { selectedTab, onTabChange, form, memberPermission } = props;
+  const { selectedTab, onTabChange, form, memberPermission, onHeader } = props;
 
   const tabs: NavigationTab[] = useMemo(() => {
     const tabsList = [];
@@ -36,5 +37,5 @@ export const FormNavigation = memo((props: Props) => {
     return tabsList;
   }, [form, memberPermission]);
 
-  return <NavigationTabs selectedTab={selectedTab} onTabChange={onTabChange} tabs={tabs} />;
+  return <NavigationTabs selectedTab={selectedTab} onTabChange={onTabChange} tabs={tabs} onHeader={onHeader} />;
 });

@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { TextField, MenuItem, FormControlLabel, Switch, Checkbox, Box, Typography, Stack, Button, Chip, Dialog, DialogTitle, DialogContent, DialogActions, Table, TableHead, TableRow, TableCell, TableBody } from "@mui/material";
-import { ApiHelper, InputBox, ErrorMessages, Locale } from "@churchapps/apphelper";
+import { ApiHelper, ErrorMessages, Locale } from "@churchapps/apphelper";
+import { FormCard } from "../../components/ui";
+import { useConfirmDelete } from "../../hooks";
 import type { WebhookInterface, WebhookDeliveryInterface } from "./WebhooksSection";
 
 interface Props {
@@ -32,6 +34,7 @@ export const WebhookEdit: React.FC<Props> = ({ webhook, onSave, onCancel, onDele
   const [deliveries, setDeliveries] = useState<WebhookDeliveryInterface[]>([]);
   const [detail, setDetail] = useState<WebhookDeliveryInterface | null>(null);
   const [testing, setTesting] = useState(false);
+  const { confirm, ConfirmDialogElement } = useConfirmDelete();
 
   const loadDeliveries = useCallback(() => {
     if (!webhook.id) return;
@@ -66,7 +69,7 @@ export const WebhookEdit: React.FC<Props> = ({ webhook, onSave, onCancel, onDele
   };
 
   const handleRegenerate = async () => {
-    if (!window.confirm(Locale.label("settings.webhookEdit.regenerateConfirm"))) return;
+    if (!(await confirm(Locale.label("settings.webhookEdit.regenerateConfirm"), { destructive: false, confirmLabel: Locale.label("common.confirm", "Confirm") }))) return;
     const res: { secret?: string } = await ApiHelper.post("/webhooks/" + webhook.id + "/regenerate-secret", {}, "MembershipApi");
     if (res?.secret) setSecret(res.secret);
   };
@@ -99,7 +102,8 @@ export const WebhookEdit: React.FC<Props> = ({ webhook, onSave, onCancel, onDele
 
   return (
     <>
-      <InputBox headerIcon="webhook" headerText={webhook.id ? Locale.label("settings.webhookEdit.editWebhook") : Locale.label("settings.webhookEdit.newWebhook")} saveFunction={handleSave} cancelFunction={onCancel} deleteFunction={onDelete}>
+      {ConfirmDialogElement}
+      <FormCard icon="webhook" title={webhook.id ? Locale.label("settings.webhookEdit.editWebhook") : Locale.label("settings.webhookEdit.newWebhook")} onSave={handleSave} onCancel={onCancel} onDelete={onDelete}>
         <ErrorMessages errors={errors} />
         <TextField fullWidth label={Locale.label("settings.webhookEdit.name")} placeholder={Locale.label("settings.webhookEdit.namePlaceholder")} value={name} onChange={(e) => setName(e.target.value)} />
         <TextField select fullWidth label={Locale.label("settings.webhookEdit.connectorType")} value={connectorType} onChange={(e) => setConnectorType(e.target.value)}>
@@ -125,7 +129,7 @@ export const WebhookEdit: React.FC<Props> = ({ webhook, onSave, onCancel, onDele
             <Button variant="outlined" size="small" onClick={handleSendTest} disabled={testing}>{testing ? Locale.label("settings.webhookEdit.sendingTest") : Locale.label("settings.webhookEdit.sendTest")}</Button>
           </Stack>
         )}
-      </InputBox>
+      </FormCard>
 
       {webhook.id && (
         <Box sx={{ mt: 2 }}>
@@ -138,7 +142,7 @@ export const WebhookEdit: React.FC<Props> = ({ webhook, onSave, onCancel, onDele
                 <TableRow>
                   <TableCell>{Locale.label("settings.webhookEdit.event")}</TableCell>
                   <TableCell>{Locale.label("settings.webhooksPage.status")}</TableCell>
-                  <TableCell>{Locale.label("settings.webhookEdit.attempts")}</TableCell>
+                  <TableCell align="right">{Locale.label("settings.webhookEdit.attempts")}</TableCell>
                   <TableCell>{Locale.label("settings.webhookEdit.response")}</TableCell>
                   <TableCell>{Locale.label("settings.webhookEdit.date")}</TableCell>
                   <TableCell align="right" />
@@ -149,10 +153,10 @@ export const WebhookEdit: React.FC<Props> = ({ webhook, onSave, onCancel, onDele
                   <TableRow key={d.id} hover sx={{ cursor: "pointer" }} onClick={() => setDetail(d)}>
                     <TableCell>{d.event}</TableCell>
                     <TableCell><Chip size="small" color={statusColor(d.status)} label={d.status} /></TableCell>
-                    <TableCell>{d.attemptCount}</TableCell>
+                    <TableCell align="right">{d.attemptCount}</TableCell>
                     <TableCell>{d.responseStatus || "—"}</TableCell>
                     <TableCell>{d.dateCreated ? new Date(d.dateCreated).toLocaleString() : ""}</TableCell>
-                    <TableCell align="right">
+                    <TableCell align="right" className="rowActions">
                       <Button size="small" onClick={(e) => { e.stopPropagation(); handleRedeliver(d); }}>{Locale.label("settings.webhookEdit.redeliver")}</Button>
                     </TableCell>
                   </TableRow>

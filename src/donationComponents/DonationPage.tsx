@@ -1,13 +1,11 @@
 "use client";
 
 import React from "react";
-import { loadStripe } from "@stripe/stripe-js";
-import type { Stripe } from "@stripe/stripe-js";
-import { Elements } from "@stripe/react-stripe-js";
 import { DisplayBox, ExportLink, Loading } from "@churchapps/apphelper";
-import { DonationForm, RecurringDonations, PaymentMethods } from "@churchapps/apphelper/donations";
+import { MultiGatewayDonationForm, RecurringDonations, PaymentMethods, SavedPaymentMethod, getPaymentProvider } from "@churchapps/apphelper/donations";
+import type { PaymentGateway } from "@churchapps/apphelper/donations";
 import { ApiHelper, DateHelper, UniqueIdHelper, CurrencyHelper, Locale } from "../helpers";
-import type { DonationInterface, PersonInterface, StripePaymentMethod, ChurchInterface } from "@churchapps/helpers";
+import type { DonationInterface, PersonInterface, ChurchInterface } from "@churchapps/helpers";
 // import { Link } from "react-router-dom"
 import { Table, TableBody, TableRow, TableCell, TableHead, Alert, Button, Icon, Link, Menu, MenuItem } from "@mui/material";
 
@@ -20,8 +18,8 @@ interface Props {
 
 export const DonationPage: React.FC<Props> = (props) => {
   const [donations, setDonations] = React.useState<DonationInterface[]>(null);
-  const [stripePromise, setStripe] = React.useState<Promise<Stripe>>(null);
-  const [paymentMethods, setPaymentMethods] = React.useState<StripePaymentMethod[]>(null);
+  const [paymentMethods, setPaymentMethods] = React.useState<SavedPaymentMethod[]>(null);
+  const [paymentGateways, setPaymentGateways] = React.useState<PaymentGateway[]>([]);
   const [customerId, setCustomerId] = React.useState(null);
   const [person, setPerson] = React.useState<PersonInterface>(null);
   const [message, setMessage] = React.useState<string>(null);
@@ -45,15 +43,17 @@ export const DonationPage: React.FC<Props> = (props) => {
       // Handle both old nested format and new flat array format
       if (data[0]?.cards?.data || data[0]?.banks?.data) {
         // Old format with nested cards/banks structure
-        const cards = data[0]?.cards?.data?.map((card: any) => new StripePaymentMethod(card)) || [];
-        const banks = data[0]?.banks?.data?.map((bank: any) => new StripePaymentMethod(bank)) || [];
+        const cards = data[0]?.cards?.data?.map((card: any) => new SavedPaymentMethod(card)) || [];
+        const banks = data[0]?.banks?.data?.map((bank: any) => new SavedPaymentMethod(bank)) || [];
         setCustomerId(data[0]?.customer?.id);
         setPaymentMethods(cards.concat(banks));
       } else {
         // New flat array format from normalized API response
-        const methods = data.map((pm: any) => new StripePaymentMethod(pm));
+        const methods = data
+          .filter((pm: any) => getPaymentProvider(pm.provider).capabilities.savedCard)
+          .map((pm: any) => new SavedPaymentMethod(pm));
         // Get customerId from first payment method if available
-        const firstMethod = data[0];
+        const firstMethod = data.find((pm: any) => pm.customerId);
         if (firstMethod?.customerId) {
           setCustomerId(firstMethod.customerId);
         }
@@ -74,17 +74,14 @@ export const DonationPage: React.FC<Props> = (props) => {
     }
   };
 
-  const loadStripeData = async (gatewayData: any) => {
-    if (!gatewayData.length || !gatewayData[0]?.publicKey) {
+  const loadGatewayData = async (gatewayData: any) => {
+    if (!gatewayData.length) {
       setPaymentMethods([]);
       return;
     }
 
-    setStripe(loadStripe(gatewayData[0].publicKey));
-    await Promise.all([
-      // loadPersonData(),
-      loadPaymentMethods()
-    ]);
+    setPaymentGateways(gatewayData);
+    await loadPaymentMethods();
   };
 
   const loadData = async () => {
@@ -95,8 +92,8 @@ export const DonationPage: React.FC<Props> = (props) => {
       const [donationsData, gatewaysData] = await Promise.all([ApiHelper.get("/donations?personId=" + props.personId, "GivingApi"), ApiHelper.get("/gateways", "GivingApi")]);
 
       setDonations(donationsData);
-      await loadPersonData(); //moved this outside of loadStripeData to fix issue with person data not loading when there's no gateway data
-      await loadStripeData(gatewaysData);
+      await loadPersonData(); //loaded before gateway data to fix issue with person data not loading when there's no gateway data
+      await loadGatewayData(gatewaysData);
     } catch (error) {
       console.error("Error loading donation data:", error);
       setDonations([]);
@@ -254,22 +251,20 @@ export const DonationPage: React.FC<Props> = (props) => {
     else {
       return (
         <>
-          <Elements stripe={stripePromise}>
-            <DonationForm
-              person={person}
-              customerId={customerId}
-              paymentMethods={paymentMethods}
-              stripePromise={stripePromise}
-              donationSuccess={handleDataUpdate}
-              church={props?.church}
-              churchLogo={props?.churchLogo}
-            />
-          </Elements>
+          <MultiGatewayDonationForm
+            person={person}
+            customerId={customerId}
+            paymentMethods={paymentMethods || []}
+            paymentGateways={paymentGateways}
+            donationSuccess={handleDataUpdate}
+            church={props?.church}
+            churchLogo={props?.churchLogo}
+          />
           <DisplayBox headerIcon="payments" headerText={Locale.label("donation.donationPage.donations")} editContent={getEditContent()}>
             {getTable()}
           </DisplayBox>
           <RecurringDonations customerId={customerId} paymentMethods={paymentMethods} appName={appName} dataUpdate={handleDataUpdate} />
-          <PaymentMethods person={person} customerId={customerId} paymentMethods={paymentMethods} appName={appName} stripePromise={stripePromise} dataUpdate={handleDataUpdate} />
+          <PaymentMethods person={person} customerId={customerId} paymentMethods={paymentMethods} appName={appName} dataUpdate={handleDataUpdate} />
         </>
       );
     }

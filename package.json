@@ -3,17 +3,16 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
+  "packageManager": "yarn@4.15.0",
   "dependencies": {
-    "@churchapps/apphelper": "^0.8.0",
-    "@churchapps/content-providers": "^0.3.0",
-    "@churchapps/helpers": "^1.5.0",
+    "@churchapps/apphelper": "^0.22.0",
+    "@churchapps/content-providers": "^0.5.1",
+    "@churchapps/helpers": "^1.10.1",
     "@mui/icons-material": "^7.3.11",
     "@mui/material": "^7.3.11",
     "@react-google-maps/api": "^2.20.0",
     "@react-hook/window-size": "^3.1.1",
     "@sentry/react": "^10.52.0",
-    "@stripe/react-stripe-js": "^3.10.0",
-    "@stripe/stripe-js": "^7.9.0",
     "@tanstack/react-query": "^5.100.9",
     "axios": "^1.16.0",
     "cropperjs": "^1.6.2",
@@ -21,6 +20,7 @@
     "i18next-browser-languagedetector": "^8.2.1",
     "jszip": "^3.10.1",
     "mui-tel-input": "^9.0.1",
+    "qrcode.react": "^4.2.0",
     "react": "^19.2.6",
     "react-big-calendar": "^1.19.4",
     "react-colorful": "^5.7.0",
@@ -42,9 +42,14 @@
     "webfontloader": "^1.6.28"
   },
   "devDependencies": {
+    "@babel/core": "^8.0.1",
     "@eslint/js": "^10.0.1",
     "@playwright/test": "^1.59.1",
+    "@rolldown/plugin-babel": "^0.2.3",
+    "@stripe/react-stripe-js": "^6.6.0",
+    "@stripe/stripe-js": "^9.8.0",
     "@tanstack/react-query-devtools": "^5.100.9",
+    "@types/babel__core": "^7.20.5",
     "@types/react": "^19.2.14",
     "@types/react-big-calendar": "^1.16.3",
     "@types/react-csv": "^1.1.10",
@@ -53,7 +58,7 @@
     "@typescript-eslint/eslint-plugin": "^8.59.2",
     "@typescript-eslint/parser": "^8.59.2",
     "@vitejs/plugin-react": "^6.0.1",
-    "@vitejs/plugin-react-swc": "^4.3.0",
+    "babel-plugin-react-compiler": "^1.0.0",
     "copyfiles": "^2.4.1",
     "esbuild": "^0.28.0",
     "eslint": "^10.3.0",
@@ -69,6 +74,7 @@
     "vite": "^8.0.11"
   },
   "scripts": {
+    "preinstall": "node -e \"if(!(process.env.npm_config_user_agent||'').startsWith('yarn')){console.error('\\n[B1Admin] This project uses Yarn (Berry). Run \\'yarn install\\' instead of npm/pnpm.\\n');process.exit(1)}\"",
     "start": "vite",
     "build": "vite build",
     "serve": "serve -s dist -l ${PORT:-3101}",
@@ -80,24 +86,32 @@
     "test:debug": "playwright test --debug",
     "test:report": "playwright show-report",
     "lint": "eslint --fix src/",
-    "predeploy-demo": "export REACT_APP_STAGE=demo && npm run postinstall && npm run build",
+    "predeploy-demo": "REACT_APP_STAGE=demo yarn postinstall && REACT_APP_STAGE=demo yarn build",
     "exec-deploy-demo": "aws s3 sync dist/ s3://demo-chums-app --exclude \"sw.js\" && aws s3 cp dist/sw.js s3://demo-chums-app/sw.js --cache-control no-cache",
     "postdeploy-demo": "aws cloudfront create-invalidation --distribution-id E2OZ4STEUZXHZZ --paths \"/*\"",
-    "deploy-demo": "npm run predeploy-demo && npm run exec-deploy-demo && npm run postdeploy-demo",
-    "predeploy-staging": "export REACT_APP_STAGE=staging && npm run postinstall && npm run build",
+    "deploy-demo": "yarn predeploy-demo && yarn exec-deploy-demo && yarn postdeploy-demo",
+    "predeploy-staging": "REACT_APP_STAGE=staging yarn postinstall && REACT_APP_STAGE=staging yarn build",
     "exec-deploy-staging": "aws s3 sync dist/ s3://staging-chums-app --exclude \"sw.js\" && aws s3 cp dist/sw.js s3://staging-chums-app/sw.js --cache-control no-cache",
     "postdeploy-staging": "aws cloudfront create-invalidation --distribution-id E2OZ4STEUZXHZZ --paths \"/*\"",
-    "deploy-staging": "npm run predeploy-staging && npm run exec-deploy-staging && npm run postdeploy-staging",
-    "predeploy-prod": "export REACT_APP_STAGE=prod && npm run postinstall && npm run build",
+    "deploy-staging": "yarn predeploy-staging && yarn exec-deploy-staging && yarn postdeploy-staging",
+    "predeploy-prod": "REACT_APP_STAGE=prod yarn postinstall && REACT_APP_STAGE=prod yarn build",
     "exec-deploy-prod": "aws s3 sync dist/ s3://chums-app --exclude \"sw.js\" && aws s3 cp dist/sw.js s3://chums-app/sw.js --cache-control no-cache",
     "postdeploy-prod": "aws cloudfront create-invalidation --distribution-id E2OZ4STEUZXHZZ --paths \"/*\"",
-    "deploy-prod": "npm run predeploy-prod && npm run exec-deploy-prod && npm run postdeploy-prod",
-    "postinstall": "copyfiles -a -f node_modules/@churchapps/apphelper/dist/public/locales/** public/apphelper/locales && copyfiles -a -f node_modules/@churchapps/apphelper/dist/public/css/** public/apphelper/css"
+    "deploy-prod": "yarn predeploy-prod && yarn exec-deploy-prod && yarn postdeploy-prod",
+    "postinstall": "copyfiles -a -f \"node_modules/@churchapps/apphelper/dist/public/locales/**\" public/apphelper/locales && copyfiles -a -f \"node_modules/@churchapps/apphelper/dist/public/css/**\" public/apphelper/css"
   },
   "lint-staged": {
     "src/**/*.{ts,tsx,js}": [
-      "npm run lint:fix"
+      "yarn lint:fix"
     ]
+  },
+  "dependenciesMeta": {
+    "@swc/core": {
+      "built": true
+    },
+    "esbuild": {
+      "built": true
+    }
   },
   "browserslist": [
     ">0.3%",

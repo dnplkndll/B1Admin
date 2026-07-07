@@ -3,23 +3,25 @@ import { ApiHelper, ArrayHelper, PageHeader, UserHelper, Permissions, Locale } f
 import { useParams, useNavigate } from "react-router-dom";
 import { type ArrangementInterface, type ArrangementKeyInterface, type SongDetailInterface, type SongInterface } from "../../helpers";
 import { useQuery } from "@tanstack/react-query";
-import { Grid, Box, Card, CardContent, Typography, Stack, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Divider, Button, IconButton, Tooltip } from "@mui/material";
+import { Grid, Box, Card, CardContent, Typography, Stack, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Divider, Button } from "@mui/material";
 import { LibraryMusic as MusicIcon, Add as AddIcon, QueueMusic as ArrangementIcon, Edit as EditIcon, Delete as DeleteIcon } from "@mui/icons-material";
+import { AppIconButton } from "../../components/ui/AppIconButton";
 import { Arrangement } from "./components/Arrangement";
 import { EmptyState } from "../../components/ui/EmptyState";
-import { SongSearchDialog } from "./SongSearchDialog";
+import { CountChip, HeaderPrimaryButton } from "../../components/ui";
 import { SongDetailsEdit } from "./components/SongDetailsEdit";
 import { SongDetailLinks } from "./components/SongDetailLinks";
 import { SongDetailLinksEdit } from "./components/SongDetailLinksEdit";
+import { useConfirmDelete } from "../../hooks";
 
 export const SongPage = memo(() => {
-  const [showSearch, setShowSearch] = React.useState(false);
   const canEdit = UserHelper.checkAccess(Permissions.contentApi.content.edit);
   const [editSongDetails, setEditSongDetails] = React.useState(false);
   const [editLinks, setEditLinks] = React.useState(false);
   const [selectedArrangement, setSelectedArrangement] = React.useState(null);
   const params = useParams();
   const navigate = useNavigate();
+  const { confirm, ConfirmDialogElement } = useConfirmDelete();
 
   const song = useQuery<SongInterface>({
     queryKey: ["/songs/" + params.id, "ContentApi"],
@@ -32,23 +34,17 @@ export const SongPage = memo(() => {
     enabled: !!params.id
   });
 
-  const songDetailId = useMemo(() => {
-    if (arrangements.data && arrangements.data.length > 0 && arrangements.data[0].songDetailId) {
-      return arrangements.data[0].songDetailId;
-    }
-    return null;
-  }, [arrangements.data]);
-
   const songDetail = useQuery<SongDetailInterface>({
-    queryKey: ["/songDetails/" + songDetailId, "ContentApi"],
-    enabled: !!songDetailId
+    queryKey: ["/songDetails/" + song.data?.songDetailId, "ContentApi"],
+    enabled: !!song.data?.songDetailId
   });
 
-  // Set selected arrangement when arrangements load
+  // Set selected arrangement when arrangements load; fall back to the first one when
+  // the current selection no longer exists (e.g. deleted, or stale from a kept-alive visit).
   React.useEffect(() => {
-    if (arrangements.data && arrangements.data.length > 0 && !selectedArrangement) {
-      setSelectedArrangement(arrangements.data[0]);
-    }
+    if (!arrangements.data || arrangements.data.length === 0) return;
+    const stillExists = selectedArrangement && arrangements.data.some((a) => a.id === selectedArrangement.id);
+    if (!stillExists) setSelectedArrangement(arrangements.data[0]);
   }, [arrangements.data, selectedArrangement]);
 
   const selectArrangement = useCallback(
@@ -62,43 +58,44 @@ export const SongPage = memo(() => {
   const refetch = useCallback(async () => {
     const results = await Promise.all([song.refetch(), arrangements.refetch(), songDetail.refetch()]);
 
-    // Update selected arrangement with fresh data after refetch
     if (selectedArrangement?.id) {
       const arrangementResult = results[1];
       if (arrangementResult.data) {
         const updatedArrangement = arrangementResult.data.find((arr) => arr.id === selectedArrangement.id);
         if (updatedArrangement) {
           setSelectedArrangement(updatedArrangement);
+        } else {
+          const nextArrangement = arrangementResult.data.length > 0 ? arrangementResult.data[0] : null;
+          setSelectedArrangement(nextArrangement);
+          if (!nextArrangement) {
+            navigate("/serving/songs");
+          }
         }
       }
     }
-  }, [song, arrangements, songDetail, selectedArrangement?.id]);
+  }, [song, arrangements, songDetail, selectedArrangement?.id, navigate]);
 
-  const handleDeleteSong = useCallback(() => {
-    if (window.confirm(Locale.label("songs.deleteSong.confirm"))) {
+  const handleDeleteSong = useCallback(async () => {
+    if (await confirm(Locale.label("songs.deleteSong.confirm"))) {
       ApiHelper.delete("/songs/" + song.data?.id, "ContentApi").then(() => {
         navigate("/serving/songs");
       });
     }
-  }, [song.data?.id, navigate]);
+  }, [song.data?.id, navigate, confirm]);
 
-  const handleAdd = useCallback(
-    async (songDetail: SongDetailInterface) => {
-      if (!song.data?.id) return;
-      const a: ArrangementInterface = {
-        songId: song.data.id,
-        songDetailId: songDetail.id,
-        name: songDetail.artist,
-        lyrics: ""
-      };
-      const arrangements = await ApiHelper.post("/arrangements", [a], "ContentApi");
-      const key: ArrangementKeyInterface = { arrangementId: arrangements[0].id, keySignature: songDetail.keySignature || "", shortDescription: "Default" };
-      await ApiHelper.post("/arrangementKeys", [key], "ContentApi");
-      refetch();
-      setShowSearch(false);
-    },
-    [song.data?.id, refetch]
-  );
+  const handleAddArrangement = useCallback(async () => {
+    if (!song.data?.id) return;
+    const a: ArrangementInterface = {
+      songId: song.data.id,
+      name: "New Arrangement", // ponytail: default record name, a literal like sibling "(Default)" — not a Locale key (apphelper owns the catalog)
+      lyrics: ""
+    };
+    const newArrangements = await ApiHelper.post("/arrangements", [a], "ContentApi");
+    const key: ArrangementKeyInterface = { arrangementId: newArrangements[0].id, keySignature: songDetail.data?.keySignature || "", shortDescription: "Default" };
+    await ApiHelper.post("/arrangementKeys", [key], "ContentApi");
+    await refetch();
+    setSelectedArrangement(newArrangements[0]);
+  }, [song.data?.id, songDetail.data?.keySignature, refetch]);
 
   const arrangementNavigation = useMemo(
     () => (
@@ -106,10 +103,11 @@ export const SongPage = memo(() => {
         <Card sx={{ height: "fit-content", borderRadius: 2 }}>
           <CardContent>
             <Stack direction="row" spacing={2} alignItems="center" sx={{ mb: 2 }}>
-              <MusicIcon sx={{ color: "primary.main" }} />
-              <Typography variant="h6" sx={{ fontWeight: 600, color: "primary.main" }}>
+              <MusicIcon sx={{ color: "primary.main", fontSize: 20 }} />
+              <Typography variant="h6">
                 {Locale.label("songs.oldArrangements.arrangements")}
               </Typography>
+              {arrangements.data.length > 0 && <CountChip count={arrangements.data.length} />}
             </Stack>
 
             <List sx={{ p: 0 }}>
@@ -150,7 +148,7 @@ export const SongPage = memo(() => {
               <Button
                 variant="outlined"
                 startIcon={<AddIcon />}
-                onClick={() => setShowSearch(true)}
+                onClick={handleAddArrangement}
                 fullWidth
                 sx={{
                   mt: 2,
@@ -169,7 +167,6 @@ export const SongPage = memo(() => {
           </CardContent>
         </Card>
 
-        {/* External Links Card */}
         <Card sx={{ height: "fit-content", borderRadius: 2 }}>
           <CardContent>
             {songDetail.data &&
@@ -188,7 +185,9 @@ export const SongPage = memo(() => {
         </Card>
       </Stack>
     ),
-    [arrangements.data, selectedArrangement, selectArrangement, songDetail.data, editLinks, refetch, canEdit]
+    [
+      arrangements.data, selectedArrangement, selectArrangement, songDetail.data, editLinks, refetch, canEdit, handleAddArrangement
+    ]
   );
 
   const currentContent = useMemo(() => {
@@ -207,41 +206,18 @@ export const SongPage = memo(() => {
 
   return (
     <>
-      <PageHeader title={songDetail.data?.title || song.data?.name || Locale.label("songs.songPage.loading")} subtitle={Locale.label("songs.songPage.subtitle")}>
+      {ConfirmDialogElement}
+      <PageHeader icon={<MusicIcon />} title={songDetail.data?.title || song.data?.name || Locale.label("songs.songPage.loading")} subtitle={Locale.label("songs.songPage.subtitle")}>
         {canEdit && (
-          <IconButton
-            onClick={() => setEditSongDetails(true)}
-            sx={{
-              color: "rgba(255,255,255,0.8)",
-              "&:hover": {
-                color: "#FFF",
-                backgroundColor: "rgba(255,255,255,0.1)"
-              }
-            }}
-            size="small">
-            <EditIcon fontSize="small" />
-          </IconButton>
+          <AppIconButton label={Locale.label("common.edit")} icon={<EditIcon />} tone="header" onClick={() => setEditSongDetails(true)} />
         )}
         {canEdit && (
-          <Tooltip title={Locale.label("common.delete")}>
-            <IconButton size="small" color="error" onClick={handleDeleteSong} aria-label={Locale.label("songs.songPage.deleteSongAria")}><DeleteIcon fontSize="small" /></IconButton>
-          </Tooltip>
+          <AppIconButton label={Locale.label("common.delete")} icon={<DeleteIcon />} tone="header" intent="remove" onClick={handleDeleteSong} />
         )}
         {canEdit && (
-          <Button
-            variant="outlined"
-            startIcon={<AddIcon />}
-            onClick={() => setShowSearch(true)}
-            sx={{
-              color: "#FFF",
-              borderColor: "rgba(255,255,255,0.5)",
-              "&:hover": {
-                borderColor: "#FFF",
-                backgroundColor: "rgba(255,255,255,0.1)"
-              }
-            }}>
+          <HeaderPrimaryButton startIcon={<AddIcon />} onClick={handleAddArrangement}>
             {Locale.label("songs.songPage.addArrangement")}
-          </Button>
+          </HeaderPrimaryButton>
         )}
       </PageHeader>
 
@@ -258,14 +234,12 @@ export const SongPage = memo(() => {
           />
         ) : (
           <Grid container spacing={3}>
-            <Grid size={{ xs: 12, md: 3 }}>{arrangementNavigation}</Grid>
-
             <Grid size={{ xs: 12, md: 9 }}>{currentContent}</Grid>
+
+            <Grid size={{ xs: 12, md: 3 }}>{arrangementNavigation}</Grid>
           </Grid>
         )}
       </Box>
-
-      {showSearch && canEdit && <SongSearchDialog searchText={song.data?.name} onClose={() => setShowSearch(false)} onSelect={handleAdd} />}
     </>
   );
 });

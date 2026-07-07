@@ -11,26 +11,30 @@ export const SEED_PEOPLE = {
   JENNIFER: "Jennifer Williams",
   PATRICIA: "Patricia Moore",
   ROBERT: "Robert Moore",
-  DEMO: "Demo User",
+  DEMO: "Demo User"
 } as const;
 
 export type SeedPersonName = (typeof SEED_PEOPLE)[keyof typeof SEED_PEOPLE];
 
-// Navigate to People and open a known seed person's detail page.
-// Replaces the brittle `page.locator('table tbody tr').first()` pattern
-// that depends on default sort + prior test mutations.
+// Replaces the brittle `page.locator('table tbody tr').first()` pattern that depends on default sort + prior test mutations.
 export async function openKnownPerson(page: Page, name: SeedPersonName) {
   await navigateToPeople(page);
-  const row = page.locator("table tbody tr").filter({ hasText: name }).first();
-  await row.waitFor({ state: "visible", timeout: 10000 });
-  await row.click();
-  await page.waitForURL(/\/people\/PER\d+/, { timeout: 10000 });
+  await openPersonRow(page, name);
 }
 
-// Same as openKnownPerson but assumes you're already on /people — just
-// finds the row and clicks it.
+// Assumes you're already on /people.
 export async function openPersonRow(page: Page, name: SeedPersonName | string) {
   const row = page.locator("table tbody tr").filter({ hasText: name }).first();
+  // The default /people view only lists the first page of members (50,
+  // alphabetical by last name) — seed people late in the alphabet (the
+  // Moores) fall past the cutoff. Filter via the instant search box when
+  // the row isn't already on screen.
+  if (!(await row.isVisible({ timeout: 3000 }).catch(() => false))) {
+    const search = page.locator('input[name="searchText"]');
+    const searched = page.waitForResponse((r) => r.url().includes("/people/advancedSearch") && r.status() === 200, { timeout: 10000 }).catch((): null => null);
+    await search.fill(String(name));
+    await searched;
+  }
   await row.waitFor({ state: "visible", timeout: 10000 });
   await row.click();
   await page.waitForURL(/\/people\/PER\d+/, { timeout: 10000 });
@@ -43,6 +47,12 @@ export async function openPersonRow(page: Page, name: SeedPersonName | string) {
 
 export function editIconButton(page: Page) {
   return page.locator('button:has(svg[data-testid="EditIcon"])');
+}
+
+// The person-details "Personal Details" box surfaces edit via a DisplayBox editContent
+// button, not the banner EditIcon svg the page used to show.
+export function personDetailsEditButton(page: Page) {
+  return page.locator('[data-testid="edit-person-button"]');
 }
 
 export function closeIconButton(page: Page) {
@@ -67,13 +77,13 @@ export function trashIconButton(page: Page) {
 // Click Retry first (forces the app's own retry path); fall back to a hard
 // reload, which re-fetches the chunk manifest. Loop up to 4 times.
 export async function recoverFromViteError(page: import("@playwright/test").Page, successLocator?: import("@playwright/test").Locator) {
-  const viteError = page.locator('text=Failed to fetch dynamically imported module');
-  const retryBtn = page.getByRole('button', { name: 'Retry' });
+  const viteError = page.locator("text=Failed to fetch dynamically imported module");
+  const retryBtn = page.getByRole("button", { name: "Retry" });
   for (let i = 0; i < 4; i++) {
     if (successLocator) {
       const result = await Promise.race([
-        viteError.waitFor({ state: "visible", timeout: 8000 }).then(() => "error" as const).catch(() => null),
-        successLocator.waitFor({ state: "visible", timeout: 8000 }).then(() => "success" as const).catch(() => null),
+        viteError.waitFor({ state: "visible", timeout: 8000 }).then(() => "error" as const).catch((): null => null),
+        successLocator.waitFor({ state: "visible", timeout: 8000 }).then(() => "success" as const).catch((): null => null)
       ]);
       if (result === "success") return;
       if (result !== "error") return;
@@ -88,6 +98,17 @@ export async function recoverFromViteError(page: import("@playwright/test").Page
     }
     await page.waitForLoadState("domcontentloaded").catch(() => { });
   }
+}
+
+// Styled MUI ConfirmDialog (src/components/ui/ConfirmDialog.tsx) replaced the
+// native window.confirm for deletes/archives. Click its contained confirm
+// button (the only contained button in the dialog). `.last()` targets the
+// topmost dialog so this works even when the edit form is itself in a dialog.
+export async function confirmDelete(page: Page, timeout = 8000) {
+  const dialog = page.locator('div[role="dialog"]').last();
+  const confirmBtn = dialog.locator("button.MuiButton-contained");
+  await confirmBtn.waitFor({ state: "visible", timeout });
+  await confirmBtn.click();
 }
 
 // SendInviteDialog appears whenever a person with an email is added to a

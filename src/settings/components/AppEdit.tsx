@@ -1,11 +1,14 @@
-import React, { useEffect, useState, useCallback } from "react";
-import { Button, Stack, TextField, FormControl, Icon, InputLabel, Select, MenuItem, Dialog, Box, Divider, IconButton, Grid, Checkbox, FormControlLabel, FormGroup, Typography } from "@mui/material";
+import { useEffect, useState, useCallback } from "react";
+import { Button, Stack, TextField, FormControl, Icon, InputLabel, Select, MenuItem, Dialog, Box, Divider, Grid, Checkbox, FormControlLabel, FormGroup, Typography } from "@mui/material";
 import { Save as SaveIcon, Cancel as CancelIcon, Delete as DeleteIcon, Edit as EditIcon } from "@mui/icons-material";
 import { Controller, useForm } from "react-hook-form";
 import type { LinkInterface, GroupInterface } from "@churchapps/helpers";
 import { IconPicker } from "../../components/iconPicker";
-import { ApiHelper, UniqueIdHelper, ArrayHelper, Locale, GalleryModal } from "@churchapps/apphelper";
+import { ApiHelper, UniqueIdHelper, ArrayHelper, Locale } from "@churchapps/apphelper";
+import { GalleryModal } from "../../components/gallery";
 import { CardWithHeader, LoadingButton } from "../../components/ui";
+import { AppIconButton } from "../../components/ui/AppIconButton";
+import { useConfirmDelete } from "../../hooks";
 
 interface PageInterface {
   id?: string;
@@ -22,6 +25,7 @@ interface Props {
 type AnyRecord = Record<string, any>;
 
 export function AppEdit({ currentTab: currentTabFromProps, updatedFunction = () => {} }: Props) {
+  "use no memo"; // compiler caches register() results, breaking RHF field re-registration after reset()
   const [icon, setIcon] = useState<string>("");
   const [photo, setPhoto] = useState<string>("");
   const [groupIdsJson, setGroupIdsJson] = useState<string>("");
@@ -30,6 +34,7 @@ export function AppEdit({ currentTab: currentTabFromProps, updatedFunction = () 
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [isSaving, setIsSaving] = useState<boolean>(false);
   const [showPhotoGallery, setShowPhotoGallery] = useState<boolean>(false);
+  const { confirm, ConfirmDialogElement } = useConfirmDelete();
 
   const { register, handleSubmit, reset, control, watch, setValue } = useForm<AnyRecord>({ defaultValues: { text: "", linkType: "", linkData: "", url: "", visibility: "everyone" } });
   const linkType = watch("linkType");
@@ -85,8 +90,8 @@ export function AppEdit({ currentTab: currentTabFromProps, updatedFunction = () 
     setIsModalOpen(false);
   }, []);
 
-  const handleDelete = () => {
-    if (window.confirm(Locale.label("settings.app.confirmDeleteTab"))) {
+  const handleDelete = async () => {
+    if (await confirm(Locale.label("settings.app.confirmDeleteTab"))) {
       ApiHelper.delete("/links/" + currentTabFromProps.id, "ContentApi").then(() => updatedFunction());
     }
   };
@@ -138,12 +143,13 @@ export function AppEdit({ currentTab: currentTabFromProps, updatedFunction = () 
 
   return (
     <>
+      {ConfirmDialogElement}
       <CardWithHeader
         title={UniqueIdHelper.isMissing(currentTabFromProps?.id) ? Locale.label("settings.appEdit.addTab") : Locale.label("settings.appEdit.editTab")}
         icon={<EditIcon />}
         actions={
           <Stack direction="row" spacing={1}>
-            <Button variant="outlined" color="error" startIcon={<CancelIcon />} onClick={updatedFunction} size="small" sx={{ textTransform: "none" }}>{Locale.label("common.cancel")}</Button>
+            <Button variant="outlined" startIcon={<CancelIcon />} onClick={updatedFunction} size="small" sx={{ textTransform: "none" }}>{Locale.label("common.cancel")}</Button>
             <LoadingButton loading={isSaving} loadingText={Locale.label("settings.appEdit.saving")} variant="contained" startIcon={<SaveIcon />} onClick={handleSubmit(onValid)} size="small" sx={{ textTransform: "none" }}>{Locale.label("settings.appEdit.saveTab")}</LoadingButton>
           </Stack>
         }
@@ -155,7 +161,7 @@ export function AppEdit({ currentTab: currentTabFromProps, updatedFunction = () 
                 fullWidth
                 label={Locale.label("settings.appEdit.tabName")}
                 {...register("text")}
-                InputProps={{ endAdornment: (<IconButton onClick={() => setIsModalOpen(true)} data-testid="icon-dropdown-button" sx={{ color: "primary.main" }}><Icon>{icon}</Icon></IconButton>) }}
+                InputProps={{ endAdornment: (<AppIconButton label={Locale.label("common.change")} icon={<Icon>{icon}</Icon>} tone="card" onClick={() => setIsModalOpen(true)} data-testid="icon-dropdown-button" />) }}
                 helperText={Locale.label("settings.app.tabNameHelper")}
               />
 
@@ -238,7 +244,7 @@ export function AppEdit({ currentTab: currentTabFromProps, updatedFunction = () 
                 <>
                   <Divider sx={{ mt: 2 }} />
                   <Box sx={{ textAlign: "center" }}>
-                    <Button variant="outlined" color="error" startIcon={<DeleteIcon />} onClick={handleDelete} size="small" sx={{ textTransform: "none" }}>{Locale.label("settings.appEdit.deleteTab")}</Button>
+                    <Button variant="outlined" startIcon={<DeleteIcon />} onClick={handleDelete} size="small" sx={{ textTransform: "none" }}>{Locale.label("settings.appEdit.deleteTab")}</Button>
                   </Box>
                 </>
               )}

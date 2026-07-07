@@ -22,7 +22,7 @@ export const ReportFilterField = (props: Props) => {
       case "provided": setRawData(props.parameter.options); break;
       case "month": setRawData(getMonths()); break;
       case "campus":
-        ApiHelper.get("/campuses", "AttendanceApi").then((data) => {
+        ApiHelper.get("/campuses", "MembershipApi").then((data: any) => {
           data.unshift({ id: "", name: Locale.label("common.reportFilterField.any") });
           if (isMounted()) {
             setRawData(data);
@@ -30,7 +30,7 @@ export const ReportFilterField = (props: Props) => {
         });
         break;
       case "service":
-        ApiHelper.get("/services", "AttendanceApi").then((data) => {
+        ApiHelper.get("/services", "AttendanceApi").then((data: any) => {
           data.unshift({ id: "", name: Locale.label("common.reportFilterField.any") });
           if (isMounted()) {
             setRawData(data);
@@ -38,7 +38,7 @@ export const ReportFilterField = (props: Props) => {
         });
         break;
       case "serviceTime":
-        ApiHelper.get("/serviceTimes", "AttendanceApi").then((data) => {
+        ApiHelper.get("/serviceTimes", "AttendanceApi").then((data: any) => {
           data.unshift({ id: "", name: Locale.label("common.reportFilterField.any") });
           if (isMounted()) {
             setRawData(data);
@@ -46,20 +46,20 @@ export const ReportFilterField = (props: Props) => {
         });
         break;
       case "group":
-        ApiHelper.get("/groups", "MembershipApi").then((data) => {
+        ApiHelper.get("/groups", "MembershipApi").then((data: any) => {
           data.unshift({ id: "", name: Locale.label("common.reportFilterField.any") });
           if (isMounted()) {
             setRawData(data);
           }
         });
-        ApiHelper.get("/groupServiceTimes", "AttendanceApi").then((data) => {
+        ApiHelper.get("/groupServiceTimes", "AttendanceApi").then((data: any) => {
           if (isMounted()) {
             setSecondaryData(data);
           }
         });
         break;
       case "fund":
-        ApiHelper.get("/funds", "GivingApi").then((data) => {
+        ApiHelper.get("/funds", "GivingApi").then((data: any) => {
           data.unshift({ id: "", name: Locale.label("common.reportFilterField.any") });
           if (isMounted()) {
             setRawData(data);
@@ -173,8 +173,8 @@ export const ReportFilterField = (props: Props) => {
     case "dropdown":
       result = (
         <FormControl fullWidth>
-          <InputLabel>{props.parameter.displayName}</InputLabel>
-          <Select value={options.find((v) => v.value === props.parameter.value)?.value || ""} label={props.parameter.displayName} onChange={handleChange} name={props.parameter.keyName}>
+          <InputLabel shrink>{props.parameter.displayName}</InputLabel>
+          <Select displayEmpty value={options.find((v) => v.value === props.parameter.value)?.value || ""} label={props.parameter.displayName} onChange={handleChange} name={props.parameter.keyName}>
             {options.map((o, i) => (
               <MenuItem key={i} value={o.value}>
                 {o.text}

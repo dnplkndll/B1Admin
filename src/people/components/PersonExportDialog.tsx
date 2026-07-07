@@ -274,9 +274,9 @@ export const PersonExportDialog: React.FC<Props> = memo((props) => {
             <Table size="small">
               <TableHead>
                 <TableRow>
-                  <TableCell sx={{ fontWeight: 600 }}>Form</TableCell>
-                  <TableCell sx={{ fontWeight: 600 }}>Question</TableCell>
-                  <TableCell sx={{ fontWeight: 600 }}>Answer</TableCell>
+                  <TableCell>Form</TableCell>
+                  <TableCell>Question</TableCell>
+                  <TableCell>Answer</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>

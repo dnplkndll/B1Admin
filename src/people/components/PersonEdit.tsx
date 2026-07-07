@@ -3,11 +3,20 @@ import { useForm, Controller, useFormState } from "react-hook-form";
 import { MuiTelInput, matchIsValidTel } from "mui-tel-input";
 import { B1AdminPersonHelper, UpdateHouseHold } from ".";
 import { type PersonInterface } from "@churchapps/helpers";
-import { PersonHelper, DateHelper, InputBox, ApiHelper, Loading, ErrorMessages, Locale, PersonAvatar } from "@churchapps/apphelper";
+import { PersonHelper, DateHelper, ApiHelper, Loading, ErrorMessages, Locale, PersonAvatar } from "@churchapps/apphelper";
+import { QuestionEdit } from "@churchapps/apphelper/forms";
+import { type QuestionInterface, type AnswerInterface } from "@churchapps/helpers";
+import { GdprActions } from "./GdprActions";
+import { FormCard } from "../../components/ui";
+import { useConfirmDelete } from "../../hooks";
 import { Navigate } from "react-router-dom";
 import UserContext from "../../UserContext";
 import { Button, FormControl, Grid, InputLabel, MenuItem, Select, TextField, Box, FormControlLabel, Checkbox } from "@mui/material";
 import { getMembershipStatusOptions } from "../helpers/MembershipStatusOptions";
+import { CampusSelect } from "../../components/CampusSelect";
+import { GRADE_OPTIONS } from "../../helpers/GradeOptions";
+import { type PersonFieldInterface, type PersonFieldValueInterface } from "../../helpers/Interfaces";
+import { parseFieldChoices } from "../../helpers/PersonFieldHelper";
 
 // PersonInterface has typed subfields; RHF nested paths require looser typing
 type AnyRecord = Record<string, any>;
@@ -31,7 +40,7 @@ const phoneSlotProps = { htmlInput: { "aria-describedby": "errorMsg", "aria-labe
 const phoneMenuProps = { "aria-label": "phone-number" };
 const phoneRules = (v: string) => !v || v.length <= 4 || matchIsValidTel(v.split("x")[0]) || Locale.label("people.personEdit.invalForm");
 const phoneHelperText = (hasError: boolean) => (
-  <div id="errorMsg">{hasError && <p style={{ margin: 0, color: "#d32f2f" }}>{Locale.label("people.personEdit.invalForm")}</p>}</div>
+  <div id="errorMsg">{hasError && <Box component="p" sx={{ margin: 0, color: "error.main" }}>{Locale.label("people.personEdit.invalForm")}</Box>}</div>
 );
 
 // Normalize legacy phone formats like "(217) 555-2504" or "217-555-2504" into E.164
@@ -61,20 +70,47 @@ const buildFormDefaults = (p: PersonInterface) => ({
 });
 
 export const PersonEdit = memo((props: Props) => {
+  "use no memo"; // compiler caches register() results, breaking RHF field re-registration after reset()
   const context = React.useContext(UserContext);
   const [redirect, setRedirect] = useState("");
   const [showUpdateAddressModal, setShowUpdateAddressModal] = useState(false);
   const [modalText, setModalText] = useState("");
   const [members, setMembers] = useState<PersonInterface[]>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [customFields, setCustomFields] = useState<PersonFieldInterface[]>([]);
+  const [customValues, setCustomValues] = useState<Record<string, string>>({});
 
   const { control, register, handleSubmit, reset, getValues } = useForm<AnyRecord>({ defaultValues: buildFormDefaults(props.person) });
+  const { confirm, ConfirmDialogElement } = useConfirmDelete();
 
   const { errors } = useFormState({ control });
 
   React.useEffect(() => {
     if (props.person) reset(buildFormDefaults(props.person));
   }, [props.person, reset]);
+
+  React.useEffect(() => {
+    ApiHelper.get("/personfields", "MembershipApi")
+      .then((data: PersonFieldInterface[]) => setCustomFields(data || []))
+      .catch(() => setCustomFields([]));
+  }, []);
+
+  React.useEffect(() => {
+    if (!props.person?.id) return;
+    ApiHelper.get(`/personfieldvalues/person/${props.person.id}`, "MembershipApi")
+      .then((data: PersonFieldValueInterface[]) => {
+        const map: Record<string, string> = {};
+        (data || []).forEach((v) => { if (v.fieldId) map[v.fieldId] = v.value || ""; });
+        setCustomValues(map);
+      })
+      .catch(() => setCustomValues({}));
+  }, [props.person?.id]);
+
+  const saveCustomFields = useCallback(async () => {
+    if (customFields.length === 0 || !props.person?.id) return;
+    const payload = customFields.map((f) => ({ personId: props.person.id, fieldId: f.id, value: customValues[f.id || ""] || "" }));
+    await ApiHelper.post("/personfieldvalues", payload, "MembershipApi");
+  }, [customFields, customValues, props.person?.id]);
 
   const e = errors as any;
   const summaryErrors: string[] = React.useMemo(() => {
@@ -96,6 +132,8 @@ export const PersonEdit = memo((props: Props) => {
   const buildPerson = useCallback((values: AnyRecord): PersonInterface => {
     const p: PersonInterface = JSON.parse(JSON.stringify(props.person));
     Object.assign(p, values);
+    // "" = the Unassigned option; store as null so it matches campusId IS NULL.
+    if (!p.campusId) p.campusId = null;
     if (p.contactInfo) {
       p.contactInfo.homePhone = (p.contactInfo.homePhone?.length ?? 0) <= 4 ? null : p.contactInfo.homePhone;
       p.contactInfo.workPhone = (p.contactInfo.workPhone?.length ?? 0) <= 4 ? null : p.contactInfo.workPhone;
@@ -107,12 +145,13 @@ export const PersonEdit = memo((props: Props) => {
   const updatePerson = useCallback(async (p: PersonInterface) => {
     try {
       await ApiHelper.post("/people/", [p], "MembershipApi");
+      await saveCustomFields();
       props.updatedFunction();
     } catch (error) {
       console.error("Error updating person:", error);
     }
     setIsSubmitting(false);
-  }, [props.updatedFunction]);
+  }, [props.updatedFunction, saveCustomFields]);
 
   const onValid = useCallback(async (values: AnyRecord) => {
     setIsSubmitting(true);
@@ -131,16 +170,16 @@ export const PersonEdit = memo((props: Props) => {
     await updatePerson(p);
   }, [props.person, members, context, updatePerson, buildPerson]);
 
-  const handleDelete = useCallback(() => {
+  const handleDelete = useCallback(async () => {
     if (!props.person?.id) return;
     if (B1AdminPersonHelper.getExpandedPersonObject(props.person).id === context.person?.id) {
       alert(Locale.label("people.personEdit.cannotDeleteSelf"));
       return;
     }
-    if (window.confirm(Locale.label("people.personEdit.confirmMsg"))) {
+    if (await confirm(Locale.label("people.personEdit.confirmMsg"))) {
       ApiHelper.delete("/people/" + props.person.id.toString(), "MembershipApi").then(() => setRedirect("/people"));
     }
-  }, [props.person?.id, context.person?.id]);
+  }, [props.person?.id, context.person?.id, confirm]);
 
   const handleYes = useCallback(async () => {
     setShowUpdateAddressModal(false);
@@ -149,8 +188,9 @@ export const PersonEdit = memo((props: Props) => {
       member.contactInfo = PersonHelper.changeOnlyAddress(member.contactInfo, p.contactInfo);
       try { await ApiHelper.post("/people", [member], "MembershipApi"); } catch (error) { console.log(`error in updating ${p.name.display}"s address`, error); }
     }));
+    await saveCustomFields();
     props.updatedFunction();
-  }, [members, getValues, buildPerson, props.updatedFunction]);
+  }, [members, getValues, buildPerson, props.updatedFunction, saveCustomFields]);
 
   const handleNo = useCallback(() => {
     setShowUpdateAddressModal(false);
@@ -161,9 +201,10 @@ export const PersonEdit = memo((props: Props) => {
 
   return (
     <>
+      {ConfirmDialogElement}
       <UpdateHouseHold show={showUpdateAddressModal} text={modalText} onHide={() => setShowUpdateAddressModal(false)} handleNo={handleNo} handleYes={handleYes} />
-      <InputBox headerIcon="person" headerText={Locale.label("people.personEdit.persDet")} cancelFunction={props.updatedFunction} deleteFunction={handleDelete} saveFunction={handleSubmit(onValid)} isSubmitting={isSubmitting}
-        headerActionContent={
+      <FormCard id={props.id} icon="person" title={Locale.label("people.personEdit.persDet")} onCancel={props.updatedFunction} onDelete={handleDelete} onSave={handleSubmit(onValid)} isSubmitting={isSubmitting}
+        headerActions={
           <Button id="mergeButton" size="small" onClick={props.showMergeSearch} data-testid="merge-person-button" aria-label={Locale.label("people.personEdit.mergePersonAria")}>
             {Locale.label("people.personEdit.merge")}
           </Button>
@@ -256,6 +297,26 @@ export const PersonEdit = memo((props: Props) => {
         </Grid>
 
         <Grid container spacing={3}>
+          <Grid size={{ xs: 12, md: 4 }}>
+            <CampusSelect control={control} />
+          </Grid>
+          <Grid size={{ xs: 12, md: 4 }}>
+            <FormControl fullWidth>
+              <InputLabel id="grade-label">{Locale.label("person.grade")}</InputLabel>
+              <Controller name="grade" control={control} render={({ field }) => (
+                <Select {...field} value={field.value ?? ""} id="grade" labelId="grade-label" label={Locale.label("person.grade")} data-testid="grade-select" aria-label="Grade">
+                  <MenuItem value="">{Locale.label("person.unspecified")}</MenuItem>
+                  {GRADE_OPTIONS.map((g) => <MenuItem key={g} value={g}>{g}</MenuItem>)}
+                </Select>
+              )} />
+            </FormControl>
+          </Grid>
+          <Grid size={{ xs: 12, md: 4 }}>
+            <TextField fullWidth id="school" label={Locale.label("person.school")} data-testid="school-input" aria-label="School" {...register("school")} />
+          </Grid>
+        </Grid>
+
+        <Grid container spacing={3}>
           <Grid size={{ md: 8 }}>
             <div className="section">{Locale.label("person.address")}</div>
             <TextField fullWidth id="address1" label={Locale.label("person.line1")} placeholder={Locale.label("placeholders.person.address1")} data-testid="address1-input" aria-label="Address line 1" {...register("contactInfo.address1")} />
@@ -305,7 +366,27 @@ export const PersonEdit = memo((props: Props) => {
             )} />
           </Grid>
         </Grid>
-      </InputBox>
+
+        {customFields.length > 0 && (
+          <Grid container spacing={3} sx={{ mt: 1 }} data-testid="person-custom-fields">
+            <Grid size={12}>
+              <div className="section">{Locale.label("people.personEdit.customFields")}</div>
+            </Grid>
+            {customFields.map((f) => {
+              const question = { id: f.id, title: f.name, fieldType: f.fieldType, choices: parseFieldChoices(f.choices) } as QuestionInterface;
+              const answer = { questionId: f.id, value: customValues[f.id || ""] || "" } as AnswerInterface;
+              return (
+                <Grid key={f.id} size={{ xs: 12, md: 4 }}>
+                  <QuestionEdit question={question} answer={answer} changeFunction={(id, value) => setCustomValues((prev) => ({ ...prev, [id]: value }))} />
+                </Grid>
+              );
+            })}
+          </Grid>
+        )}
+        {props.person?.id && (
+          <GdprActions personId={props.person.id} personName={props.person.name?.display || Locale.label("people.personPage.thisPerson")} onAnonymized={props.updatedFunction} />
+        )}
+      </FormCard>
       {redirect !== "" && <Navigate to={redirect} />}
     </>
   );

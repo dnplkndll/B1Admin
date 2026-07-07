@@ -1,14 +1,19 @@
-import type { Page } from '@playwright/test';
-import { servingTest as test, expect } from './helpers/test-fixtures';
-import { editIconButton, addIconButton, checkIconButton } from './helpers/fixtures';
-import { login } from './helpers/auth';
-import { navigateToServing } from './helpers/navigation';
-import { STORAGE_STATE_PATH } from './global-setup';
+import type { Page } from "@playwright/test";
+import { servingTest as test, expect } from "./helpers/test-fixtures";
+import { login } from "./helpers/auth";
+import { navigateToServing } from "./helpers/navigation";
+import { STORAGE_STATE_PATH } from "./global-setup";
+import { confirmDelete } from "./helpers/fixtures";
+
+async function openMyTasks(page: Page) {
+  await page.locator('[id="secondaryMenu"] a').getByText("My Work").click();
+  await expect(page).toHaveURL(/\/tasks/, { timeout: 10000 });
+}
 
 // ZACCHAEUS/ZEBEDEE are the names used for testing. If you see Zacchaeus or Zebedee entered anywhere, it is a result of these tests.
-test.describe('Serving Management - Songs & Tasks', () => {
+test.describe("Serving Management - Songs & Tasks", () => {
 
-  test.describe.serial('Songs', () => {
+  test.describe.serial("Songs", () => {
     // Songs tests share data — a retry would create duplicate "Zacchaeus
     // Song" rows and break subsequent assertions.
     test.describe.configure({ retries: 0 });
@@ -26,463 +31,334 @@ test.describe('Serving Management - Songs & Tasks', () => {
       await page?.context().close();
     });
 
-    test('should add a song', async () => {
-      const songsBtn = page.locator('[id="secondaryMenu"] a').getByText('Songs');
+    test("should add a song", async () => {
+      const songsBtn = page.locator('[id="secondaryMenu"] a').getByText("Songs");
       await songsBtn.click();
-      // Tight match: the songs *list* page, not /serving/songs/<id> (detail).
-      // On the detail page, "Frolic" matches the renamed YouTube link first,
-      // and clicking it opens an external tab.
       await expect(page).toHaveURL(/\/serving\/songs(?:\/?$|\?)/, { timeout: 10000 });
-      // Wait for the songs-list query to settle so locator('a') sees list
-      // links (which navigate to /serving/songs/<id>) rather than stale
-      // detail-page anchors (which include the YouTube link renamed "Frolic").
-      await page.locator('[data-testid="add-song-button"]').waitFor({ state: 'visible', timeout: 10000 });
+      await page.locator('[data-testid="add-song-button"]').waitFor({ state: "visible", timeout: 10000 });
 
       const addBtn = page.locator('[data-testid="add-song-button"]');
       await addBtn.click();
       const songSearch = page.locator('[data-testid="song-search-dialog-input"] input');
-      await songSearch.fill('Frolic');
+      await songSearch.fill("Frolic");
       const searchBtn = page.locator('[data-testid="song-search-dialog-button"]');
       await searchBtn.click();
-      const createBtn = page.locator('button').getByText('Create Manually');
+      const createBtn = page.locator("button").getByText("Create Manually");
       await expect(createBtn).toBeVisible({ timeout: 15000 });
       await createBtn.click();
       const songName = page.locator('[name="title"]');
       await expect(songName).toBeVisible({ timeout: 10000 });
-      await songName.fill('Frolic');
+      await songName.fill("Frolic");
       const artistName = page.locator('[name="artist"]');
-      await artistName.fill('Luciano Michelini');
-      const saveBtn = page.locator('[role="dialog"] button').getByText('Save', { exact: true });
+      await artistName.fill("Luciano Michelini");
+      const saveBtn = page.locator('[role="dialog"] button').getByText("Save", { exact: true });
       await saveBtn.click();
       await page.waitForURL(/\/serving\/songs\/[^/]+/, { timeout: 20000 });
-      const validatedSong = page.getByRole('heading', { name: 'Frolic' });
+      const validatedSong = page.locator("#page-header-title");
       await expect(validatedSong).toBeVisible({ timeout: 10000 });
     });
 
-    test('should add song key', async () => {
-      const songsBtn = page.locator('[id="secondaryMenu"] a').getByText('Songs');
+    test("should add a blank arrangement (same-song variation, not a PraiseCharts cover)", async () => {
+      const songsBtn = page.locator('[id="secondaryMenu"] a').getByText("Songs");
       await songsBtn.click();
-      // Tight match: the songs *list* page, not /serving/songs/<id> (detail).
-      // On the detail page, "Frolic" matches the renamed YouTube link first,
-      // and clicking it opens an external tab.
       await expect(page).toHaveURL(/\/serving\/songs(?:\/?$|\?)/, { timeout: 10000 });
-      // Wait for the songs-list query to settle so locator('a') sees list
-      // links (which navigate to /serving/songs/<id>) rather than stale
-      // detail-page anchors (which include the YouTube link renamed "Frolic").
-      await page.locator('[data-testid="add-song-button"]').waitFor({ state: 'visible', timeout: 10000 });
-
-      // Songs page renders both "Frolic" (link to song) and "Play Frolic"
-      // (player link). Use exact match to avoid strict-mode violation.
-      const song = page.locator('a').getByText('Frolic', { exact: true }).first();
+      await page.locator('[data-testid="add-song-button"]').waitFor({ state: "visible", timeout: 10000 });
+      const song = page.locator("a").getByText("Frolic", { exact: true }).first();
       await song.click();
-      await expect(page.getByRole('heading', { name: 'Frolic' })).toBeVisible({ timeout: 10000 });
-      // Song was created with a default key, so the Keys tablist already has
-      // ["Default", "Add"]. Click "Add" to open the new-key form.
+      await expect(page.locator("#page-header-title")).toBeVisible({ timeout: 10000 });
+
+      await page.locator("button").getByText("Add Arrangement").first().click();
+      await expect(page.getByText("New Arrangement").first()).toBeVisible({ timeout: 10000 });
+      await expect(page.locator('[data-testid="song-search-dialog-input"]')).toHaveCount(0);
+
+      // Delete new arrangement to keep single-arrangement assertions later.
+      const arrCard = page.locator(".MuiCard-root").filter({ hasText: "Arrangement - New Arrangement" });
+      await arrCard.getByRole("button", { name: "Edit" }).first().click();
+      await page.locator("button").getByText("Delete").last().click();
+      await confirmDelete(page);
+      // Frolic still has its default arrangement, so we stay on the song detail (SongPage
+      // only returns to the list when the last arrangement is deleted). Confirm cleanup.
+      await expect(arrCard).toHaveCount(0, { timeout: 10000 });
+    });
+
+    test("should add song key", async () => {
+      const songsBtn = page.locator('[id="secondaryMenu"] a').getByText("Songs");
+      await songsBtn.click();
+      await expect(page).toHaveURL(/\/serving\/songs(?:\/?$|\?)/, { timeout: 10000 });
+      await page.locator('[data-testid="add-song-button"]').waitFor({ state: "visible", timeout: 10000 });
+
+      const song = page.locator("a").getByText("Frolic", { exact: true }).first();
+      await song.click();
+      await expect(page.locator("#page-header-title")).toBeVisible({ timeout: 10000 });
       const allTabs = page.locator('[role="tab"]');
       await expect(allTabs).toHaveCount(2, { timeout: 10000 });
-      const addKeyTab = page.getByRole('tab', { name: /Add/ });
+      const addKeyTab = page.getByRole("tab", { name: /Add/ });
       await addKeyTab.click();
-      const saveBtn = page.locator('button').getByText('Save');
+      const saveBtn = page.locator("button").getByText("Save");
       await saveBtn.click();
-      // After save: two real keys (Default + the new one) plus the "Add" tab = 3.
       await expect(allTabs).toHaveCount(3, { timeout: 10000 });
     });
 
-    test('should add link from song key menu', async () => {
-      const songsBtn = page.locator('[id="secondaryMenu"] a').getByText('Songs');
+    test("should add link from song key menu", async () => {
+      const songsBtn = page.locator('[id="secondaryMenu"] a').getByText("Songs");
       await songsBtn.click();
-      // Tight match: the songs *list* page, not /serving/songs/<id> (detail).
-      // On the detail page, "Frolic" matches the renamed YouTube link first,
-      // and clicking it opens an external tab.
       await expect(page).toHaveURL(/\/serving\/songs(?:\/?$|\?)/, { timeout: 10000 });
-      // Wait for the songs-list query to settle so locator('a') sees list
-      // links (which navigate to /serving/songs/<id>) rather than stale
-      // detail-page anchors (which include the YouTube link renamed "Frolic").
-      await page.locator('[data-testid="add-song-button"]').waitFor({ state: 'visible', timeout: 10000 });
+      await page.locator('[data-testid="add-song-button"]').waitFor({ state: "visible", timeout: 10000 });
 
-      // Songs page renders both "Frolic" (link to song) and "Play Frolic"
-      // (player link). Use exact match to avoid strict-mode violation.
-      const song = page.locator('a').getByText('Frolic', { exact: true }).first();
+      const song = page.locator("a").getByText("Frolic", { exact: true }).first();
       await song.click();
-      await expect(page.getByRole('heading', { name: 'Frolic' })).toBeVisible({ timeout: 10000 });
+      await expect(page.locator("#page-header-title")).toBeVisible({ timeout: 10000 });
       const addBtn = page.locator('[id="addBtnGroup"]');
       await addBtn.click();
-      const addLinkBtn = page.locator('li').getByText('Add External Link');
+      const addLinkBtn = page.locator("li").getByText("Add External Link");
       await addLinkBtn.click();
       const urlInput = page.locator('[name="url"]');
-      await urlInput.fill('https://youtu.be/6MYAGyZlBY0?si=S4ULjdVbcBof2inI');
+      await urlInput.fill("https://youtu.be/6MYAGyZlBY0?si=S4ULjdVbcBof2inI");
       const textInput = page.locator('[name="text"]');
-      await textInput.fill('Frolic on YouTube');
-      const saveBtn = page.locator('button').getByText('Save');
+      await textInput.fill("Frolic on YouTube");
+      const saveBtn = page.locator("button").getByText("Save");
       await saveBtn.click();
-      const validatedLink = page.locator('a').getByText('Frolic on YouTube');
+      const validatedLink = page.locator("a").getByText("Frolic on YouTube");
       await expect(validatedLink).toHaveCount(1);
     });
 
-    test('should edit link from song key menu', async () => {
-      const songsBtn = page.locator('[id="secondaryMenu"] a').getByText('Songs');
+    test("should edit link from song key menu", async () => {
+      const songsBtn = page.locator('[id="secondaryMenu"] a').getByText("Songs");
       await songsBtn.click();
-      // Tight match: the songs *list* page, not /serving/songs/<id> (detail).
-      // On the detail page, "Frolic" matches the renamed YouTube link first,
-      // and clicking it opens an external tab.
       await expect(page).toHaveURL(/\/serving\/songs(?:\/?$|\?)/, { timeout: 10000 });
-      // Wait for the songs-list query to settle so locator('a') sees list
-      // links (which navigate to /serving/songs/<id>) rather than stale
-      // detail-page anchors (which include the YouTube link renamed "Frolic").
-      await page.locator('[data-testid="add-song-button"]').waitFor({ state: 'visible', timeout: 10000 });
+      await page.locator('[data-testid="add-song-button"]').waitFor({ state: "visible", timeout: 10000 });
 
-      // Exact match — the songs page renders a "Play Frolic" link too, which
-      // would make a substring locator strict-mode-violate.
-      const song = page.locator('a').getByText('Frolic', { exact: true }).first();
+      const song = page.locator("a").getByText("Frolic", { exact: true }).first();
       await song.click();
-      await expect(page.getByRole('heading', { name: 'Frolic' })).toBeVisible({ timeout: 10000 });
-      // Target the Edit button inside the list item for the YouTube link, not
-      // the outermost edit icon (which now opens the Arrangement editor after
-      // the Keys redesign).
-      const linkRow = page.locator('li').filter({ hasText: 'Frolic on YouTube' });
+      await expect(page.locator("#page-header-title")).toBeVisible({ timeout: 10000 });
+      const linkRow = page.locator("li").filter({ hasText: "Frolic on YouTube" });
       const editBtn = linkRow.locator('button:has(svg[data-testid="EditIcon"])').first();
       await editBtn.click();
       const textInput = page.locator('[name="text"]');
       await expect(textInput).toBeVisible({ timeout: 10000 });
-      await textInput.fill('Frolic');
-      const saveBtn = page.locator('button').getByText('Save');
+      await textInput.fill("Frolic");
+      const saveBtn = page.locator("button").getByText("Save");
       await saveBtn.click();
-      const validatedLink = page.locator('a').getByText('Frolic', { exact: true });
+      const validatedLink = page.locator("a").getByText("Frolic", { exact: true });
       await expect(validatedLink).toHaveCount(1, { timeout: 10000 });
     });
 
-    test('should cancel editing link from song key menu', async () => {
-      const songsBtn = page.locator('[id="secondaryMenu"] a').getByText('Songs');
+    test("should cancel editing link from song key menu", async () => {
+      const songsBtn = page.locator('[id="secondaryMenu"] a').getByText("Songs");
       await songsBtn.click();
-      // Tight match: the songs *list* page, not /serving/songs/<id> (detail).
-      // On the detail page, "Frolic" matches the renamed YouTube link first,
-      // and clicking it opens an external tab.
       await expect(page).toHaveURL(/\/serving\/songs(?:\/?$|\?)/, { timeout: 10000 });
-      // Wait for the songs-list query to settle so locator('a') sees list
-      // links (which navigate to /serving/songs/<id>) rather than stale
-      // detail-page anchors (which include the YouTube link renamed "Frolic").
-      await page.locator('[data-testid="add-song-button"]').waitFor({ state: 'visible', timeout: 10000 });
+      await page.locator('[data-testid="add-song-button"]').waitFor({ state: "visible", timeout: 10000 });
 
-      // Songs page renders both "Frolic" (link to song) and "Play Frolic"
-      // (player link). Use exact match to avoid strict-mode violation.
-      const song = page.locator('a').getByText('Frolic', { exact: true }).first();
+      const song = page.locator("a").getByText("Frolic", { exact: true }).first();
       await song.click();
-      await expect(page.getByRole('heading', { name: 'Frolic' })).toBeVisible({ timeout: 10000 });
-      // Keys load first, then a follow-up effect fetches links — the link
-      // list re-renders mid-page-load. Wait for the YouTube link itself to
-      // render before clicking its row's edit icon, then dispatch the click
-      // directly so the click survives a layout shift between actionability
-      // check and execution (the IconButton was detaching otherwise).
-      await page.locator('a[href*="youtu.be"]').waitFor({ state: 'visible', timeout: 10000 });
-      const linkRow = page.locator('li').filter({ has: page.locator('a[href*="youtu.be"]') });
-      await linkRow.locator('button:has(svg[data-testid="EditIcon"])').first().dispatchEvent('click');
+      await expect(page.locator("#page-header-title")).toBeVisible({ timeout: 10000 });
+      // Link list re-renders mid-load; wait for link to render then dispatch click.
+      await page.locator('a[href*="youtu.be"]').waitFor({ state: "visible", timeout: 10000 });
+      const linkRow = page.locator("li").filter({ has: page.locator('a[href*="youtu.be"]') });
+      await linkRow.locator('button:has(svg[data-testid="EditIcon"])').first().dispatchEvent("click");
       const textInput = page.locator('[name="text"]');
       await expect(textInput).toHaveCount(1);
-      const cancelBtn = page.locator('button').getByText('Cancel');
+      const cancelBtn = page.locator("button").getByText("Cancel");
       await cancelBtn.click();
       await expect(textInput).toHaveCount(0);
     });
 
-    test('should delete link from song key menu', async () => {
-      page.once('dialog', async dialog => {
-        expect(dialog.type()).toBe('confirm');
-        expect(dialog.message()).toContain('Are you sure');
-        await dialog.accept();
-      });
-
-      const songsBtn = page.locator('[id="secondaryMenu"] a').getByText('Songs');
+    test("should delete link from song key menu", async () => {
+      const songsBtn = page.locator('[id="secondaryMenu"] a').getByText("Songs");
       await songsBtn.click();
-      // Tight match: the songs *list* page, not /serving/songs/<id> (detail).
-      // On the detail page, "Frolic" matches the renamed YouTube link first,
-      // and clicking it opens an external tab.
       await expect(page).toHaveURL(/\/serving\/songs(?:\/?$|\?)/, { timeout: 10000 });
-      // Wait for the songs-list query to settle so locator('a') sees list
-      // links (which navigate to /serving/songs/<id>) rather than stale
-      // detail-page anchors (which include the YouTube link renamed "Frolic").
-      await page.locator('[data-testid="add-song-button"]').waitFor({ state: 'visible', timeout: 10000 });
+      await page.locator('[data-testid="add-song-button"]').waitFor({ state: "visible", timeout: 10000 });
 
-      // Songs page renders both "Frolic" (link to song) and "Play Frolic"
-      // (player link). Use exact match to avoid strict-mode violation.
-      const song = page.locator('a').getByText('Frolic', { exact: true }).first();
+      const song = page.locator("a").getByText("Frolic", { exact: true }).first();
       await song.click();
-      await expect(page.getByRole('heading', { name: 'Frolic' })).toBeVisible({ timeout: 10000 });
-      // Wait for the YouTube link to render, then dispatch the edit click
-      // directly — the link list keeps re-rendering as keys/links/products
-      // load, so a normal click hits the actionability retry/detach loop.
-      await page.locator('a[href*="youtu.be"]').waitFor({ state: 'visible', timeout: 10000 });
-      const linkRow = page.locator('li').filter({ has: page.locator('a[href*="youtu.be"]') });
-      await linkRow.locator('button:has(svg[data-testid="EditIcon"])').first().dispatchEvent('click');
-      const deleteBtn = page.locator('button').getByText('Delete').last();
+      await expect(page.locator("#page-header-title")).toBeVisible({ timeout: 10000 });
+      // Link list re-renders mid-load; wait for link then dispatch click.
+      await page.locator('a[href*="youtu.be"]').waitFor({ state: "visible", timeout: 10000 });
+      const linkRow = page.locator("li").filter({ has: page.locator('a[href*="youtu.be"]') });
+      await linkRow.locator('button:has(svg[data-testid="EditIcon"])').first().dispatchEvent("click");
+      const deleteBtn = page.locator("button").getByText("Delete").last();
       await deleteBtn.click();
+      await confirmDelete(page);
       const validatedDeletion = page.locator('a[href*="youtu.be"]');
       await expect(validatedDeletion).toHaveCount(0, { timeout: 10000 });
     });
 
-    test('should edit song key', async () => {
-      const songsBtn = page.locator('[id="secondaryMenu"] a').getByText('Songs');
+    test("should edit song key", async () => {
+      const songsBtn = page.locator('[id="secondaryMenu"] a').getByText("Songs");
       await songsBtn.click();
-      // Tight match: the songs *list* page, not /serving/songs/<id> (detail).
-      // On the detail page, "Frolic" matches the renamed YouTube link first,
-      // and clicking it opens an external tab.
       await expect(page).toHaveURL(/\/serving\/songs(?:\/?$|\?)/, { timeout: 10000 });
-      // Wait for the songs-list query to settle so locator('a') sees list
-      // links (which navigate to /serving/songs/<id>) rather than stale
-      // detail-page anchors (which include the YouTube link renamed "Frolic").
-      await page.locator('[data-testid="add-song-button"]').waitFor({ state: 'visible', timeout: 10000 });
+      await page.locator('[data-testid="add-song-button"]').waitFor({ state: "visible", timeout: 10000 });
 
-      // Songs page renders both "Frolic" (link to song) and "Play Frolic"
-      // (player link). Use exact match to avoid strict-mode violation.
-      const song = page.locator('a').getByText('Frolic', { exact: true }).first();
+      const song = page.locator("a").getByText("Frolic", { exact: true }).first();
       await song.click();
-      await expect(page.getByRole('heading', { name: 'Frolic' })).toBeVisible({ timeout: 10000 });
-      // Target the "Edit selected key" button directly. editIconButton().last()
-      // is fragile here because the page has multiple EditIcon buttons (header,
-      // External Links, Arrangement, Keys) and DOM order changed.
-      const editBtn = page.getByRole('button', { name: 'Edit selected key' });
+      await expect(page.locator("#page-header-title")).toBeVisible({ timeout: 10000 });
+      // Scope to Keys card header to disambiguate from other Edit icons.
+      const editBtn = page.locator(".MuiCard-root").filter({ has: page.getByRole("heading", { name: "Keys", exact: true }) }).locator('button[aria-label="Edit"]').first();
       await editBtn.click();
       const label = page.locator('[name="shortDescription"]');
       await expect(label).toBeVisible({ timeout: 10000 });
-      await label.fill('Zacchaeus Key');
-      const saveBtn = page.locator('button').getByText('Save');
+      await label.fill("Zacchaeus Key");
+      const saveBtn = page.locator("button").getByText("Save");
       await saveBtn.click();
-      const validatedEdit = page.locator('[role="tab"]').filter({ hasText: 'Zacchaeus Key' });
+      const validatedEdit = page.locator('[role="tab"]').filter({ hasText: "Zacchaeus Key" });
       await expect(validatedEdit).toHaveCount(1, { timeout: 10000 });
     });
 
-    test('should cancel editing song key', async () => {
-      const songsBtn = page.locator('[id="secondaryMenu"] a').getByText('Songs');
+    test("should cancel editing song key", async () => {
+      const songsBtn = page.locator('[id="secondaryMenu"] a').getByText("Songs");
       await songsBtn.click();
-      // Tight match: the songs *list* page, not /serving/songs/<id> (detail).
-      // On the detail page, "Frolic" matches the renamed YouTube link first,
-      // and clicking it opens an external tab.
       await expect(page).toHaveURL(/\/serving\/songs(?:\/?$|\?)/, { timeout: 10000 });
-      // Wait for the songs-list query to settle so locator('a') sees list
-      // links (which navigate to /serving/songs/<id>) rather than stale
-      // detail-page anchors (which include the YouTube link renamed "Frolic").
-      await page.locator('[data-testid="add-song-button"]').waitFor({ state: 'visible', timeout: 10000 });
+      await page.locator('[data-testid="add-song-button"]').waitFor({ state: "visible", timeout: 10000 });
 
-      // Songs page renders both "Frolic" (link to song) and "Play Frolic"
-      // (player link). Use exact match to avoid strict-mode violation.
-      const song = page.locator('a').getByText('Frolic', { exact: true }).first();
+      const song = page.locator("a").getByText("Frolic", { exact: true }).first();
       await song.click();
-      await expect(page.getByRole('heading', { name: 'Frolic' })).toBeVisible({ timeout: 10000 });
-      const editBtn = page.getByRole('button', { name: 'Edit selected key' });
+      await expect(page.locator("#page-header-title")).toBeVisible({ timeout: 10000 });
+      const editBtn = page.locator(".MuiCard-root").filter({ has: page.getByRole("heading", { name: "Keys", exact: true }) }).locator('button[aria-label="Edit"]').first();
       await editBtn.click();
       const keySignature = page.locator('[name="keySignature"]');
       await expect(keySignature).toHaveCount(1);
-      const cancelBtn = page.locator('button').getByText('Cancel');
+      const cancelBtn = page.locator("button").getByText("Cancel");
       await cancelBtn.click();
       await expect(keySignature).toHaveCount(0, { timeout: 10000 });
     });
 
-    test('should delete key', async () => {
-      page.once('dialog', async dialog => {
-        expect(dialog.type()).toBe('confirm');
-        expect(dialog.message()).toContain('Are you sure');
-        await dialog.accept();
-      });
-
-      const songsBtn = page.locator('[id="secondaryMenu"] a').getByText('Songs');
+    test("should delete key", async () => {
+      const songsBtn = page.locator('[id="secondaryMenu"] a').getByText("Songs");
       await songsBtn.click();
-      // Tight match: the songs *list* page, not /serving/songs/<id> (detail).
-      // On the detail page, "Frolic" matches the renamed YouTube link first,
-      // and clicking it opens an external tab.
       await expect(page).toHaveURL(/\/serving\/songs(?:\/?$|\?)/, { timeout: 10000 });
-      // Wait for the songs-list query to settle so locator('a') sees list
-      // links (which navigate to /serving/songs/<id>) rather than stale
-      // detail-page anchors (which include the YouTube link renamed "Frolic").
-      await page.locator('[data-testid="add-song-button"]').waitFor({ state: 'visible', timeout: 10000 });
+      await page.locator('[data-testid="add-song-button"]').waitFor({ state: "visible", timeout: 10000 });
 
-      // Songs page renders both "Frolic" (link to song) and "Play Frolic"
-      // (player link). Use exact match to avoid strict-mode violation.
-      const song = page.locator('a').getByText('Frolic', { exact: true }).first();
+      const song = page.locator("a").getByText("Frolic", { exact: true }).first();
       await song.click();
-      await expect(page.getByRole('heading', { name: 'Frolic' })).toBeVisible({ timeout: 10000 });
-      // Click the "Zacchaeus Key" tab so it becomes selected, then delete it.
-      await page.locator('[role="tab"]').filter({ hasText: 'Zacchaeus Key' }).click();
-      const editBtn = page.getByRole('button', { name: 'Edit selected key' });
+      await expect(page.locator("#page-header-title")).toBeVisible({ timeout: 10000 });
+      await page.locator('[role="tab"]').filter({ hasText: "Zacchaeus Key" }).click();
+      const editBtn = page.locator(".MuiCard-root").filter({ has: page.getByRole("heading", { name: "Keys", exact: true }) }).locator('button[aria-label="Edit"]').first();
       await editBtn.click();
-      const deleteBtn = page.locator('button').getByText('Delete').last();
+      const deleteBtn = page.locator("button").getByText("Delete").last();
       await deleteBtn.click();
-      const validatedDeletion = page.locator('[role="tab"]').filter({ hasText: 'Zacchaeus Key' });
+      await confirmDelete(page);
+      const validatedDeletion = page.locator('[role="tab"]').filter({ hasText: "Zacchaeus Key" });
       await expect(validatedDeletion).toHaveCount(0, { timeout: 10000 });
     });
 
-    test('should add external link', async () => {
-      const songsBtn = page.locator('[id="secondaryMenu"] a').getByText('Songs');
+    test("should add external link", async () => {
+      const songsBtn = page.locator('[id="secondaryMenu"] a').getByText("Songs");
       await songsBtn.click();
-      // Tight match: the songs *list* page, not /serving/songs/<id> (detail).
-      // On the detail page, "Frolic" matches the renamed YouTube link first,
-      // and clicking it opens an external tab.
       await expect(page).toHaveURL(/\/serving\/songs(?:\/?$|\?)/, { timeout: 10000 });
-      // Wait for the songs-list query to settle so locator('a') sees list
-      // links (which navigate to /serving/songs/<id>) rather than stale
-      // detail-page anchors (which include the YouTube link renamed "Frolic").
-      await page.locator('[data-testid="add-song-button"]').waitFor({ state: 'visible', timeout: 10000 });
+      await page.locator('[data-testid="add-song-button"]').waitFor({ state: "visible", timeout: 10000 });
 
-      // Songs page renders both "Frolic" (link to song) and "Play Frolic"
-      // (player link). Use exact match to avoid strict-mode violation.
-      const song = page.locator('a').getByText('Frolic', { exact: true }).first();
+      const song = page.locator("a").getByText("Frolic", { exact: true }).first();
       await song.click();
-      await expect(page.getByRole('heading', { name: 'Frolic' })).toBeVisible({ timeout: 10000 });
-      // Click the edit pencil next to the External Links heading to open
-      // SongDetailLinksEdit, then click the Add (+) icon it renders.
-      const extHeading = page.getByRole('heading', { name: 'External Links' });
-      const extContainer = extHeading.locator('xpath=ancestor::div[1]/..');
+      await expect(page.locator("#page-header-title")).toBeVisible({ timeout: 10000 });
+      const extHeading = page.getByRole("heading", { name: "External Links" });
+      const extContainer = extHeading.locator("xpath=ancestor::div[1]/..");
       await extContainer.locator('button:has(svg[data-testid="EditIcon"])').first().click();
       await extContainer.locator('button:has(svg[data-testid="AddIcon"])').first().click();
       const serviceBox = page.locator('[role="combobox"]');
       await expect(serviceBox).toBeVisible({ timeout: 10000 });
       await serviceBox.click();
-      const selService = page.locator('li').getByText('YouTube');
+      const selService = page.locator("li").getByText("YouTube");
       await selService.click();
       const link = page.locator('[name="serviceKey"]');
-      await link.fill('6MYAGyZlBY0');
-      const saveBtn = page.locator('button').getByText('Save');
+      await link.fill("6MYAGyZlBY0");
+      const saveBtn = page.locator("button").getByText("Save");
       await saveBtn.click();
-      await expect(page.getByRole('cell', { name: 'YouTube' })).toBeVisible({ timeout: 10000 });
+      await expect(page.getByRole("cell", { name: "YouTube" })).toBeVisible({ timeout: 10000 });
     });
 
-    test('should cancel adding external link', async () => {
-      const songsBtn = page.locator('[id="secondaryMenu"] a').getByText('Songs');
+    test("should cancel adding external link", async () => {
+      const songsBtn = page.locator('[id="secondaryMenu"] a').getByText("Songs");
       await songsBtn.click();
-      // Tight match: the songs *list* page, not /serving/songs/<id> (detail).
-      // On the detail page, "Frolic" matches the renamed YouTube link first,
-      // and clicking it opens an external tab.
       await expect(page).toHaveURL(/\/serving\/songs(?:\/?$|\?)/, { timeout: 10000 });
-      // Wait for the songs-list query to settle so locator('a') sees list
-      // links (which navigate to /serving/songs/<id>) rather than stale
-      // detail-page anchors (which include the YouTube link renamed "Frolic").
-      await page.locator('[data-testid="add-song-button"]').waitFor({ state: 'visible', timeout: 10000 });
+      await page.locator('[data-testid="add-song-button"]').waitFor({ state: "visible", timeout: 10000 });
 
-      // Songs page renders both "Frolic" (link to song) and "Play Frolic"
-      // (player link). Use exact match to avoid strict-mode violation.
-      const song = page.locator('a').getByText('Frolic', { exact: true }).first();
+      const song = page.locator("a").getByText("Frolic", { exact: true }).first();
       await song.click();
-      await expect(page.getByRole('heading', { name: 'Frolic' })).toBeVisible({ timeout: 10000 });
-      const extHeading = page.getByRole('heading', { name: 'External Links' });
-      const extContainer = extHeading.locator('xpath=ancestor::div[1]/..');
+      await expect(page.locator("#page-header-title")).toBeVisible({ timeout: 10000 });
+      const extHeading = page.getByRole("heading", { name: "External Links" });
+      const extContainer = extHeading.locator("xpath=ancestor::div[1]/..");
       await extContainer.locator('button:has(svg[data-testid="EditIcon"])').first().click();
       await extContainer.locator('button:has(svg[data-testid="AddIcon"])').first().click();
       const serviceBox = page.locator('[role="combobox"]');
       await expect(serviceBox).toHaveCount(1);
-      const cancelBtn = page.locator('button').getByText('Cancel');
+      const cancelBtn = page.locator("button").getByText("Cancel");
       await cancelBtn.click();
       await expect(serviceBox).toHaveCount(0);
     });
 
-    test('should add lyrics', async () => {
-      const songsBtn = page.locator('[id="secondaryMenu"] a').getByText('Songs');
+    test("should add lyrics", async () => {
+      const songsBtn = page.locator('[id="secondaryMenu"] a').getByText("Songs");
       await songsBtn.click();
-      // Tight match: the songs *list* page, not /serving/songs/<id> (detail).
-      // On the detail page, "Frolic" matches the renamed YouTube link first,
-      // and clicking it opens an external tab.
       await expect(page).toHaveURL(/\/serving\/songs(?:\/?$|\?)/, { timeout: 10000 });
-      // Wait for the songs-list query to settle so locator('a') sees list
-      // links (which navigate to /serving/songs/<id>) rather than stale
-      // detail-page anchors (which include the YouTube link renamed "Frolic").
-      await page.locator('[data-testid="add-song-button"]').waitFor({ state: 'visible', timeout: 10000 });
+      await page.locator('[data-testid="add-song-button"]').waitFor({ state: "visible", timeout: 10000 });
 
-      // Songs page renders both "Frolic" (link to song) and "Play Frolic"
-      // (player link). Use exact match to avoid strict-mode violation.
-      const song = page.locator('a').getByText('Frolic', { exact: true }).first();
+      const song = page.locator("a").getByText("Frolic", { exact: true }).first();
       await song.click();
-      await expect(page.getByRole('heading', { name: 'Frolic' })).toBeVisible({ timeout: 10000 });
-      const editBtn = editIconButton(page).nth(2);
+      await expect(page.locator("#page-header-title")).toBeVisible({ timeout: 10000 });
+      const editBtn = page.locator(".MuiCard-root").filter({ has: page.getByRole("heading", { name: /Arrangement -/ }) }).getByRole("button", { name: "Edit" }).first();
       await editBtn.click();
       const lyricBox = page.locator('[name="lyrics"]');
-      await lyricBox.fill('No Lyrics');
-      const saveBtn = page.locator('button').getByText('Save');
+      await lyricBox.fill("No Lyrics");
+      const saveBtn = page.locator("button").getByText("Save");
       await saveBtn.click();
-      const validatedLyrics = page.locator('div').getByText('No Lyrics');
+      const validatedLyrics = page.locator("div").getByText("No Lyrics");
       await expect(validatedLyrics).toBeVisible({ timeout: 10000 });
       await expect(validatedLyrics).toHaveCount(1);
     });
 
-    test('should cancel editing lyrics', async () => {
-      const songsBtn = page.locator('[id="secondaryMenu"] a').getByText('Songs');
+    test("should cancel editing lyrics", async () => {
+      const songsBtn = page.locator('[id="secondaryMenu"] a').getByText("Songs");
       await songsBtn.click();
-      // Tight match: the songs *list* page, not /serving/songs/<id> (detail).
-      // On the detail page, "Frolic" matches the renamed YouTube link first,
-      // and clicking it opens an external tab.
       await expect(page).toHaveURL(/\/serving\/songs(?:\/?$|\?)/, { timeout: 10000 });
-      // Wait for the songs-list query to settle so locator('a') sees list
-      // links (which navigate to /serving/songs/<id>) rather than stale
-      // detail-page anchors (which include the YouTube link renamed "Frolic").
-      await page.locator('[data-testid="add-song-button"]').waitFor({ state: 'visible', timeout: 10000 });
+      await page.locator('[data-testid="add-song-button"]').waitFor({ state: "visible", timeout: 10000 });
 
-      // Songs page renders both "Frolic" (link to song) and "Play Frolic"
-      // (player link). Use exact match to avoid strict-mode violation.
-      const song = page.locator('a').getByText('Frolic', { exact: true }).first();
+      const song = page.locator("a").getByText("Frolic", { exact: true }).first();
       await song.click();
-      await expect(page.getByRole('heading', { name: 'Frolic' })).toBeVisible({ timeout: 10000 });
-      const editBtn = editIconButton(page).nth(2);
+      await expect(page.locator("#page-header-title")).toBeVisible({ timeout: 10000 });
+      const editBtn = page.locator(".MuiCard-root").filter({ has: page.getByRole("heading", { name: /Arrangement -/ }) }).getByRole("button", { name: "Edit" }).first();
       await editBtn.click();
       const lyricBox = page.locator('[name="lyrics"]');
       await expect(lyricBox).toHaveCount(1);
-      const cancelBtn = page.locator('button').getByText('Cancel');
+      const cancelBtn = page.locator("button").getByText("Cancel");
       await cancelBtn.click();
       await expect(lyricBox).toHaveCount(0);
     });
 
-    test('should delete arrangement', async () => {
-      page.once('dialog', async dialog => {
-        expect(dialog.type()).toBe('confirm');
-        expect(dialog.message()).toContain('Are you sure');
-        await dialog.accept();
-      });
-
-      const songsBtn = page.locator('[id="secondaryMenu"] a').getByText('Songs');
+    test("should delete arrangement", async () => {
+      const songsBtn = page.locator('[id="secondaryMenu"] a').getByText("Songs");
       await songsBtn.click();
-      // Tight match: the songs *list* page, not /serving/songs/<id> (detail).
-      // On the detail page, "Frolic" matches the renamed YouTube link first,
-      // and clicking it opens an external tab.
       await expect(page).toHaveURL(/\/serving\/songs(?:\/?$|\?)/, { timeout: 10000 });
-      // Wait for the songs-list query to settle so locator('a') sees list
-      // links (which navigate to /serving/songs/<id>) rather than stale
-      // detail-page anchors (which include the YouTube link renamed "Frolic").
-      await page.locator('[data-testid="add-song-button"]').waitFor({ state: 'visible', timeout: 10000 });
+      await page.locator('[data-testid="add-song-button"]').waitFor({ state: "visible", timeout: 10000 });
 
-      // Songs page renders both "Frolic" (link to song) and "Play Frolic"
-      // (player link). Use exact match to avoid strict-mode violation.
-      const song = page.locator('a').getByText('Frolic', { exact: true }).first();
+      const song = page.locator("a").getByText("Frolic", { exact: true }).first();
       await song.click();
-      await expect(page.getByRole('heading', { name: 'Frolic' })).toBeVisible({ timeout: 10000 });
-      const editBtn = editIconButton(page).nth(2);
+      await expect(page.locator("#page-header-title")).toBeVisible({ timeout: 10000 });
+      const editBtn = page.locator(".MuiCard-root").filter({ has: page.getByRole("heading", { name: /Arrangement -/ }) }).getByRole("button", { name: "Edit" }).first();
       await editBtn.click();
-      const deleteBtn = page.locator('button').getByText('Delete').last();
+      const deleteBtn = page.locator("button").getByText("Delete").last();
       await deleteBtn.click();
-      const validatedDeletion = page.locator('a').getByText('Frolic');
+      await confirmDelete(page);
+      const validatedDeletion = page.locator("a").getByText("Frolic");
       await expect(validatedDeletion).toHaveCount(0);
     });
 
-    test('should search for songs', async () => {
-      const songsBtn = page.locator('[id="secondaryMenu"] a').getByText('Songs');
+    test("should search for songs", async () => {
+      const songsBtn = page.locator('[id="secondaryMenu"] a').getByText("Songs");
       await songsBtn.click();
-      // Tight match: the songs *list* page, not /serving/songs/<id> (detail).
-      // On the detail page, "Frolic" matches the renamed YouTube link first,
-      // and clicking it opens an external tab.
       await expect(page).toHaveURL(/\/serving\/songs(?:\/?$|\?)/, { timeout: 10000 });
-      // Wait for the songs-list query to settle so locator('a') sees list
-      // links (which navigate to /serving/songs/<id>) rather than stale
-      // detail-page anchors (which include the YouTube link renamed "Frolic").
-      await page.locator('[data-testid="add-song-button"]').waitFor({ state: 'visible', timeout: 10000 });
+      await page.locator('[data-testid="add-song-button"]').waitFor({ state: "visible", timeout: 10000 });
 
-      const searchBtn = page.locator('button').getByText('Search');
+      const searchBtn = page.locator("button").getByText("Search");
       await searchBtn.click();
-      // After clicking Search, a search input renders; multiple inputs may be
-      // on the page, so target the visible textbox by role + name fallback.
       const searchInput = page.locator('input[type="text"]').last();
-      await searchInput.fill('Amazing Grace');
-      await searchInput.press('Enter');
-      // SongsPage filters client-side on title/artist substring; the demo
-      // seed has at least one Amazing Grace song, possibly more arrangements.
-      const results = page.locator('a').getByText('Amazing Grace');
+      await searchInput.fill("Amazing Grace");
+      await searchInput.press("Enter");
+      const results = page.locator("a").getByText("Amazing Grace");
       await expect(results.first()).toBeVisible({ timeout: 10000 });
     });
   });
 
-  test.describe.serial('Tasks', () => {
+  test.describe.serial("Tasks", () => {
     // Tasks tests share data — a retry would create duplicate task/automation
     // rows and break subsequent assertions.
     test.describe.configure({ retries: 0 });
@@ -500,351 +376,155 @@ test.describe('Serving Management - Songs & Tasks', () => {
       await page?.context().close();
     });
 
-    test('should add a task', async () => {
-      const tasksBtn = page.locator('[id="secondaryMenu"] a').getByText('Tasks');
-      await tasksBtn.click();
-      await expect(page).toHaveURL(/\/tasks/, { timeout: 10000 });
+    test("should add a task", async () => {
+      await openMyTasks(page);
 
       const addBtn = page.locator('[data-testid="add-task-button"]');
       await addBtn.click();
       const assignInput = page.locator('[data-testid="assign-to-input"]');
       await assignInput.click();
       const personSearch = page.locator('[name="personAddText"]');
-      await personSearch.fill('Demo User');
+      await personSearch.fill("Demo User");
       const searchBtn = page.locator('[data-testid="search-button"]');
       await searchBtn.click();
-      const selectBtn = page.locator('button').getByText('Select');
+      const selectBtn = page.locator('[data-testid^="add-person-"]').first();
       await selectBtn.click();
       const taskName = page.locator('[name="title"]');
-      await taskName.fill('Test Task');
+      await taskName.fill("Test Task");
       const taskNotes = page.locator('[name="note"]');
-      await taskNotes.fill('Zacchaeus Testing (Playwright)');
-      const saveBtn = page.locator('button').getByText('Save');
+      await taskNotes.fill("Zacchaeus Testing (Playwright)");
+      const saveBtn = page.locator("button").getByText("Save");
       await saveBtn.click();
-      const validatedTask = page.locator('a').getByText('Test Task');
-      await expect(validatedTask).toHaveCount(2, { timeout: 10000 });
+      const validatedTask = page.locator("a").getByText("Test Task");
+      await expect(validatedTask).toHaveCount(1, { timeout: 10000 });
     });
 
-    test('should cancel adding a task', async () => {
-      const tasksBtn = page.locator('[id="secondaryMenu"] a').getByText('Tasks');
-      await tasksBtn.click();
-      await expect(page).toHaveURL(/\/tasks/, { timeout: 10000 });
+    test("should cancel adding a task", async () => {
+      await openMyTasks(page);
 
       const addBtn = page.locator('[data-testid="add-task-button"]');
       await addBtn.click();
       const assignInput = page.locator('[data-testid="assign-to-input"]');
       await expect(assignInput).toBeVisible({ timeout: 10000 });
-      // The NewTask form re-renders during async loads; force-click avoids
-      // the "element detached" race and target the last Cancel (in the form).
-      const cancelBtn = page.locator('button').getByText('Cancel').last();
+      // Form re-renders during async loads; force-click avoids detach race.
+      const cancelBtn = page.locator("button").getByText("Cancel").last();
       await cancelBtn.click({ force: true });
       await expect(assignInput).toHaveCount(0, { timeout: 10000 });
     });
 
-    test('should toggle show closed tasks', async () => {
-      const tasksBtn = page.locator('[id="secondaryMenu"] a').getByText('Tasks');
-      await tasksBtn.click();
-      await expect(page).toHaveURL(/\/tasks/, { timeout: 10000 });
+    test("should toggle show closed tasks", async () => {
+      await openMyTasks(page);
 
-      // After "should add a task" creates one task assigned to Demo User, it appears
-      // in both "Assigned to Me" and "Created by Me" sections -> 2 links.
-      const task = page.locator('a').getByText('Test Task');
-      await expect(task).toHaveCount(2);
+      const task = page.locator("a").getByText("Test Task");
+      await expect(task).toHaveCount(1);
       const closedBtn = page.locator('[data-testid="show-closed-tasks-button"]');
       await closedBtn.click();
       await expect(task).toHaveCount(0, { timeout: 10000 });
       const openBtn = page.locator('[data-testid="show-open-tasks-button"]');
       await openBtn.click();
-      await expect(task).toHaveCount(2, { timeout: 10000 });
+      await expect(task).toHaveCount(1, { timeout: 10000 });
     });
 
-    test('should reassign tasks', async () => {
-      const tasksBtn = page.locator('[id="secondaryMenu"] a').getByText('Tasks');
-      await tasksBtn.click();
-      await expect(page).toHaveURL(/\/tasks/, { timeout: 10000 });
+    test("should reassign tasks", async () => {
+      await openMyTasks(page);
 
-      const task = page.locator('a').getByText('Test Task');
-      await expect(task).toHaveCount(2);
-      const selectedTask = page.locator('a').getByText('Test Task').first();
-      await selectedTask.click()
+      const task = page.locator("a").getByText("Test Task");
+      await expect(task).toHaveCount(1);
+      const selectedTask = page.locator("a").getByText("Test Task").first();
+      await selectedTask.click();
       const assignBtn = page.locator('[title="Edit Assigned"]');
       await assignBtn.click();
       const personSearch = page.locator('[name="personAddText"]');
-      await personSearch.fill('Dorothy');
+      await personSearch.fill("Dorothy");
       const searchBtn = page.locator('[data-testid="search-button"]');
       await searchBtn.click();
-      const selectBtn = page.locator('button').getByText('Select');
+      const selectBtn = page.locator('[data-testid^="add-person-"]').first();
       await selectBtn.click();
-      await tasksBtn.click();
-      // After reassignment, task is no longer in "Assigned to Me" but still in
-      // "Created by Me" -> 1 link remaining.
+      await openMyTasks(page);
+      await expect(task).toHaveCount(0, { timeout: 10000 });
+      await page.locator('[data-testid="tasklist-tab-created"]').click();
       await expect(task).toHaveCount(1, { timeout: 10000 });
     });
 
-    test('should reassociate tasks', async () => {
-      const tasksBtn = page.locator('[id="secondaryMenu"] a').getByText('Tasks');
-      await tasksBtn.click();
-      await expect(page).toHaveURL(/\/tasks/, { timeout: 10000 });
+    test("should reassociate tasks", async () => {
+      await openMyTasks(page);
+      await page.locator('[data-testid="tasklist-tab-created"]').click();
 
-      const task = page.locator('a').getByText('Test Task').first();
-      await task.click()
+      const task = page.locator("a").getByText("Test Task").first();
+      await task.click();
       const associateBtn = page.locator('[title="Edit Associated"]');
       await associateBtn.click();
       const personSearch = page.locator('[name="personAddText"]');
-      await personSearch.fill('Grace Jackson');
+      await personSearch.fill("Grace Jackson");
       const searchBtn = page.locator('[data-testid="search-button"]');
       await searchBtn.click();
-      const selectBtn = page.locator('button').getByText('Select');
+      const selectBtn = page.locator('[data-testid^="add-person-"]').first();
       await selectBtn.click();
-      await tasksBtn.click();
-      // After reassociation, the single remaining list entry shows
-      // "Grace Jackson" as the Associated-With label.
-      const validatedAssociation = page.locator('p').getByText('Grace Jackson');
-      await expect(validatedAssociation).toHaveCount(1, { timeout: 10000 });
+      await expect(page.getByText(/Grace Jackson/).first()).toBeVisible({ timeout: 10000 });
     });
 
-    test('should close a task', async () => {
-      const tasksBtn = page.locator('[id="secondaryMenu"] a').getByText('Tasks');
-      await tasksBtn.click();
-      await expect(page).toHaveURL(/\/tasks/, { timeout: 10000 });
+    test("should close a task", async () => {
+      await openMyTasks(page);
+      await page.locator('[data-testid="tasklist-tab-created"]').click();
 
-      const task = page.locator('a').getByText('Test Task').first();
+      const task = page.locator("a").getByText("Test Task").first();
       await task.click();
-      const openBtn = page.locator('button').getByText('Open');
+      const openBtn = page.locator("button").getByText("Open");
       await openBtn.click();
-      const closedBtn = page.locator('li').getByText('Closed');
+      const closedBtn = page.locator("li").getByText("Closed");
       await closedBtn.click();
-      await tasksBtn.click();
-      // Task is now closed -> invisible on the default "Open" filter.
-      await expect(task).toHaveCount(0, { timeout: 10000 });
+      await openMyTasks(page);
+      await page.locator('[data-testid="tasklist-tab-created"]').click();
+      const task2 = page.locator("a").getByText("Test Task");
+      await expect(task2).toHaveCount(0, { timeout: 10000 });
       const closedTasksBtn = page.locator('[data-testid="show-closed-tasks-button"]');
       await closedTasksBtn.click();
-      // After switching to "Closed" filter, the task reappears in "Created by Me".
-      await expect(task).toHaveCount(1, { timeout: 10000 });
-    });
-
-    test('should add an automation', async () => {
-      const tasksBtn = page.locator('[id="secondaryMenu"] a').getByText('Tasks');
-      await tasksBtn.click();
-      await expect(page).toHaveURL(/\/tasks/, { timeout: 10000 });
-      const automationsBtn = page.locator('[role="tablist"] button').getByText('Automations');
-      await automationsBtn.click();
-      await expect(page).toHaveURL(/\/tasks\/automations/);
-
-      const addBtn = page.locator('button').getByText('Add Automation');
-      await addBtn.click();
-      const autoName = page.locator('[name="title"]');
-      await expect(autoName).toBeVisible({ timeout: 10000 });
-      await autoName.fill('Zacchaeus Test Automation');
-      const recurranceBox = page.locator('[id="mui-component-select-recurs"]');
-      await recurranceBox.click();
-      const selRecurrance = page.locator('[data-value="yearly"]');
-      await selRecurrance.click();
-      const saveBtn = page.locator('button').getByText('Save');
-      await saveBtn.click();
-      const validatedAuto = page.locator('h6').getByText('Zacchaeus Test Automation');
-      await expect(validatedAuto).toBeVisible({ timeout: 10000 });
-      await expect(validatedAuto).toHaveCount(1);
-    });
-
-    test('should cancel adding an automation', async () => {
-      const tasksBtn = page.locator('[id="secondaryMenu"] a').getByText('Tasks');
-      await tasksBtn.click();
-      await expect(page).toHaveURL(/\/tasks/, { timeout: 10000 });
-      const automationsBtn = page.locator('[role="tablist"] button').getByText('Automations');
-      await automationsBtn.click();
-      await expect(page).toHaveURL(/\/tasks\/automations/);
-
-      const addBtn = page.locator('button').getByText('Add Automation');
-      await addBtn.click();
-      const autoName = page.locator('[name="title"]');
-      await expect(autoName).toHaveCount(1);
-      const cancelBtn = page.locator('button').getByText('Cancel');
-      await cancelBtn.click();
-      await expect(autoName).toHaveCount(0);
-    });
-
-    test('should add task to an automation', async () => {
-      const tasksBtn = page.locator('[id="secondaryMenu"] a').getByText('Tasks');
-      await tasksBtn.click();
-      await expect(page).toHaveURL(/\/tasks/, { timeout: 10000 });
-      const automationsBtn = page.locator('[role="tablist"] button').getByText('Automations');
-      await automationsBtn.click();
-      await expect(page).toHaveURL(/\/tasks\/automations/);
-
-      const auto = page.locator('h6').getByText('Zacchaeus Test Automation');
-      await auto.click();
-      const addBtn = page.locator('button').getByText('Add Action');
-      await addBtn.click();
-      const assignBox = page.locator('input').nth(1);
-      await assignBox.click();
-      const personSearch = page.locator('[name="personAddText"]');
-      await personSearch.fill('Demo User');
-      const searchBtn = page.locator('[data-testid="search-button"]');
-      await searchBtn.click();
-      const selectBtn = page.locator('button').getByText('Select');
-      await selectBtn.click();
-      const taskName = page.locator('[name="title"]');
-      await taskName.fill('Zacchaeus Test Task');
-      const taskNotes = page.locator('[name="note"]');
-      await taskNotes.fill('Zacchaeus Testing (Playwright)');
-      const saveBtn = page.locator('button').getByText('Save');
-      await saveBtn.click();
-      const validatedTask = page.locator('p').getByText('Zacchaeus Test Task');
-      await expect(validatedTask).toBeVisible({ timeout: 10000 });
-      await expect(validatedTask).toHaveCount(1);
-    });
-
-    test('should cancel adding task to an automation', async () => {
-      const tasksBtn = page.locator('[id="secondaryMenu"] a').getByText('Tasks');
-      await tasksBtn.click();
-      await expect(page).toHaveURL(/\/tasks/, { timeout: 10000 });
-      const automationsBtn = page.locator('[role="tablist"] button').getByText('Automations');
-      await automationsBtn.click();
-      await expect(page).toHaveURL(/\/tasks\/automations/);
-
-      const auto = page.locator('h6').getByText('Zacchaeus Test Automation');
-      await auto.click();
-      const addBtn = page.locator('button').getByText('Add Action');
-      await addBtn.click();
-      const assignBox = page.locator('input').nth(1);
-      await expect(assignBox).toHaveCount(1);
-      const cancelBtn = page.locator('button').getByText('Cancel');
-      await cancelBtn.click();
-      await expect(assignBox).toHaveCount(0);
-    });
-
-    test('should edit task on automation', async () => {
-      const tasksBtn = page.locator('[id="secondaryMenu"] a').getByText('Tasks');
-      await tasksBtn.click();
-      await expect(page).toHaveURL(/\/tasks/, { timeout: 10000 });
-      const automationsBtn = page.locator('[role="tablist"] button').getByText('Automations');
-      await automationsBtn.click();
-      await expect(page).toHaveURL(/\/tasks\/automations/);
-
-      const auto = page.locator('h6').getByText('Zacchaeus Test Automation');
-      await auto.click();
-      const editBtn = editIconButton(page).nth(1);
-      await editBtn.click();
-      const taskName = page.locator('[name="title"]');
-      await taskName.fill('Zebedee Test Task');
-      const saveBtn = page.locator('button').getByText('Save');
-      await saveBtn.click();
-      const validatedTask = page.locator('p').getByText('Zebedee Test Task');
-      await expect(validatedTask).toBeVisible({ timeout: 10000 });
-      await expect(validatedTask).toHaveCount(1);
-    });
-
-    test('should add condition to an automation', async () => {
-      const tasksBtn = page.locator('[id="secondaryMenu"] a').getByText('Tasks');
-      await tasksBtn.click();
-      await expect(page).toHaveURL(/\/tasks/, { timeout: 10000 });
-      const automationsBtn = page.locator('[role="tablist"] button').getByText('Automations');
-      await automationsBtn.click();
-      await expect(page).toHaveURL(/\/tasks\/automations/);
-
-      const auto = page.locator('h6').getByText('Zacchaeus Test Automation');
-      await auto.click();
-      const addBtn = page.locator('button').getByText('Add Condition');
-      await addBtn.click();
-      // Save the conjunction with the default groupType (and) — the
-      // [data-value="or"] dropdown selector is fragile under MUI v7. The
-      // important thing is that a conjunction exists so the conjunction's
-      // Add icon button appears on the next render.
-      const saveBtn = page.locator('button').getByText('Save');
-      await saveBtn.click();
-
-      // Wait for the ConjunctionEdit form to close (its Save button detaches).
-      const addConBtn = page.locator(`button[data-testid^="add-conjunction-button-"]`).last();
-      await expect(addConBtn).toBeVisible({ timeout: 10000 });
-      await addConBtn.click();
-      const addCon = page.locator('li').getByText('Add Condition');
-      await addCon.click();
-      const conType = page.locator('[role="combobox"]').first();
-      await conType.click();
-      const selConType = page.locator('[data-value="displayName"]');
-      await selConType.click();
-      const name = page.locator('[name="value"]');
-      await name.fill('Demo User');
-      await saveBtn.click();
-      const validatedCon = page.locator('p').getByText('Display Name is Demo User');
-      await expect(validatedCon).toBeVisible({ timeout: 10000 });
-      await expect(validatedCon).toHaveCount(1);
-    });
-
-    test('should edit an automation', async () => {
-      const tasksBtn = page.locator('[id="secondaryMenu"] a').getByText('Tasks');
-      await tasksBtn.click();
-      await expect(page).toHaveURL(/\/tasks/, { timeout: 10000 });
-      const automationsBtn = page.locator('[role="tablist"] button').getByText('Automations');
-      await automationsBtn.click();
-      await expect(page).toHaveURL(/\/tasks\/automations/);
-
-      const auto = page.locator('h6').getByText('Zacchaeus Test Automation');
-      await auto.click();
-      const editBtn = editIconButton(page).first();
-      await editBtn.click();
-      const autoName = page.locator('[name="title"]');
-      await autoName.fill('Zebedee Test Automation');
-      const saveBtn = page.locator('button').getByText('Save');
-      await saveBtn.click();
-      const validatedAuto = page.locator('h6').getByText('Zebedee Test Automation');
-      await expect(validatedAuto).toBeVisible({ timeout: 10000 });
-      await expect(validatedAuto).toHaveCount(1);
-    });
-
-    test('should cancel editing an automation', async () => {
-      const tasksBtn = page.locator('[id="secondaryMenu"] a').getByText('Tasks');
-      await tasksBtn.click();
-      await expect(page).toHaveURL(/\/tasks/, { timeout: 10000 });
-      const automationsBtn = page.locator('[role="tablist"] button').getByText('Automations');
-      await automationsBtn.click();
-      await expect(page).toHaveURL(/\/tasks\/automations/);
-
-      const auto = page.locator('h6').getByText('Zebedee Test Automation');
-      await auto.click();
-      const editBtn = editIconButton(page).first();
-      await editBtn.click();
-      const autoName = page.locator('[name="title"]');
-      await expect(autoName).toHaveCount(1);
-      const cancelBtn = page.locator('button').getByText('Cancel');
-      await cancelBtn.click();
-      await expect(autoName).toHaveCount(0);
-    });
-
-    test('should delete an automation', async () => {
-      const tasksBtn = page.locator('[id="secondaryMenu"] a').getByText('Tasks');
-      await tasksBtn.click();
-      await expect(page).toHaveURL(/\/tasks/, { timeout: 10000 });
-      const automationsBtn = page.locator('[role="tablist"] button').getByText('Automations');
-      await automationsBtn.click();
-      await expect(page).toHaveURL(/\/tasks\/automations/);
-
-      const auto = page.locator('h6').getByText('Zebedee Test Automation');
-      await auto.click();
-      const editBtn = editIconButton(page).first();
-      await editBtn.click();
-      const deleteBtn = page.locator('button').getByText('Delete');
-      await deleteBtn.click();
-      const validatedDeletion = page.locator('h6').getByText('Zebedee Test Automation');
-      await expect(validatedDeletion).toHaveCount(0);
+      await expect(task2).toHaveCount(1, { timeout: 10000 });
     });
   });
 
   // Edge-case extensions: navigation surface from .notes/B1Admin-test-coverage-gaps.md §3.
-  test.describe('Songs and Tasks navigation extras', () => {
-    test('Songs page exposes Add Song affordance', async ({ page }) => {
-      const songsLink = page.locator('[id="secondaryMenu"]').getByText('Songs').first();
+  test.describe("Songs and Tasks navigation extras", () => {
+    test("Songs page exposes Add Song affordance", async ({ page }) => {
+      const songsLink = page.locator('[id="secondaryMenu"]').getByText("Songs").first();
       await songsLink.click();
       await page.waitForURL(/\/serving\/songs/, { timeout: 10000 });
-      await expect(page.locator('button').getByText(/Add Song/i).first()).toBeVisible({ timeout: 10000 });
+      await expect(page.locator("button").getByText(/Add Song/i).first()).toBeVisible({ timeout: 10000 });
     });
 
-    test('Tasks page exposes the Tasks/Automations tab navigation', async ({ page }) => {
-      const tasksLink = page.locator('[id="secondaryMenu"]').getByText('Tasks').first();
+    test("Serving subnav exposes My Work and Workflows links", async ({ page }) => {
+      const tasksLink = page.locator('[id="secondaryMenu"]').getByText("My Work").first();
       await tasksLink.click();
       await page.waitForURL(/\/serving\/tasks/, { timeout: 10000 });
-      await expect(page.locator('button[role="tab"]').getByText('Automations')).toBeVisible({ timeout: 10000 });
+      const secondaryMenu = page.locator('[id="secondaryMenu"]');
+      await expect(secondaryMenu.locator("a").getByText("My Work")).toBeVisible({ timeout: 10000 });
+      await expect(secondaryMenu.locator("a").getByText("Workflows")).toBeVisible({ timeout: 10000 });
+    });
+  });
+
+  // keyOffset is client state (not persisted); verify select presence/default/reactivity.
+  test.describe("Songs — transpose key select", () => {
+    test("Key select appears for a song with a keySignature and updates on change", async ({ page }) => {
+      const songsBtn = page.locator('[id="secondaryMenu"] a').getByText("Songs");
+      await songsBtn.click();
+      await expect(page).toHaveURL(/\/serving\/songs(?:\/?$|\?)/, { timeout: 10000 });
+      await page.locator('[data-testid="add-song-button"]').waitFor({ state: "visible", timeout: 10000 });
+
+      const song = page.locator("a").getByText("Amazing Grace", { exact: true }).first();
+      await song.click();
+      await expect(page.locator("#page-header-title")).toBeVisible({ timeout: 10000 });
+
+      const arrangementCard = page.locator(".MuiCard-root").filter({ hasText: /^Arrangement - / });
+      await expect(arrangementCard).toBeVisible({ timeout: 10000 });
+      const keySelect = arrangementCard.locator('[role="combobox"]');
+      await expect(keySelect).toBeVisible({ timeout: 10000 });
+      await expect(keySelect).toHaveText("G");
+
+      await keySelect.click();
+      await page.getByRole("option", { name: "C", exact: true }).click();
+      await expect(keySelect).toHaveText("C");
+
+      await expect(page.locator(".chordPro")).toBeVisible();
     });
   });
 });

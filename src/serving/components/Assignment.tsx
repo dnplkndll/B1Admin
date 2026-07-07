@@ -1,21 +1,19 @@
 import React, { useCallback } from "react";
-import { Grid, TextField, Card, CardContent, Typography, Stack, Button, Snackbar, Alert, Menu, MenuItem } from "@mui/material";
-import { PublishedWithChanges as AutoAssignIcon, Add as AddIcon, StickyNote2 as NotesIcon, Save as SaveIcon, ContentCopy as CopyIcon, ArrowDropDown as ArrowDropDownIcon } from "@mui/icons-material";
+import { Grid, TextField, Card, CardContent, Typography, Stack, Button, Snackbar, Alert, Menu, MenuItem, Chip, LinearProgress } from "@mui/material";
+import { PublishedWithChanges as AutoAssignIcon, Add as AddIcon, StickyNote2 as NotesIcon, Save as SaveIcon, ContentCopy as CopyIcon, ArrowDropDown as ArrowDropDownIcon, Undo as UndoIcon, EditNote as PreparedIcon } from "@mui/icons-material";
 import {
   type AssignmentInterface,
   type BlockoutDateInterface,
   type GroupInterface,
   type PersonInterface,
-  type PlanInterface,
   type PositionInterface,
   type TimeInterface
 } from "@churchapps/helpers";
+import { type PlanInterface, hasPlansEditAccess } from "../../helpers";
 import {
   ApiHelper,
   ArrayHelper,
-  Locale,
-  UserHelper,
-  Permissions
+  Locale
 } from "@churchapps/apphelper";
 import { useQuery } from "@tanstack/react-query";
 import { PositionEdit } from "./PositionEdit";
@@ -30,7 +28,7 @@ interface Props {
 
 export const Assignment = (props: Props) => {
   const [plan, setPlan] = React.useState<PlanInterface>(null);
-  const hasPlansEdit = UserHelper.checkAccess(Permissions.membershipApi.plans.edit);
+  const hasPlansEdit = hasPlansEditAccess();
 
   const myMinistriesQuery = useQuery<GroupInterface[]>({
     queryKey: ["/groups/my/ministry", "MembershipApi"],
@@ -51,8 +49,10 @@ export const Assignment = (props: Props) => {
   const [showSuccessMessage, setShowSuccessMessage] = React.useState(false);
   const [allPlans, setAllPlans] = React.useState<PlanInterface[]>([]);
   const [copyMenuAnchor, setCopyMenuAnchor] = React.useState<null | HTMLElement>(null);
+  // Hoisted: the compiler emits non-optional guard reads (position.count/position.id) for
+  // the AssignmentEdit JSX deps, which crash while position is still null.
+  const peopleNeededForPosition = position ? position.count - ArrayHelper.getAll(assignments, "positionId", position.id).length : 0;
 
-  // Get the most recent plan that is before the current plan's date
   const previousPlan = React.useMemo(() => {
     if (allPlans.length === 0 || !props.plan?.serviceDate) return null;
     const currentDate = new Date(props.plan.serviceDate).getTime();
@@ -60,12 +60,12 @@ export const Assignment = (props: Props) => {
       .filter(p => {
         if (p.id === props.plan?.id) return false;
         const planDate = p.serviceDate ? new Date(p.serviceDate).getTime() : 0;
-        return planDate < currentDate;  // Only include plans before current plan
+        return planDate < currentDate;
       })
       .sort((a, b) => {
         const dateA = a.serviceDate ? new Date(a.serviceDate).getTime() : 0;
         const dateB = b.serviceDate ? new Date(b.serviceDate).getTime() : 0;
-        return dateB - dateA;  // Sort descending to get most recent previous plan first
+        return dateB - dateA;
       });
     return sorted[0] || null;
   }, [allPlans, props.plan?.id, props.plan?.serviceDate]);
@@ -83,7 +83,6 @@ export const Assignment = (props: Props) => {
   const getAddPositionActions = () => {
     if (!canEdit) return null;
 
-    // When no positions exist, show copy from previous dropdown instead of Auto Assign
     if (positions.length === 0 && previousPlan) {
       return (
         <Stack direction="row" spacing={1} alignItems="center">
@@ -136,9 +135,24 @@ export const Assignment = (props: Props) => {
       );
     }
 
-    // When positions exist, show Auto Assign and Add Position buttons
     return (
       <Stack direction="row" spacing={1}>
+        {plan?.lastAutofillRunId && (
+          <Button
+            variant="outlined"
+            color="warning"
+            startIcon={<UndoIcon />}
+            onClick={handleUndoAutoAssign}
+            data-testid="undo-auto-assign-button"
+            size="small"
+            sx={{
+              textTransform: "none",
+              borderRadius: 2,
+              fontWeight: 600
+            }}>
+            {Locale.label("plans.assignment.undoAutoAssign") || "Undo Auto Assign"}
+          </Button>
+        )}
         <Button
           variant="outlined"
           startIcon={<AutoAssignIcon />}
@@ -191,6 +205,10 @@ export const Assignment = (props: Props) => {
 
   const loadData = useCallback(async () => {
     setPlan(props.plan);
+    // Refresh the plan row itself — autofill/undo/publish mutate prepared and lastAutofillRunId.
+    ApiHelper.get("/plans/" + props.plan?.id, "DoingApi").then((data: PlanInterface) => {
+      if (data?.id) setPlan(data);
+    });
     const positionsData = await ApiHelper.get("/positions/plan/" + props.plan?.id, "DoingApi");
     setPositions(positionsData);
 
@@ -201,10 +219,10 @@ export const Assignment = (props: Props) => {
       });
     }
 
-    ApiHelper.get("/times/plan/" + props.plan?.id, "DoingApi").then((data) => {
+    ApiHelper.get("/times/plan/" + props.plan?.id, "DoingApi").then((data: any) => {
       setTimes(data);
     });
-    ApiHelper.get("/blockoutDates/upcoming", "DoingApi").then((data) => {
+    ApiHelper.get("/blockoutDates/upcoming", "DoingApi").then((data: any) => {
       setBlockoutDates(data);
     });
     const d = await ApiHelper.get("/assignments/plan/" + props.plan?.id, "DoingApi");
@@ -236,7 +254,12 @@ export const Assignment = (props: Props) => {
     });
   };
 
-  // Load all plans for the plan type to find previous plan for copy functionality
+  const handleUndoAutoAssign = async () => {
+    ApiHelper.post("/plans/autofill/" + props.plan.id + "/undo", {}, "DoingApi").then(() => {
+      loadData();
+    });
+  };
+
   const loadPlans = useCallback(async () => {
     if (props.plan?.planTypeId) {
       const plans = await ApiHelper.get("/plans/types/" + props.plan.planTypeId, "DoingApi");
@@ -254,10 +277,14 @@ export const Assignment = (props: Props) => {
     loadPlans();
   }, [props.plan?.id, loadData, loadPlans]);
 
+  const totalNeeded = positions.reduce((s, p) => s + (p.count || 0), 0);
+  const totalFilled = positions.reduce((s, p) => s + Math.min(assignments.filter((a) => a.positionId === p.id).length, p.count || 0), 0);
+  const remaining = Math.max(0, totalNeeded - totalFilled);
+  const progress = totalNeeded > 0 ? (totalFilled / totalNeeded) * 100 : 0;
+
   return (
     <Grid container spacing={3}>
       <Grid size={{ xs: 12, md: 8 }}>
-        {/* Assignments Section */}
         <Card
           sx={{
             mb: 3,
@@ -270,18 +297,43 @@ export const Assignment = (props: Props) => {
           <CardContent>
             <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ mb: 3 }}>
               <Stack direction="row" alignItems="center" spacing={1}>
-                <AutoAssignIcon sx={{ color: "primary.main", fontSize: 28 }} />
-                <Typography variant="h6" sx={{ fontWeight: 600, color: "primary.main" }}>
+                <AutoAssignIcon sx={{ color: "primary.main", fontSize: 20 }} />
+                <Typography variant="h6">
                   {Locale.label("plans.planPage.assign") || "Serving Team Assignments"}
                 </Typography>
+                {plan?.prepared && (
+                  <Chip
+                    icon={<PreparedIcon />}
+                    label={Locale.label("plans.assignment.penciledIn") || "Penciled In"}
+                    size="small"
+                    color="warning"
+                    variant="outlined"
+                    data-testid="penciled-in-chip"
+                  />
+                )}
               </Stack>
               {getAddPositionActions()}
             </Stack>
+            {positions.length > 0 && (
+              <Stack sx={{ mb: 3 }} spacing={0.5}>
+                <Stack direction="row" alignItems="center" justifyContent="space-between">
+                  <Typography variant="caption" color="text.secondary">
+                    {Locale.label("plans.assignment.positionsFilled").replace("{filled}", totalFilled.toString()).replace("{total}", totalNeeded.toString())}
+                  </Typography>
+                  <Chip
+                    size="small"
+                    variant="outlined"
+                    color={remaining > 0 ? "warning" : "success"}
+                    label={remaining > 0 ? remaining + " " + Locale.label("plans.assignment.needed") : Locale.label("plans.assignment.fullyStaffed")}
+                  />
+                </Stack>
+                <LinearProgress variant="determinate" value={progress} sx={{ height: 8, borderRadius: 4 }} />
+              </Stack>
+            )}
             <PositionList positions={positions} assignments={assignments} people={people} groups={groups} canEdit={canEdit} onSelect={(p) => setPosition(p)} onAssignmentSelect={handleAssignmentSelect} />
           </CardContent>
         </Card>
 
-        {/* Notes Section */}
         <Card
           sx={{
             borderRadius: 2,
@@ -293,8 +345,8 @@ export const Assignment = (props: Props) => {
           <CardContent>
             <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ mb: 3 }}>
               <Stack direction="row" alignItems="center" spacing={1}>
-                <NotesIcon sx={{ color: "primary.main", fontSize: 28 }} />
-                <Typography variant="h6" sx={{ fontWeight: 600, color: "primary.main" }}>
+                <NotesIcon sx={{ color: "primary.main", fontSize: 20 }} />
+                <Typography variant="h6">
                   {Locale.label("common.notes") || "Plan Notes"}
                 </Typography>
               </Stack>
@@ -341,7 +393,6 @@ export const Assignment = (props: Props) => {
 
       <Grid size={{ xs: 12, md: 4 }}>
         <Stack spacing={3}>
-          {/* Position/Assignment Edit */}
           {canEdit && position && !assignment && (
             <PositionEdit
               position={position}
@@ -356,20 +407,16 @@ export const Assignment = (props: Props) => {
             <AssignmentEdit
               position={position}
               assignment={assignment}
-              peopleNeeded={position.count - ArrayHelper.getAll(assignments, "positionId", position.id).length}
+              peopleNeeded={peopleNeededForPosition}
               updatedFunction={handleAssignmentUpdate}
             />
           )}
 
-          {/* Time List */}
           <TimeList times={times} positions={positions} plan={plan} canEdit={canEdit} onUpdate={loadData} />
-
-          {/* Plan Validation */}
           <PlanValidation plan={plan} positions={positions} assignments={assignments} people={people} times={times} blockoutDates={blockoutDates} canEdit={canEdit} onUpdate={loadData} />
         </Stack>
       </Grid>
 
-      {/* Success Snackbar */}
       <Snackbar
         open={showSuccessMessage}
         autoHideDuration={3000}

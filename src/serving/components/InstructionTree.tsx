@@ -1,7 +1,8 @@
 import React from "react";
-import { Button, Typography, Box, IconButton } from "@mui/material";
+import { Button, Typography, Box } from "@mui/material";
 import { PlayArrow as PlayArrowIcon, ExpandMore as ExpandMoreIcon, ChevronRight as ChevronRightIcon, Add as AddIcon } from "@mui/icons-material";
 import { Locale } from "@churchapps/apphelper";
+import { AppIconButton } from "../../components/ui/AppIconButton";
 import { type InstructionItem } from "@churchapps/content-providers";
 
 interface InstructionTreeProps {
@@ -27,8 +28,6 @@ const InstructionItemRow: React.FC<{
   excludeActions?: boolean;
 }> = ({ item, providerId, depth, pathIndices, expandedSections, onToggleExpanded, onAddSection, onAddAction, excludeActions }) => {
   const itemId = item.relatedId || item.id || "";
-  // Filter out file type items - we only show sections and actions
-  // When excludeActions is true, also filter out action items
   const visibleChildren = item.children?.filter(child => {
     if (child.itemType === "file") return false;
     if (excludeActions && (child.itemType === "action" || child.itemType === "providerPresentation")) return false;
@@ -39,13 +38,11 @@ const InstructionItemRow: React.FC<{
   const isSection = item.itemType === "section" || item.itemType === "header";
   const isAction = item.itemType === "action" || item.itemType === "providerPresentation";
 
-  // Get thumbnail from item or first file child (only for actions, not sections)
   const fileChild = item.children?.find(child => child.itemType === "file");
   const thumbnail = !isSection
     ? (item.thumbnail || fileChild?.thumbnail)
     : undefined;
 
-  // Items with children are expandable (sections, headers, or actions with files)
   if (hasChildren) {
     return (
       <Box key={itemId} sx={{ mb: depth === 0 ? 1 : 0.5 }}>
@@ -60,9 +57,7 @@ const InstructionItemRow: React.FC<{
             "&:hover": { bgcolor: depth === 0 ? "grey.200" : "action.hover" }
           }}
         >
-          <IconButton size="small" onClick={() => onToggleExpanded(itemId)} sx={{ mr: 1 }}>
-            {isExpanded ? <ExpandMoreIcon /> : <ChevronRightIcon />}
-          </IconButton>
+          <AppIconButton label={isExpanded ? Locale.label("common.collapse") : Locale.label("common.expand")} icon={isExpanded ? <ExpandMoreIcon /> : <ChevronRightIcon />} onClick={() => onToggleExpanded(itemId)} sx={{ mr: 1 }} />
           {thumbnail && (
             <Box
               component="img"
@@ -73,9 +68,9 @@ const InstructionItemRow: React.FC<{
           )}
           <Box sx={{ flex: 1 }}>
             <Typography sx={{ fontWeight: depth === 0 ? 500 : 400 }}>{item.label}</Typography>
-            {item.description && (
+            {item.content && (
               <Typography variant="caption" color="text.secondary">
-                {item.description}
+                {item.content}
                 {item.seconds ? ` - ${Math.round(item.seconds / 60)}min` : ""}
               </Typography>
             )}
@@ -95,9 +90,7 @@ const InstructionItemRow: React.FC<{
         {isExpanded && (
           <Box sx={{ pl: 4 }}>
             {visibleChildren.map((child) => {
-              // navigateToPath walks the unfiltered children, so we must store the original
-              // index — not the filtered one — or the saved providerContentPath lands on the
-              // wrong sibling whenever a file/excluded action sits before this item.
+              // Store original unfiltered index; navigateToPath walks unfiltered children.
               const originalIndex = item.children!.indexOf(child);
               return (
                 <InstructionItemRow
@@ -120,12 +113,8 @@ const InstructionItemRow: React.FC<{
     );
   }
 
-  // Leaf items (no children) - just show with add button
-  // If excludeActions is true and this is an action, don't render it
   if (excludeActions && isAction) return null;
 
-  // For sections rendered as leaf items (e.g., when excludeActions filters out their children),
-  // use a Button with "Add Section" label instead of IconButton
   if (isSection) {
     return (
       <Box
@@ -141,9 +130,9 @@ const InstructionItemRow: React.FC<{
       >
         <Box sx={{ flex: 1 }}>
           <Typography variant="body2">{item.label}</Typography>
-          {item.description && (
+          {item.content && (
             <Typography variant="caption" color="text.secondary">
-              {item.description}
+              {item.content}
               {item.seconds ? ` - ${Math.round(item.seconds / 60)}min` : ""}
             </Typography>
           )}
@@ -185,28 +174,19 @@ const InstructionItemRow: React.FC<{
       )}
       <Box sx={{ flex: 1 }}>
         <Typography variant="body2">{item.label}</Typography>
-        {item.description && (
+        {item.content && (
           <Typography variant="caption" color="text.secondary">
-            {item.description}
+            {item.content}
             {item.seconds ? ` - ${Math.round(item.seconds / 60)}min` : ""}
           </Typography>
         )}
       </Box>
-      <IconButton
-        size="small"
-        color="primary"
-        onClick={() => onAddAction(item, providerId, pathIndices)}
-        title={Locale.label("plans.actionSelector.addAction") || "Add Action"}
-      >
-        <AddIcon />
-      </IconButton>
+      <AppIconButton label={Locale.label("common.add")} icon={<AddIcon />} intent="add" onClick={() => onAddAction(item, providerId, pathIndices)} />
     </Box>
   );
 };
 
 export const InstructionTree: React.FC<InstructionTreeProps> = ({ items, providerId, expandedSections, onToggleExpanded, onAddSection, onAddAction, excludeHeaders, excludeActions }) => {
-  // When excludeHeaders is true, skip header items and show their children (sections) directly
-  // We need to track the original path indices for proper provider content path generation
   const itemsToRender: { item: InstructionItem; pathIndices: number[] }[] = [];
 
   if (excludeHeaders) {

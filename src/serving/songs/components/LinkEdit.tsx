@@ -1,7 +1,10 @@
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import { useForm } from "react-hook-form";
-import { ApiHelper, InputBox, type LinkInterface, Locale } from "@churchapps/apphelper";
+import { ApiHelper, Locale } from "@churchapps/apphelper";
+import { type LinkInterface } from "@churchapps/helpers";
 import { TextField } from "@mui/material";
+import { FormCard } from "../../../components/ui";
+import { useConfirmDelete } from "../../../hooks";
 
 interface Props {
   link: LinkInterface;
@@ -12,7 +15,9 @@ interface Props {
 type AnyRecord = Record<string, any>;
 
 export const LinkEdit = (props: Props) => {
+  "use no memo"; // compiler caches register() results, breaking RHF field re-registration after reset()
   const { register, handleSubmit, reset } = useForm<AnyRecord>({ defaultValues: { url: "", text: "" } });
+  const { confirm, ConfirmDialogElement } = useConfirmDelete();
 
   useEffect(() => {
     if (props.link) reset({ ...props.link });
@@ -20,13 +25,13 @@ export const LinkEdit = (props: Props) => {
 
   const onValid = (values: AnyRecord) => {
     const l: LinkInterface = { ...props.link, ...values };
-    ApiHelper.post("/links", [l], "ContentApi").then((data) => {
+    ApiHelper.post("/links", [l], "ContentApi").then((data: any) => {
       props.onSave(data[0]);
     });
   };
 
-  const handleDelete = () => {
-    if (window.confirm(Locale.label("songs.link.deleteConfirm"))) {
+  const handleDelete = async () => {
+    if (await confirm(Locale.label("songs.link.deleteConfirm"))) {
       ApiHelper.delete("/links/" + props.link?.id, "ContentApi").then(() => {
         props.onSave(null);
       });
@@ -34,9 +39,12 @@ export const LinkEdit = (props: Props) => {
   };
 
   return (
-    <InputBox headerText={Locale.label("songs.link.edit")} headerIcon="link" saveFunction={handleSubmit(onValid)} cancelFunction={props.onCancel} deleteFunction={props.link?.id ? handleDelete : null}>
-      <TextField label={Locale.label("songs.link.url")} fullWidth placeholder={Locale.label("placeholders.song.linkUrl")} {...register("url")} />
-      <TextField label={Locale.label("songs.link.text")} fullWidth placeholder={Locale.label("songs.link.chordChart")} {...register("text")} />
-    </InputBox>
+    <>
+      {ConfirmDialogElement}
+      <FormCard title={Locale.label("songs.link.edit")} icon="link" onSave={handleSubmit(onValid)} onCancel={props.onCancel} onDelete={props.link?.id ? handleDelete : undefined}>
+        <TextField label={Locale.label("songs.link.url")} fullWidth placeholder={Locale.label("placeholders.song.linkUrl")} {...register("url")} />
+        <TextField label={Locale.label("songs.link.text")} fullWidth placeholder={Locale.label("songs.link.chordChart")} {...register("text")} />
+      </FormCard>
+    </>
   );
 };

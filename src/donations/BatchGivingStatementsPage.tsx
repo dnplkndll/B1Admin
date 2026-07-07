@@ -6,7 +6,8 @@ import {
 } from "@mui/material";
 import {
   DownloadOutlined as DownloadIcon,
-  PrintOutlined as PrintIcon
+  PrintOutlined as PrintIcon,
+  Receipt as ReceiptIcon
 } from "@mui/icons-material";
 import { PageHeader, Locale, CurrencyHelper, UserHelper, Permissions, ArrayHelper } from "@churchapps/apphelper";
 import { type DonationInterface, type FundDonationInterface, type PersonInterface, type FundInterface } from "@churchapps/helpers";
@@ -17,25 +18,21 @@ export const BatchGivingStatementsPage = () => {
   const [selectedYear, setSelectedYear] = useState<number>(currentYear);
   const [currency, setCurrency] = useState<string>("usd");
 
-  // Fetch all donations
   const allDonations = useQuery<DonationInterface[]>({
     queryKey: ["/donations", "GivingApi"],
     placeholderData: []
   });
 
-  // Fetch all fund donations
   const allFundDonations = useQuery<FundDonationInterface[]>({
     queryKey: ["/fundDonations", "GivingApi"],
     placeholderData: []
   });
 
-  // Fetch all funds
   const funds = useQuery<FundInterface[]>({
     queryKey: ["/funds", "GivingApi"],
     placeholderData: []
   });
 
-  // Filter donations by selected year
   const yearDonations = useMemo(() => {
     return (
       allDonations.data?.filter((don) => {
@@ -46,7 +43,6 @@ export const BatchGivingStatementsPage = () => {
     );
   }, [allDonations.data, selectedYear]);
 
-  // Get unique person IDs from donations
   const personIds = useMemo(() => {
     const ids = new Set<string>();
     yearDonations.forEach((donation) => {
@@ -57,55 +53,18 @@ export const BatchGivingStatementsPage = () => {
     return Array.from(ids);
   }, [yearDonations]);
 
-  // Fetch all people who made donations
   const people = useQuery<PersonInterface[]>({
     queryKey: ["/people/ids?ids=" + personIds.join(","), "MembershipApi"],
     placeholderData: [],
     enabled: personIds.length > 0
   });
 
-  // Filter fund donations for selected year
   const yearFundDonations = useMemo(() => {
     return allFundDonations.data?.filter((fundDonation) =>
       yearDonations.some((donation) => donation.id === fundDonation.donationId)) || [];
   }, [allFundDonations.data, yearDonations]);
 
-  // Prepare CSV data
-  const csvData = useMemo(() => {
-    const data: any[] = [];
-
-    personIds.forEach((personId) => {
-      const person = people.data?.find((p) => p.id === personId);
-      const personDonations = yearDonations.filter((d) => d.personId === personId);
-      const personFundDonations = yearFundDonations.filter((fd) =>
-        personDonations.some((d) => d.id === fd.donationId));
-
-      // Calculate total for this person
-      let totalAmount = 0;
-      personFundDonations.forEach((fd) => {
-        totalAmount += fd.amount || 0;
-      });
-
-      data.push({
-        lastName: person?.name?.last || "",
-        firstName: person?.name?.first || "",
-        email: person?.contactInfo?.email || "",
-        phone: person?.contactInfo?.homePhone || person?.contactInfo?.mobilePhone || "",
-        address: person?.contactInfo?.address1 || "",
-        city: person?.contactInfo?.city || "",
-        state: person?.contactInfo?.state || "",
-        zip: person?.contactInfo?.zip || "",
-        year: selectedYear,
-        totalAmount: totalAmount,
-        donationCount: personDonations.length
-      });
-    });
-
-    return data.sort((a, b) => a.lastName.localeCompare(b.lastName));
-  }, [personIds, people.data, yearDonations, yearFundDonations, selectedYear]);
-
   const handlePrintAll = () => {
-    // Navigate to consolidated print view in the same window
     const url = `/donations/print-all?year=${selectedYear}`;
     window.location.href = url;
   };
@@ -113,12 +72,10 @@ export const BatchGivingStatementsPage = () => {
   const handleDownloadZip = async () => {
     const zip = new JSZip();
 
-    // Generate individual CSV for each person
     personIds.forEach((personId) => {
       const person = people.data?.find((p) => p.id === personId);
       const personDonations = yearDonations.filter((d) => d.personId === personId);
 
-      // Build CSV data matching the individual format
       const csvRows: string[] = [];
       csvRows.push("amount,donationDate,fundName,method,methodDetails"); // Header
 
@@ -133,7 +90,6 @@ export const BatchGivingStatementsPage = () => {
           const method = donation.method || "";
           const methodDetails = donation.methodDetails || "";
 
-          // Escape values that might contain commas or quotes
           const escapeCsv = (value: any) => {
             const str = String(value);
             if (str.includes(",") || str.includes('"') || str.includes("\n")) {
@@ -156,7 +112,6 @@ export const BatchGivingStatementsPage = () => {
       zip.file(filename, csvContent);
     });
 
-    // Generate and download the zip file
     const blob = await zip.generateAsync({ type: "blob" });
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
@@ -181,7 +136,6 @@ export const BatchGivingStatementsPage = () => {
 
   const isLoading = allDonations.isLoading || allFundDonations.isLoading || (personIds.length > 0 && people.isLoading);
 
-  // Generate year options (current year and previous 5 years)
   const yearOptions = Array.from({ length: 6 }, (_, i) => currentYear - i);
 
   React.useEffect(() => {
@@ -195,13 +149,13 @@ export const BatchGivingStatementsPage = () => {
   return (
     <>
       <PageHeader
+        icon={<ReceiptIcon />}
         title={Locale.label("donations.batchStatements.title") || "Batch Giving Statements"}
         subtitle={Locale.label("donations.batchStatements.subtitle") || "Download giving statements for all donors"}
       />
 
       <Container maxWidth="lg">
         <Box sx={{ py: 3 }}>
-          {/* Year Selection */}
           <Card elevation={2} sx={{ mb: 3 }}>
             <CardContent>
               <Typography variant="h6" gutterBottom>
@@ -224,7 +178,6 @@ export const BatchGivingStatementsPage = () => {
             </CardContent>
           </Card>
 
-          {/* Summary Stats */}
           {isLoading ? (
             <Box display="flex" justifyContent="center" alignItems="center" minHeight="200px">
               <CircularProgress />
@@ -266,7 +219,6 @@ export const BatchGivingStatementsPage = () => {
                 </CardContent>
               </Card>
 
-              {/* Download Options */}
               {totalDonors > 0 ? (
                 <Card elevation={2}>
                   <CardContent>
@@ -276,7 +228,6 @@ export const BatchGivingStatementsPage = () => {
                     <Divider sx={{ my: 2 }} />
 
                     <Stack spacing={2}>
-                      {/* CSV Download */}
                       <Box>
                         <Typography variant="subtitle1" gutterBottom>
                           {Locale.label("donations.batchStatements.csvDownload") || "Individual CSV Files"}
@@ -300,7 +251,6 @@ export const BatchGivingStatementsPage = () => {
 
                       <Divider />
 
-                      {/* Print All */}
                       <Box>
                         <Typography variant="subtitle1" gutterBottom>
                           {Locale.label("donations.batchStatements.printStatements") || "Printable Statements"}

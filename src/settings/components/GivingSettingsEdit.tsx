@@ -1,30 +1,54 @@
 import React from "react";
-import { Alert, FormControl, InputLabel, MenuItem, Select, TextField, Grid, Stack, Switch, Typography, Tooltip, IconButton } from "@mui/material";
+import { Alert, FormControl, IconButton, InputLabel, MenuItem, Select, Snackbar, TextField, Grid, Stack, Switch, Typography } from "@mui/material";
 import HelpIcon from "@mui/icons-material/Help";
+import ContentCopyIcon from "@mui/icons-material/ContentCopy";
 import { Controller, useForm } from "react-hook-form";
-import { ApiHelper, Locale, UniqueIdHelper } from "@churchapps/apphelper";
+import { ApiHelper, Locale, UniqueIdHelper, UserHelper } from "@churchapps/apphelper";
+import { listPaymentProviders, getPaymentProvider } from "@churchapps/apphelper/donations";
+import { type ChurchInterface } from "@churchapps/helpers";
+import { AppIconButton } from "../../components/ui/AppIconButton";
 import { type PaymentGatewaysInterface } from "../../helpers";
 import { FeeOptionsSettingsEdit } from "./FeeOptionsSettingsEdit";
 
 interface Props {
   churchId: string;
   saveTrigger: Date | null;
+  churchInfo?: ChurchInterface;
   onError?: (errors: string[]) => void;
 }
 
 type AnyRecord = Record<string, any>;
 
-const stripeSupportedCurrencies = [
-  "usd", "eur", "gbp", "cad", "aud", "inr", "jpy", "sgd", "hkd", "sek", "nok", "dkk", "chf", "mxn", "brl"
-];
+const isProd = process.env.REACT_APP_STAGE === "prod";
 
 export const GivingSettingsEdit: React.FC<Props> = (props) => {
+  "use no memo"; // compiler caches register() results, breaking RHF field re-registration after reset()
   const [gateway, setGateway] = React.useState<PaymentGatewaysInterface>(null);
   const [errors, setErrors] = React.useState<string[]>([]);
+  const [copySnackbar, setCopySnackbar] = React.useState(false);
 
-  const { register, reset, control, watch, getValues } = useForm<AnyRecord>({ defaultValues: { provider: "", publicKey: "", privateKey: "", payFees: false, currency: "usd" } });
+  const { register, reset, control, watch, getValues } = useForm<AnyRecord>({ defaultValues: { provider: "", publicKey: "", privateKey: "", webhookKey: "", payFees: false, currency: "usd" } });
   const provider = watch("provider");
   const currency = watch("currency");
+
+  // Detect unknown providers to suppress wrong fields instead of silently showing Stripe labels.
+  const knownProvider = !provider || listPaymentProviders().some((p) => p.descriptor.adminValue?.toLowerCase() === String(provider).toLowerCase());
+  const descriptor = (provider && knownProvider) ? getPaymentProvider(provider).descriptor : undefined;
+  const providerOptions = listPaymentProviders().filter((p) => p.descriptor.selectableInAdmin && (!p.descriptor.betaOnly || !isProd || p.descriptor.adminValue === provider));
+
+  const webhookUrl = React.useMemo(() => {
+    if (!props.churchId || !descriptor?.keyLabels.webhook) return "";
+    const base = ApiHelper.getConfig("GivingApi")?.url?.replace(/\/+$/, "") || "";
+    return base ? base + "/donate/webhook/" + getPaymentProvider(provider).key + "?churchId=" + props.churchId : "";
+  }, [props.churchId, provider, descriptor?.keyLabels.webhook]);
+
+  const signupHref = descriptor?.signupUrl
+    ? descriptor.signupUrl(props.churchInfo, { ...UserHelper.user, contactInfo: UserHelper.person?.contactInfo })
+    : undefined;
+
+  const copyWebhookUrl = () => {
+    navigator.clipboard.writeText(webhookUrl).then(() => setCopySnackbar(true)).catch(() => {});
+  };
 
   const save = async () => {
     try {
@@ -32,13 +56,20 @@ export const GivingSettingsEdit: React.FC<Props> = (props) => {
       if (values.provider === "") {
         if (!UniqueIdHelper.isMissing(gateway?.id)) await ApiHelper.delete("/gateways/" + gateway.id, "GivingApi");
       } else {
-        if (values.privateKey === "") return;
+        const providerChanged = !!gateway && gateway.provider !== values.provider;
+        if ((gateway === null || providerChanged) && values.privateKey === "") {
+          const message = Locale.label("settings.givingSettingsEdit.privateKeyRequired");
+          setErrors([message]);
+          if (props.onError) props.onError([message]);
+          return;
+        }
         const gw: PaymentGatewaysInterface = gateway === null ? { churchId: props.churchId } : { ...gateway };
         gw.provider = values.provider;
         gw.publicKey = values.publicKey;
         gw.payFees = values.payFees;
         gw.currency = values.currency;
         if (values.privateKey !== "") gw.privateKey = values.privateKey;
+        if (values.webhookKey !== "") gw.webhookKey = values.webhookKey;
         await ApiHelper.post("/gateways", [gw], "GivingApi");
       }
     } catch (error: any) {
@@ -60,13 +91,14 @@ export const GivingSettingsEdit: React.FC<Props> = (props) => {
     const gateways = await ApiHelper.get("/gateways", "GivingApi");
     if (gateways.length === 0) {
       setGateway(null);
-      reset({ provider: "", publicKey: "", privateKey: "", payFees: false, currency: "usd" });
+      reset({ provider: "", publicKey: "", privateKey: "", webhookKey: "", payFees: false, currency: "usd" });
     } else {
       setGateway(gateways[0]);
       reset({
         provider: gateways[0].provider || "",
         publicKey: gateways[0].publicKey || "",
         privateKey: "",
+        webhookKey: "",
         payFees: gateways[0].payFees || false,
         currency: gateways[0].currency || "usd"
       });
@@ -82,9 +114,9 @@ export const GivingSettingsEdit: React.FC<Props> = (props) => {
   }, [props.saveTrigger]);
 
   const getKeys = () => {
-    if (!provider) return null;
-    const publicLabel = provider === "Paypal" ? Locale.label("settings.givingSettingsEdit.clientId") : Locale.label("settings.givingSettingsEdit.pubKey");
-    const privateLabel = provider === "Paypal" ? Locale.label("settings.givingSettingsEdit.clientSecret") : Locale.label("settings.givingSettingsEdit.secKey");
+    if (!descriptor) return null;
+    const publicLabel = Locale.label(descriptor.keyLabels.public);
+    const privateLabel = Locale.label(descriptor.keyLabels.private);
     return (
       <>
         <Grid size={{ xs: 12, md: 4 }}>
@@ -93,14 +125,15 @@ export const GivingSettingsEdit: React.FC<Props> = (props) => {
         <Grid size={{ xs: 12, md: 4 }}>
           <TextField fullWidth label={privateLabel} placeholder={Locale.label("settings.giving.secretPlaceholder")} type="password" {...register("privateKey")} />
         </Grid>
+        {descriptor.keyLabels.webhook && (
+          <Grid size={{ xs: 12, md: 4 }}>
+            <TextField fullWidth label={Locale.label(descriptor.keyLabels.webhook)} placeholder={Locale.label("settings.giving.secretPlaceholder")} type="password" helperText={Locale.label("settings.givingSettingsEdit.webhookKeyHelper")} {...register("webhookKey")} />
+          </Grid>
+        )}
         <Grid size={{ xs: 12 }}>
           <Stack direction="row" alignItems="center">
             <Typography>{Locale.label("settings.givingSettingsEdit.transFee")}</Typography>
-            <Tooltip title={Locale.label("settings.givingSettingsEdit.forceMsg")} arrow>
-              <IconButton data-testid="force-ssl-help-button" aria-label={Locale.label("settings.givingSettingsEdit.forceSslHelpAria")}>
-                <HelpIcon />
-              </IconButton>
-            </Tooltip>
+            <AppIconButton label={Locale.label("settings.givingSettingsEdit.forceMsg")} icon={<HelpIcon />} data-testid="force-ssl-help-button" />
             <Controller
               control={control}
               name="payFees"
@@ -113,11 +146,13 @@ export const GivingSettingsEdit: React.FC<Props> = (props) => {
   };
 
   const getCurrency = () => {
-    if (provider !== "Stripe") return null;
+    const currencyOptions = Array.isArray(descriptor?.currencies) ? descriptor!.currencies : [];
+    if (!currencyOptions.length) return null;
     return (
       <Grid size={{ xs: 12, md: 4 }}>
         <Typography variant="body2" color="textSecondary" component="div" sx={{ mb: 1 }}>
-          {Locale.label("settings.givingSettingsEdit.currencyHelper")} <a href="https://dashboard.stripe.com/settings/currencies" target="_blank" rel="noopener noreferrer">{Locale.label("settings.givingSettingsEdit.stripeDashboard")}</a>
+          {Locale.label("settings.givingSettingsEdit.currencyHelper")}
+          {descriptor?.currencyHelpUrl && <> <a href={descriptor.currencyHelpUrl} target="_blank" rel="noopener noreferrer">{Locale.label("settings.givingSettingsEdit.stripeDashboard")}</a></>}
         </Typography>
         <Controller
           control={control}
@@ -126,7 +161,7 @@ export const GivingSettingsEdit: React.FC<Props> = (props) => {
             <FormControl fullWidth>
               <InputLabel>{Locale.label("settings.givingSettingsEdit.currency")}</InputLabel>
               <Select {...field} label={Locale.label("settings.givingSettingsEdit.currency")}>
-                {stripeSupportedCurrencies.map((c) => <MenuItem key={c} value={c}>{c.toUpperCase()}</MenuItem>)}
+                {currencyOptions.map((c) => <MenuItem key={c} value={c}>{c.toUpperCase()}</MenuItem>)}
               </Select>
             </FormControl>
           )}
@@ -148,30 +183,43 @@ export const GivingSettingsEdit: React.FC<Props> = (props) => {
                 <InputLabel>{Locale.label("settings.givingSettingsEdit.prov")}</InputLabel>
                 <Select {...field} label={Locale.label("settings.givingSettingsEdit.prov")}>
                   <MenuItem value="">{Locale.label("settings.givingSettingsEdit.none")}</MenuItem>
-                  <MenuItem value="Stripe">{Locale.label("settings.givingSettingsEdit.stripe")}</MenuItem>
+                  {providerOptions.map((p) => (
+                    <MenuItem key={p.key} value={p.descriptor.adminValue}>{p.descriptor.label}</MenuItem>
+                  ))}
                 </Select>
               </FormControl>
             )}
           />
         </Grid>
-        {provider === "Stripe" && (
+        {provider && !knownProvider && (
           <Grid size={{ xs: 12 }}>
-            <Typography variant="body2" color="textSecondary" component="div">
-              {Locale.label("settings.givingSettingsEdit.stripeVisit")} <a href="https://dashboard.stripe.com/" target="_blank" rel="noopener noreferrer">{Locale.label("settings.givingSettingsEdit.stripeDashboard")}</a> {Locale.label("settings.givingSettingsEdit.stripeGoTo")} <strong>{Locale.label("settings.givingSettingsEdit.developersApiKeys")}</strong> {Locale.label("settings.givingSettingsEdit.stripeCopyKeys")}
-            </Typography>
+            {/* ponytail: admin-only misconfiguration warning — intentionally not localized (rare, English-only edge). */}
+            <Alert severity="warning">This church is configured with an unrecognized payment provider (&quot;{provider}&quot;). Please reselect a provider above.</Alert>
           </Grid>
         )}
-        {provider === "Paypal" && (
+        {descriptor && (descriptor.setupInstructionsKey || signupHref) && (
           <Grid size={{ xs: 12 }}>
             <Typography variant="body2" color="textSecondary" component="div">
-              {Locale.label("settings.givingSettingsEdit.paypalGoTo")} <a href="https://developer.paypal.com/" target="_blank" rel="noopener noreferrer">{Locale.label("settings.givingSettingsEdit.paypalDeveloper")}</a>, {Locale.label("settings.givingSettingsEdit.paypalLogin")} <strong>{Locale.label("settings.givingSettingsEdit.apiCredentials")}</strong> {Locale.label("settings.givingSettingsEdit.paypalCreateApp")}
+              {descriptor.setupInstructionsKey ? Locale.label(descriptor.setupInstructionsKey) : ""}
+              {signupHref && <> <a href={signupHref} target="_blank" rel="noopener noreferrer">{descriptor.label}</a></>}
             </Typography>
+            {webhookUrl && (
+              <Typography variant="body2" color="textSecondary" component="div" sx={{ mt: 1 }}>
+                {Locale.label("settings.givingSettingsEdit.kfWebhookInstructions")} <code style={{ wordBreak: "break-all" }}>{webhookUrl}</code>
+                <IconButton size="small" onClick={copyWebhookUrl} aria-label={Locale.label("settings.givingSettingsEdit.copyWebhookUrl")} sx={{ ml: 0.5, verticalAlign: "middle" }}>
+                  <ContentCopyIcon fontSize="small" />
+                </IconButton>
+              </Typography>
+            )}
           </Grid>
         )}
         {getKeys()}
         {getCurrency()}
       </Grid>
       <FeeOptionsSettingsEdit churchId={props.churchId} saveTrigger={props.saveTrigger} provider={provider} currency={currency} />
+      <Snackbar open={copySnackbar} autoHideDuration={2500} onClose={() => setCopySnackbar(false)} anchorOrigin={{ vertical: "bottom", horizontal: "center" }}>
+        <Alert severity="success" variant="filled" onClose={() => setCopySnackbar(false)}>{Locale.label("settings.givingSettingsEdit.webhookUrlCopied")}</Alert>
+      </Snackbar>
     </>
   );
 };

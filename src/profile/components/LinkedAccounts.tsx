@@ -1,23 +1,20 @@
-import React, { useEffect } from "react";
 import { type SettingInterface } from "@churchapps/helpers";
 import { Locale, ApiHelper } from "@churchapps/apphelper";
+import { useQuery } from "@tanstack/react-query";
 import { Button, Card, CardContent, CardMedia, Grid } from "@mui/material";
+import { Link as LinkIcon } from "@mui/icons-material";
+import { CardWithHeader } from "../../components/ui";
 
 export const LinkedAccounts = () => {
-  const [settings, setSettings] = React.useState<SettingInterface[]>([]);
-
-  const loadData = () => {
-    ApiHelper.get("/settings/my", "ContentApi").then((data) => {
-      setSettings(data);
-    });
-  };
+  const settingsQuery = useQuery<SettingInterface[]>({ queryKey: ["/settings/my", "ContentApi"], placeholderData: [] });
+  const settings = settingsQuery.data || [];
 
   const unlinkPraiseCharts = async () => {
     const token = settings.find((s) => s.keyName === "praiseChartsAccessToken");
     const secret = settings.find((s) => s.keyName === "praiseChartsAccessTokenSecret");
     if (secret) await ApiHelper.delete("/settings/my/" + secret.id, "ContentApi");
     if (token) await ApiHelper.delete("/settings/my/" + token.id, "ContentApi");
-    loadData();
+    settingsQuery.refetch();
   };
 
   const openOAuthPopup = async () => {
@@ -39,7 +36,7 @@ export const LinkedAccounts = () => {
       } catch (error) {
         console.error("Failed to complete OAuth flow:", error);
       }
-      loadData();
+      settingsQuery.refetch();
       window.removeEventListener("message", handleMessage);
     };
 
@@ -47,16 +44,11 @@ export const LinkedAccounts = () => {
     window.addEventListener("message", handleMessage);
   };
 
-  useEffect(loadData, []);
-
   const praiseChartsAccessToken = settings.find((s) => s.keyName === "praiseChartsAccessToken")?.value;
 
   return (
-    <>
-      <div style={{ marginBottom: 15 }}>
-        <b>{Locale.label("profile.profilePage.linkedAccounts")}</b>
-      </div>
-      <Grid container spacing={3} style={{ marginBottom: 25 }}>
+    <CardWithHeader title={Locale.label("profile.profilePage.linkedAccounts")} icon={<LinkIcon />}>
+      <Grid container spacing={3}>
         <Grid size={{ sm: 3 }}>
           <Card>
             <CardContent sx={{ textAlign: "center" }}>
@@ -81,7 +73,7 @@ export const LinkedAccounts = () => {
                 </>
               )}
               {praiseChartsAccessToken && (
-                <Button variant="contained" color="error" onClick={unlinkPraiseCharts}>
+                <Button variant="contained" onClick={unlinkPraiseCharts}>
                   {Locale.label("profile.linkedAccounts.unlink")}
                 </Button>
               )}
@@ -89,6 +81,6 @@ export const LinkedAccounts = () => {
           </Card>
         </Grid>
       </Grid>
-    </>
+    </CardWithHeader>
   );
 };

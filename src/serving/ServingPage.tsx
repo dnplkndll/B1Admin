@@ -4,11 +4,12 @@ import { TeamList } from "./components/TeamList";
 import { ContentProviderAuthManager } from "./components/ContentProviderAuthManager";
 import { GroupAdd } from "../groups/components";
 import { Locale, PageHeader, Loading, ArrayHelper, UserHelper, Permissions } from "@churchapps/apphelper";
-import { Box, Button, Grid, Tabs, Tab, FormControlLabel, Switch } from "@mui/material";
+import { Box, Button, Grid, FormControlLabel, Switch } from "@mui/material";
 import { Assignment as AssignmentIcon, Add as AddIcon, Edit as EditIcon } from "@mui/icons-material";
 import { useQuery } from "@tanstack/react-query";
 import { type GroupInterface, type GroupMemberInterface } from "@churchapps/helpers";
-import { EmptyState } from "../components/ui";
+import { EmptyState, HeaderPrimaryButton, HeaderSecondaryButton } from "../components/ui";
+import { NavigationTabs } from "../components/ui/NavigationTabs";
 import UserContext from "../UserContext";
 import { Link } from "react-router-dom";
 
@@ -28,7 +29,6 @@ export const ServingPage = () => {
     return ministries.data && ministries.data.length > 0 ? ArrayHelper.getIds(ministries.data, "id") : [];
   }, [ministries.data]);
 
-  // Only admins need group members (for membership filtering and Show All toggle)
   const groupMembers = useQuery<GroupMemberInterface[]>({
     queryKey: ["/groupMembers", "MembershipApi", groupIds],
     enabled: isAdmin && groupIds.length > 0,
@@ -58,7 +58,6 @@ export const ServingPage = () => {
 
   const selectedMinistry = groups.find((g) => g.id === selectedMinistryId);
 
-  // Auto-select first ministry from filtered groups, or reset if current selection is not in filtered list
   React.useEffect(() => {
     if (groups.length > 0) {
       const isCurrentSelectionValid = groups.some(g => g.id === selectedMinistryId);
@@ -70,11 +69,10 @@ export const ServingPage = () => {
 
   if (ministries.isLoading) return <Loading />;
 
-  // Show add ministry form
   if (showAdd) {
     return (
       <>
-        <PageHeader title={Locale.label("plans.plansPage.addMinistry")} subtitle={Locale.label("plans.plansPage.subtitle")} />
+        <PageHeader icon={<AssignmentIcon />} title={Locale.label("plans.plansPage.addMinistry")} subtitle={Locale.label("plans.plansPage.subtitle")} />
         <Box sx={{ p: 3 }}>
           <GroupAdd updatedFunction={handleAddUpdated} tags="ministry" categoryName="Ministry" />
         </Box>
@@ -82,11 +80,10 @@ export const ServingPage = () => {
     );
   }
 
-  // No ministries - prompt to create one
   if (groups.length === 0) {
     return (
       <>
-        <PageHeader title={Locale.label("plans.plansPage.selMin")} subtitle={Locale.label("plans.plansPage.subtitle")} />
+        <PageHeader icon={<AssignmentIcon />} title={Locale.label("plans.plansPage.selMin")} subtitle={Locale.label("plans.plansPage.subtitle")} />
         <Box sx={{ p: 3 }}>
           <EmptyState
             icon={<AssignmentIcon />}
@@ -105,10 +102,21 @@ export const ServingPage = () => {
     );
   }
 
-  // Has ministries - show selector and content
   return (
     <>
-      <PageHeader title={selectedMinistry?.name || Locale.label("components.wrapper.serving")} subtitle={Locale.label("plans.ministryPage.subtitle")}>
+      <PageHeader
+        icon={<AssignmentIcon />}
+        title={selectedMinistry?.name || Locale.label("components.wrapper.serving")}
+        subtitle={Locale.label("plans.ministryPage.subtitle")}
+        tabs={groups.length > 1 && (
+          <NavigationTabs
+            selectedTab={selectedMinistryId || ""}
+            onTabChange={setSelectedMinistryId}
+            tabs={groups.map((g) => ({ value: g.id, label: g.name }))}
+            onHeader
+          />
+        )}
+      >
         {isAdmin && (
           <FormControlLabel
             control={
@@ -125,64 +133,16 @@ export const ServingPage = () => {
         {UserHelper.checkAccess(Permissions.membershipApi.groups.edit) && (
           <>
             {selectedMinistry && (
-              <Button
-                component={Link}
-                to={`/groups/${selectedMinistry.id}?tag=ministry`}
-                variant="outlined"
-                startIcon={<EditIcon />}
-                sx={{
-                  color: "#FFF",
-                  borderColor: "rgba(255,255,255,0.5)",
-                  mr: 1,
-                  "&:hover": {
-                    borderColor: "#FFF",
-                    backgroundColor: "rgba(255,255,255,0.1)"
-                  }
-                }}>
+              <HeaderSecondaryButton component={Link} to={`/groups/${selectedMinistry.id}?tag=ministry`} startIcon={<EditIcon />}>
                 {Locale.label("plans.plansPage.editMinistry")}
-              </Button>
+              </HeaderSecondaryButton>
             )}
-            <Button
-              variant="outlined"
-              startIcon={<AddIcon />}
-              onClick={handleShowAdd}
-              sx={{
-                color: "#FFF",
-                borderColor: "rgba(255,255,255,0.5)",
-                "&:hover": {
-                  borderColor: "#FFF",
-                  backgroundColor: "rgba(255,255,255,0.1)"
-                }
-              }}>
+            <HeaderPrimaryButton startIcon={<AddIcon />} onClick={handleShowAdd}>
               {Locale.label("plans.plansPage.addMinistry")}
-            </Button>
+            </HeaderPrimaryButton>
           </>
         )}
       </PageHeader>
-
-      {/* Ministry Tabs */}
-      {groups.length > 1 && (
-        <Box sx={{ borderBottom: 1, borderColor: "divider", backgroundColor: "background.paper" }}>
-          <Tabs
-            value={selectedMinistryId || false}
-            onChange={(_e, value) => setSelectedMinistryId(value)}
-            variant="fullWidth"
-            sx={{
-              minHeight: 48,
-              "& .MuiTab-root": {
-                textTransform: "none",
-                fontSize: "0.95rem",
-                fontWeight: 700,
-                minHeight: 48
-              }
-            }}
-          >
-            {groups.map((g) => (
-              <Tab key={g.id} value={g.id} label={g.name} />
-            ))}
-          </Tabs>
-        </Box>
-      )}
 
       <Box sx={{ p: 3 }}>
         {selectedMinistry && (

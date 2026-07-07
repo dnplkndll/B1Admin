@@ -4,10 +4,15 @@ import { ApiHelper } from "../../helpers";
 import { Locale } from "@churchapps/apphelper";
 import { StyleHelper } from "@churchapps/apphelper/website";
 import { Box, Container } from "@mui/material";
-import { DraggableWrapper, YoutubeBackground, DroppableArea, Element } from "@churchapps/apphelper/website";
+import { DraggableWrapper, YoutubeBackground, DroppableArea, Element, SectionDivider, parseDividerConfig } from "@churchapps/apphelper/website";
 import type { ChurchInterface } from "@churchapps/helpers";
+import { ElementTypes } from "@churchapps/helpers";
 import { ElementSelection } from "./ElementSelection";
 import { FloatingElementSelection } from "./FloatingElementSelection";
+import { SectionToolbar } from "./SectionToolbar";
+import { hasExtractableContent } from "./templates/sectionTemplates";
+import { getElementTypeMeta } from "./elements/elementTypeMeta";
+import { trackSave } from "./saveStatusTracker";
 
 interface Props {
   first?: boolean,
@@ -25,6 +30,14 @@ interface Props {
   onElementMove?: (elementId: string, direction: "up" | "down") => void;
   onElementUpdate?: (element: ElementInterface) => void;
   onSectionClick?: (section: SectionInterface) => void;
+  onSectionMove?: (section: SectionInterface, direction: "up" | "down") => void;
+  onSectionDuplicate?: (sectionId: string) => void;
+  onSectionDelete?: (section: SectionInterface) => void;
+  onSectionSwitchLayout?: (section: SectionInterface) => void;
+  onSectionAiRewrite?: (section: SectionInterface) => void;
+  isFirstSection?: boolean;
+  isLastSection?: boolean;
+  isSectionEditing?: boolean;
 }
 
 export const Section: React.FC<Props> = props => {
@@ -41,7 +54,6 @@ export const Section: React.FC<Props> = props => {
     }
   };
 
-  // Helper function to find element by ID in the nested structure
   const findElementById = (elements: ElementInterface[], id: string): ElementInterface | null => {
     for (const el of elements) {
       if (el.id === id) return el;
@@ -135,6 +147,21 @@ export const Section: React.FC<Props> = props => {
     };
   }, [props.onEdit, props.section]);
 
+  // Stamp type labels onto wrappers so the hover CSS chip (content: attr(data-el-label)) can render them.
+  useEffect(() => {
+    const root = sectionContentRef.current;
+    if (!root || !props.onEdit) return;
+    root.querySelectorAll('[id^="el-"]').forEach((node) => {
+      const el = findElementById(props.section?.elements || [], node.id.substring(3));
+      if (!el) return;
+      const wrapper = (node.closest(".elementWrapper") as HTMLElement) || (node as HTMLElement);
+      wrapper.setAttribute("data-el-label", getElementTypeMeta(el.elementType).label);
+    });
+    root.querySelectorAll(".elementWrapper.rawHTML").forEach((wrapper) => {
+      wrapper.setAttribute("data-el-label", getElementTypeMeta("rawHTML").label);
+    });
+  }, [props.section, props.onEdit]);
+
   const findRawHtmlElementByWrapper = (rawHtmlWrapper: HTMLElement): ElementInterface | null => {
     const root = sectionContentRef.current;
     if (!root) return null;
@@ -158,7 +185,6 @@ export const Section: React.FC<Props> = props => {
     return rawHtmlElements[rawHtmlIndex] || null;
   };
 
-  // Helper to find innermost nested element inside any element that contains children
   const findInnermostNestedElement = (containerEl: HTMLElement, target: HTMLElement, containerId: string): string | null => {
     const element = findElementById(props.section?.elements || [], containerId);
     if (element?.elements && element.elements.length > 0) {
@@ -186,7 +212,6 @@ export const Section: React.FC<Props> = props => {
     return null;
   };
 
-  // Handle clicks on any element in the section (including nested ones in rows)
   const handleSectionClick = (event: React.MouseEvent) => {
     const target = event.target as HTMLElement;
     const rawHtmlWrapper = target.closest(".elementWrapper.rawHTML") as HTMLElement;
@@ -204,10 +229,8 @@ export const Section: React.FC<Props> = props => {
     if (target.closest("button")) return;
     if (target.closest(".MuiDialog-root")) return;
 
-    // Find the closest element wrapper - look for data-element-id attribute or el-{id} pattern
     let elementId: string | null = null;
 
-    // First, try to find element by data-element-id attribute (our wrapper for top-level elements)
     const wrapperWithId = target.closest("[data-element-id]") as HTMLElement;
     if (wrapperWithId) {
       elementId = wrapperWithId.getAttribute("data-element-id");
@@ -221,7 +244,6 @@ export const Section: React.FC<Props> = props => {
       }
     }
 
-    // If not found, try to find by el-{id} pattern (used by elements inside rows)
     if (!elementId) {
       const elDiv = target.closest('[id^="el-"]') as HTMLElement;
       if (elDiv && elDiv.id.startsWith("el-")) {
@@ -248,7 +270,6 @@ export const Section: React.FC<Props> = props => {
     }
   };
 
-  // Handle double-clicks on any element in the section (including nested ones in rows)
   const handleSectionDoubleClick = (event: React.MouseEvent) => {
     if (!props.onElementDoubleClick) return;
 
@@ -265,7 +286,6 @@ export const Section: React.FC<Props> = props => {
     }
     let elementId: string | null = null;
 
-    // First, try to find element by data-element-id attribute (our wrapper)
     const wrapperWithId = target.closest("[data-element-id]") as HTMLElement;
     if (wrapperWithId) {
       elementId = wrapperWithId.getAttribute("data-element-id");
@@ -279,7 +299,6 @@ export const Section: React.FC<Props> = props => {
       }
     }
 
-    // If not found, try to find by el-{id} pattern (from RowElement)
     if (!elementId) {
       const elDiv = target.closest('[id^="el-"]') as HTMLElement;
       if (elDiv && elDiv.id.startsWith("el-")) {
@@ -347,7 +366,7 @@ export const Section: React.FC<Props> = props => {
 
   const getStyle = () => {
 
-    let result: CSSProperties = {};
+    let result: CSSProperties;
     if (props.section.background.indexOf("/") > -1) {
       result = { backgroundImage: "url('" + props.section.background + "')" };
     } else {
@@ -372,12 +391,23 @@ export const Section: React.FC<Props> = props => {
     return result;
   };
 
+  const topDivider = parseDividerConfig(props.section.answers?.dividerTop);
+  const bottomDivider = parseDividerConfig(props.section.answers?.dividerBottom);
+
+  const getDividers = () => (
+    <>
+      {topDivider && <SectionDivider position="top" {...topDivider} />}
+      {bottomDivider && <SectionDivider position="bottom" {...bottomDivider} />}
+    </>
+  );
+
   const getClassName = () => {
     let result = "section";
     if (props.section.background.indexOf("/") > -1) result += " sectionBG";
     if (props.section.textColor === "light") result += " sectionDark";
     if (props.first) result += " sectionFirst";
     if (props.onEdit) result += " sectionWrapper";
+    if (topDivider || bottomDivider) result += " sectionWithDivider";
 
     let hc = props.section.headingColor;
     if (hc) {
@@ -421,12 +451,13 @@ export const Section: React.FC<Props> = props => {
       element.sort = sort;
       element.sectionId = props.section.id;
       if (props.onBeforeChange) props.onBeforeChange("Before moving element");
-      ApiHelper.post("/elements", [element], "ContentApi").then(() => { props.onMove(); });
+      trackSave(ApiHelper.post("/elements", [element], "ContentApi")).then(() => { props.onMove(); });
     } else {
       const element: ElementInterface = { sectionId: props.section.id, elementType: data.elementType, sort, blockId: props.section.blockId };
       if (data.blockId) element.answersJSON = JSON.stringify({ targetBlockId: data.blockId });
       else if (data.elementType === "row") element.answersJSON = JSON.stringify({ columns: "6,6" });
       else if (data.elementType === "box") element.answersJSON = JSON.stringify({ background: "var(--light)", text: "var(--dark)" });
+      else element.answersJSON = JSON.stringify(ElementTypes[data.elementType]?.defaults ?? {});
       props.onEdit(null, element);
     }
   };
@@ -436,7 +467,7 @@ export const Section: React.FC<Props> = props => {
     return (<DroppableArea accept={["element", "elementBlock"]} text={Locale.label("site.contentEditor.dropToAddElement")} onDrop={(data) => handleDrop(data, sort)} updateIsDragging={(dragging) => setIsDragging(dragging)} />);
   };
 
-  const contents = (<Container ref={sectionContentRef} onClick={handleSectionClick} onDoubleClick={handleSectionDoubleClick}>
+  const contents = (<Container ref={sectionContentRef} className={isDragging ? "dragActive" : undefined} onClick={handleSectionClick} onDoubleClick={handleSectionDoubleClick}>
     {props.onEdit && getAddElement(0)}
     {getElements()}
   </Container>);
@@ -453,24 +484,30 @@ export const Section: React.FC<Props> = props => {
     return result;
   };
 
-  // Check if the selected element is a nested element (inside a row, not a top-level element)
   const isNestedElementSelected = () => {
     if (!props.selectedElementId || !props.section?.elements) return false;
-    // Check if the selected element is a top-level element
     const isTopLevel = props.section.elements.some(e => e.id === props.selectedElementId);
     if (isTopLevel) return false;
-    // Check if it exists in the nested structure
     const found = findElementById(props.section.elements, props.selectedElementId);
     return !!found;
   };
 
-  // Get the selected nested element
   const getSelectedNestedElement = (): ElementInterface | null => {
     if (!props.selectedElementId || !props.section?.elements) return null;
     return findElementById(props.section.elements, props.selectedElementId);
   };
 
-  // Render floating selection for nested elements
+  const findParentElement = (elements: ElementInterface[], id: string): ElementInterface | null => {
+    for (const el of elements) {
+      if (el.elements?.some((c) => c.id === id)) return el;
+      if (el.elements?.length) {
+        const found = findParentElement(el.elements, id);
+        if (found) return found;
+      }
+    }
+    return null;
+  };
+
   const renderFloatingSelection = () => {
     if (!isNestedElementSelected() || !props.onElementDelete || !props.onElementDuplicate || !props.onElementMove) return null;
 
@@ -479,10 +516,16 @@ export const Section: React.FC<Props> = props => {
 
     const type = (selectedElement.elementType || "").toLowerCase();
 
-    const targetSelector =
+    let targetSelector =
       type === "rawhtml" || type === "html" || type === "embed"
         ? `.elementWrapper.rawHTML[data-element-id="${props.selectedElementId}"]`
         : `#el-${props.selectedElementId}`;
+    if (type === "column") {
+      // Columns render without an el-{id} node; target the indexed .rowColumn inside the parent row instead.
+      const parent = findParentElement(props.section?.elements || [], selectedElement.id);
+      const idx = parent?.elements?.findIndex((c) => c.id === selectedElement.id) ?? -1;
+      if (parent?.id && idx >= 0) targetSelector = `#el-${parent.id} .rowColumn-${idx}`;
+    }
 
     return (
       <FloatingElementSelection
@@ -497,17 +540,32 @@ export const Section: React.FC<Props> = props => {
     );
   };
 
-  let result = <></>;
+  let result: React.ReactElement;
   if (props.section.background && props.section.background.indexOf("youtube:") > -1) {
     const youtubeId = props.section.background.split(":")[1];
-    result = (<>{getSectionAnchor()}<YoutubeBackground isDragging={isDragging} id={getId()} videoId={youtubeId} overlay="rgba(0,0,0,.4)" contentClassName={getVideoClassName()}>{contents}</YoutubeBackground></>);
-  } else result = (<>{getSectionAnchor()}<Box component="div" sx={{ "&&:before": { opacity: props.section.answers?.backgroundOpacity || "" } }} style={getStyle()} className={getClassName()} id={getId()}>{contents}</Box></>);
+    result = (<>{getSectionAnchor()}<YoutubeBackground isDragging={isDragging} id={getId()} videoId={youtubeId} overlay="rgba(0,0,0,.4)" contentClassName={getVideoClassName() + ((topDivider || bottomDivider) ? " sectionWithDivider" : "")}>{getDividers()}{contents}</YoutubeBackground></>);
+  } else result = (<>{getSectionAnchor()}<Box component="div" sx={{ "&&:before": { opacity: props.section.answers?.backgroundOpacity || "" } }} style={getStyle()} className={getClassName()} id={getId()}>{getDividers()}{contents}</Box></>);
 
   if (props.onEdit) {
     return (
-      <div>
+      <div className="sectionEditWrapper" data-section-id={props.section.id}>
         <DraggableWrapper dndType="section" elementType="section" data={props.section} onDoubleClick={(e: React.MouseEvent) => { const target = e.target as HTMLElement; if (!target.closest(".elementWrapper")) { props.onEdit(props.section, null); } }}>
           {result}
+          <div className="sectionHoverEdge" />
+          {props.onSectionMove && (
+            <SectionToolbar
+              isFirst={!!props.isFirstSection}
+              isLast={!!props.isLastSection}
+              visible={props.isSectionEditing}
+              onSettings={() => props.onEdit(props.section, null)}
+              onMoveUp={() => props.onSectionMove(props.section, "up")}
+              onMoveDown={() => props.onSectionMove(props.section, "down")}
+              onDuplicate={() => props.onSectionDuplicate?.(props.section.id)}
+              onDelete={() => props.onSectionDelete?.(props.section)}
+              onSwitchLayout={props.onSectionSwitchLayout && !props.section.targetBlockId && hasExtractableContent(props.section) ? () => props.onSectionSwitchLayout(props.section) : undefined}
+              onAiRewrite={props.onSectionAiRewrite && !props.section.targetBlockId ? () => props.onSectionAiRewrite(props.section) : undefined}
+            />
+          )}
         </DraggableWrapper>
         {renderFloatingSelection()}
       </div>

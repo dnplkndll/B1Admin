@@ -11,6 +11,7 @@ import {
   Typography
 } from "@mui/material";
 import { ApiHelper, UserHelper, Locale } from "@churchapps/apphelper";
+import { AuthShell } from "../components/AuthShell";
 
 interface DeviceInfo {
   userCode: string;
@@ -37,7 +38,6 @@ export const DeviceAuthPage: React.FC = () => {
   const [error, setError] = React.useState<string | null>(null);
   const [success, setSuccess] = React.useState(false);
   const [step, setStep] = React.useState<"code" | "confirm">("code");
-  const [autoSubmitted, setAutoSubmitted] = React.useState(false);
 
   // Use the already-selected church from login
   const churchName = UserHelper.currentUserChurch?.church?.name;
@@ -147,7 +147,7 @@ export const DeviceAuthPage: React.FC = () => {
       return (
         <>
           <div style={{ textAlign: "center" }}>
-            <Icon style={{ fontSize: 120, marginTop: 30, color: "var(--success-main, #4caf50)" }}>check_circle</Icon>
+            <Icon sx={{ fontSize: 120, mt: 3.75, color: "success.main" }}>check_circle</Icon>
             <h2>{Locale.label("device.deviceAuthPage.deviceAuthorizedHeading")}</h2>
             <p>{Locale.label("device.deviceAuthPage.deviceAuthorizedMessage")}</p>
           </div>
@@ -211,7 +211,9 @@ export const DeviceAuthPage: React.FC = () => {
             <Icon sx={{ fontSize: 120, mt: 3.75, color: "text.secondary" }}>lock</Icon>
             <h2>{clientName || Locale.label("device.deviceAuthPage.loading")}</h2>
             <p>
-              <span dangerouslySetInnerHTML={{ __html: Locale.label("device.deviceAuthPage.confirmPrompt").replace("{churchName}", "<b>" + (churchName || "") + "</b>") }} />
+              {Locale.label("device.deviceAuthPage.confirmPrompt").split("<b>{churchName}</b>").map((part, i, arr) => (
+                <React.Fragment key={i}>{part}{i < arr.length - 1 && <b>{churchName || ""}</b>}</React.Fragment>
+              ))}
             </p>
           </div>
           <div style={{ marginLeft: 50, marginRight: 50 }}>
@@ -238,7 +240,6 @@ export const DeviceAuthPage: React.FC = () => {
                 <Button
                   fullWidth
                   variant="contained"
-                  color="error"
                   onClick={handleDeny}
                   disabled={loading}
                 >
@@ -266,31 +267,12 @@ export const DeviceAuthPage: React.FC = () => {
   };
 
   return (
-    <Box sx={{ display: "flex", backgroundColor: "background.default", minHeight: "100vh" }}>
-      <div style={{ marginLeft: "auto", marginRight: "auto", paddingTop: 20 }}>
-        <Box
-          sx={{
-            width: 500,
-            minHeight: 100,
-            backgroundColor: "background.paper",
-            border: "1px solid",
-            borderColor: "divider",
-            borderRadius: "5px",
-            padding: "10px"
-          }}
-          px="16px"
-          mx="auto"
-        >
-          <div style={{ textAlign: "center", margin: 50 }}>
-            <img src={"/images/logo-login.png"} alt={Locale.label("device.deviceAuthPage.altLogo")} />
-          </div>
-          <Alert severity="info" style={{ fontWeight: "bold" }}>
-            {success ? Locale.label("device.deviceAuthPage.deviceAuthorizedAlert") : Locale.label("device.deviceAuthPage.authorizationRequired")}
-          </Alert>
-          {renderContent()}
-        </Box>
-      </div>
-    </Box>
+    <AuthShell logoAlt={Locale.label("device.deviceAuthPage.altLogo")}>
+      <Alert severity="info" style={{ fontWeight: "bold" }}>
+        {success ? Locale.label("device.deviceAuthPage.deviceAuthorizedAlert") : Locale.label("device.deviceAuthPage.authorizationRequired")}
+      </Alert>
+      {renderContent()}
+    </AuthShell>
   );
 };
 

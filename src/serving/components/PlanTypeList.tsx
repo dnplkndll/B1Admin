@@ -1,12 +1,13 @@
 import React from "react";
-import { Box, Button, Typography, Stack, IconButton, Paper, Table, TableBody, TableCell, TableRow, TableHead } from "@mui/material";
+import { Box, Button, Typography, Stack, Paper, Table, TableBody, TableCell, TableRow, TableHead } from "@mui/material";
 import { Add as AddIcon, Assignment as AssignmentIcon, Edit as EditIcon } from "@mui/icons-material";
-import { Locale, Loading, UserHelper, Permissions } from "@churchapps/apphelper";
+import { Locale, Loading } from "@churchapps/apphelper";
+import { AppIconButton } from "../../components/ui/AppIconButton";
 import { useQuery } from "@tanstack/react-query";
 import { type GroupInterface } from "@churchapps/helpers";
-import { type PlanTypeInterface } from "../../helpers";
+import { type PlanTypeInterface, hasPlansEditAccess } from "../../helpers";
 import { PlanTypeEdit } from "./PlanTypeEdit";
-import { EmptyState } from "../../components/ui";
+import { CountChip, EmptyState } from "../../components/ui";
 import { Link } from "react-router-dom";
 
 interface Props {
@@ -16,7 +17,7 @@ interface Props {
 export const PlanTypeList = React.memo(({ ministry }: Props) => {
   const [showAdd, setShowAdd] = React.useState(false);
   const [editItem, setEditItem] = React.useState<PlanTypeInterface | null>(null);
-  const hasPlansEdit = UserHelper.checkAccess(Permissions.membershipApi.plans.edit);
+  const hasPlansEdit = hasPlansEditAccess();
 
   const myMinistriesQuery = useQuery<GroupInterface[]>({
     queryKey: ["/groups/my/ministry", "MembershipApi"],
@@ -58,10 +59,11 @@ export const PlanTypeList = React.memo(({ ministry }: Props) => {
     <Box>
       <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ mb: 2 }}>
         <Stack direction="row" alignItems="center" spacing={1}>
-          <AssignmentIcon sx={{ color: "primary.main" }} />
-          <Typography variant="h6" sx={{ fontWeight: 600 }}>
+          <AssignmentIcon sx={{ color: "primary.main", fontSize: 20 }} />
+          <Typography variant="h6">
             {Locale.label("plans.planTypeList.planTypes")}
           </Typography>
+          {types.length > 0 && <CountChip count={types.length} />}
         </Stack>
         {canEdit && types.length > 0 && (
           <Button
@@ -94,7 +96,7 @@ export const PlanTypeList = React.memo(({ ministry }: Props) => {
         <Paper sx={{ width: "100%", overflow: "hidden" }}>
           <Table size="small">
             <TableHead>
-              <TableRow sx={{ backgroundColor: "background.subtle" }}>
+              <TableRow>
                 <TableCell sx={{ fontWeight: 600, color: "text.primary" }}>{Locale.label("common.name")}</TableCell>
                 {canEdit && <TableCell align="right" sx={{ width: 50 }}></TableCell>}
               </TableRow>
@@ -112,7 +114,7 @@ export const PlanTypeList = React.memo(({ ministry }: Props) => {
                       to={`/serving/planTypes/${planType.id}`}
                       sx={{
                         textDecoration: "none",
-                        color: "primary.main",
+                        color: "var(--link)",
                         fontWeight: 500,
                         "&:hover": { textDecoration: "underline" }
                       }}>
@@ -120,15 +122,14 @@ export const PlanTypeList = React.memo(({ ministry }: Props) => {
                     </Typography>
                   </TableCell>
                   {canEdit && (
-                    <TableCell align="right">
-                      <IconButton
-                        size="small"
+                    <TableCell align="right" className="rowActions">
+                      <AppIconButton
+                        label={Locale.label("common.edit")}
+                        icon={<EditIcon />}
                         onClick={(e) => {
                           e.preventDefault();
                           handleEdit(planType);
-                        }}>
-                        <EditIcon fontSize="small" />
-                      </IconButton>
+                        }} />
                     </TableCell>
                   )}
                 </TableRow>

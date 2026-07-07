@@ -1,15 +1,13 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import {
   Box,
   Stack,
   Typography,
-  IconButton,
   List,
   ListItem,
   ListItemIcon,
   ListItemText,
   ListItemSecondaryAction,
-  Tooltip,
   Divider,
   Icon,
   Chip
@@ -20,10 +18,11 @@ import {
   ArrowDownward as ArrowDownIcon,
   Tab as TabIcon
 } from "@mui/icons-material";
-import { ApiHelper, Locale } from "@churchapps/apphelper";
+import { Locale } from "@churchapps/apphelper";
 import type { LinkInterface } from "@churchapps/helpers";
 import { CardWithHeader, EmptyState } from "../../components/ui";
-import { ensureSequentialSort, moveItemDown, moveItemUp } from "../../helpers/SortHelper";
+import { AppIconButton } from "../../components/ui/AppIconButton";
+import { useReorderableLinks } from "../../hooks";
 
 interface Props {
   onSelected?: (tab: LinkInterface) => void;
@@ -31,27 +30,7 @@ interface Props {
 }
 
 export function AppTabs({ onSelected = () => {}, refreshKey = 0 }: Props) {
-  const [tabs, setTabs] = useState<LinkInterface[]>([]);
-
-  const loadData = () => {
-    ApiHelper.get("/links?category=b1Tab", "ContentApi").then((data: any) => setTabs(data)).catch(() => { setTabs([]); });
-  };
-
-  const saveChanges = () => {
-    ApiHelper.post("/links", tabs, "ContentApi").then(loadData);
-  };
-
-  const moveUp = (idx: number) => {
-    ensureSequentialSort(tabs);
-    moveItemUp(tabs, idx);
-    saveChanges();
-  };
-
-  const moveDown = (idx: number) => {
-    ensureSequentialSort(tabs);
-    moveItemDown(tabs, idx);
-    saveChanges();
-  };
+  const { links: tabs, moveUp, moveDown } = useReorderableLinks("b1Tab", { refresh: refreshKey });
 
   const handleEdit = (tab: LinkInterface) => {
     onSelected(tab);
@@ -133,48 +112,15 @@ export function AppTabs({ onSelected = () => {}, refreshKey = 0 }: Props) {
         />
         <ListItemSecondaryAction>
           <Stack direction="row" spacing={0.5}>
-            <Tooltip title={Locale.label("settings.appTabs.moveUp")} arrow>
-              <span>
-                <IconButton
-                  size="small"
-                  onClick={() => moveUp(index)}
-                  disabled={index === 0}
-                  sx={{ color: "text.secondary" }}
-                >
-                  <ArrowUpIcon fontSize="small" />
-                </IconButton>
-              </span>
-            </Tooltip>
-            <Tooltip title={Locale.label("settings.appTabs.moveDown")} arrow>
-              <span>
-                <IconButton
-                  size="small"
-                  onClick={() => moveDown(index)}
-                  disabled={index === tabs.length - 1}
-                  sx={{ color: "text.secondary" }}
-                >
-                  <ArrowDownIcon fontSize="small" />
-                </IconButton>
-              </span>
-            </Tooltip>
-            <Tooltip title={Locale.label("settings.appTabs.editTab")} arrow>
-              <IconButton
-                size="small"
-                onClick={() => handleEdit(tab)}
-                sx={{ color: "primary.main" }}
-              >
-                <EditIcon fontSize="small" />
-              </IconButton>
-            </Tooltip>
+            <AppIconButton label={Locale.label("settings.appTabs.moveUp")} icon={<ArrowUpIcon />} onClick={() => moveUp(index)} disabled={index === 0} />
+            <AppIconButton label={Locale.label("settings.appTabs.moveDown")} icon={<ArrowDownIcon />} onClick={() => moveDown(index)} disabled={index === tabs.length - 1} />
+            <AppIconButton label={Locale.label("common.edit")} icon={<EditIcon />} tone="card" onClick={() => handleEdit(tab)} />
           </Stack>
         </ListItemSecondaryAction>
       </ListItem>
       {index < tabs.length - 1 && <Divider />}
     </React.Fragment>
   );
-
-  useEffect(loadData, []);
-  useEffect(loadData, [refreshKey]);
 
   return (
     <CardWithHeader

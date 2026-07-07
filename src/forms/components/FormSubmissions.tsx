@@ -9,10 +9,10 @@ import {
 import {
   DateHelper,
   DisplayBox,
-  ExportLink,
   Locale,
   Loading
 } from "@churchapps/apphelper";
+import { CountChip, ExportButton, hoverRowSx } from "../../components/ui";
 import { useReactToPrint } from "react-to-print";
 import { Grid, Icon, Table, TableBody, TableRow, TableCell, TableHead, Card, Box, Typography, Stack } from "@mui/material";
 import { useQuery } from "@tanstack/react-query";
@@ -34,7 +34,7 @@ export const FormSubmissions: React.FC<Props> = memo((props) => {
     []
   );
   const contentRef: any = useRef<HTMLDivElement>(null);
-  const handleSummaryPrint = useReactToPrint({ content: () => contentRef.current });
+  const handleSummaryPrint = useReactToPrint({ contentRef });
 
   const getPerson = useCallback((people: PersonInterface[], formSubmission: any) => {
     let result = people.find((person: PersonInterface) => person.id === formSubmission.submittedBy);
@@ -116,7 +116,7 @@ export const FormSubmissions: React.FC<Props> = memo((props) => {
         formSubmission.questions.forEach((question: QuestionInterface) => {
           const answer = formSubmission.answers.find((answer: AnswerInterface) => answer.questionId === question.id) || null;
           const answerValue = answer?.value || "";
-          if (question.fieldType === "Yes/No" && answer?.value) answer.value = yesNoMap[answer.value];
+          if (question.fieldType === "Yes/No" && answer?.value) answer.value = (yesNoMap as Record<string, string>)[answer.value];
           csvData[question.title] = answerValue;
           formSubmission.csvData.push({ [question.title]: answerValue });
           if (question.fieldType === "Multiple Choice" || question.fieldType === "Yes/No" || question.fieldType === "Checkbox") {
@@ -157,27 +157,13 @@ export const FormSubmissions: React.FC<Props> = memo((props) => {
     const result: JSX.Element[] = [];
     if (formSubmissions.data?.length) {
       result.push(
-        <TableCell key="submittedBy" sx={{ fontWeight: 600 }}>
-          <Typography variant="subtitle2" sx={{ fontWeight: 600 }}>
-            {formSubmissions.data[0].contentType === "person" ? Locale.label("forms.formSubmissions.subFor") : Locale.label("forms.formSubmissions.subBy")}
-          </Typography>
+        <TableCell key="submittedBy">
+          {formSubmissions.data[0].contentType === "person" ? Locale.label("forms.formSubmissions.subFor") : Locale.label("forms.formSubmissions.subBy")}
         </TableCell>
       );
-      result.push(
-        <TableCell key="submissionDate" sx={{ fontWeight: 600 }}>
-          <Typography variant="subtitle2" sx={{ fontWeight: 600 }}>
-            {Locale.label("forms.formSubmissions.subDate")}
-          </Typography>
-        </TableCell>
-      );
-      formSubmissions.data[0].questions.forEach((question: QuestionInterface) =>
-        result.push(
-          <TableCell key={question.id} sx={{ fontWeight: 600 }}>
-            <Typography variant="subtitle2" sx={{ fontWeight: 600 }}>
-              {question.title}
-            </Typography>
-          </TableCell>
-        ));
+      result.push(<TableCell key="submissionDate">{Locale.label("forms.formSubmissions.subDate")}</TableCell>);
+      [...formSubmissions.data[0].questions].sort((a: QuestionInterface, b: QuestionInterface) => (a.title > b.title ? 1 : -1)).forEach((question: QuestionInterface) =>
+        result.push(<TableCell key={question.id}>{question.title}</TableCell>));
     }
     return result;
   }, [formSubmissions.data]);
@@ -226,13 +212,10 @@ export const FormSubmissions: React.FC<Props> = memo((props) => {
       rows.push(
         <TableRow
           key={i}
-          sx={{
-            "&:hover": { backgroundColor: "action.hover" },
-            transition: "background-color 0.2s ease"
-          }}>
+          sx={hoverRowSx}>
           <TableCell key="personName">
             {personId ? (
-              <Typography component="a" href={"/people/" + personId} variant="body2" sx={{ textDecoration: "none", color: "primary.light", fontWeight: 500 }}>
+              <Typography component="a" href={"/people/" + personId} variant="body2" sx={{ textDecoration: "none", color: "var(--link)", fontWeight: 500 }}>
                 {personName}
               </Typography>
             ) : (
@@ -254,8 +237,8 @@ export const FormSubmissions: React.FC<Props> = memo((props) => {
   const editLinks = useMemo(() => {
     const formName = formSubmissions.data?.length ? formSubmissions.data[0].form?.name + ".csv" : "form_submissions.csv";
     return (
-      <>
-        <ExportLink data={summaryCsv} spaceAfter={true} filename={formName} />
+      <Stack direction="row" spacing={1} alignItems="center">
+        <ExportButton data={summaryCsv} filename={formName} text={Locale.label("donations.donations.export")} />
         <button
           type="button"
           aria-label={Locale.label("forms.formSubmissions.printSummaryAria")}
@@ -263,18 +246,21 @@ export const FormSubmissions: React.FC<Props> = memo((props) => {
           style={{ background: "none", border: 0, padding: 0, cursor: "pointer", color: "inherit" }}>
           <Icon>print</Icon>
         </button>
-      </>
+      </Stack>
     );
   }, [formSubmissions.data, summaryCsv, handleSummaryPrint]);
+
+  const submissionCount = formSubmissions.data?.length || 0;
 
   const formSubmissionsTable = useMemo(
     () => (
       <Card>
-        <Box sx={{ p: 2, borderBottom: 1, borderColor: "divider" }}>
+        <Box sx={{ p: 2, borderBottom: 1, borderColor: "var(--border-light)" }}>
           <Stack direction="row" justifyContent="space-between" alignItems="center">
             <Stack direction="row" spacing={1} alignItems="center">
-              <Icon>assignment</Icon>
+              <Icon sx={{ color: "primary.main", fontSize: 20 }}>assignment</Icon>
               <Typography variant="h6">{Locale.label("forms.formSubmissions.subRes")}</Typography>
+              {submissionCount > 0 && <CountChip count={submissionCount} />}
             </Stack>
             <Stack direction="row" spacing={1} alignItems="center">
               {editLinks}
@@ -283,14 +269,7 @@ export const FormSubmissions: React.FC<Props> = memo((props) => {
         </Box>
         <Box>
           <Table sx={{ minWidth: 650 }}>
-            <TableHead
-              sx={{
-                backgroundColor: "grey.50",
-                "& .MuiTableCell-root": {
-                  borderBottom: "2px solid",
-                  borderBottomColor: "divider"
-                }
-              }}>
+            <TableHead>
               <TableRow key="header">{tableHeader}</TableRow>
             </TableHead>
             <TableBody>{tableRows}</TableBody>
@@ -298,7 +277,7 @@ export const FormSubmissions: React.FC<Props> = memo((props) => {
         </Box>
       </Card>
     ),
-    [tableHeader, tableRows, editLinks]
+    [tableHeader, tableRows, editLinks, submissionCount]
   );
 
   if (people.isLoading || formSubmissions.isLoading) return <Loading />;

@@ -4,11 +4,17 @@ import { UserHelper } from "@churchapps/apphelper";
 import { ArrayHelper } from "@churchapps/apphelper";
 import { DateHelper } from "@churchapps/apphelper";
 import { PageHeader } from "@churchapps/apphelper";
+import { ImageEditor } from "@churchapps/apphelper";
 import type { SermonInterface, PlaylistInterface } from "@churchapps/helpers";
-import { Box, Button, Card, CardContent, Icon, InputAdornment, Menu, MenuItem, Stack, Table, TableBody, TableCell, TableHead, TableRow, TextField, Typography } from "@mui/material";
-import { Add as AddIcon, CalendarMonth as CalendarIcon, LiveTv as LiveTvIcon, PlaylistPlay as PlaylistIcon, Search as SearchIcon, ArrowDropDown as ArrowDropDownIcon } from "@mui/icons-material";
+import { Box, Button, Card, CardContent, Grid, InputAdornment, Menu, MenuItem, Stack, Table, TableBody, TableCell, TableHead, TableRow, TextField, Typography } from "@mui/material";
+import { Add as AddIcon, CalendarMonth as CalendarIcon, CloudUpload as CloudUploadIcon, Edit as EditIcon, LiveTv as LiveTvIcon, PlaylistPlay as PlaylistIcon, Search as SearchIcon, ArrowDropDown as ArrowDropDownIcon, VideoLibrary as VideoLibraryIcon } from "@mui/icons-material";
 import React from "react";
+import { useNavigate } from "react-router-dom";
 import { SermonEdit } from "./SermonEdit";
+import { PlaylistEdit } from "./PlaylistEdit";
+import { AppIconButton } from "../../components/ui/AppIconButton";
+import { CountChip, HeaderPrimaryButton } from "../../components/ui";
+import { hoverRowSx } from "../../components/ui/tableStyles";
 
 export const Sermons = () => {
   const [sermons, setSermons] = React.useState<SermonInterface[]>([]);
@@ -17,7 +23,16 @@ export const Sermons = () => {
   const [currentSermon, setCurrentSermon] = React.useState<SermonInterface>(null);
   const [isLoading, setIsLoading] = React.useState(true);
   const [searchTerm, setSearchTerm] = React.useState("");
+  const [showSermonSearch, setShowSermonSearch] = React.useState<boolean>(false);
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+  const navigate = useNavigate();
+
+  const [currentPlaylist, setCurrentPlaylist] = React.useState<PlaylistInterface>(null);
+  const [playlistSearch, setPlaylistSearch] = React.useState<string>("");
+  const [showPlaylistSearch, setShowPlaylistSearch] = React.useState<boolean>(false);
+  const [photoUrl, setPhotoUrl] = React.useState<string>(null);
+  const [photoType, setPhotoType] = React.useState<string>(null);
+  const imageEditorRef = React.useRef<HTMLDivElement>(null);
 
   const handleUpdated = () => { setCurrentSermon(null); loadData(); };
 
@@ -39,25 +54,21 @@ export const Sermons = () => {
     handleAdd(true);
   };
 
+  const handleBulkImport = () => {
+    handleMenuClose();
+    navigate("/sermons/bulk");
+  };
+
   const getActionButtons = () => (
     <>
-      <Button
-        variant="outlined"
+      <HeaderPrimaryButton
         startIcon={<AddIcon />}
         endIcon={<ArrowDropDownIcon />}
         onClick={handleMenuClick}
         data-testid="add-sermon-button"
-        sx={{
-          color: "#FFF",
-          borderColor: "rgba(255,255,255,0.5)",
-          "&:hover": {
-            borderColor: "#FFF",
-            backgroundColor: "rgba(255,255,255,0.1)"
-          }
-        }}
       >
         {Locale.label("sermons.addSermon")}
-      </Button>
+      </HeaderPrimaryButton>
       <Menu
         anchorEl={anchorEl}
         open={Boolean(anchorEl)}
@@ -81,6 +92,12 @@ export const Sermons = () => {
           <Stack direction="row" spacing={1} alignItems="center">
             <LiveTvIcon fontSize="small" sx={{ color: "error.main" }} />
             <Typography>{Locale.label("sermons.addPermanentLiveUrl")}</Typography>
+          </Stack>
+        </MenuItem>
+        <MenuItem onClick={handleBulkImport} data-testid="bulk-import-menu-item">
+          <Stack direction="row" spacing={1} alignItems="center">
+            <CloudUploadIcon fontSize="small" />
+            <Typography>{Locale.label("sermons.bulkImport.title")}</Typography>
           </Stack>
         </MenuItem>
       </Menu>
@@ -119,6 +136,7 @@ export const Sermons = () => {
       v.videoData = Locale.label("sermons.sermonEdit.channelIdPlaceholder");
       v.title = Locale.label("sermons.sermonEdit.currentLiveService");
     }
+    setCurrentPlaylist(null);
     setCurrentSermon(v);
     loadData();
   };
@@ -132,6 +150,23 @@ export const Sermons = () => {
     return result;
   };
 
+  const handlePlaylistUpdated = () => { setCurrentPlaylist(null); loadData(); };
+
+  const showPhotoEditor = (pType: string, url: string) => {
+    setPhotoUrl(url);
+    setPhotoType(pType);
+  };
+
+  const handlePhotoUpdated = (dataUrl: string) => {
+    setPhotoUrl(dataUrl);
+    setPhotoType(photoType);
+  };
+
+  const handleAddPlaylist = () => {
+    const v: PlaylistInterface = { churchId: UserHelper.currentUserChurch.church.id, title: Locale.label("sermons.playlists.playlistEdit.newPlaylist"), description: "", publishDate: new Date(), thumbnail: "" };
+    setCurrentSermon(null);
+    setCurrentPlaylist(v);
+  };
 
   const getRows = () => {
     const rows: React.ReactElement[] = [];
@@ -139,14 +174,11 @@ export const Sermons = () => {
       rows.push(
         <TableRow
           key={video.id}
-          sx={{
-            "&:hover": { backgroundColor: "action.hover" },
-            transition: "background-color 0.2s ease"
-          }}
+          sx={hoverRowSx}
         >
           <TableCell>
             <Stack direction="row" spacing={1} alignItems="center">
-              <PlaylistIcon sx={{ fontSize: 16, color: "text.secondary" }} />
+              <PlaylistIcon sx={{ fontSize: 18, color: "text.secondary" }} />
               <Typography variant="body2">
                 {getPlaylistTitle(video.playlistId) || Locale.label("sermons.noPlaylist")}
               </Typography>
@@ -159,24 +191,19 @@ export const Sermons = () => {
           </TableCell>
           <TableCell>
             <Stack direction="row" spacing={1} alignItems="center">
-              <CalendarIcon sx={{ fontSize: 16, color: "text.secondary" }} />
+              <CalendarIcon sx={{ fontSize: 18, color: "text.secondary" }} />
               <Typography variant="body2" color="text.secondary">
                 {(video.publishDate) ? DateHelper.prettyDate(DateHelper.toDate(video.publishDate)) : Locale.label("sermons.notScheduled")}
               </Typography>
             </Stack>
           </TableCell>
-          <TableCell align="right">
-            <Button
-              size="small"
-              variant="outlined"
-              startIcon={<Icon>edit</Icon>}
-              onClick={() => { setCurrentSermon(video); }}
+          <TableCell align="right" className="rowActions">
+            <AppIconButton
+              label={Locale.label("common.edit")}
+              icon={<EditIcon />}
+              onClick={() => { setCurrentPlaylist(null); setCurrentSermon(video); }}
               data-testid={`edit-sermon-${video.id}`}
-              aria-label={Locale.label("sermons.editSermonAria").replace("{title}", video.title)}
-              sx={{ minWidth: "auto" }}
-            >
-              {Locale.label("sermons.edit")}
-            </Button>
+            />
           </TableCell>
         </TableRow>
       );
@@ -214,21 +241,12 @@ export const Sermons = () => {
     else {
       return (
         <Table sx={{ minWidth: 650 }}>
-          <TableHead
-            sx={{
-              backgroundColor: "background.paper",
-              "& .MuiTableCell-root": {
-                borderBottom: "2px solid",
-                borderBottomColor: "divider",
-                fontWeight: 600
-              }
-            }}
-          >
+          <TableHead>
             <TableRow>
               <TableCell sx={{ width: "25%" }}>{Locale.label("sermons.playlist")}</TableCell>
               <TableCell sx={{ width: "45%" }}>{Locale.label("sermons.sermon")}</TableCell>
               <TableCell sx={{ width: "25%" }}>{Locale.label("sermons.publishDate")}</TableCell>
-              <TableCell sx={{ width: "5%" }}></TableCell>
+              <TableCell sx={{ width: "5%" }} align="right"></TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -239,64 +257,235 @@ export const Sermons = () => {
     }
   };
 
+  const getPlaylistRows = () => {
+    const displayed = playlistSearch
+      ? playlists.filter((p: any) =>
+        p.title?.toLowerCase().includes(playlistSearch.toLowerCase())
+        || p.description?.toLowerCase().includes(playlistSearch.toLowerCase()))
+      : playlists;
+
+    if (displayed.length === 0) {
+      return (
+        <TableRow>
+          <TableCell colSpan={2} sx={{ textAlign: "center", py: 4, borderBottom: 0 }}>
+            <Stack spacing={1.5} alignItems="center">
+              <VideoLibraryIcon sx={{ fontSize: 40, color: "text.secondary" }} />
+              <Typography variant="body2" color="text.secondary">
+                {playlistSearch ? Locale.label("sermons.playlists.noPlaylistsMatch") : Locale.label("sermons.playlists.noPlaylistsFound")}
+              </Typography>
+              {!playlistSearch && (
+                <Button variant="contained" size="small" startIcon={<AddIcon />} onClick={handleAddPlaylist} data-testid="add-first-playlist-button">
+                  {Locale.label("sermons.playlists.createFirstPlaylist")}
+                </Button>
+              )}
+            </Stack>
+          </TableCell>
+        </TableRow>
+      );
+    }
+
+    return displayed.map((playlist) => (
+      <TableRow
+        key={playlist.id}
+        sx={{ ...hoverRowSx, "&:last-child td": { borderBottom: 0 } }}
+      >
+        <TableCell>
+          <Typography variant="body2" sx={{ fontWeight: 500 }}>
+            {playlist.title}
+          </Typography>
+        </TableCell>
+        <TableCell align="right" className="rowActions">
+          <AppIconButton
+            label={Locale.label("common.edit")}
+            icon={<EditIcon />}
+            tone="card"
+            onClick={() => { setCurrentSermon(null); setCurrentPlaylist(playlist); }}
+          />
+        </TableCell>
+      </TableRow>
+    ));
+  };
+
   React.useEffect(() => { loadData(); }, []);
 
-  if (currentSermon !== null) return <SermonEdit currentSermon={currentSermon} updatedFunction={handleUpdated} />;
-  else {
-    return (
-      <>
-        <Box sx={{ mb: 3 }}>
-          <PageHeader
-            title={Locale.label("sermons.title")}
-            subtitle={Locale.label("sermons.subtitle")}
-          >
-            <Stack
-              direction="row"
-              spacing={1}
-              sx={{
-                flexShrink: 0,
-                justifyContent: { xs: "flex-start", md: "flex-end" },
-                width: { xs: "100%", md: "auto" }
-              }}
-            >
-              {getActionButtons()}
-            </Stack>
-          </PageHeader>
-        </Box>
+  React.useEffect(() => {
+    if ((photoUrl || photoUrl === "") && imageEditorRef.current) {
+      imageEditorRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  }, [photoUrl]);
 
-        {/* Content */}
-        <Box sx={{ px: 3 }}>
-          <Card sx={{
-            borderRadius: 2,
-            border: "1px solid",
-            borderColor: "divider"
-          }}>
-            {/* Search Bar */}
-            {sermons.length > 0 && (
-              <Box sx={{ p: 2, borderBottom: 1, borderColor: "divider" }}>
-                <TextField
-                  fullWidth
-                  placeholder={Locale.label("sermons.searchPlaceholder")}
-                  value={searchTerm}
-                  onChange={(e) => handleSearch(e.target.value)}
-                  InputProps={{
-                    startAdornment: (
-                      <InputAdornment position="start">
-                        <SearchIcon />
-                      </InputAdornment>
-                    )
-                  }}
-                  sx={{ maxWidth: 400 }}
+  const imageEditor = (photoUrl || photoUrl === "") && (
+    <div ref={imageEditorRef}>
+      <ImageEditor
+        aspectRatio={16 / 9}
+        outputWidth={640}
+        outputHeight={360}
+        photoUrl={photoUrl}
+        onCancel={() => { setPhotoUrl(null); setPhotoType(null); }}
+        onUpdate={handlePhotoUpdated}
+      />
+    </div>
+  );
+
+  return (
+    <>
+      <Box sx={{ mb: 3 }}>
+        <PageHeader
+          icon={<LiveTvIcon />}
+          title={Locale.label("sermons.title")}
+          subtitle={Locale.label("sermons.subtitle")}
+        >
+          <Stack
+            direction="row"
+            spacing={1}
+            sx={{
+              flexShrink: 0,
+              justifyContent: { xs: "flex-start", md: "flex-end" },
+              width: { xs: "100%", md: "auto" }
+            }}
+          >
+            {getActionButtons()}
+          </Stack>
+        </PageHeader>
+      </Box>
+
+      {/* Content: sermons (2/3) on the left, playlists (1/3) on the right */}
+      <Box sx={{ px: 3 }}>
+        <Grid container spacing={3}>
+          <Grid size={{ xs: 12, md: 8 }}>
+            {currentSermon !== null && (
+              <Box sx={{ mb: 3 }}>
+                <SermonEdit currentSermon={currentSermon} updatedFunction={handleUpdated} />
+              </Box>
+            )}
+            <Card sx={{
+              borderRadius: 2,
+              border: "1px solid",
+              borderColor: "divider"
+            }}>
+              {/* Search Bar */}
+              {sermons.length > 0 && (
+                <Box sx={{ p: 2, borderBottom: 1, borderColor: "var(--border-light)", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                  <Stack direction="row" spacing={1} alignItems="center">
+                    <LiveTvIcon sx={{ color: "primary.main", fontSize: 20 }} />
+                    <Typography variant="h6">
+                      {Locale.label("sermons.title")}
+                    </Typography>
+                    {filteredSermons.length > 0 && <CountChip count={filteredSermons.length} />}
+                  </Stack>
+                  <AppIconButton
+                    label={Locale.label("common.search")}
+                    icon={<SearchIcon />}
+                    tone={showSermonSearch ? "card" : "default"}
+                    onClick={() => setShowSermonSearch(!showSermonSearch)}
+                    data-testid="sermon-search-button"
+                  />
+                </Box>
+              )}
+
+              {sermons.length > 0 && showSermonSearch && (
+                <Box sx={{ p: 1.5, borderBottom: 1, borderColor: "divider" }}>
+                  <TextField
+                    fullWidth
+                    size="small"
+                    autoFocus
+                    placeholder={Locale.label("sermons.searchPlaceholder")}
+                    value={searchTerm}
+                    onChange={(e) => handleSearch(e.target.value)}
+                    InputProps={{
+                      startAdornment: (
+                        <InputAdornment position="start">
+                          <SearchIcon fontSize="small" />
+                        </InputAdornment>
+                      )
+                    }}
+                  />
+                </Box>
+              )}
+
+              <CardContent sx={{ p: 0 }}>
+                {getTable()}
+              </CardContent>
+            </Card>
+          </Grid>
+
+          <Grid size={{ xs: 12, md: 4 }}>
+            {currentPlaylist !== null && (
+              <Box sx={{ mb: 3 }}>
+                {imageEditor}
+                <PlaylistEdit
+                  currentPlaylist={currentPlaylist}
+                  updatedFunction={handlePlaylistUpdated}
+                  showPhotoEditor={showPhotoEditor}
+                  updatedPhoto={(photoType === "playlist" && photoUrl) || null}
                 />
               </Box>
             )}
+            <Card data-testid="playlists-panel" sx={{
+              borderRadius: 2,
+              border: "1px solid",
+              borderColor: "divider"
+            }}>
+              <Box sx={{ p: 2, borderBottom: 1, borderColor: "var(--border-light)", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                <Stack direction="row" spacing={1} alignItems="center">
+                  <VideoLibraryIcon sx={{ color: "primary.main", fontSize: 20 }} />
+                  <Typography variant="h6">
+                    {Locale.label("sermons.playlists.title")}
+                  </Typography>
+                  {playlists.length > 0 && <CountChip count={playlists.length} />}
+                </Stack>
+                <Stack direction="row" spacing={0.5}>
+                  <AppIconButton
+                    label={Locale.label("common.search")}
+                    icon={<SearchIcon />}
+                    tone={showPlaylistSearch ? "card" : "default"}
+                    onClick={() => setShowPlaylistSearch(!showPlaylistSearch)}
+                    data-testid="playlist-search-button"
+                  />
+                  <AppIconButton
+                    intent="add"
+                    label={Locale.label("common.add")}
+                    icon={<AddIcon />}
+                    tone="card"
+                    onClick={handleAddPlaylist}
+                    data-testid="add-playlist-button"
+                  />
+                </Stack>
+              </Box>
 
-            <CardContent sx={{ p: 0 }}>
-              {getTable()}
-            </CardContent>
-          </Card>
-        </Box>
-      </>
-    );
-  }
+              {showPlaylistSearch && (
+                <Box sx={{ p: 1.5, borderBottom: 1, borderColor: "divider" }}>
+                  <TextField
+                    fullWidth
+                    size="small"
+                    autoFocus
+                    placeholder={Locale.label("sermons.playlists.searchPlaceholder")}
+                    value={playlistSearch}
+                    onChange={(e) => setPlaylistSearch(e.target.value)}
+                    InputProps={{
+                      startAdornment: (
+                        <InputAdornment position="start">
+                          <SearchIcon fontSize="small" />
+                        </InputAdornment>
+                      )
+                    }}
+                  />
+                </Box>
+              )}
+
+              <CardContent sx={{ p: 0 }}>
+                {isLoading ? <Loading /> : (
+                  <Table size="small">
+                    <TableBody>
+                      {getPlaylistRows()}
+                    </TableBody>
+                  </Table>
+                )}
+              </CardContent>
+            </Card>
+          </Grid>
+        </Grid>
+      </Box>
+    </>
+  );
 };

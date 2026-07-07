@@ -1,9 +1,10 @@
 import React, { memo, useCallback, useMemo } from "react";
 import { Stack, Typography, Button, ButtonGroup, Box, Card, CardContent, Menu, MenuItem, Chip, Snackbar, Alert, TextField } from "@mui/material";
-import { Print as PrintIcon, Add as AddIcon, Album as AlbumIcon, MenuBook as MenuBookIcon, ArrowDropDown as ArrowDropDownIcon, Link as LinkIcon, Close as CloseIcon, Schedule as ScheduleIcon } from "@mui/icons-material";
+import { Print as PrintIcon, Add as AddIcon, Album as AlbumIcon, MenuBook as MenuBookIcon, ArrowDropDown as ArrowDropDownIcon, Link as LinkIcon, Close as CloseIcon, Schedule as ScheduleIcon, BookmarkAdd as BookmarkAddIcon } from "@mui/icons-material";
+import { AppIconButton } from "../../components/ui/AppIconButton";
 import { type GroupInterface, type PlanInterface, type TimeInterface, type PlanItemTimeInterface } from "@churchapps/helpers";
-import { type PlanItemInterface } from "../../helpers";
-import { ApiHelper, UserHelper, Permissions, Locale } from "@churchapps/apphelper";
+import { type PlanItemInterface, hasPlansEditAccess } from "../../helpers";
+import { ApiHelper, Locale } from "@churchapps/apphelper";
 import { useQuery } from "@tanstack/react-query";
 import { getProvider, type InstructionItem, type IProvider, type Instructions } from "@churchapps/content-providers";
 import { PlanItemEdit } from "./PlanItemEdit";
@@ -12,12 +13,12 @@ import { LessonHeaderSelector } from "./LessonHeaderSelector";
 import { DndProvider } from "react-dnd";
 import { HTML5Backend } from "react-dnd-html5-backend";
 import { PlanItem } from "./PlanItem";
+import { SaveTemplateDialog } from "./SaveTemplateDialog";
 import { LessonPreview } from "./LessonPreview";
 import { DraggableWrapper } from "../../components/DraggableWrapper";
-import { DroppableWrapper } from "../../components/DroppableWrapper";
-import { DroppableScroll } from "../../site/admin/DroppableScroll";
-import { getSectionDuration, formatTime } from "./PlanUtils";
-import { findThumbnailRecursive } from "./planItemUtils";
+import { RowDropZone } from "./RowDropZone";
+import { formatTime } from "./PlanUtils";
+import { findThumbnailRecursive, buildProviderMediaLookup, matchProviderMedia, isVideoMedia, getVideoDuration, estimateSeconds, type ProviderMediaInfo } from "./planItemUtils";
 
 interface Props {
   plan: PlanInterface;
@@ -26,12 +27,13 @@ interface Props {
 
 
 // Helper to get instructions from provider based on its capabilities
-async function getProviderInstructions(provider: IProvider, path: string): Promise<Instructions | null> {
+async function getProviderInstructions(provider: IProvider, path: string, ministryId?: string, providerId?: string): Promise<Instructions | null> {
   const capabilities = provider.capabilities;
-  if (capabilities.instructions && provider.getInstructions) {
-    return provider.getInstructions(path);
+  if (!capabilities.instructions || !provider.getInstructions) return null;
+  if (provider.requiresAuth && ministryId && providerId) {
+    return ApiHelper.post("/providerProxy/getInstructions", { ministryId, providerId, path }, "DoingApi");
   }
-  return null;
+  return provider.getInstructions(path);
 }
 
 // Helper to convert InstructionItem to PlanItemInterface
@@ -52,7 +54,7 @@ function instructionToPlanItem(item: InstructionItem, providerId?: string, provi
     itemType,
     relatedId: item.relatedId,
     label: item.label || "",
-    description: item.description,
+    description: item.content,
     seconds: item.seconds ?? 0,
     providerId,
     providerPath,
@@ -64,7 +66,7 @@ function instructionToPlanItem(item: InstructionItem, providerId?: string, provi
 
 export const ServiceOrder = memo((props: Props) => {
   const [planItems, setPlanItems] = React.useState<PlanItemInterface[]>([]);
-  const hasPlansEdit = UserHelper.checkAccess(Permissions.membershipApi.plans.edit);
+  const hasPlansEdit = hasPlansEditAccess();
 
   const myMinistriesQuery = useQuery<GroupInterface[]>({
     queryKey: ["/groups/my/ministry", "MembershipApi"],
@@ -86,6 +88,9 @@ export const ServiceOrder = memo((props: Props) => {
   const [serviceTimes, setServiceTimes] = React.useState<TimeInterface[]>([]);
   const [exclusions, setExclusions] = React.useState<PlanItemTimeInterface[]>([]);
   const [selectedServiceTimeId, setSelectedServiceTimeId] = React.useState<string>("");
+  const [showSaveTemplate, setShowSaveTemplate] = React.useState(false);
+  const [mediaLookup, setMediaLookup] = React.useState<Record<string, ProviderMediaInfo>>({});
+  const [settingTimes, setSettingTimes] = React.useState(false);
 
   // Get the provider dynamically based on plan's providerId
   const provider: IProvider | null = useMemo(() => {
@@ -95,10 +100,12 @@ export const ServiceOrder = memo((props: Props) => {
     return null;
   }, [props.plan?.providerId]);
 
-  // Calculate total plan duration
+  // Calculate total plan duration (includes ~5:00 planning estimates for untimed images)
   const totalDuration = useMemo(() => {
-    return planItems.reduce((total, item) => total + getSectionDuration(item), 0);
-  }, [planItems]);
+    const walk = (pi: PlanItemInterface): number =>
+      estimateSeconds(pi, mediaLookup) + (pi.children || []).reduce((sum, c) => sum + walk(c), 0);
+    return planItems.reduce((total, item) => total + walk(item), 0);
+  }, [planItems, mediaLookup]);
 
   const loadData = useCallback(async () => {
     if (props.plan?.id) {
@@ -160,7 +167,7 @@ export const ServiceOrder = memo((props: Props) => {
 
   const handleDisassociateContent = useCallback(async () => {
     try {
-      const updatedPlan = {
+      const updatedPlan: PlanInterface = {
         ...props.plan,
         contentType: null,
         contentId: null,
@@ -190,7 +197,7 @@ export const ServiceOrder = memo((props: Props) => {
     if (!items || items.length === 0) return;
 
     // Prepare top-level items for this batch
-    const itemsToSave = items.map((item, index) => {
+    const itemsToSave = items.map((item, index): PlanItemInterface => {
       const cleanItem = { ...item };
       delete cleanItem.id; // Completely remove the id property
       return {
@@ -224,18 +231,18 @@ export const ServiceOrder = memo((props: Props) => {
       const contentPath = getContentPath();
       if (!contentPath) return;
 
-      const instructions = await getProviderInstructions(provider, contentPath);
       const currentProviderId = props.plan?.providerId;
+      const instructions = await getProviderInstructions(provider, contentPath, props.plan?.ministryId, currentProviderId);
 
       if (instructions?.items && instructions.items.length > 0) {
         // Convert InstructionItems to PlanItemInterface with providerId and providerPath
         const planItemsFromInstructions = instructions.items.map((item, index) => instructionToPlanItem(item, currentProviderId, contentPath, [index]));
 
         // Keep top-level headers with their section children, but strip grandchildren (actions)
-        const sectionsOnly = planItemsFromInstructions.map((item: PlanItemInterface) => ({
+        const sectionsOnly = planItemsFromInstructions.map((item: PlanItemInterface): PlanItemInterface => ({
           ...item,
           // Keep children (sections) but strip their children (actions)
-          children: item.children?.map((section: PlanItemInterface) => ({
+          children: item.children?.map((section: PlanItemInterface): PlanItemInterface => ({
             ...section,
             children: undefined // Remove actions from sections
           }))
@@ -247,7 +254,7 @@ export const ServiceOrder = memo((props: Props) => {
     } catch (error) {
       console.error("Error customizing lesson:", error);
     }
-  }, [hasAssociatedContent, getContentPath, provider, props.plan?.providerId, loadData]);
+  }, [hasAssociatedContent, getContentPath, provider, props.plan?.providerId, props.plan?.ministryId, loadData]);
 
   const addHeader = useCallback(async () => {
     // If in preview mode, first customize (import sections only), then add header
@@ -273,26 +280,31 @@ export const ServiceOrder = memo((props: Props) => {
       const contentPath = getContentPath();
       if (!contentPath) return;
 
-      const instructions = await getProviderInstructions(provider, contentPath);
+      const instructions = await getProviderInstructions(provider, contentPath, props.plan?.ministryId, props.plan?.providerId);
       if (instructions?.name) setContentName(instructions.name);
     } catch (error) {
       console.error("Error loading content name:", error);
     }
-  }, [hasAssociatedContent, getContentPath, provider, props.plan?.providerPlanName]);
+  }, [hasAssociatedContent, getContentPath, provider, props.plan?.providerPlanName, props.plan?.ministryId, props.plan?.providerId]);
 
+  // Fetches provider instructions once per load: builds the fresh media lookup (thumbnails)
+  // for saved items, and doubles as the preview source when the plan has no items yet.
   const loadPreviewLessonItems = useCallback(async () => {
-    if (hasAssociatedContent && planItems.length === 0 && provider) {
+    if (hasAssociatedContent && provider) {
       try {
         const contentPath = getContentPath();
         if (!contentPath) {
           setPreviewLessonItems([]);
+          setMediaLookup({});
           return;
         }
 
-        const instructions = await getProviderInstructions(provider, contentPath);
         const currentProviderId = props.plan?.providerId;
+        const instructions = await getProviderInstructions(provider, contentPath, props.plan?.ministryId, currentProviderId);
 
-        if (instructions?.items) {
+        setMediaLookup(instructions?.items ? buildProviderMediaLookup(instructions.items) : {});
+
+        if (instructions?.items && planItems.length === 0) {
           // Convert InstructionItems to PlanItemInterface for preview with providerId and providerPath
           const planItemsFromInstructions = instructions.items.map((item, index) => instructionToPlanItem(item, currentProviderId, contentPath, [index]));
           setPreviewLessonItems(planItemsFromInstructions);
@@ -306,8 +318,59 @@ export const ServiceOrder = memo((props: Props) => {
       }
     } else {
       setPreviewLessonItems([]);
+      setMediaLookup({});
     }
-  }, [hasAssociatedContent, planItems.length, getContentPath, provider, props.plan?.providerId]);
+  }, [hasAssociatedContent, planItems.length, getContentPath, provider, props.plan?.providerId, props.plan?.ministryId]);
+
+  // Videos still at 0:00 get their real length saved; images intentionally stay at 0
+  // (playback leaves the volunteer in control — the plan shows a ~5:00 estimate instead).
+  const timeSyncTargets = useMemo(() => {
+    const targets: { item: PlanItemInterface; media: ProviderMediaInfo }[] = [];
+    const walk = (list: PlanItemInterface[]) => {
+      list.forEach((pi) => {
+        if (pi.id && pi.itemType !== "header" && (pi.seconds || 0) === 0) {
+          const media = matchProviderMedia(pi, mediaLookup);
+          if (media && isVideoMedia(pi.label, media)) targets.push({ item: pi, media });
+        }
+        if (pi.children) walk(pi.children);
+      });
+    };
+    walk(planItems);
+    return targets;
+  }, [planItems, mediaLookup]);
+
+  const handleSyncTimes = useCallback(async (targets: { item: PlanItemInterface; media: ProviderMediaInfo }[]) => {
+    if (targets.length === 0 || settingTimes) return;
+    setSettingTimes(true);
+    try {
+      const updates: PlanItemInterface[] = [];
+      // Sequential on purpose: each video loads its metadata over the network.
+      for (const { item, media } of targets) {
+        const seconds = media.seconds || await getVideoDuration(media.url);
+        if (seconds && seconds > 0) updates.push({ ...item, children: undefined, seconds: Math.round(seconds) });
+      }
+      if (updates.length > 0) {
+        await ApiHelper.post("/planItems", updates, "DoingApi");
+        loadData();
+      }
+    } catch (error) {
+      console.error("Error syncing times:", error);
+      setErrorMessage(Locale.label("plans.serviceOrder.autoSetTimesError") || "Failed to set times");
+    } finally {
+      setSettingTimes(false);
+    }
+  }, [settingTimes, loadData]);
+
+  // Auto-sync on load: fill in real video lengths without user action.
+  // Each item is only attempted once per session so unmeasurable videos can't loop.
+  const attemptedSyncIds = React.useRef<Set<string>>(new Set());
+  React.useEffect(() => {
+    if (!canEdit || settingTimes) return;
+    const pending = timeSyncTargets.filter((t) => t.item.id && !attemptedSyncIds.current.has(t.item.id));
+    if (pending.length === 0) return;
+    pending.forEach((t) => attemptedSyncIds.current.add(t.item.id!));
+    handleSyncTimes(pending);
+  }, [timeSyncTargets, canEdit, settingTimes, handleSyncTimes]);
 
   const handleAddContent = useCallback(() => {
     // Always show the LessonHeaderSelector - it now supports provider browsing
@@ -325,20 +388,18 @@ export const ServiceOrder = memo((props: Props) => {
   const editContent = useMemo(
     () => (
       <Stack direction="row" spacing={1} alignItems="center">
-        <Button
-          onClick={() => window.open(`/serving/plans/print/${props.plan?.id}`, "_blank")}
-          variant="outlined"
-          size="small"
-          title={Locale.label("plans.serviceOrder.print")}
-          aria-label={Locale.label("plans.serviceOrder.print") || "Print plan"}
-          sx={{
-            minWidth: 40,
-            borderRadius: 2
-          }}>
-          <PrintIcon sx={{ fontSize: 20 }} />
-        </Button>
+        <AppIconButton
+          label={Locale.label("common.print")}
+          icon={<PrintIcon />}
+          tone="card"
+          onClick={() => window.open(`/serving/plans/print/${props.plan?.id}`, "_blank")} />
         {canEdit && (
           <>
+            <AppIconButton
+              label={Locale.label("plans.templates.saveTitle") || "Save as Template"}
+              icon={<BookmarkAddIcon />}
+              tone="card"
+              onClick={() => setShowSaveTemplate(true)} />
             {hasAssociatedContent ? (
               <Chip
                 icon={<MenuBookIcon sx={{ fontSize: 18 }} />}
@@ -437,10 +498,10 @@ export const ServiceOrder = memo((props: Props) => {
   // Section duration that respects per-item exclusions for the selected service time.
   const effectiveSectionDuration = useCallback((item: PlanItemInterface): number => {
     if (item.itemType !== "header" && isItemExcluded(item.id || "")) return 0;
-    let total = item.itemType === "header" ? 0 : (item.seconds || 0);
+    let total = item.itemType === "header" ? 0 : estimateSeconds(item, mediaLookup);
     if (item.children) item.children.forEach((c) => { total += effectiveSectionDuration(c); });
     return total;
-  }, [isItemExcluded]);
+  }, [isItemExcluded, mediaLookup]);
 
   const renderPlanItems = () => {
     const result: JSX.Element[] = [];
@@ -452,53 +513,42 @@ export const ServiceOrder = memo((props: Props) => {
 
       result.push(
         <React.Fragment key={pi.id || `temp-${index}`}>
-          {canEdit && showHeaderDrop && (
-            <DroppableWrapper
-              accept="planItemHeader"
-              onDrop={(item) => {
-                handleDrop(item, index + 0.5);
-              }}>
-              <Box
-                sx={{
-                  height: 40,
-                  border: "2px dashed",
-                  borderColor: "primary.main",
-                  borderRadius: 1,
-                  backgroundColor: "primary.light",
-                  opacity: 0.3,
-                  mb: 1
-                }}
-              />
-            </DroppableWrapper>
-          )}
           {canEdit ? (
-            <DraggableWrapper
-              dndType="planItemHeader"
-              data={pi}
-              draggingCallback={(isDragging) => {
-                setShowHeaderDrop(isDragging);
+            <RowDropZone
+              accept="planItemHeader"
+              onDrop={(item, position) => {
+                handleDrop(item, index + (position === "before" ? 0.5 : 1.5));
               }}>
-              <PlanItem
-                planItem={pi}
-                setEditPlanItem={setEditPlanItem}
-                showItemDrop={showItemDrop}
-                onDragChange={(dragging) => {
-                  setShowItemDrop(dragging);
-                }}
-                onChange={() => {
-                  loadData();
-                  loadTimesAndExclusions();
-                }}
-                startTime={sectionStartTime}
-                associatedContentPath={hasAssociatedContent ? getContentPath() : undefined}
-                associatedProviderId={props.plan?.providerId}
-                ministryId={props.plan?.ministryId}
-                serviceTime={selectedServiceTime}
-                exclusions={exclusions}
-                selectedServiceTimeId={selectedServiceTimeId}
-                excluded={excluded}
-              />
-            </DraggableWrapper>
+              <DraggableWrapper
+                dndType="planItemHeader"
+                data={pi}
+                handleClassName="dragHandle"
+                draggingCallback={(isDragging) => {
+                  setShowHeaderDrop(isDragging);
+                }}>
+                <PlanItem
+                  planItem={pi}
+                  setEditPlanItem={setEditPlanItem}
+                  showItemDrop={showItemDrop}
+                  onDragChange={(dragging) => {
+                    setShowItemDrop(dragging);
+                  }}
+                  onChange={() => {
+                    loadData();
+                    loadTimesAndExclusions();
+                  }}
+                  startTime={sectionStartTime}
+                  associatedContentPath={hasAssociatedContent ? getContentPath() : undefined}
+                  associatedProviderId={props.plan?.providerId}
+                  ministryId={props.plan?.ministryId}
+                  serviceTime={selectedServiceTime}
+                  exclusions={exclusions}
+                  selectedServiceTimeId={selectedServiceTimeId}
+                  excluded={excluded}
+                  mediaLookup={mediaLookup}
+                />
+              </DraggableWrapper>
+            </RowDropZone>
           ) : (
             <PlanItem
               planItem={pi}
@@ -515,6 +565,7 @@ export const ServiceOrder = memo((props: Props) => {
               exclusions={exclusions}
               selectedServiceTimeId={selectedServiceTimeId}
               excluded={excluded}
+              mediaLookup={mediaLookup}
             />
           )}
         </React.Fragment>
@@ -525,6 +576,32 @@ export const ServiceOrder = memo((props: Props) => {
 
     return result;
   };
+
+  // While dragging, scroll the page when the cursor nears the top/bottom edge.
+  React.useEffect(() => {
+    if (!showHeaderDrop && !showItemDrop) return;
+    const EDGE = 130;
+    const MAX_SPEED = 24;
+    let lastY = -1;
+    let raf = 0;
+    const onDragOver = (e: DragEvent) => { lastY = e.clientY; };
+    const tick = () => {
+      if (lastY >= 0) {
+        if (lastY < EDGE) {
+          window.scrollBy(0, -MAX_SPEED * (1 - lastY / EDGE));
+        } else if (lastY > window.innerHeight - EDGE) {
+          window.scrollBy(0, MAX_SPEED * (1 - (window.innerHeight - lastY) / EDGE));
+        }
+      }
+      raf = requestAnimationFrame(tick);
+    };
+    window.addEventListener("dragover", onDragOver);
+    raf = requestAnimationFrame(tick);
+    return () => {
+      window.removeEventListener("dragover", onDragOver);
+      cancelAnimationFrame(raf);
+    };
+  }, [showHeaderDrop, showItemDrop]);
 
   React.useEffect(() => {
     loadData();
@@ -573,6 +650,10 @@ export const ServiceOrder = memo((props: Props) => {
         ministryId={props.plan?.ministryId}
       />
 
+      {showSaveTemplate && canEdit && (
+        <SaveTemplateDialog plan={props.plan} onClose={() => setShowSaveTemplate(false)} />
+      )}
+
       <Card
         sx={{
           borderRadius: 2,
@@ -585,8 +666,8 @@ export const ServiceOrder = memo((props: Props) => {
           <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ mb: 3 }}>
             <Stack direction="row" alignItems="center" spacing={2}>
               <Stack direction="row" alignItems="center" spacing={1}>
-                <AlbumIcon sx={{ color: "primary.main", fontSize: 28 }} />
-                <Typography variant="h6" sx={{ fontWeight: 600, color: "primary.main" }}>
+                <AlbumIcon sx={{ color: "primary.main", fontSize: 20 }} />
+                <Typography variant="h6">
                   {Locale.label("plans.serviceOrder.orderOfService")}
                 </Typography>
               </Stack>
@@ -594,6 +675,15 @@ export const ServiceOrder = memo((props: Props) => {
                 <Chip
                   icon={<ScheduleIcon sx={{ fontSize: 18 }} />}
                   label={formatTime(totalDuration)}
+                  size="small"
+                  variant="outlined"
+                  sx={{ fontWeight: 500 }}
+                />
+              )}
+              {settingTimes && (
+                <Chip
+                  icon={<ScheduleIcon sx={{ fontSize: 18 }} />}
+                  label={Locale.label("plans.serviceOrder.settingTimes") || "Detecting video times..."}
                   size="small"
                   variant="outlined"
                   sx={{ fontWeight: 500 }}
@@ -621,16 +711,6 @@ export const ServiceOrder = memo((props: Props) => {
           </Stack>
 
           <DndProvider backend={HTML5Backend}>
-            {(showHeaderDrop || showItemDrop) && (
-              <>
-                <div style={{ position: "fixed", bottom: "20px", left: "50%", transform: "translateX(-50%)", zIndex: 1000, width: "min(600px, 80%)" }}>
-                  <DroppableScroll direction="down" text={Locale.label("plans.serviceOrder.scrollDown")} acceptTypes={["planItemHeader", "planItem"]} />
-                </div>
-                <div style={{ position: "fixed", top: "20px", left: "50%", transform: "translateX(-50%)", zIndex: 1000, width: "min(600px, 80%)" }}>
-                  <DroppableScroll direction="up" text={Locale.label("plans.serviceOrder.scrollUp")} acceptTypes={["planItemHeader", "planItem"]} />
-                </div>
-              </>
-            )}
             {planItems.length === 0 ? (
               showPreviewMode ? (
                 <LessonPreview
@@ -640,6 +720,7 @@ export const ServiceOrder = memo((props: Props) => {
                   associatedProviderId={props.plan?.providerId}
                   associatedContentPath={getContentPath() || undefined}
                   ministryId={props.plan?.ministryId}
+                  mediaLookup={mediaLookup}
                 />
               ) : (
                 <Box
@@ -653,28 +734,7 @@ export const ServiceOrder = memo((props: Props) => {
                 </Box>
               )
             ) : (
-              <>
-                {renderPlanItems()}
-                {showHeaderDrop && (
-                  <DroppableWrapper
-                    accept="planItemHeader"
-                    onDrop={(item) => {
-                      handleDrop(item, planItems?.length + 1);
-                    }}>
-                    <Box
-                      sx={{
-                        height: 40,
-                        border: "2px dashed",
-                        borderColor: "primary.main",
-                        borderRadius: 1,
-                        backgroundColor: "primary.light",
-                        opacity: 0.3,
-                        mb: 1
-                      }}
-                    />
-                  </DroppableWrapper>
-                )}
-              </>
+              renderPlanItems()
             )}
           </DndProvider>
         </CardContent>

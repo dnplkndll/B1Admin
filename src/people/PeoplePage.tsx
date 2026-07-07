@@ -1,14 +1,20 @@
 import React, { memo, useCallback } from "react";
-import { Permissions, UserHelper, type PersonInterface } from "@churchapps/helpers";
+import { useLocation, useNavigate } from "react-router-dom";
+import { Permissions, UserHelper, type PersonInterface, type SearchCondition } from "@churchapps/helpers";
 import { ApiHelper, Locale } from "@churchapps/apphelper";
 import { PeopleSearchResults, PeopleColumns } from "./components";
-import { ExportLink } from "@churchapps/apphelper";
-import { Grid, Box, Typography, Card, Stack, Button, IconButton, Tooltip, Dialog, DialogTitle, DialogContent, DialogActions, Snackbar, Alert, CircularProgress } from "@mui/material";
-import { B1AdminPersonHelper } from "../helpers";
+import { Grid, Box, Typography, Card, Stack, Button, TextField, Dialog, DialogTitle, DialogContent, DialogActions, Snackbar, Alert, CircularProgress, Checkbox, FormControl, FormControlLabel, InputLabel, MenuItem, Select } from "@mui/material";
+import { B1AdminPersonHelper, EnvironmentHelper } from "../helpers";
+import { CreatePerson } from "../components";
 import { PeopleSearch } from "./components/PeopleSearch";
-import { Search as SearchIcon, People as PeopleIcon, PersonAdd as PersonAddIcon, FileDownload as ExportIcon, Print as PrintIcon } from "@mui/icons-material";
+import { SavedLists, type ListConditions, type ListInterface } from "./components/SavedLists";
+import { buildRulesFromCriteria } from "./components/listRules";
+import { type ActiveFilter } from "./components/AdvancedPeopleSearch";
+import { People as PeopleIcon, PersonAdd as PersonAddIcon, Print as PrintIcon, BookmarkAdd as SaveListIcon, BarChart as BarChartIcon, Close as CloseIcon } from "@mui/icons-material";
 import { PageHeader } from "@churchapps/apphelper";
-import { useQuery } from "@tanstack/react-query";
+import { AppIconButton } from "../components/ui/AppIconButton";
+import { CountChip, ExportButton, HeaderPrimaryButton, HeaderSecondaryButton } from "../components/ui";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { AISearch } from "./components/AISearch";
 import { PeopleBulkActions } from "./components/bulk/PeopleBulkActions";
 import { type BulkResult } from "./components/bulk/BulkFieldDialog";
@@ -21,10 +27,68 @@ interface BulkDeleteResponse {
 
 const INITIAL_PAGE_SIZE = 50;
 
+const formatHeader = (key: string): string => {
+  const customMap: Record<string, string> = {
+    address: "Address",
+    address1: "Address 1",
+    address2: "Address 2",
+    age: "Age",
+    anniversary: "Anniversary",
+    birthDate: "Birth Date",
+    campusId: "Campus ID",
+    churchId: "Church ID",
+    city: "City",
+    contactCity: "Contact City",
+    contactEmail: "Contact Email",
+    contactState: "Contact State",
+    contactZip: "Contact Zip",
+    conversationId: "Conversation ID",
+    display: "Display Name",
+    first: "First Name",
+    last: "Last Name",
+    middle: "Middle Name",
+    middleName: "Middle Name",
+    mobilePhone: "Mobile Phone",
+    nametagNotes: "Nametag Notes",
+    nick: "Nick Name",
+    optedOut: "Opted Out",
+    phone: "Phone",
+    photo: "Photo",
+    photoUpdated: "Photo Updated",
+    state: "State",
+    workPhone: "Work Phone",
+    firstName: "First Name",
+    lastName: "Last Name",
+    gender: "Gender",
+    membershipStatus: "Membership Status",
+    id: "ID",
+    householdId: "Household ID"
+  };
+
+  if (customMap[key]) {
+    return customMap[key];
+  }
+
+  // Programmatic camelCase to spaced Title Case fallback
+  const result = key
+    .replace(/([A-Z])/g, " $1")
+    .replace(/([0-9]+)/g, " $1")
+    .trim();
+  return result.charAt(0).toUpperCase() + result.slice(1);
+};
+
 export const PeoplePage = memo(() => {
   const [searchResults, setSearchResults] = React.useState<PersonInterface[] | null>(null);
   const [selectedColumns, setSelectedColumns] = React.useState<string[]>(["photo", "displayName"]);
   const [isSearchPerformed, setIsSearchPerformed] = React.useState(false);
+  const [selectedListFilters, setSelectedListFilters] = React.useState<Record<string, ActiveFilter> | undefined>(undefined);
+  // Query behind current results; null when not from a search.
+  const [saveableCriteria, setSaveableCriteria] = React.useState<ListConditions | null>(null);
+  const emptySaveListDialog = { open: false, name: "", category: "", scope: "org", match: "all" as "all" | "any", householdInclusion: "none", autoRefresh: false, notifyOnChange: false, saving: false };
+  const [saveListDialog, setSaveListDialog] = React.useState(emptySaveListDialog);
+  const queryClient = useQueryClient();
+  const location = useLocation();
+  const navigate = useNavigate();
   const [selectedPersonIds, setSelectedPersonIds] = React.useState<string[]>([]);
   const [isBulkDeleting, setIsBulkDeleting] = React.useState(false);
   const [showBulkDeleteConfirm, setShowBulkDeleteConfirm] = React.useState(false);
@@ -38,6 +102,8 @@ export const PeoplePage = memo(() => {
   });
   const canEdit = UserHelper.checkAccess(Permissions.membershipApi.people.edit);
   const currentPersonId = UserHelper.currentUserChurch?.person?.id || "";
+  const [showCreatePerson, setShowCreatePerson] = React.useState(false);
+  const createPersonRef = React.useRef<HTMLDivElement>(null);
 
   const peopleQuery = useQuery<PersonInterface[]>({
     queryKey: [loadAll ? "/people/list" : `/people/list?pageSize=${INITIAL_PAGE_SIZE}`, "MembershipApi"],
@@ -47,6 +113,20 @@ export const PeoplePage = memo(() => {
   const refetch = useCallback(() => {
     peopleQuery.refetch();
   }, [peopleQuery]);
+
+  const handlePersonCreated = useCallback((person: PersonInterface) => {
+    setShowCreatePerson(false);
+    navigate("/people/" + person.id);
+  }, [navigate]);
+
+  React.useEffect(() => {
+    if (!showCreatePerson) return;
+    const timer = setTimeout(() => {
+      createPersonRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+      (createPersonRef.current?.querySelector("input") as HTMLElement | null)?.focus();
+    }, 100);
+    return () => clearTimeout(timer);
+  }, [showCreatePerson]);
 
   const columns = [
     { key: "photo", label: Locale.label("people.peoplePage.photo"), shortName: "" },
@@ -65,6 +145,7 @@ export const PeoplePage = memo(() => {
     { key: "age", label: Locale.label("person.age"), shortName: Locale.label("person.age") },
     { key: "gender", label: Locale.label("person.gender"), shortName: Locale.label("person.gender") },
     { key: "membershipStatus", label: Locale.label("person.membershipStatus"), shortName: Locale.label("person.membershipStatus") },
+    { key: "campus", label: Locale.label("person.campus"), shortName: Locale.label("person.campus") },
     { key: "maritalStatus", label: Locale.label("person.maritalStatus"), shortName: Locale.label("person.married") },
     { key: "anniversary", label: Locale.label("person.anniversary"), shortName: Locale.label("person.anniversary") },
     { key: "nametagNotes", label: Locale.label("people.peoplePage.nameNote"), shortName: Locale.label("common.notes") },
@@ -111,6 +192,64 @@ export const PeoplePage = memo(() => {
   const handleShowAll = useCallback(() => {
     setLoadAll(true);
   }, []);
+
+  const handleSelectList = useCallback((list: ListInterface) => {
+    const conditions = list.conditions;
+    setIsSearchPerformed(true);
+    // Server-eval for match-any and household-inclusion; client-eval for plain all-match.
+    const needsServerEval = !!list.id && !!list.rules && (list.rules.match !== "all" || (!!list.householdInclusion && list.householdInclusion !== "none"));
+    if (needsServerEval) {
+      setSaveableCriteria(null);
+      setSelectedListFilters(undefined);
+      ApiHelper.get(`/lists/${list.id}/people`, "MembershipApi").then((data: any) => {
+        setSearchResults(data.map((d: PersonInterface) => B1AdminPersonHelper.getExpandedPersonObject(d)));
+      });
+    } else if (Array.isArray(conditions)) {
+      setSaveableCriteria(conditions);
+      setSelectedListFilters(undefined);
+      ApiHelper.post("/people/advancedSearch", conditions, "MembershipApi").then((data: any) => {
+        setSearchResults(data.map((d: PersonInterface) => B1AdminPersonHelper.getExpandedPersonObject(d)));
+      });
+    } else {
+      // New ref on re-select to re-seed advanced panel.
+      setSaveableCriteria(conditions);
+      setSelectedListFilters({ ...conditions });
+    }
+  }, []);
+
+  React.useEffect(() => {
+    const conditions = (location.state as { searchConditions?: SearchCondition[] } | null)?.searchConditions;
+    if (conditions && conditions.length > 0) {
+      handleSelectList({ conditions });
+      navigate(location.pathname, { replace: true, state: null });
+    }
+
+  }, []);
+
+  const handleSaveList = useCallback(async () => {
+    if (!saveableCriteria || !saveListDialog.name.trim()) return;
+    setSaveListDialog((d) => ({ ...d, saving: true }));
+    try {
+      // Rules tree is canonical server query; conditions blob allows re-seeding for edit.
+      const rules = buildRulesFromCriteria(saveableCriteria, saveListDialog.match);
+      await ApiHelper.post("/lists", [
+        {
+          name: saveListDialog.name.trim(),
+          category: saveListDialog.category.trim() || undefined,
+          conditions: saveableCriteria,
+          rules,
+          scope: saveListDialog.scope,
+          householdInclusion: saveListDialog.householdInclusion,
+          autoRefresh: saveListDialog.autoRefresh,
+          notifyOnChange: saveListDialog.autoRefresh && saveListDialog.notifyOnChange
+        }
+      ], "MembershipApi");
+      queryClient.invalidateQueries({ queryKey: ["/lists", "MembershipApi"] });
+      setSaveListDialog(emptySaveListDialog);
+    } catch {
+      setSaveListDialog((d) => ({ ...d, saving: false }));
+    }
+  }, [saveableCriteria, saveListDialog, queryClient]);
 
   React.useEffect(() => {
     if (!searchResults) return;
@@ -183,9 +322,11 @@ export const PeoplePage = memo(() => {
   const getExportData = (people: PersonInterface[]) => {
     return people.map((person) => {
       const { name, contactInfo, ...rest } = person;
+      const photoUrl = person.photo ? (person.photo.startsWith("http") ? person.photo : (EnvironmentHelper.Common.ContentRoot + person.photo)) : "";
 
-      return {
+      const rawExport: any = {
         ...rest,
+        photo: photoUrl,
 
         display: name?.display,
         first: name?.first,
@@ -209,12 +350,20 @@ export const PeoplePage = memo(() => {
         contactZip: contactInfo?.zip,
         contactEmail: contactInfo?.email
       };
+
+      const formattedExport: any = {};
+      Object.keys(rawExport).forEach((key) => {
+        formattedExport[formatHeader(key)] = rawExport[key];
+      });
+
+      return formattedExport;
     });
   };
 
   return (
     <>
       <PageHeader
+        icon={<PeopleIcon />}
         title={Locale.label("people.peoplePage.searchPpl")}
         subtitle={
           searchResults
@@ -225,63 +374,13 @@ export const PeoplePage = memo(() => {
               ? Locale.label("people.peoplePage.loading")
               : Locale.label("people.peoplePage.noPeopleFound")
         }>
-        <SearchIcon
-          sx={{
-            fontSize: 32,
-            color: "rgba(255,255,255,0.8)",
-            cursor: "pointer",
-            "&:hover": {
-              color: "#FFF",
-              transform: "scale(1.1)"
-            },
-            transition: "all 0.2s ease",
-            mr: 2
-          }}
-          onClick={() => {
-            const searchPanel = document.getElementById("peopleSearch");
-            if (searchPanel) {
-              searchPanel.scrollIntoView({ behavior: "smooth", block: "start" });
-              // Focus on the search input after scrolling
-              setTimeout(() => {
-                const searchInput = document.getElementById("searchText") || document.querySelector('[data-testid="people-search-input"]');
-                if (searchInput) {
-                  (searchInput as HTMLElement).focus();
-                }
-              }, 500);
-            }
-          }}
-        />
+        <HeaderSecondaryButton startIcon={<BarChartIcon />} onClick={() => navigate("/people/demographics")} data-testid="demographics-button">
+          {Locale.label("people.demographics.title")}
+        </HeaderSecondaryButton>
         {canEdit && (
-          <Button
-            variant="outlined"
-            sx={{
-              color: "#FFF",
-              borderColor: "rgba(255,255,255,0.5)",
-              "&:hover": {
-                borderColor: "#FFF",
-                backgroundColor: "rgba(255,255,255,0.1)"
-              }
-            }}
-            startIcon={<PersonAddIcon />}
-            onClick={() => {
-              // Scroll to the CreatePerson component at the bottom
-              const createPersonSection = document.querySelector('[data-cy="createPerson"]') || document.querySelector(".create-person") || document.getElementById("createPersonForm");
-              if (createPersonSection) {
-                createPersonSection.scrollIntoView({ behavior: "smooth", block: "start" });
-                // Focus on first input field after scrolling
-                setTimeout(() => {
-                  const firstInput = createPersonSection.querySelector("input") as HTMLElement;
-                  if (firstInput) {
-                    firstInput.focus();
-                  }
-                }, 500);
-              } else {
-                // Fallback: scroll to bottom of page
-                window.scrollTo({ top: document.body.scrollHeight, behavior: "smooth" });
-              }
-            }}>
+          <HeaderPrimaryButton startIcon={<PersonAddIcon />} onClick={() => setShowCreatePerson(true)} data-testid="add-person-button">
             {Locale.label("people.peoplePage.addPerson")}
-          </Button>
+          </HeaderPrimaryButton>
         )}
       </PageHeader>
 
@@ -289,6 +388,22 @@ export const PeoplePage = memo(() => {
       <Box sx={{ p: 3 }}>
         <Grid container spacing={3}>
           <Grid size={{ xs: 12, md: 3 }}>
+            {showCreatePerson && (
+              <Card ref={createPersonRef} sx={{ mb: 3 }} data-testid="create-person-panel">
+                <Box sx={{ p: 2, borderBottom: 1, borderColor: "var(--border-light)" }}>
+                  <Stack direction="row" justifyContent="space-between" alignItems="center">
+                    <Stack direction="row" spacing={1} alignItems="center">
+                      <PersonAddIcon sx={{ color: "primary.main", fontSize: 20 }} />
+                      <Typography variant="h6">{Locale.label("people.peoplePage.addPerson")}</Typography>
+                    </Stack>
+                    <AppIconButton label={Locale.label("common.cancel")} icon={<CloseIcon />} tone="card" onClick={() => setShowCreatePerson(false)} data-testid="cancel-create-person" />
+                  </Stack>
+                </Box>
+                <Box sx={{ p: 2 }}>
+                  <CreatePerson onCreate={handlePersonCreated} />
+                </Box>
+              </Card>
+            )}
             <PeopleSearch
               updateSearchResults={(people) => {
                 setSearchResults(people);
@@ -296,21 +411,27 @@ export const PeoplePage = memo(() => {
               }}
               resetSearchResults={resetSearchResults}
               updatedFunction={refetch}
+              initialFilters={selectedListFilters}
+              onReportCriteria={setSaveableCriteria}
             />
+            <SavedLists onSelect={handleSelectList} canManage={canEdit} />
             <AISearch
               updateSearchResults={(people) => {
                 setSearchResults(people);
                 setIsSearchPerformed(true);
               }}
+              onReportCriteria={setSaveableCriteria}
+              resetSearchResults={resetSearchResults}
             />
           </Grid>
           <Grid size={{ xs: 12, md: 9 }}>
             <Card>
-              <Box sx={{ p: 2, borderBottom: 1, borderColor: "divider" }}>
+              <Box sx={{ p: 2, borderBottom: 1, borderColor: "var(--border-light)" }}>
                 <Stack direction="row" justifyContent="space-between" alignItems="center">
                   <Stack direction="row" spacing={1} alignItems="center">
-                    <PeopleIcon />
+                    <PeopleIcon sx={{ color: "primary.main", fontSize: 20 }} />
                     <Typography variant="h6">{isSearchPerformed ? Locale.label("people.peoplePage.searchResults") : Locale.label("people.peoplePage.allMembers")}</Typography>
+                    {searchResults && searchResults.length > 0 && <CountChip count={searchResults.length} />}
                   </Stack>
                   <Stack direction="row" spacing={1} alignItems="center">
                     {canEdit && selectedPersonIds.length > 0 && (
@@ -320,16 +441,13 @@ export const PeoplePage = memo(() => {
                         <PeopleBulkActions selectedPersonIds={selectedPersonIds} onComplete={handleBulkComplete} onDeleteClick={() => setShowBulkDeleteConfirm(true)} />
                       </>
                     )}
-                    {searchResults && (
-                      <Button size="small" variant="outlined" startIcon={<ExportIcon />} component={ExportLink} data={getExportData(searchResults || [])} filename="people.csv" sx={{ mr: 1 }}>
-                        {Locale.label("people.peoplePage.export")}
+                    {canEdit && saveableCriteria && isSearchPerformed && searchResults && searchResults.length > 0 && (
+                      <Button size="small" variant="outlined" startIcon={<SaveListIcon />} onClick={() => setSaveListDialog({ ...emptySaveListDialog, open: true })} sx={{ mr: 1 }}>
+                        {Locale.label("people.lists.saveAs")}
                       </Button>
                     )}
-                    <Tooltip title={Locale.label("people.peoplePage.printDirectory")}>
-                      <IconButton size="small" onClick={() => window.open("/people/print-directory", "_blank")} sx={{ color: "text.secondary" }}>
-                        <PrintIcon fontSize="small" />
-                      </IconButton>
-                    </Tooltip>
+                    {searchResults && <ExportButton data={getExportData(searchResults || [])} filename="people.csv" text={Locale.label("people.peoplePage.export")} />}
+                    <AppIconButton label={Locale.label("people.peoplePage.printDirectory")} icon={<PrintIcon />} tone="card" onClick={() => window.open("/people/print-directory", "_blank")} />
                     <PeopleColumns selectedColumns={selectedColumns} toggleColumn={handleToggleColumn} columns={columns} />
                   </Stack>
                 </Stack>
@@ -359,6 +477,52 @@ export const PeoplePage = memo(() => {
           </Grid>
         </Grid>
       </Box>
+
+      <Dialog open={saveListDialog.open} onClose={() => setSaveListDialog((d) => ({ ...d, open: false }))} maxWidth="xs" fullWidth>
+        <DialogTitle>{Locale.label("people.lists.saveAs")}</DialogTitle>
+        <DialogContent>
+          <Stack spacing={2} sx={{ mt: 1 }}>
+            <TextField fullWidth autoFocus label={Locale.label("people.lists.name")} value={saveListDialog.name} onChange={(e) => setSaveListDialog((d) => ({ ...d, name: e.target.value }))} />
+            <TextField fullWidth label={Locale.label("people.lists.category")} placeholder={Locale.label("people.lists.categoryPlaceholder")} value={saveListDialog.category} onChange={(e) => setSaveListDialog((d) => ({ ...d, category: e.target.value }))} />
+            <FormControl fullWidth size="small">
+              <InputLabel>{Locale.label("people.lists.sharing")}</InputLabel>
+              <Select label={Locale.label("people.lists.sharing")} value={saveListDialog.scope} onChange={(e) => setSaveListDialog((d) => ({ ...d, scope: e.target.value }))} data-testid="save-list-sharing">
+                <MenuItem value="org">{Locale.label("people.lists.sharingOrg")}</MenuItem>
+                <MenuItem value="private">{Locale.label("people.lists.sharingPrivate")}</MenuItem>
+              </Select>
+            </FormControl>
+            <FormControl fullWidth size="small">
+              <InputLabel>{Locale.label("people.lists.match")}</InputLabel>
+              <Select label={Locale.label("people.lists.match")} value={saveListDialog.match} onChange={(e) => setSaveListDialog((d) => ({ ...d, match: e.target.value as "all" | "any" }))} data-testid="save-list-match">
+                <MenuItem value="all">{Locale.label("people.lists.matchAll")}</MenuItem>
+                <MenuItem value="any">{Locale.label("people.lists.matchAny")}</MenuItem>
+              </Select>
+            </FormControl>
+            <FormControl fullWidth size="small">
+              <InputLabel>{Locale.label("people.lists.household")}</InputLabel>
+              <Select label={Locale.label("people.lists.household")} value={saveListDialog.householdInclusion} onChange={(e) => setSaveListDialog((d) => ({ ...d, householdInclusion: e.target.value }))} data-testid="save-list-household">
+                <MenuItem value="none">{Locale.label("people.lists.householdNone")}</MenuItem>
+                <MenuItem value="children">{Locale.label("people.lists.householdChildren")}</MenuItem>
+                <MenuItem value="household">{Locale.label("people.lists.householdAll")}</MenuItem>
+              </Select>
+            </FormControl>
+            <FormControlLabel
+              control={<Checkbox checked={saveListDialog.autoRefresh} onChange={(e) => setSaveListDialog((d) => ({ ...d, autoRefresh: e.target.checked }))} data-testid="save-list-autorefresh" />}
+              label={Locale.label("people.lists.autoRefresh")}
+            />
+            {saveListDialog.autoRefresh && (
+              <FormControlLabel
+                control={<Checkbox checked={saveListDialog.notifyOnChange} onChange={(e) => setSaveListDialog((d) => ({ ...d, notifyOnChange: e.target.checked }))} data-testid="save-list-notify" />}
+                label={Locale.label("people.lists.notifyOnChange")}
+              />
+            )}
+          </Stack>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setSaveListDialog((d) => ({ ...d, open: false }))}>{Locale.label("common.cancel")}</Button>
+          <Button onClick={handleSaveList} variant="contained" disabled={saveListDialog.saving || !saveListDialog.name.trim()} data-testid="save-list-confirm">{Locale.label("common.save")}</Button>
+        </DialogActions>
+      </Dialog>
 
       <Dialog open={showBulkDeleteConfirm} onClose={() => !isBulkDeleting && setShowBulkDeleteConfirm(false)} maxWidth="xs" fullWidth>
         <DialogTitle>Delete Selected People</DialogTitle>

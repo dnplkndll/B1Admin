@@ -9,12 +9,12 @@ import {
   CircularProgress,
   Typography,
   Stack,
-  IconButton,
   Breadcrumbs,
   Link
 } from "@mui/material";
 import { ArrowBack as ArrowBackIcon } from "@mui/icons-material";
 import { ApiHelper, Locale } from "@churchapps/apphelper";
+import { AppIconButton } from "../../components/ui/AppIconButton";
 import { getProvider, type Instructions, type InstructionItem, type ContentFolder } from "@churchapps/content-providers";
 import { getProviderInstructions } from "./ActionSelectorHelpers";
 import { InstructionTree } from "./InstructionTree";
@@ -32,7 +32,6 @@ interface LessonHeaderSelectorProps {
   ministryId?: string;
 }
 
-// Helper to find thumbnail recursively in instruction tree
 function findThumbnailRecursive(item: InstructionItem): string | undefined {
   if (item.thumbnail) return item.thumbnail;
   if (item.children) {
@@ -44,12 +43,10 @@ function findThumbnailRecursive(item: InstructionItem): string | undefined {
   return undefined;
 }
 
-// Generate dot-notation path from indices
 function generatePath(indices: number[]): string {
   return indices.join(".");
 }
 
-// Convert InstructionItem to PlanItemInterface
 function instructionToPlanItem(
   item: InstructionItem,
   itemType: string,
@@ -61,7 +58,7 @@ function instructionToPlanItem(
     itemType,
     relatedId: item.relatedId || item.id,
     label: item.label || "",
-    description: item.description,
+    description: item.content,
     seconds: item.seconds,
     providerId,
     providerPath,
@@ -86,13 +83,11 @@ export const LessonHeaderSelector: React.FC<LessonHeaderSelectorProps> = ({
   const [instructions, setInstructions] = useState<Instructions | null>(null);
   const [expandedSections, setExpandedSections] = useState<Set<string>>(new Set());
 
-  // Mode: "associated" shows from providerPath, "browse" allows navigation
   const hasAssociatedLesson = !!(providerId && providerPath);
   const [mode, setMode] = useState<"associated" | "browse">(
     hasAssociatedLesson ? "associated" : "browse"
   );
 
-  // Load instructions from provider
   const loadInstructions = useCallback(async (path: string, provId: string) => {
     const provider = getProvider(provId);
     if (!provider) return;
@@ -118,14 +113,12 @@ export const LessonHeaderSelector: React.FC<LessonHeaderSelectorProps> = ({
     }
   }, [ministryId, browser.setLoading]);
 
-  // Check if folder is a leaf with instruction capabilities
   const isLeafWithInstructions = useCallback((folder: ContentFolder): boolean => {
     const provider = getProvider(browser.selectedProviderId);
     if (!provider?.capabilities?.instructions) return false;
     return !!folder.isLeaf;
   }, [browser.selectedProviderId]);
 
-  // Handle folder click — leaf loads instructions, otherwise navigate
   const handleFolderClick = useCallback((folder: ContentFolder) => {
     if (isLeafWithInstructions(folder)) {
       browser.setCurrentPath(folder.path);
@@ -137,7 +130,6 @@ export const LessonHeaderSelector: React.FC<LessonHeaderSelectorProps> = ({
     }
   }, [isLeafWithInstructions, browser.setCurrentPath, browser.setBreadcrumbTitles, browser.selectedProviderId, browser.navigateToFolder, loadInstructions]);
 
-  // Handle back navigation
   const handleBack = useCallback(() => {
     if (instructions) {
       setInstructions(null);
@@ -150,7 +142,6 @@ export const LessonHeaderSelector: React.FC<LessonHeaderSelectorProps> = ({
     }
   }, [instructions, browser.currentPath, browser.navigateBack, browser.setSelectedProviderId, mode, hasAssociatedLesson, providerId]);
 
-  // Toggle section expansion
   const toggleSectionExpanded = useCallback((sectionId: string) => {
     setExpandedSections((prev) => {
       const next = new Set(prev);
@@ -160,7 +151,6 @@ export const LessonHeaderSelector: React.FC<LessonHeaderSelectorProps> = ({
     });
   }, []);
 
-  // Auto-expand when there's only one item at a level
   useEffect(() => {
     if (instructions?.items) {
       const autoExpandIds = new Set<string>();
@@ -177,18 +167,16 @@ export const LessonHeaderSelector: React.FC<LessonHeaderSelectorProps> = ({
     }
   }, [instructions]);
 
-  // Handle selecting a header - convert to planItemHeader with sections as children
   const handleAddSection = useCallback(
     (section: InstructionItem, provId: string, pathIndices: number[]) => {
       const isHeader = section.itemType === "header";
       const currentProviderPath = mode === "browse" ? browser.currentPath : providerPath;
 
-      // Create the header plan item
       const headerItem: PlanItemInterface = {
         itemType: "header",
         relatedId: section.relatedId || section.id,
         label: section.label || "",
-        description: section.description,
+        description: section.content,
         providerId: provId,
         providerPath: currentProviderPath,
         providerContentPath: generatePath(pathIndices),
@@ -196,11 +184,8 @@ export const LessonHeaderSelector: React.FC<LessonHeaderSelectorProps> = ({
         children: []
       };
 
-      // Add children based on whether this is a header or section
       if (isHeader) {
-        // Header selected: only sections become providerSection children. (The previous
-        // `=== "section" || !== "action"` simplified to "anything but action", which let
-        // headers/files leak in.)
+        // Only sections become providerSection children (not headers/files).
         section.children?.forEach((child, childIndex) => {
           if (child.itemType === "section") {
             headerItem.children!.push(
@@ -215,7 +200,7 @@ export const LessonHeaderSelector: React.FC<LessonHeaderSelectorProps> = ({
           }
         });
       } else {
-        // Section selected: only actions become providerPresentation children.
+        // Only actions become providerPresentation children.
         section.children?.forEach((child, childIndex) => {
           if (child.itemType === "action") {
             headerItem.children!.push(
@@ -237,19 +222,14 @@ export const LessonHeaderSelector: React.FC<LessonHeaderSelectorProps> = ({
     [onSelect, onClose, providerPath, mode, browser.currentPath]
   );
 
-  // For this dialog, we don't allow adding individual actions
-  const handleAddAction = useCallback(() => {
-    // No-op - actions are excluded
-  }, []);
+  const handleAddAction = useCallback(() => {}, []);
 
-  // Handle provider change — clear instructions + delegate to hook
   const handleProviderChange = useCallback((newProviderId: string) => {
     setInstructions(null);
     setExpandedSections(new Set());
     browser.changeProvider(newProviderId);
   }, [browser.changeProvider]);
 
-  // Switch to browse mode
   const handleBrowseOther = useCallback(() => {
     setMode("browse");
     setInstructions(null);
@@ -257,7 +237,6 @@ export const LessonHeaderSelector: React.FC<LessonHeaderSelectorProps> = ({
     browser.setBreadcrumbTitles([]);
   }, [browser.setCurrentPath, browser.setBreadcrumbTitles]);
 
-  // Reset state on close
   const handleClose = useCallback(() => {
     setMode(hasAssociatedLesson ? "associated" : "browse");
     setInstructions(null);
@@ -267,7 +246,6 @@ export const LessonHeaderSelector: React.FC<LessonHeaderSelectorProps> = ({
     onClose();
   }, [onClose, hasAssociatedLesson, providerId, browser.reset, browser.setSelectedProviderId]);
 
-  // Load data on open or mode change
   useEffect(() => {
     if (!open) return;
     browser.loadLinkedProviders();
@@ -279,7 +257,6 @@ export const LessonHeaderSelector: React.FC<LessonHeaderSelectorProps> = ({
 
   }, [open, mode]);
 
-  // Breadcrumb items — wraps hook breadcrumbs to also clear instructions on click
   const breadcrumbItems = useMemo(() => {
     if (mode === "associated") return [];
     return browser.breadcrumbItems.map(item => ({
@@ -288,7 +265,6 @@ export const LessonHeaderSelector: React.FC<LessonHeaderSelectorProps> = ({
     }));
   }, [mode, browser.breadcrumbItems]);
 
-  // Associated mode — show instructions from providerPath
   if (mode === "associated" && hasAssociatedLesson) {
     return (
       <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
@@ -337,15 +313,12 @@ export const LessonHeaderSelector: React.FC<LessonHeaderSelectorProps> = ({
     );
   }
 
-  // Browse mode
   return (
     <Dialog open={open} onClose={handleClose} maxWidth="md" fullWidth>
       <DialogTitle>
         <Stack direction="row" alignItems="center" spacing={1}>
           {(browser.currentPath || (hasAssociatedLesson && mode === "browse")) && (
-            <IconButton size="small" onClick={handleBack}>
-              <ArrowBackIcon />
-            </IconButton>
+            <AppIconButton label={Locale.label("common.back")} icon={<ArrowBackIcon />} onClick={handleBack} />
           )}
           <span>{Locale.label("plans.lessonHeaderSelector.selectContent") || "Select Lesson Content"}</span>
         </Stack>
@@ -363,7 +336,6 @@ export const LessonHeaderSelector: React.FC<LessonHeaderSelectorProps> = ({
             currentProviderRequiresAuth={!!browser.currentProviderInfo?.requiresAuth}
           />
 
-          {/* Breadcrumbs */}
           {breadcrumbItems.length > 0 && (
             <Breadcrumbs aria-label="breadcrumb">
               {breadcrumbItems.map((item, index) => (
@@ -378,7 +350,6 @@ export const LessonHeaderSelector: React.FC<LessonHeaderSelectorProps> = ({
             </Breadcrumbs>
           )}
 
-          {/* Content area */}
           {!browser.isCurrentProviderLinked && browser.currentProviderInfo?.requiresAuth ? (
             <Box sx={{ textAlign: "center", py: 4 }}>
               <Typography color="text.secondary">

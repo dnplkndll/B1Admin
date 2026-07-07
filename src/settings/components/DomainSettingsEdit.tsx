@@ -1,10 +1,16 @@
 import React from "react";
 import { type DomainInterface } from "@churchapps/helpers";
 import { ArrayHelper, ApiHelper, Locale } from "@churchapps/apphelper";
-import { TextField, TableCell, TableBody, TableRow, Table, TableHead, Alert, Box, Typography, IconButton } from "@mui/material";
+import { TextField, TableCell, TableBody, TableRow, Table, TableHead, Alert, Box, Typography, FormControl, MenuItem, Select, type SelectChangeEvent } from "@mui/material";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import LinkIcon from "@mui/icons-material/Link";
+import { AppIconButton } from "../../components/ui/AppIconButton";
+import type { SiteInterface } from "../../helpers/Interfaces";
+
+interface DomainWithSite extends DomainInterface {
+  siteId?: string;
+}
 
 interface Props {
   churchId: string;
@@ -12,10 +18,11 @@ interface Props {
 }
 
 export const DomainSettingsEdit: React.FC<Props> = (props) => {
-  const [domains, setDomains] = React.useState<DomainInterface[]>([]);
-  const [originalDomains, setOriginalDomains] = React.useState<DomainInterface[]>([]);
+  const [domains, setDomains] = React.useState<DomainWithSite[]>([]);
+  const [originalDomains, setOriginalDomains] = React.useState<DomainWithSite[]>([]);
   const [addDomainName, setAddDomainName] = React.useState("");
   const [error, setError] = React.useState("");
+  const [sites, setSites] = React.useState<SiteInterface[]>([]);
 
   const validateDomainName = (domain: string): string => {
     if (!domain || domain.trim() === "") {
@@ -72,12 +79,9 @@ export const DomainSettingsEdit: React.FC<Props> = (props) => {
     for (const d of originalDomains) {
       if (!ArrayHelper.getOne(domains, "id", d.id)) ApiHelper.delete("/domains/" + d.id, "MembershipApi");
     }
-
-    for (const d of domains) {
-      const toAdd: DomainInterface[] = [];
-      if (!d.id) toAdd.push(d);
-      if (toAdd.length > 0) ApiHelper.post("/domains", toAdd, "MembershipApi");
-    }
+    // One upsert for the whole list: rows without id are creates, rows with id are
+    // updates carrying their (possibly changed) siteId. Fire-and-forget, as before.
+    if (domains.length > 0) ApiHelper.post("/domains", domains, "MembershipApi");
   };
 
   const checkSave = () => {
@@ -88,6 +92,13 @@ export const DomainSettingsEdit: React.FC<Props> = (props) => {
     const data = await ApiHelper.get("/domains", "MembershipApi");
     setOriginalDomains(data);
     setDomains(data);
+    try {
+      const siteData = await ApiHelper.get("/sites", "MembershipApi");
+      setSites(Array.isArray(siteData) ? siteData : []);
+    } catch {
+      // Older APIs may not expose /sites — hide the per-domain site column.
+      setSites([]);
+    }
   };
 
   const handleAdd = (e: React.MouseEvent) => {
@@ -104,7 +115,7 @@ export const DomainSettingsEdit: React.FC<Props> = (props) => {
       cleanDomain = cleanDomain.slice(0, -1);
     }
 
-    const doms: DomainInterface[] = [...domains];
+    const doms: DomainWithSite[] = [...domains];
     doms.push({ domainName: cleanDomain });
     setDomains(doms);
     setAddDomainName("");
@@ -112,8 +123,14 @@ export const DomainSettingsEdit: React.FC<Props> = (props) => {
   };
 
   const handleDelete = (index: number) => {
-    const doms: DomainInterface[] = [...domains];
+    const doms: DomainWithSite[] = [...domains];
     doms.splice(index, 1);
+    setDomains(doms);
+  };
+
+  const handleSiteChange = (index: number, e: SelectChangeEvent) => {
+    const doms: DomainWithSite[] = [...domains];
+    doms[index] = { ...doms[index], siteId: e.target.value };
     setDomains(doms);
   };
 
@@ -130,28 +147,24 @@ export const DomainSettingsEdit: React.FC<Props> = (props) => {
               <Typography variant="body2">{d.domainName}</Typography>
             </Box>
           </TableCell>
+          {sites.length > 0 && (
+            <TableCell sx={{ py: 1.5 }}>
+              <FormControl size="small" fullWidth>
+                <Select value={d.siteId || ""} onChange={(e) => handleSiteChange(index, e)} displayEmpty data-testid={`domain-site-select-${d.domainName}`} aria-label={Locale.label("settings.domainSettingsEdit.site")}>
+                  <MenuItem value="">{Locale.label("settings.domainSettingsEdit.mainWebsite")}</MenuItem>
+                  {sites.map((s) => (<MenuItem key={s.id} value={s.id}>{s.name}</MenuItem>))}
+                </Select>
+              </FormControl>
+            </TableCell>
+          )}
           <TableCell sx={{ py: 1.5, width: 50 }}>
-            <IconButton
-              size="small"
-              onClick={() => handleDelete(index)}
-              sx={{ color: "error.main", "&:hover": { bgcolor: "error.light", color: "error.contrastText" } }}
-              aria-label={Locale.label("common.delete")}
-            >
-              <DeleteOutlineIcon fontSize="small" />
-            </IconButton>
+            <AppIconButton label={Locale.label("common.delete")} icon={<DeleteOutlineIcon />} intent="remove" onClick={() => handleDelete(index)} />
           </TableCell>
         </TableRow>
       );
       idx++;
     });
     return result;
-  };
-
-  const relink = (e: React.MouseEvent) => {
-    e.preventDefault();
-    ApiHelper.get("/domains/caddy", "MembershipApi").then(() => {
-      alert(Locale.label("settings.domain.doneAlert"));
-    });
   };
 
   React.useEffect(() => {
@@ -172,15 +185,6 @@ export const DomainSettingsEdit: React.FC<Props> = (props) => {
         <Typography variant="body2" color="text.secondary" sx={{ lineHeight: 1.7 }}>
           {Locale.label("settings.domainSettingsEdit.domMsg")} <code style={{ backgroundColor: "rgba(0,0,0,0.08)", padding: "2px 6px", borderRadius: 4, fontFamily: "monospace" }}>CNAME: proxy.b1.church</code>
           {Locale.label("settings.domainSettingsEdit.domMsg2")} <code style={{ backgroundColor: "rgba(0,0,0,0.08)", padding: "2px 6px", borderRadius: 4, fontFamily: "monospace" }}>A: 3.23.251.61</code>
-          {Locale.label("settings.domainSettingsEdit.domMsg3")}{" "}
-          <Typography
-            component="span"
-            onClick={relink}
-            sx={{ color: "primary.main", cursor: "pointer", textDecoration: "underline", "&:hover": { color: "primary.dark" } }}
-          >
-            {Locale.label("settings.domainSettingsEdit.domMsgConnect")}
-          </Typography>
-          {Locale.label("settings.domainSettingsEdit.domMsg4")}
         </Typography>
       </Box>
 
@@ -188,9 +192,10 @@ export const DomainSettingsEdit: React.FC<Props> = (props) => {
 
       <Table size="small" sx={{ "& .MuiTableCell-root": { borderColor: "divider" } }}>
         <TableHead>
-          <TableRow sx={{ bgcolor: "action.hover" }}>
-            <TableCell sx={{ fontWeight: 600, py: 1.5 }}>{Locale.label("settings.domainSettingsEdit.domain")}</TableCell>
-            <TableCell sx={{ fontWeight: 600, py: 1.5, width: 50 }}></TableCell>
+          <TableRow>
+            <TableCell sx={{ py: 1.5 }}>{Locale.label("settings.domainSettingsEdit.domain")}</TableCell>
+            {sites.length > 0 && <TableCell sx={{ py: 1.5 }}>{Locale.label("settings.domainSettingsEdit.site")}</TableCell>}
+            <TableCell sx={{ py: 1.5, width: 50 }}></TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
@@ -208,15 +213,9 @@ export const DomainSettingsEdit: React.FC<Props> = (props) => {
                 sx={{ "& .MuiOutlinedInput-root": { borderRadius: 1.5 } }}
               />
             </TableCell>
+            {sites.length > 0 && <TableCell sx={{ py: 1 }} />}
             <TableCell sx={{ py: 1 }}>
-              <IconButton
-                size="small"
-                onClick={handleAdd}
-                sx={{ color: "primary.main", "&:hover": { bgcolor: "primary.light", color: "primary.contrastText" } }}
-                aria-label={Locale.label("common.add")}
-              >
-                <AddCircleOutlineIcon />
-              </IconButton>
+              <AppIconButton label={Locale.label("common.add")} icon={<AddCircleOutlineIcon />} tone="card" intent="add" onClick={handleAdd} />
             </TableCell>
           </TableRow>
         </TableBody>

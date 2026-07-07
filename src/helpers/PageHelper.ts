@@ -14,8 +14,8 @@ export class PageHelper {
     });
   }
 
-  static loadPageTree = async () => {
-    const customPages = await ApiHelper.get("/pages", "ContentApi");
+  static loadPageTree = async (siteId: string = "") => {
+    const customPages = await ApiHelper.get("/pages" + (siteId ? "?siteId=" + siteId : ""), "ContentApi");
     const templatePages: PageLink[] = await PageHelper.getTemplatePages();
     let result: PageLink[] = [...templatePages];
 

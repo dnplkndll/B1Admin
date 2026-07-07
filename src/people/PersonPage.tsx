@@ -1,22 +1,32 @@
-import React, { useContext, useState, useCallback, useMemo } from "react";
-import { Groups, PersonAttendance, PersonNotes, PersonDonations, GdprActions } from "./components";
-import { type PersonInterface, type ConversationInterface, type FormInterface } from "@churchapps/helpers";
-import { ApiHelper, Locale, SocketHelper, SubscriptionManager, UserHelper } from "@churchapps/apphelper";
+import React, { useContext, useCallback, useMemo } from "react";
+import { Groups, PersonAttendance, PersonNotes, PersonDonations, PersonForms, type PersonFormOption } from "./components";
+import { type PersonInterface, type ConversationInterface } from "@churchapps/helpers";
+import { ApiHelper, Locale, Permissions, SocketHelper, SubscriptionManager, UserHelper } from "@churchapps/apphelper";
 import { useParams } from "react-router-dom";
 import { PersonBanner } from "./components/PersonBanner";
 import { PersonNavigation } from "./components/PersonNavigation";
 import { PersonDetails } from "./components/PersonDetails";
 import UserContext from "../UserContext";
-import { PersonForm } from "./components/PersonForm";
 import { useQuery } from "@tanstack/react-query";
 
 export const PersonPage = () => {
   const [selectedTab, setSelectedTab] = React.useState("");
   const context = useContext(UserContext);
   const params = useParams();
-  const [form, setForm] = useState<FormInterface>(null);
   const [inPhotoEditMode, setInPhotoEditMode] = React.useState<boolean>(false);
   const [editMode, setEditMode] = React.useState<string>("display");
+  const [personForms, setPersonForms] = React.useState<PersonFormOption[]>([]);
+
+  const formPermission = useMemo(() => UserHelper.checkAccess(Permissions.membershipApi.forms.admin) || UserHelper.checkAccess(Permissions.membershipApi.forms.edit), []);
+
+  React.useEffect(() => {
+    if (!formPermission) return;
+    ApiHelper.get("/forms", "MembershipApi").then((data: PersonFormOption[]) => {
+      setPersonForms((data || []).filter((form) => !form.archived && form.contentType === "person"));
+    }).catch(() => setPersonForms([]));
+  }, [formPermission]);
+
+  const showForms = formPermission && personForms.length > 0;
 
   const personData = useQuery<PersonInterface>({
     queryKey: ["/people/" + params.id, "MembershipApi"],
@@ -24,25 +34,11 @@ export const PersonPage = () => {
     placeholderData: null
   });
 
-  const formsData = useQuery<FormInterface[]>({
-    queryKey: ["/forms?contentType=person", "MembershipApi"],
-    placeholderData: []
-  });
-
   const refetch = useCallback(() => {
     personData.refetch();
-    formsData.refetch();
-  }, [personData, formsData]);
+  }, [personData]);
 
-  // Subscribe to a content-scoped room for this person so any tab gets notified
-  // when a Notes conversation is created/updated for them — even before this tab
-  // knows the conversation id. Server broadcasts `conversationActivity` to
-  // `content-person-{id}` from ConversationController.save and MessageController.
-  //
-  // refetch is a useCallback whose reference changes every time react-query touches
-  // personData/formsData — which is constantly. Stash it in a ref so the subscription
-  // effect's deps stay limited to params.id. Otherwise every data update tears down
-  // the connection and re-creates it, racing with inbound broadcasts.
+  // Stash refetch in ref to avoid subscription re-create on every react-query update.
   const refetchRef = React.useRef(refetch);
   React.useEffect(() => { refetchRef.current = refetch; }, [refetch]);
 
@@ -65,7 +61,6 @@ export const PersonPage = () => {
 
   const person = useMemo(() => {
     if (params.id === "add" || !params.id) {
-      // Create a new empty person for adding
       return {
         name: {
           first: "",
@@ -85,7 +80,7 @@ export const PersonPage = () => {
           workPhone: "",
           mobilePhone: ""
         },
-        membershipStatus: "",
+        membershipStatus: "Visitor",
         gender: "",
         birthDate: null,
         maritalStatus: "",
@@ -104,8 +99,6 @@ export const PersonPage = () => {
     return p;
   }, [params.id, personData.data]);
 
-  const allForms = useMemo(() => (formsData.data || []).filter((formData) => formData.contentType === "person"), [formsData.data]);
-
   const handleCreateConversation = async () => {
     const conv: ConversationInterface = {
       allowAnonymousPosts: false,
@@ -122,7 +115,7 @@ export const PersonPage = () => {
     return result[0].id;
   };
 
-  const defaultTab = "details";
+  const defaultTab: string = "details";
 
   React.useEffect(() => {
     if (selectedTab === "" && defaultTab !== "") {
@@ -131,10 +124,8 @@ export const PersonPage = () => {
   }, [selectedTab, defaultTab]);
 
   const getCurrentTab = () => {
-    let currentTab = null;
-    // Tabs other than details need a loaded person; the query can flush to
-    // null during refetches/navigation, so guard against crashing child
-    // components that dereference person.id unconditionally.
+    let currentTab: JSX.Element;
+    // Guard against null person during query refetches.
     if (selectedTab !== "details" && !person?.id) {
       return <div key="loading" />;
     }
@@ -153,10 +144,10 @@ export const PersonPage = () => {
         );
         break;
       case "notes": currentTab = <PersonNotes key={`notes-${person?.conversationId || "new"}`} context={context} conversationId={person?.conversationId} createConversation={handleCreateConversation} />; break;
-      case "attendance": currentTab = <PersonAttendance key="attendance" personId={person.id} updatedFunction={refetch} />; break;
+      case "attendance": currentTab = <PersonAttendance key="attendance" personId={person.id} personName={person.name?.display} updatedFunction={refetch} />; break;
       case "donations": currentTab = <PersonDonations key="donations" personId={person.id} />; break;
+      case "forms": currentTab = <PersonForms key="forms" person={person} forms={personForms} updatedFunction={refetch} />; break;
       case "groups": currentTab = <Groups key="groups" personId={person?.id} updatedFunction={refetch} />; break;
-      case "form": currentTab = <PersonForm key="form" form={form} contentType={"person"} contentId={person.id} formSubmissions={person.formSubmissions} updatedFunction={refetch} />; break;
       default: currentTab = <div key="default">{Locale.label("people.tabs.noImplement")}</div>; break;
     }
     return currentTab;
@@ -167,25 +158,10 @@ export const PersonPage = () => {
       <PersonBanner
         person={person}
         togglePhotoEditor={setInPhotoEditMode}
-        onEdit={() => {
-          setEditMode("edit");
-          setSelectedTab("details");
-        }}
-      />
-      <PersonNavigation
-        selectedTab={selectedTab}
-        onTabChange={setSelectedTab}
-        allForms={allForms}
-        onFormSelect={(form) => {
-          setForm(form);
-          setSelectedTab("form");
-        }}
+        tabs={<PersonNavigation selectedTab={selectedTab} onTabChange={setSelectedTab} showForms={showForms} onHeader />}
       />
       <div style={{ padding: "24px" }}>
         {getCurrentTab()}
-        {selectedTab === "details" && editMode === "edit" && person?.id && (
-          <GdprActions personId={person.id} personName={person.name?.display || Locale.label("people.personPage.thisPerson")} onAnonymized={refetch} />
-        )}
       </div>
     </>
   );

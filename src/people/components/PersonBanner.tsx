@@ -1,31 +1,36 @@
 import { type PersonInterface } from "@churchapps/helpers";
-import { PersonHelper, UserHelper, Permissions, DateHelper, PersonAvatar, ApiHelper, Locale } from "@churchapps/apphelper";
-import { Typography, IconButton, Stack, Chip, Tooltip, Box } from "@mui/material";
+import { PersonHelper, UserHelper, Permissions, DateHelper, PersonAvatar, ApiHelper, Locale, PageHeader } from "@churchapps/apphelper";
+import { Chip } from "@mui/material";
 import {
-  Edit as EditIcon,
-  Phone as PhoneIcon,
   Email as EmailIcon,
-  Home as HomeIcon,
-  Sms as SmsIcon
+  Sms as SmsIcon,
+  ViewKanban as WorkflowIcon,
+  Cake as CakeIcon,
+  Wc as WcIcon,
+  Favorite as FavoriteIcon
 } from "@mui/icons-material";
-import React, { memo, useMemo, useState, useEffect } from "react";
+import { memo, useMemo, useState, useEffect, type ReactNode } from "react";
+import { AppIconButton } from "../../components/ui/AppIconButton";
 import { StatusChip } from "../../components";
 import { SendTextDialog } from "../../groups/components/SendTextDialog";
+import { AddToWorkflowDialog } from "./AddToWorkflowDialog";
 
 interface Props {
   person: PersonInterface;
   togglePhotoEditor?: (show: boolean) => void;
-  onEdit?: () => void;
+  tabs?: ReactNode;
 }
 
 export const PersonBanner = memo((props: Props) => {
-  const { person, togglePhotoEditor, onEdit } = props;
+  const { person, togglePhotoEditor, tabs } = props;
 
   const [userEmail, setUserEmail] = useState<string>("");
   const [showTextDialog, setShowTextDialog] = useState(false);
+  const [showWorkflowDialog, setShowWorkflowDialog] = useState(false);
   const [hasTextingProvider, setHasTextingProvider] = useState(false);
 
   const canText = useMemo(() => UserHelper.checkAccess(Permissions.messagingApi.texting.send), []);
+  const canEdit = useMemo(() => UserHelper.checkAccess(Permissions.membershipApi.people.edit), []);
 
   useEffect(() => {
     if (person?.id) {
@@ -45,182 +50,68 @@ export const PersonBanner = memo((props: Props) => {
     }
   }, [canText]);
 
-  const canEdit = useMemo(() => UserHelper.checkAccess(Permissions.membershipApi.people.edit), []);
-
-  const membershipStatus = useMemo(() => {
-    if (!person?.membershipStatus) return null;
-    return <StatusChip status={person.membershipStatus} variant="header" size="small" />;
-  }, [person?.membershipStatus]);
-
-  const quickStats = useMemo(() => {
+  const statistics = useMemo(() => {
     if (!person) return [];
-    const stats = [];
+    const stats: { icon: ReactNode; value: string; label: string }[] = [];
 
     if (person.birthDate) {
-      const age = PersonHelper.getAge(person.birthDate);
-      stats.push({ label: Locale.label("people.personBanner.age"), value: `${age}` });
+      const age = PersonHelper.getAge(new Date(person.birthDate));
+      stats.push({ icon: <CakeIcon />, value: `${age}`, label: Locale.label("people.personBanner.age") });
     }
-
     if (person.gender && person.gender !== "Unspecified") {
-      stats.push({ label: Locale.label("people.personBanner.gender"), value: person.gender });
+      stats.push({ icon: <WcIcon />, value: person.gender, label: Locale.label("people.personBanner.gender") });
     }
-
     if (person.maritalStatus && person.maritalStatus !== "Single") {
       let value = person.maritalStatus;
-      if (person.anniversary) {
-        value += ` (${DateHelper.getShortDate(DateHelper.toDate(person.anniversary))})`;
-      }
-      stats.push({ label: Locale.label("people.personBanner.maritalStatus"), value });
+      if (person.anniversary) value += ` (${DateHelper.getShortDate(DateHelper.toDate(person.anniversary))})`;
+      stats.push({ icon: <FavoriteIcon />, value, label: Locale.label("people.personBanner.maritalStatus") });
     }
-
     return stats;
   }, [person]);
 
-  const contactInfo = useMemo(() => {
-    if (!person?.contactInfo) return [];
-    const info = [];
-
-    if (person.contactInfo.email) {
-      info.push({
-        icon: <EmailIcon sx={{ color: "#fff", fontSize: 16 }} />,
-        value: person.contactInfo.email,
-        action: () => (window.location.href = `mailto:${person.contactInfo.email}`)
-      });
-    }
-
+  const subtitle = useMemo(() => {
+    if (!person?.contactInfo) return undefined;
+    const parts: string[] = [];
+    if (person.contactInfo.email) parts.push(person.contactInfo.email);
     const phone = person.contactInfo.mobilePhone || person.contactInfo.homePhone || person.contactInfo.workPhone;
-    if (phone) {
-      info.push({
-        icon: <PhoneIcon sx={{ color: "#fff", fontSize: 16 }} />,
-        value: phone,
-        showTextButton: !!person.contactInfo.mobilePhone && canText && hasTextingProvider
-      });
-    }
-
+    if (phone) parts.push(phone);
     if (person.contactInfo.address1) {
-      const addressParts = [person.contactInfo.address1, person.contactInfo.address2, [person.contactInfo.city, person.contactInfo.state, person.contactInfo.zip].filter(Boolean).join(", ")].filter(
-        Boolean
-      );
-
-      info.push({
-        icon: <HomeIcon sx={{ color: "#fff", fontSize: 16 }} />,
-        value: addressParts.join(", ")
-      });
+      const addressParts = [person.contactInfo.address1, person.contactInfo.address2, [person.contactInfo.city, person.contactInfo.state, person.contactInfo.zip].filter(Boolean).join(", ")].filter(Boolean);
+      parts.push(addressParts.join(", "));
     }
-
-    return info;
-  }, [person, canText, hasTextingProvider]);
+    return parts.length > 0 ? parts.join("  •  ") : undefined;
+  }, [person]);
 
   if (!person) return null;
 
-  return (
-    <Box sx={(theme) => ({
-      background: `linear-gradient(135deg, ${theme.palette.primary.dark} 0%, ${theme.palette.primary.main} 40%, ${theme.palette.primary.light} 100%)`,
-      color: theme.palette.primary.contrastText,
-      position: "relative",
-      left: "50%",
-      right: "50%",
-      marginLeft: "-50vw",
-      marginRight: "-50vw",
-      width: "100vw",
-      overflow: "hidden",
-      paddingX: { xs: 2, sm: 3, md: 4 },
-      paddingY: 3,
-      "&::before": {
-        content: "''",
-        position: "absolute",
-        top: -100,
-        right: -100,
-        width: 400,
-        height: 400,
-        borderRadius: "50%",
-        background: "rgba(255,255,255,0.05)",
-        pointerEvents: "none"
-      },
-      "&::after": {
-        content: "''",
-        position: "absolute",
-        bottom: -80,
-        left: -80,
-        width: 300,
-        height: 300,
-        borderRadius: "50%",
-        background: "rgba(255,255,255,0.04)",
-        pointerEvents: "none"
-      }
-    })}>
-      <Stack direction={{ xs: "column", lg: "row" }} spacing={{ xs: 2, md: 4 }} alignItems={{ xs: "flex-start", md: "center" }} sx={{ width: "100%", position: "relative", zIndex: 1 }}>
-        {/* Column 1: Avatar + Name + Status */}
-        <Stack direction="row" spacing={2} alignItems="center" sx={{ flexShrink: 0 }}>
-          <div style={{ border: "3px solid #FFF", borderRadius: "50%" }}>
-            <PersonAvatar person={person} size="responsive" onClick={() => canEdit && togglePhotoEditor?.(true)} />
-          </div>
-          <Stack spacing={1} sx={{ minWidth: 0 }}>
-            <Stack direction="row" alignItems="center" spacing={1}>
-              <Typography
-                sx={{
-                  color: "#FFF",
-                  fontWeight: 400,
-                  mb: 0,
-                  wordBreak: "break-word",
-                  fontSize: { xs: "1.7rem", sm: "2rem", md: "2.5rem" },
-                  lineHeight: 1.1
-                }}>
-                {person?.name?.display}
-              </Typography>
-              {canEdit && (
-                <IconButton size="small" sx={{ color: "#FFF" }} onClick={onEdit}>
-                  <EditIcon fontSize="small" />
-                </IconButton>
-              )}
-            </Stack>
-            <Stack direction="row" flexWrap="wrap" gap={1}>
-              {membershipStatus}
-              {userEmail && (
-                <Chip
-                  label={Locale.label("people.personBanner.hasLogin")}
-                  size="small"
-                  title={userEmail}
-                  sx={{ backgroundColor: "rgba(255,255,255,0.2)", color: "#fff" }}
-                />
-              )}
-              {quickStats.map((stat) => (
-                <Typography key={`${stat.label}-${stat.value}`} variant="body2" sx={{ color: "#FFF", opacity: 0.9 }}>
-                  {stat.value}
-                </Typography>
-              ))}
-            </Stack>
-          </Stack>
-        </Stack>
+  const avatar = (
+    <div style={{ border: "3px solid #FFF", borderRadius: "50%" }}>
+      <PersonAvatar person={person} size="medium" onClick={() => canEdit && togglePhotoEditor?.(true)} />
+    </div>
+  );
 
-        {/* Column 2: Contact Info */}
-        <Stack spacing={0.5} sx={{ position: { xs: "static", lg: "absolute" }, left: { lg: "50%" }, top: { lg: "50%" }, transform: { lg: "translateY(-50%)" }, minWidth: 0 }}>
-          {contactInfo.map((info: any) => (
-            <Stack key={info.value} direction="row" spacing={1} alignItems="center" sx={{ minWidth: 0 }}>
-              {info.icon}
-              <Typography
-                variant="body2"
-                sx={{
-                  color: "#FFF",
-                  cursor: info.action ? "pointer" : "default",
-                  "&:hover": info.action ? { textDecoration: "underline" } : {},
-                  wordBreak: "break-word",
-                  fontSize: { xs: "0.875rem", md: "1rem" }
-                }}
-                onClick={info.action}>
-                {info.value}
-              </Typography>
-              {info.showTextButton && (
-                <Tooltip title={Locale.label("people.personBanner.sendTextMessage")}>
-                  <IconButton size="small" sx={{ color: "#FFF", p: 0.25 }} onClick={() => setShowTextDialog(true)}>
-                    <SmsIcon sx={{ fontSize: 14 }} />
-                  </IconButton>
-                </Tooltip>
-              )}
-            </Stack>
-          ))}
-        </Stack>
-      </Stack>
+  const chips = (
+    <>
+      {person.membershipStatus && <StatusChip status={person.membershipStatus} variant="header" size="small" />}
+      {userEmail && (
+        <Chip label={Locale.label("people.personBanner.hasLogin")} size="small" title={userEmail} sx={{ backgroundColor: "rgba(255,255,255,0.2)", color: "#fff" }} />
+      )}
+    </>
+  );
+
+  const hasMobile = !!person.contactInfo?.mobilePhone;
+
+  return (
+    <PageHeader avatar={avatar} title={person?.name?.display || ""} subtitle={subtitle} chips={chips} statistics={statistics} tabs={tabs}>
+      {person.contactInfo?.email && (
+        <AppIconButton label={Locale.label("people.personBanner.emailPerson")} icon={<EmailIcon />} tone="header" onClick={() => (window.location.href = `mailto:${person.contactInfo?.email}`)} />
+      )}
+      {hasMobile && canText && hasTextingProvider && (
+        <AppIconButton label={Locale.label("people.personBanner.sendTextMessage")} icon={<SmsIcon />} tone="header" onClick={() => setShowTextDialog(true)} />
+      )}
+      {canEdit && (
+        <AppIconButton label={Locale.label("people.personBanner.addToWorkflow")} icon={<WorkflowIcon />} tone="header" data-testid="add-to-workflow-button" onClick={() => setShowWorkflowDialog(true)} />
+      )}
       {showTextDialog && person?.contactInfo?.mobilePhone && (
         <SendTextDialog
           personId={person.id}
@@ -229,6 +120,9 @@ export const PersonBanner = memo((props: Props) => {
           onClose={() => setShowTextDialog(false)}
         />
       )}
-    </Box>
+      {showWorkflowDialog && person?.id && (
+        <AddToWorkflowDialog person={person} onClose={() => setShowWorkflowDialog(false)} />
+      )}
+    </PageHeader>
   );
 });

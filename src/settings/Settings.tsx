@@ -1,16 +1,34 @@
-import React from "react";
+import React, { Suspense } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 import { ManageChurch } from "./ManageChurch";
+import { RolesPage } from "./RolesPage";
 import { RolePage } from "./RolePage";
 import { AuditLogPage } from "./AuditLogPage";
-import { DeveloperPage } from "./DeveloperPage";
+import { BatchesPage } from "./BatchesPage";
+import { CampusesPage } from "./CampusesPage";
+import { CustomFieldsPage } from "./CustomFieldsPage";
+import { PageSkeleton } from "../components/ui/PageSkeleton";
+
+const EmailTemplatesPage = React.lazy(() => import("./EmailTemplatesPage").then((module) => ({ default: module.EmailTemplatesPage })));
 
 export const Settings: React.FC = () => (
   <Routes>
+    <Route path="/roles" element={<RolesPage />} />
     <Route path="/role/:roleId" element={<RolePage />} />
     <Route path="/audit-log" element={<AuditLogPage />} />
-    <Route path="/webhooks" element={<Navigate to="/settings/developer" replace />} />
-    <Route path="/developer" element={<DeveloperPage />} />
+    <Route path="/batches" element={<BatchesPage />} />
+    <Route path="/campuses" element={<CampusesPage />} />
+    <Route path="/custom-fields" element={<CustomFieldsPage />} />
+    <Route
+      path="/email-templates"
+      element={(
+        <Suspense fallback={<PageSkeleton />}>
+          <EmailTemplatesPage />
+        </Suspense>
+      )}
+    />
+    <Route path="/webhooks" element={<Navigate to="/settings#developer" replace />} />
+    <Route path="/developer" element={<Navigate to="/settings#developer" replace />} />
     <Route path="/" element={<ManageChurch />} />
   </Routes>
 );

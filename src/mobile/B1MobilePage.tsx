@@ -1,8 +1,10 @@
 import React from "react";
-import { Box, Button, FormControl, Grid, Icon, InputLabel, MenuItem, Select, Stack, Tooltip, Typography } from "@mui/material";
+import { Box, FormControl, Grid, Icon, InputLabel, MenuItem, Select, Stack, Tooltip, Typography } from "@mui/material";
 import { ApiHelper, Locale, PageHeader, UniqueIdHelper, UserHelper, Permissions } from "@churchapps/apphelper";
+import { PhoneIphone as PhoneIphoneIcon } from "@mui/icons-material";
 import type { GenericSettingInterface, GroupInterface, VisibilityPreferenceInterface } from "@churchapps/helpers";
-import { PermissionDenied } from "../components";
+import { FormCard } from "../components/ui/FormCard";
+import { useRequirePermission } from "../hooks";
 
 export const B1MobilePage: React.FC = () => {
   const [groups, setGroups] = React.useState<GroupInterface[]>(null);
@@ -50,7 +52,8 @@ export const B1MobilePage: React.FC = () => {
 
   React.useEffect(() => { loadData(); }, [loadData]);
 
-  if (!UserHelper.checkAccess(Permissions.membershipApi.settings.edit)) return <PermissionDenied permissions={[Permissions.membershipApi.settings.edit]} />;
+  const denied = useRequirePermission(Permissions.membershipApi.settings.edit);
+  if (denied) return denied;
 
   const handlePrefChange = (name: string, value: string) => {
     setPref(prev => ({ ...prev, [name]: value }));
@@ -81,9 +84,9 @@ export const B1MobilePage: React.FC = () => {
 
   return (
     <>
-      <PageHeader title={Locale.label("mobile.b1MobilePage.title")} subtitle={Locale.label("mobile.b1MobilePage.subtitle")} />
+      <PageHeader icon={<PhoneIphoneIcon />} title={Locale.label("mobile.b1MobilePage.title")} subtitle={Locale.label("mobile.b1MobilePage.subtitle")} />
       <Box sx={{ p: 3 }}>
-        <Box sx={{ maxWidth: 700, p: 3, backgroundColor: "background.paper", borderRadius: 2, border: "1px solid", borderColor: "divider" }}>
+        <FormCard title={Locale.label("mobile.b1MobilePage.title")} icon="phone_iphone" onSave={handleSave} isSubmitting={saving}>
           <Stack direction="row" alignItems="center" sx={{ mb: 2 }}>
             <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>{Locale.label("settings.directoryApprovalSettingsEdit.directoryApprovalGroup")}</Typography>
             <Tooltip title={Locale.label("settings.directoryApprovalSettingsEdit.forceMsg")} arrow>
@@ -160,11 +163,7 @@ export const B1MobilePage: React.FC = () => {
               </FormControl>
             </Grid>
           </Grid>
-
-          <Button variant="contained" onClick={handleSave} disabled={saving}>
-            {saving ? Locale.label("common.saving") : Locale.label("common.save")}
-          </Button>
-        </Box>
+        </FormCard>
       </Box>
     </>
   );

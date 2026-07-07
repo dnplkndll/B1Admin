@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from "react";
-import { Button, Dialog, DialogActions, DialogContent, DialogTitle, Typography, Box, Divider, IconButton } from "@mui/material";
+import { Button, Dialog, DialogActions, DialogContent, DialogTitle, Typography, Box, Divider } from "@mui/material";
 import { ArrowBack as ArrowBackIcon } from "@mui/icons-material";
 import { Locale } from "@churchapps/apphelper";
+import { AppIconButton } from "../../components/ui/AppIconButton";
 import { MarkdownPreviewLight } from "@churchapps/apphelper/markdown";
 import { useProviderContent, type ProviderContentChild } from "../hooks/useProviderContent";
 import { ContentRenderer } from "./ContentRenderer";
 import { ContentItemRow } from "./planItem/ContentItemRow";
 
-// Helper to detect media type from URL
 function detectMediaType(url: string): "video" | "image" | "iframe" {
   const lowerUrl = url.toLowerCase();
   const videoExtensions = [".mp4", ".webm", ".ogg", ".m3u8", ".mov", ".avi"];
@@ -30,7 +30,6 @@ interface Props {
   sectionName?: string;
   onClose: () => void;
   onExpandToActions?: () => void;
-  // Provider-based section support
   providerId?: string;
   downloadUrl?: string;
   /** Provider path for fetching content dynamically */
@@ -45,7 +44,6 @@ export const LessonDialog: React.FC<Props> = (props) => {
   const [iframeHeight, setIframeHeight] = useState(window.innerHeight * 0.7);
   const [selectedChild, setSelectedChild] = useState<ProviderContentChild | null>(null);
 
-  // Use the hook to fetch content from provider
   const { content, loading, error } = useProviderContent({
     providerId: props.providerId,
     providerPath: props.providerPath,
@@ -67,20 +65,16 @@ export const LessonDialog: React.FC<Props> = (props) => {
     return () => window.removeEventListener("message", handleMessage);
   }, []);
 
-  // Check if we have children to display (section with actions)
   const hasChildren = content?.children && content.children.length > 0;
 
-  // Handle clicking on a child item to preview it
   const handleChildClick = (child: ProviderContentChild) => {
     setSelectedChild(child);
   };
 
-  // Handle going back to the list
   const handleBackToList = () => {
     setSelectedChild(null);
   };
 
-  // Render the content area
   const renderContent = () => {
     if (loading) {
       return <ContentRenderer loading={true} />;
@@ -90,7 +84,6 @@ export const LessonDialog: React.FC<Props> = (props) => {
       return <ContentRenderer error={error} />;
     }
 
-    // If a child is selected, show its content
     if (selectedChild) {
       const childUrl = selectedChild.downloadUrl;
 
@@ -117,7 +110,6 @@ export const LessonDialog: React.FC<Props> = (props) => {
       }
     }
 
-    // If we have a URL, show the content
     if (content?.url) {
       return (
         <ContentRenderer
@@ -130,7 +122,6 @@ export const LessonDialog: React.FC<Props> = (props) => {
       );
     }
 
-    // If we have children (section with actions), show them as a list
     if (hasChildren) {
       return (
         <Box sx={{ p: 2 }}>
@@ -160,7 +151,6 @@ export const LessonDialog: React.FC<Props> = (props) => {
       );
     }
 
-    // Fallback - no content available
     return (
       <Box sx={{ p: 4, textAlign: "center", minHeight: 200, display: "flex", flexDirection: "column", justifyContent: "center" }}>
         <Typography color="text.secondary">
@@ -174,9 +164,7 @@ export const LessonDialog: React.FC<Props> = (props) => {
     <Dialog open={true} onClose={props.onClose} fullWidth maxWidth="lg">
       <DialogTitle sx={{ display: "flex", alignItems: "center", gap: 1 }}>
         {selectedChild && (
-          <IconButton size="small" onClick={handleBackToList} sx={{ mr: 1 }}>
-            <ArrowBackIcon />
-          </IconButton>
+          <AppIconButton label={Locale.label("common.back")} icon={<ArrowBackIcon />} onClick={handleBackToList} sx={{ mr: 1 }} />
         )}
         {selectedChild ? selectedChild.label : (props.sectionName || Locale.label("plans.lessonDialog.fallbackTitle"))}
       </DialogTitle>

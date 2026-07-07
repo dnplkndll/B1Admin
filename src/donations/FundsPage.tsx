@@ -1,22 +1,25 @@
 import React from "react";
 import { FundEdit } from "./components";
-import { UserHelper, ExportLink, Loading, Locale, PageHeader } from "@churchapps/apphelper";
+import { UserHelper, Loading, Locale, PageHeader } from "@churchapps/apphelper";
 import { Link } from "react-router-dom";
 import { Permissions } from "@churchapps/apphelper";
 import { type FundInterface } from "@churchapps/helpers";
-import { Icon, Table, TableBody, TableCell, TableRow, TableHead, Box, Typography, Card, Stack, Button } from "@mui/material";
-import { VolunteerActivism as FundIcon, Add as AddIcon, FileDownload as ExportIcon } from "@mui/icons-material";
+import { Chip, Icon, Table, TableBody, TableCell, TableRow, Box, Typography, Stack } from "@mui/material";
+import { VolunteerActivism as FundIcon, Add as AddIcon, Edit as EditIcon, AccountBalance as AccountBalanceIcon } from "@mui/icons-material";
 import { useQuery } from "@tanstack/react-query";
+import { AppIconButton } from "../components/ui/AppIconButton";
+import { CardWithHeader, EmptyState, ExportButton, PageHeaderStats, SortableTableHead, HeaderPrimaryButton, hoverRowSx } from "../components/ui";
+import { useSortableData } from "../hooks";
 
 export const FundsPage = () => {
   const [editFundId, setEditFundId] = React.useState("notset");
-  const [sortDirection, setSortDirection] = React.useState<boolean | null>(null);
-  const [currentSortedCol, setCurrentSortedCol] = React.useState<string>("");
 
   const funds = useQuery<FundInterface[]>({
     queryKey: ["/funds", "GivingApi"],
     placeholderData: []
   });
+
+  const { sorted: sortedFunds, sortBy, sortDirection, handleSort } = useSortableData<FundInterface>(funds.data || []);
 
   const fundUpdated = () => {
     setEditFundId("notset");
@@ -49,37 +52,13 @@ export const FundsPage = () => {
     return result;
   };
 
-  const sortTable = (key: string, asc: boolean | null) => {
-    if (asc === null) asc = false;
-    setCurrentSortedCol(key);
-
-    // Note: With React Query, we can't directly mutate the cached data
-    // This sort functionality would need to be implemented differently
-    // or moved to server-side sorting
-    setSortDirection(!asc);
-  };
-
-  const getSortArrows = (key: string) => (
-    <div style={{ display: "flex" }}>
-      <div style={{ marginTop: "5px" }} className={`${sortDirection && currentSortedCol === key ? "sortAscActive" : "sortAsc"}`}></div>
-      <div style={{ marginTop: "14px" }} className={`${!sortDirection && currentSortedCol === key ? "sortDescActive" : "sortDesc"}`}></div>
-    </div>
-  );
-
   const getRows = () => {
     const result: JSX.Element[] = [];
 
-    if (funds.data.length === 0) {
+    if (sortedFunds.length === 0) {
       result.push(
         <TableRow key="0">
-          <TableCell colSpan={3} sx={{ textAlign: "center", py: 4 }}>
-            <Stack spacing={2} alignItems="center">
-              <FundIcon sx={{ fontSize: 48, color: "text.secondary" }} />
-              <Typography variant="body1" color="text.secondary">
-                {Locale.label("donations.funds.noFund")}
-              </Typography>
-            </Stack>
-          </TableCell>
+          <EmptyState variant="table" colSpan={3} icon={<FundIcon />} title={Locale.label("donations.funds.noFund")} />
         </TableRow>
       );
       return result;
@@ -88,16 +67,14 @@ export const FundsPage = () => {
     const canEdit = UserHelper.checkAccess(Permissions.givingApi.donations.edit);
     const canViewFund = UserHelper.checkAccess(Permissions.givingApi.donations.view);
 
-    for (let i = 0; i < funds.data.length; i++) {
-      const f = funds.data[i];
+    for (let i = 0; i < sortedFunds.length; i++) {
+      const f = sortedFunds[i];
       const editLink = canEdit ? (
-        <Button size="small" variant="outlined" startIcon={<Icon>edit</Icon>} data-cy={`edit-${i}`} data-id={f.id} onClick={showEditFund} sx={{ minWidth: "auto" }}>
-          Edit
-        </Button>
+        <AppIconButton label={Locale.label("common.edit")} icon={<EditIcon />} data-cy={`edit-${i}`} data-id={f.id} onClick={showEditFund} />
       ) : null;
 
       const fundLink = canViewFund ? (
-        <Typography component={Link} to={"/donations/funds/" + f.id} variant="body2" sx={{ textDecoration: "none", color: "primary.light", fontWeight: 500 }}>
+        <Typography component={Link} to={"/donations/funds/" + f.id} variant="body2" sx={{ textDecoration: "none", color: "var(--link)", fontWeight: 500 }}>
           {f.name}
         </Typography>
       ) : (
@@ -107,16 +84,12 @@ export const FundsPage = () => {
       );
 
       result.push(
-        <TableRow
-          key={i}
-          sx={{
-            "&:hover": { backgroundColor: "action.hover" },
-            transition: "background-color 0.2s ease"
-          }}>
+        <TableRow key={i} sx={hoverRowSx}>
           <TableCell>
             <Stack direction="row" spacing={1} alignItems="center">
-              <FundIcon sx={{ color: "primary.light", fontSize: 20 }} />
+              <FundIcon sx={{ color: "primary.main", fontSize: 20 }} />
               {fundLink}
+              {f.visible === false && <Chip label={Locale.label("donations.funds.hidden")} size="small" />}
             </Stack>
           </TableCell>
           <TableCell>
@@ -138,49 +111,11 @@ export const FundsPage = () => {
               )}
             </Stack>
           </TableCell>
-          <TableCell>{editLink}</TableCell>
+          <TableCell align="right" className="rowActions">{editLink}</TableCell>
         </TableRow>
       );
     }
     return result;
-  };
-
-  const getTableHeader = () => {
-    const rows: JSX.Element[] = [];
-
-    if (funds.data.length === 0) {
-      return rows;
-    }
-
-    rows.push(
-      <TableRow key="header">
-        <TableCell
-          sx={{
-            fontWeight: 600,
-            cursor: "pointer",
-            "&:hover": { backgroundColor: "action.hover" }
-          }}
-          onClick={() => sortTable("name", sortDirection)}>
-          <Stack direction="row" spacing={1} alignItems="center">
-            <Typography variant="subtitle2" sx={{ fontWeight: 600 }}>
-              {Locale.label("common.name")}
-            </Typography>
-            {getSortArrows("name")}
-          </Stack>
-        </TableCell>
-        <TableCell sx={{ fontWeight: 600 }}>
-          <Typography variant="subtitle2" sx={{ fontWeight: 600 }}>
-            {Locale.label("donations.fundsPage.taxStatus")}
-          </Typography>
-        </TableCell>
-        <TableCell sx={{ fontWeight: 600 }}>
-          <Typography variant="subtitle2" sx={{ fontWeight: 600 }}>
-            {Locale.label("common.edit")}
-          </Typography>
-        </TableCell>
-      </TableRow>
-    );
-    return rows;
   };
 
   const getTable = () => {
@@ -188,16 +123,18 @@ export const FundsPage = () => {
     else {
       return (
         <Table sx={{ minWidth: 650 }}>
-          <TableHead
-            sx={{
-              backgroundColor: "background.paper",
-              "& .MuiTableCell-root": {
-                borderBottom: "2px solid",
-                borderBottomColor: "divider"
-              }
-            }}>
-            {getTableHeader()}
-          </TableHead>
+          {sortedFunds.length > 0 && (
+            <SortableTableHead
+              columns={[
+                { key: "name", label: Locale.label("common.name"), sortable: true },
+                { key: "taxDeductible", label: Locale.label("donations.fundsPage.taxStatus") },
+                { key: "edit", label: "", align: "right" }
+              ]}
+              sortBy={sortBy}
+              sortDirection={sortDirection}
+              onSort={handleSort}
+            />
+          )}
           <TableBody>{getRows()}</TableBody>
         </Table>
       );
@@ -209,77 +146,40 @@ export const FundsPage = () => {
   return (
     <>
       <PageHeader
+        icon={<AccountBalanceIcon />}
         title={Locale.label("donations.donations.funds")}
         subtitle={Locale.label("donations.fundsPage.subtitle")}
       >
         {stats.totalFunds > 0 && (
-          <Stack
-            direction={{ xs: "column", sm: "row" }}
+          <PageHeaderStats
+            spread
             spacing={{ xs: 2, sm: 2, md: 4 }}
-            sx={{
-              position: { xs: "static", md: "absolute" },
-              left: { md: "50%" },
-              top: { md: "50%" },
-              transform: { md: "translateY(-50%)" },
-              right: { md: "24px" },
-              justifyContent: { md: "space-between" },
-              flexWrap: "wrap"
-            }}
-          >
-            <Stack spacing={0.5} alignItems="center" sx={{ minWidth: 80 }}>
-              <Stack direction="row" spacing={1} alignItems="center">
-                <FundIcon sx={{ color: "#FFF", fontSize: 24 }} />
-                <Typography variant="h5" sx={{ color: "#FFF", fontWeight: 700 }}>{stats.totalFunds}</Typography>
-              </Stack>
-              <Typography variant="caption" sx={{ color: "rgba(255,255,255,0.85)", fontSize: "0.75rem", textTransform: "uppercase", letterSpacing: 0.5 }}>{Locale.label("donations.fundsPage.totalFunds")}</Typography>
-            </Stack>
-          </Stack>
+            items={[{ icon: <FundIcon sx={{ color: "#FFF", fontSize: 24 }} />, value: stats.totalFunds, label: Locale.label("donations.fundsPage.totalFunds"), minWidth: 80 }]}
+          />
         )}
         {UserHelper.checkAccess(Permissions.givingApi.donations.edit) && (
-          <Button
-            variant="outlined"
-            sx={{
-              color: "#FFF",
-              borderColor: "rgba(255,255,255,0.5)",
-              "&:hover": {
-                borderColor: "#FFF",
-                backgroundColor: "rgba(255,255,255,0.1)"
-              }
-            }}
+          <HeaderPrimaryButton
             startIcon={<AddIcon />}
             onClick={() => {
               setEditFundId("");
             }}
             data-testid="add-fund-button">
             {Locale.label("donations.fundsPage.addFund")}
-          </Button>
+          </HeaderPrimaryButton>
         )}
       </PageHeader>
 
-      {/* Main Content */}
       <Box sx={{ p: 3 }}>
-        {/* Edit content appears above when editing */}
         {editFundId !== "notset" && <Box sx={{ mb: 3 }}>{getSidebarModules()}</Box>}
 
-        {/* Main table */}
-        <Card>
-          <Box sx={{ p: 2, borderBottom: 1, borderColor: "divider" }}>
-            <Stack direction="row" justifyContent="space-between" alignItems="center">
-              <Stack direction="row" spacing={1} alignItems="center">
-                <FundIcon />
-                <Typography variant="h6">{Locale.label("donations.funds.fund")}</Typography>
-              </Stack>
-              <Stack direction="row" spacing={1} alignItems="center">
-                {funds.data && (
-                  <Button size="small" variant="outlined" startIcon={<ExportIcon />} component={ExportLink} data={funds.data} filename="funds.csv" sx={{ mr: 1 }}>
-                    {Locale.label("donations.fundsPage.export")}
-                  </Button>
-                )}
-              </Stack>
-            </Stack>
-          </Box>
-          <Box>{getTable()}</Box>
-        </Card>
+        <CardWithHeader
+          icon={<FundIcon sx={{ color: "primary.main", fontSize: 20 }} />}
+          title={Locale.label("donations.funds.fund")}
+          count={sortedFunds.length}
+          actions={funds.data && <ExportButton data={funds.data} filename="funds.csv" text={Locale.label("donations.fundsPage.export")} />}
+        >
+          {getTable()}
+        </CardWithHeader>
       </Box>
     </>
   );

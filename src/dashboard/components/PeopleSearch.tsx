@@ -5,6 +5,7 @@ import { B1AdminPersonHelper } from "../../helpers";
 import { ApiHelper, Locale, Loading } from "@churchapps/apphelper";
 import type { PersonInterface, SearchCondition } from "@churchapps/helpers";
 import { PeopleSearchResults } from "../../people/components";
+import { CountChip } from "../../components/ui";
 import { useQuery } from "@tanstack/react-query";
 
 export const PeopleSearch = () => {
@@ -53,26 +54,14 @@ export const PeopleSearch = () => {
         borderColor: "divider"
       }}>
       <CardContent>
-        {/* Header */}
-        <Stack direction="row" alignItems="center" spacing={2} sx={{ mb: 3 }}>
-          <PersonIcon
-            sx={{
-              color: "primary.main",
-              fontSize: 24
-            }}
-          />
-          <Typography
-            variant="h6"
-            component="h2"
-            sx={{
-              fontWeight: 600,
-              color: "text.primary"
-            }}>
+        <Stack direction="row" alignItems="center" spacing={1} sx={{ mb: 3 }}>
+          <PersonIcon sx={{ color: "primary.main", fontSize: 20 }} />
+          <Typography variant="h6" component="h2">
             {Locale.label("dashboard.peopleSearch.ppl")}
           </Typography>
+          {searchResults.data && searchResults.data.length > 0 && <CountChip count={searchResults.data.length} />}
         </Stack>
 
-        {/* Search Form */}
         <Box sx={{ mb: 3 }}>
           <FormControl fullWidth variant="outlined">
             <InputLabel htmlFor="searchText">{Locale.label("common.name")}</InputLabel>
@@ -109,7 +98,6 @@ export const PeopleSearch = () => {
           </FormControl>
         </Box>
 
-        {/* Search Results */}
         {searchResults.isLoading && searchTerm && (
           <Box sx={{ mt: 2 }}>
             <Loading />

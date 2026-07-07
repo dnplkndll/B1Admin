@@ -1,16 +1,22 @@
-import { useState, useEffect, useContext } from "react";
-import { Box, Grid, Card, CardContent, Stack, Typography } from "@mui/material";
-import { Palette as PaletteIcon, TextFields as TextFieldsIcon, Code as CodeIcon, Image as ImageIcon, SmartButton as SmartButtonIcon, Style as StyleIcon, SpaceBar as SpaceBarIcon, FormatSize as FormatSizeIcon, Menu as MenuIcon } from "@mui/icons-material";
+import { useState, useEffect } from "react";
+import { Box, Grid, Typography } from "@mui/material";
+import { Palette as PaletteIcon, TextFields as TextFieldsIcon, Code as CodeIcon, Image as ImageIcon, SmartButton as SmartButtonIcon, SpaceBar as SpaceBarIcon, FormatSize as FormatSizeIcon, Menu as MenuIcon } from "@mui/icons-material";
 import { ApiHelper, UserHelper, Locale } from "@churchapps/apphelper";
-import type { GlobalStyleInterface, BlockInterface, GenericSettingInterface } from "../../helpers/Interfaces";
+import type { GlobalStyleInterface, BlockInterface, GenericSettingInterface, SiteInterface } from "../../helpers/Interfaces";
 import { PaletteEdit, FontEdit, CssEdit, Preview, AppearanceEdit, TypographyEdit, SpacingScaleEdit, NavStyleEdit } from "./";
-import UserContext from "../../UserContext";
 import { useNavigate, useLocation } from "react-router-dom";
-import { CardWithHeader } from "../../components/ui";
+import { SettingsConfigList, type ConfigSection } from "../../settings/components/SettingsConfigList";
 import React from "react";
+import { EnvironmentHelper } from "../../helpers/EnvironmentHelper";
 
-export function StylesManager() {
-  const context = useContext(UserContext);
+type Props = {
+  siteId: string;
+  selectedSite?: SiteInterface;
+};
+
+export function StylesManager(props: Props) {
+  const siteId = props.siteId || "";
+  const selectedSite = props.selectedSite;
   const navigate = useNavigate();
   const location = useLocation();
   const hash = location.hash?.replace("#", "");
@@ -19,21 +25,41 @@ export function StylesManager() {
   const [churchSettings, setChurchSettings] = useState<any>(null);
   const [currentSettings, setCurrentSettings] = useState<GenericSettingInterface[]>([]);
 
+  const clearSiteCache = () => {
+    const subDomain = selectedSite?.subDomain || UserHelper.currentUserChurch?.church?.subDomain;
+    if (!subDomain) return;
+    const b1Url = EnvironmentHelper.B1Url.replace("{subdomain}", subDomain);
+    fetch(b1Url + "/api/revalidate/" + subDomain, { method: "POST" }).catch(() => { /* best-effort */ });
+  };
+
+  // Fork inherited rows to avoid overwriting primary.
+  const prepareForSave = (gs: GlobalStyleInterface): GlobalStyleInterface => {
+    if ((gs.siteId || "") !== siteId) {
+      const copy = { ...gs };
+      delete copy.id;
+      copy.siteId = siteId;
+      return copy;
+    }
+    return gs;
+  };
+
   const loadData = () => {
     ApiHelper.getAnonymous("/settings/public/" + UserHelper.currentUserChurch.church.id, "MembershipApi").then((s: any) => setChurchSettings(s));
     ApiHelper.get("/settings", "MembershipApi").then((settings: any) => { setCurrentSettings(settings); });
 
-    ApiHelper.get("/globalStyles", "ContentApi").then((gs: any) => {
+    ApiHelper.get("/globalStyles" + (siteId ? "?siteId=" + siteId : ""), "ContentApi").then((gs: any) => {
       if (gs.palette) setGlobalStyle(gs);
       else {
         setGlobalStyle({
-          palette: JSON.stringify({
+          ...gs,
+          palette: gs.palette || JSON.stringify({
             light: "#FFFFFF",
             lightAccent: "#DDDDDD",
             accent: "#0000DD",
             darkAccent: "#9999DD",
             dark: "#000000"
-          })
+          }),
+          fonts: gs.fonts || JSON.stringify({ heading: "Roboto", body: "Roboto" })
         });
       }
     });
@@ -41,129 +67,146 @@ export function StylesManager() {
 
   const handlePaletteUpdate = (paletteJson: string) => {
     if (paletteJson) {
-      const gs = { ...globalStyle };
+      const gs = prepareForSave({ ...globalStyle });
       gs.palette = paletteJson;
-      ApiHelper.post("/globalStyles", [gs], "ContentApi").then(() => loadData());
+      ApiHelper.post("/globalStyles", [gs], "ContentApi").then(() => { loadData(); clearSiteCache(); });
     }
     setSection("");
   };
 
   const handleFontsUpdate = (fontsJson: string) => {
     if (fontsJson) {
-      const gs = { ...globalStyle };
+      const gs = prepareForSave({ ...globalStyle });
       gs.fonts = fontsJson;
-      ApiHelper.post("/globalStyles", [gs], "ContentApi").then(() => loadData());
+      ApiHelper.post("/globalStyles", [gs], "ContentApi").then(() => { loadData(); clearSiteCache(); });
     }
     setSection("");
   };
 
   const handleUpdate = (gs: GlobalStyleInterface) => {
-    if (gs) ApiHelper.post("/globalStyles", [gs], "ContentApi").then(() => loadData());
+    if (gs) ApiHelper.post("/globalStyles", [prepareForSave(gs)], "ContentApi").then(() => { loadData(); clearSiteCache(); });
     setSection("");
   };
 
   const handleTypographyUpdate = (typographyJson: string) => {
     if (typographyJson) {
-      const gs = { ...globalStyle };
+      const gs = prepareForSave({ ...globalStyle });
       gs.typography = typographyJson;
-      ApiHelper.post("/globalStyles", [gs], "ContentApi").then(() => loadData());
+      ApiHelper.post("/globalStyles", [gs], "ContentApi").then(() => { loadData(); clearSiteCache(); });
     }
     setSection("");
   };
 
   const handleSpacingUpdate = (spacingJson: string) => {
     if (spacingJson) {
-      const gs = { ...globalStyle };
+      const gs = prepareForSave({ ...globalStyle });
       gs.spacing = spacingJson;
-      ApiHelper.post("/globalStyles", [gs], "ContentApi").then(() => loadData());
+      ApiHelper.post("/globalStyles", [gs], "ContentApi").then(() => { loadData(); clearSiteCache(); });
     }
     setSection("");
   };
 
   const handleNavUpdate = (navStylesJson: string) => {
     if (navStylesJson) {
-      const gs = { ...globalStyle };
+      const gs = prepareForSave({ ...globalStyle });
       gs.navStyles = navStylesJson;
-      ApiHelper.post("/globalStyles", [gs], "ContentApi").then(() => loadData());
+      ApiHelper.post("/globalStyles", [gs], "ContentApi").then(() => { loadData(); clearSiteCache(); });
     }
     setSection("");
   };
 
-  useEffect(() => { loadData(); }, []);
+  useEffect(() => { loadData(); }, [siteId]);
 
   const getFooter = async () => {
-    const existing = await ApiHelper.get("/blocks/blockType/footerBlock", "ContentApi");
-    if (existing.length > 0) navigate("/site/blocks/" + existing[0].id);
+    const existing = await ApiHelper.get("/blocks/blockType/footerBlock" + (siteId ? "?siteId=" + siteId : ""), "ContentApi");
+    const match = siteId ? existing.find((b: BlockInterface) => (b.siteId || "") === siteId) : existing[0];
+    if (match) navigate("/site/blocks/" + match.id);
     else {
-      const block: BlockInterface = { name: Locale.label("site.stylesManager.siteFooterName"), blockType: "footerBlock" };
+      const block: BlockInterface = { name: Locale.label("site.stylesManager.siteFooterName"), blockType: "footerBlock", siteId: siteId || undefined };
       ApiHelper.post("/blocks", [block], "ContentApi").then((data: any) => {
         navigate("/site/blocks/" + data[0].id);
       });
     }
   };
 
-  const styleOptions = [
+  const styleOptions: (ConfigSection & { action: () => void })[] = [
     {
-      id: "palette",
+      key: "palette",
       icon: <PaletteIcon />,
       title: Locale.label("site.stylesManager.color"),
-      description: Locale.label("site.stylesManager.colorDesc"),
+      subtitle: Locale.label("site.stylesManager.colorDesc"),
+      color: "primary",
       action: () => setSection("palette")
     },
     {
-      id: "fonts",
+      key: "fonts",
       icon: <TextFieldsIcon />,
       title: Locale.label("site.stylesManager.fonts"),
-      description: Locale.label("site.stylesManager.fontsDesc"),
+      subtitle: Locale.label("site.stylesManager.fontsDesc"),
+      color: "secondary",
       action: () => setSection("fonts")
     },
     {
-      id: "typography",
+      key: "typography",
       icon: <FormatSizeIcon />,
       title: Locale.label("site.stylesManager.typography"),
-      description: Locale.label("site.stylesManager.typographyDesc"),
+      subtitle: Locale.label("site.stylesManager.typographyDesc"),
+      color: "info",
       action: () => setSection("typography")
     },
     {
-      id: "spacing",
+      key: "spacing",
       icon: <SpaceBarIcon />,
       title: Locale.label("site.stylesManager.spacing"),
-      description: Locale.label("site.stylesManager.spacingDesc"),
+      subtitle: Locale.label("site.stylesManager.spacingDesc"),
+      color: "warning",
       action: () => setSection("spacing")
     },
     {
-      id: "nav",
+      key: "nav",
       icon: <MenuIcon />,
       title: Locale.label("site.stylesManager.nav"),
-      description: Locale.label("site.stylesManager.navDesc"),
+      subtitle: Locale.label("site.stylesManager.navDesc"),
+      color: "success",
       action: () => setSection("nav")
     },
     {
-      id: "css",
+      key: "css",
       icon: <CodeIcon />,
       title: Locale.label("site.stylesManager.css"),
-      description: Locale.label("site.stylesManager.cssDesc"),
+      subtitle: Locale.label("site.stylesManager.cssDesc"),
+      color: "secondary",
       action: () => setSection("css")
     },
     {
-      id: "logo",
+      key: "logo",
       icon: <ImageIcon />,
       title: Locale.label("site.stylesManager.logo"),
-      description: Locale.label("site.stylesManager.logoDesc"),
+      subtitle: Locale.label("site.stylesManager.logoDesc"),
+      color: "primary",
       action: () => setSection("logo")
     },
     {
-      id: "footer",
+      key: "footer",
       icon: <SmartButtonIcon />,
       title: Locale.label("site.stylesManager.footer"),
-      description: Locale.label("site.stylesManager.footerDesc"),
+      subtitle: Locale.label("site.stylesManager.footerDesc"),
+      color: "warning",
       action: getFooter
     }
   ];
 
+  const handleSelect = (key: string) => {
+    styleOptions.find((o) => o.key === key)?.action();
+  };
+
   return (
     <Box>
       <Grid container spacing={3}>
+        <Grid size={{ xs: 12, md: 4 }}>
+          <SettingsConfigList sections={styleOptions} selected={section} onSelect={handleSelect} testIdPrefix="style-option" headerLabel={Locale.label("site.stylesManager.styleSettings")} />
+        </Grid>
+
         <Grid size={{ xs: 12, md: 8 }}>
           {section === "palette" && <PaletteEdit globalStyle={globalStyle} updatedFunction={handlePaletteUpdate} />}
           {section === "fonts" && <FontEdit globalStyle={globalStyle} updatedFunction={handleFontsUpdate} />}
@@ -179,62 +222,6 @@ export function StylesManager() {
                 <Typography color="text.secondary">{Locale.label("site.stylesManager.loadingPreview")}</Typography>
               </Box>)
           )}
-        </Grid>
-
-        <Grid size={{ xs: 12, md: 4 }}>
-          <CardWithHeader title={Locale.label("site.stylesManager.styleSettings")} icon={<StyleIcon sx={{ color: "primary.main" }} />}>
-            <Stack spacing={2}>
-              {styleOptions.map((option) => (
-                <Card
-                  key={option.id}
-                  sx={{
-                    cursor: "pointer",
-                    transition: "all 0.2s ease-in-out",
-                    border: "1px solid",
-                    borderColor: section === option.id ? "primary.main" : "grey.200",
-                    backgroundColor: section === option.id ? "primary.50" : "transparent",
-                    "&:hover": {
-                      transform: "translateY(-2px)",
-                      boxShadow: 2,
-                      borderColor: "primary.main"
-                    }
-                  }}
-                  onClick={option.action}
-                  data-testid={`style-option-${option.id}`}>
-                  <CardContent sx={{ p: 2 }}>
-                    <Stack direction="row" spacing={2} alignItems="center">
-                      <Box
-                        sx={{
-                          backgroundColor: section === option.id ? "primary.main" : "rgba(25, 118, 210, 0.1)",
-                          borderRadius: "8px",
-                          p: 1,
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "center",
-                          minWidth: 40,
-                          height: 40
-                        }}>
-                        {React.cloneElement(option.icon, {
-                          sx: {
-                            fontSize: 20,
-                            color: section === option.id ? "#FFF" : "primary.main"
-                          }
-                        })}
-                      </Box>
-                      <Box sx={{ flex: 1 }}>
-                        <Typography variant="subtitle1" sx={{ fontWeight: 600, color: section === option.id ? "primary.main" : "text.primary" }}>
-                          {option.title}
-                        </Typography>
-                        <Typography variant="body2" sx={{ color: "text.secondary", fontSize: "0.875rem" }}>
-                          {option.description}
-                        </Typography>
-                      </Box>
-                    </Stack>
-                  </CardContent>
-                </Card>
-              ))}
-            </Stack>
-          </CardWithHeader>
         </Grid>
       </Grid>
     </Box>

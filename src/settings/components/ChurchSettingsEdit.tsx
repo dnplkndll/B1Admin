@@ -1,7 +1,8 @@
 import React from "react";
 import { useForm } from "react-hook-form";
 import { type ChurchInterface } from "@churchapps/helpers";
-import { ApiHelper, InputBox, UserHelper, Permissions, Locale } from "@churchapps/apphelper";
+import { ApiHelper, UserHelper, Permissions, Locale } from "@churchapps/apphelper";
+import { FormCard } from "../../components/ui";
 import { GivingSettingsEdit } from "./GivingSettingsEdit";
 import { Alert, TextField, Grid, Typography, Accordion, AccordionSummary, AccordionDetails } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
@@ -25,12 +26,13 @@ interface Props {
 }
 
 export const ChurchSettingsEdit: React.FC<Props> = (props) => {
+  "use no memo"; // compiler caches register() results, breaking RHF field re-registration after reset()
   const [errors, setErrors] = React.useState<string[]>([]);
   const [saveTrigger, setSaveTrigger] = React.useState<Date | null>(null);
   const childErrorsRef = React.useRef<string[]>([]);
   const [expanded, setExpanded] = React.useState<string | false>(props.initialSection || "church-info");
 
-  const { control, register, handleSubmit, reset, formState } = useForm<AnyRecord>({ defaultValues: { ...(props.church || {}), churchName: props.church?.name || "" } });
+  const { register, handleSubmit, reset, formState } = useForm<AnyRecord>({ defaultValues: { ...(props.church || {}), churchName: props.church?.name || "" } });
 
   const fe = formState.errors as any;
 
@@ -46,7 +48,6 @@ export const ChurchSettingsEdit: React.FC<Props> = (props) => {
     setExpanded(isExpanded ? panel : false);
   };
 
-  // Shared accordion styles for a warm, approachable look
   const accordionStyles = {
     mb: 1.5,
     "&&": { borderRadius: "12px" },
@@ -98,16 +99,15 @@ export const ChurchSettingsEdit: React.FC<Props> = (props) => {
 
   const giveSection = () => {
     if (!UserHelper.checkAccess(Permissions.givingApi.settings.edit)) return null;
-    return <GivingSettingsEdit churchId={props.church?.id || ""} saveTrigger={saveTrigger} onError={handleGivingError} />;
+    return <GivingSettingsEdit churchId={props.church?.id || ""} churchInfo={props.church} saveTrigger={saveTrigger} onError={handleGivingError} />;
   };
 
   if (!props.church || !props.church.id) return null;
 
   return (
-    <InputBox id="churchSettingsBox" cancelFunction={props.updatedFunction} saveFunction={handleSubmit(onValid)} headerText={Locale.label("settings.churchSettingsEdit.churchSettings")} headerIcon="business">
+    <FormCard id="churchSettingsBox" onCancel={props.updatedFunction} onSave={handleSubmit(onValid)} title={Locale.label("settings.churchSettingsEdit.churchSettings")} icon="business">
       {summaryErrors.length > 0 && <Alert severity="error" sx={{ mb: 2 }}>{summaryErrors.map((msg) => <div key={msg}>{msg}</div>)}</Alert>}
 
-      {/* Church Information Accordion */}
       <Accordion expanded={expanded === "church-info"} onChange={handleAccordionChange("church-info")} sx={accordionStyles}>
         <AccordionSummary expandIcon={<ExpandMoreIcon />} sx={accordionSummaryStyles}>
           <SettingsSectionHeader icon={<BusinessIcon />} color="primary" title={Locale.label("settings.churchSettingsEdit.churchInfo")} subtitle={props.church?.name || Locale.label("settings.churchSettingsEdit.churchInfoSubtitle")} />
@@ -148,7 +148,6 @@ export const ChurchSettingsEdit: React.FC<Props> = (props) => {
         </AccordionDetails>
       </Accordion>
 
-      {/* General Settings Accordion */}
       <Accordion expanded={expanded === "general"} onChange={handleAccordionChange("general")} sx={accordionStyles}>
         <AccordionSummary expandIcon={<ExpandMoreIcon />} sx={accordionSummaryStyles}>
           <SettingsSectionHeader icon={<TuneIcon />} color="secondary" title={Locale.label("settings.churchSettingsEdit.general")} subtitle={Locale.label("settings.churchSettingsEdit.generalSubtitle")} />
@@ -158,7 +157,6 @@ export const ChurchSettingsEdit: React.FC<Props> = (props) => {
         </AccordionDetails>
       </Accordion>
 
-      {/* Giving Settings Accordion */}
       {UserHelper.checkAccess(Permissions.givingApi.settings.edit) && (
         <Accordion expanded={expanded === "giving"} onChange={handleAccordionChange("giving")} sx={accordionStyles}>
           <AccordionSummary expandIcon={<ExpandMoreIcon />} sx={accordionSummaryStyles}>
@@ -170,7 +168,6 @@ export const ChurchSettingsEdit: React.FC<Props> = (props) => {
         </Accordion>
       )}
 
-      {/* Texting Settings Accordion */}
       {UserHelper.checkAccess(Permissions.membershipApi.settings.edit) && (
         <Accordion expanded={expanded === "texting"} onChange={handleAccordionChange("texting")} sx={accordionStyles}>
           <AccordionSummary expandIcon={<ExpandMoreIcon />} sx={accordionSummaryStyles}>
@@ -182,7 +179,6 @@ export const ChurchSettingsEdit: React.FC<Props> = (props) => {
         </Accordion>
       )}
 
-      {/* Domains Accordion */}
       <Accordion expanded={expanded === "domains"} onChange={handleAccordionChange("domains")} sx={accordionStyles}>
         <AccordionSummary expandIcon={<ExpandMoreIcon />} sx={accordionSummaryStyles}>
           <SettingsSectionHeader icon={<LanguageIcon />} color="info" title={Locale.label("settings.domainSettingsEdit.domains")} subtitle={Locale.label("settings.churchSettingsEdit.domainsSubtitle")} />
@@ -191,6 +187,6 @@ export const ChurchSettingsEdit: React.FC<Props> = (props) => {
           <DomainSettingsEdit churchId={props.church?.id || ""} saveTrigger={saveTrigger} />
         </AccordionDetails>
       </Accordion>
-    </InputBox>
+    </FormCard>
   );
 };

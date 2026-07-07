@@ -24,9 +24,9 @@ export const TranslationTab = () => {
   const getTableHeader = () => {
     const rows: JSX.Element[] = [];
     rows.push(
-      <TableRow sx={{ textAlign: "left" }} key="header">
-        <th>{Locale.label("serverAdmin.translation.abbreviations")}</th>
-        <th>{Locale.label("serverAdmin.translation.lookups")}</th>
+      <TableRow key="header">
+        <TableCell>{Locale.label("serverAdmin.translation.abbreviations")}</TableCell>
+        <TableCell align="right">{Locale.label("serverAdmin.translation.lookups")}</TableCell>
       </TableRow>
     );
     return rows;
@@ -40,7 +40,7 @@ export const TranslationTab = () => {
       rows.push(
         <TableRow key={keyVal.toString()}>
           <TableCell>{r.abbreviation}</TableCell>
-          <TableCell>{r.lookups}</TableCell>
+          <TableCell align="right">{r.lookups}</TableCell>
         </TableRow>
       );
       keyVal += 1;

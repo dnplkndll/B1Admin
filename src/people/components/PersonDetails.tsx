@@ -1,7 +1,8 @@
 import React, { memo } from "react";
-import { Household, Merge, PersonAssociatedForms, PersonEdit, PersonExportDialog } from "./";
+import { Household, Merge, PersonEdit, PersonExportDialog, PersonView } from "./";
+import { PickupPeople } from "./PickupPeople";
 import { type PersonInterface } from "@churchapps/helpers";
-import { DisplayBox, ImageEditor, Locale, Permissions, PersonHelper, UserHelper } from "@churchapps/apphelper";
+import { ImageEditor, Locale, Permissions, PersonHelper, UserHelper } from "@churchapps/apphelper";
 import { Button } from "@mui/material";
 import { FileDownload as ExportIcon } from "@mui/icons-material";
 
@@ -68,20 +69,19 @@ export const PersonDetails = memo((props: Props) => {
         <PersonEdit id="personDetailsBox" person={person} updatedFunction={handleUpdated} togglePhotoEditor={togglePhotoEditor} showMergeSearch={handleShowSearch} />
       ) : (
         <>
+          <PersonView
+            person={person}
+            editFunction={() => setEditMode("edit")}
+            updatedFunction={props.updatedFunction}
+            showForms={false}
+            headerActions={formPermission ? (
+              <Button size="small" variant="outlined" startIcon={<ExportIcon />} onClick={() => setShowExportDialog(true)} sx={{ minWidth: "auto" }}>
+                {Locale.label("people.peoplePage.export") || "Export"}
+              </Button>
+            ) : undefined}
+          />
           <Household person={person} reload={person?.photoUpdated} />
-            {formPermission && (
-              <DisplayBox
-                id="personFormsBox"
-                headerIcon="description"
-                headerText={Locale.label("people.personNavigation.forms") || "Forms"}
-                editContent={(
-                  <Button size="small" variant="outlined" startIcon={<ExportIcon />} onClick={() => setShowExportDialog(true)} sx={{ minWidth: "auto" }}>
-                    {Locale.label("people.peoplePage.export") || "Export"}
-                  </Button>
-                )}>
-                <PersonAssociatedForms contentId={person.id} formSubmissions={person.formSubmissions} updatedFunction={props.updatedFunction} />
-              </DisplayBox>
-            )}
+          <PickupPeople person={person} />
         </>
       )}
     </>

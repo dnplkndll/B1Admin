@@ -4,8 +4,9 @@ import { UserHelper, Permissions, DateHelper, PageHeader, Locale, CurrencyHelper
 import { type DonationBatchInterface, type FundInterface, type DonationInterface } from "@churchapps/helpers";
 import { useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { Box, Card, Stack, Button, Typography } from "@mui/material";
+import { Box, Stack } from "@mui/material";
 import { Receipt as ReceiptIcon, Edit as EditIcon } from "@mui/icons-material";
+import { HeaderSecondaryButton, PageHeaderStats } from "../components/ui";
 
 export const DonationBatchPage = () => {
   const params = useParams();
@@ -76,6 +77,7 @@ export const DonationBatchPage = () => {
   return (
     <>
       <PageHeader
+        icon={<ReceiptIcon />}
         title={batch.data?.name || Locale.label("donations.donationBatchPage.title")}
         subtitle={batch.data?.batchDate ? `${Locale.label("donations.donationBatchPage.batchDate")} ${DateHelper.prettyDate(new Date(batch.data.batchDate.split("T")[0] + "T00:00:00"))}` : Locale.label("donations.donationBatchPage.subtitle")}
       >
@@ -86,59 +88,26 @@ export const DonationBatchPage = () => {
           sx={{ width: "100%" }}
         >
           {stats.totalDonations > 0 && (
-            <Stack
-              direction={{ xs: "column", sm: "row" }}
-              spacing={{ xs: 2, sm: 4, md: 5 }}
-              sx={{
-                position: { xs: "static", md: "absolute" },
-                left: { md: "50%" },
-                top: { md: "50%" },
-                transform: { md: "translateY(-50%)" },
-                flexWrap: "wrap"
-              }}
-            >
-              <Stack spacing={0.5} alignItems="center" sx={{ minWidth: 80 }}>
-                <Stack direction="row" spacing={1} alignItems="center">
-                  <ReceiptIcon sx={{ color: "#FFF", fontSize: 24 }} />
-                  <Typography variant="h5" sx={{ color: "#FFF", fontWeight: 700 }}>{stats.totalDonations}</Typography>
-                </Stack>
-                <Typography variant="caption" sx={{ color: "rgba(255,255,255,0.85)", fontSize: "0.75rem", textTransform: "uppercase", letterSpacing: 0.5 }}>{Locale.label("donations.donationBatchPage.donations")}</Typography>
-              </Stack>
-              <Stack spacing={0.5} alignItems="center" sx={{ minWidth: 100 }}>
-                <Stack direction="row" spacing={1} alignItems="center">
-                  {/* <MoneyIcon sx={{ color: "#FFF", fontSize: 24 }} /> */}
-                  <Typography variant="h5" sx={{ color: "#FFF", fontWeight: 700 }}>{CurrencyHelper.formatCurrencyWithLocale(stats.totalAmount, currency, 0)}</Typography>
-                </Stack>
-                <Typography variant="caption" sx={{ color: "rgba(255,255,255,0.85)", fontSize: "0.75rem", textTransform: "uppercase", letterSpacing: 0.5 }}>{Locale.label("donations.donationBatchPage.totalAmount")}</Typography>
-              </Stack>
-            </Stack>
+            <PageHeaderStats
+              items={[
+                { icon: <ReceiptIcon sx={{ color: "#FFF", fontSize: 24 }} />, value: stats.totalDonations, label: Locale.label("donations.donationBatchPage.donations"), minWidth: 80 },
+                { value: CurrencyHelper.formatCurrencyWithLocale(stats.totalAmount, currency, 0), label: Locale.label("donations.donationBatchPage.totalAmount") }
+              ]}
+            />
           )}
           {UserHelper.checkAccess(Permissions.givingApi.donations.edit) && (
-            <Button
-              variant="outlined"
+            <HeaderSecondaryButton
               startIcon={<EditIcon />}
               onClick={() => setEditBatch(true)}
               data-testid="edit-batch-button"
-              sx={{
-                color: "#FFF",
-                borderColor: "rgba(255,255,255,0.5)",
-                "&:hover": {
-                  borderColor: "#FFF",
-                  backgroundColor: "rgba(255,255,255,0.1)"
-                },
-                position: { md: "relative" },
-                ml: { md: "auto" },
-                zIndex: 1
-              }}>
+              sx={{ position: { md: "relative" }, ml: { md: "auto" }, zIndex: 1 }}>
               {Locale.label("donations.donationBatchPage.editBatch")}
-            </Button>
+            </HeaderSecondaryButton>
           )}
         </Stack>
       </PageHeader>
 
-      {/* Main Content */}
       <Box sx={{ p: 3 }}>
-        {/* Bulk entry form - always visible when not editing existing donation */}
         {editDonationId === "notset" && UserHelper.checkAccess(Permissions.givingApi.donations.edit) && funds.data?.length > 0 && (
           <BulkDonationEntry
             batchId={batch.data?.id}
@@ -148,13 +117,9 @@ export const DonationBatchPage = () => {
           />
         )}
 
-        {/* Edit content appears when editing existing donation or batch */}
         {(editDonationId !== "notset" || editBatch) && <Box sx={{ mb: 3 }}>{getEditModules()}</Box>}
 
-        {/* Main donations table */}
-        <Card>
-          <Donations key={donationsKey} batch={batch.data} editFunction={showEditDonation} funds={funds.data} currency={currency} />
-        </Card>
+        <Donations key={donationsKey} batch={batch.data} editFunction={showEditDonation} funds={funds.data} currency={currency} />
       </Box>
     </>
   );

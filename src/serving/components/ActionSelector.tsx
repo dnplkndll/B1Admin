@@ -8,13 +8,13 @@ import {
   Stack,
   Typography,
   Box,
-  IconButton,
   CircularProgress,
   Breadcrumbs,
   Link
 } from "@mui/material";
 import { ArrowBack as ArrowBackIcon } from "@mui/icons-material";
 import { ProviderChipSelector } from "./ProviderChipSelector";
+import { AppIconButton } from "../../components/ui/AppIconButton";
 import { ApiHelper, Locale } from "@churchapps/apphelper";
 import { getProvider, type ContentFile, type ContentFolder, type Instructions, type InstructionItem } from "@churchapps/content-providers";
 import { generatePath, getProviderInstructions, type ActionSelectorProps } from "./ActionSelectorHelpers";
@@ -29,14 +29,11 @@ export const ActionSelector: React.FC<ActionSelectorProps> = ({ open, onClose, o
     includeFiles: true
   });
 
-  // Instructions state (when viewing a venue/leaf) — unique to ActionSelector
   const [instructions, setInstructions] = useState<Instructions | null>(null);
   const [expandedSections, setExpandedSections] = useState<Set<string>>(new Set());
 
-  // Mode: "associated" shows actions from contentPath, "browse" allows navigation
   const [mode, setMode] = useState<"associated" | "browse">(contentPath ? "associated" : "browse");
 
-  // Load instructions for a content path
   const loadInstructions = useCallback(async (path: string, provId: string) => {
     const provider = getProvider(provId);
     if (!provider) return;
@@ -58,14 +55,12 @@ export const ActionSelector: React.FC<ActionSelectorProps> = ({ open, onClose, o
     }
   }, [ministryId, browser.setLoading]);
 
-  // Check if folder is a leaf with instruction capabilities
   const isLeafWithInstructions = useCallback((folder: ContentFolder): boolean => {
     const provider = getProvider(browser.selectedProviderId);
     if (!provider?.capabilities?.instructions) return false;
     return !!folder.isLeaf;
   }, [browser.selectedProviderId]);
 
-  // Handle folder click — leaf loads instructions, otherwise navigate
   const handleFolderClick = useCallback((folder: ContentFolder) => {
     if (isLeafWithInstructions(folder)) {
       browser.setCurrentPath(folder.path);
@@ -77,7 +72,6 @@ export const ActionSelector: React.FC<ActionSelectorProps> = ({ open, onClose, o
     }
   }, [isLeafWithInstructions, browser.setCurrentPath, browser.setBreadcrumbTitles, browser.selectedProviderId, browser.navigateToFolder, loadInstructions]);
 
-  // Handle back navigation
   const handleBack = useCallback(() => {
     if (instructions) {
       setInstructions(null);
@@ -90,7 +84,6 @@ export const ActionSelector: React.FC<ActionSelectorProps> = ({ open, onClose, o
     }
   }, [instructions, browser.currentPath, browser.navigateBack, browser.setSelectedProviderId, mode, contentPath, providerId]);
 
-  // Toggle section expansion
   const toggleSectionExpanded = useCallback((sectionId: string) => {
     setExpandedSections(prev => {
       const next = new Set(prev);
@@ -100,7 +93,6 @@ export const ActionSelector: React.FC<ActionSelectorProps> = ({ open, onClose, o
     });
   }, []);
 
-  // Handle adding a section
   const handleAddSection = useCallback((section: InstructionItem, provId: string, pathIndices: number[]) => {
     const sectionId = section.relatedId || section.id || "";
     const sectionName = section.label || Locale.label("plans.actionSelector.fallbackSection");
@@ -112,7 +104,6 @@ export const ActionSelector: React.FC<ActionSelectorProps> = ({ open, onClose, o
     onClose();
   }, [onSelect, onClose, mode, browser.currentPath, contentPath]);
 
-  // Handle adding an action
   const handleAddAction = useCallback((action: InstructionItem, provId: string, pathIndices: number[]) => {
     const actionId = action.relatedId || action.id || "";
     const actionName = action.label || Locale.label("plans.actionSelector.fallbackAction");
@@ -132,7 +123,6 @@ export const ActionSelector: React.FC<ActionSelectorProps> = ({ open, onClose, o
     onClose();
   }, [onSelect, onClose, mode, browser.currentPath, contentPath]);
 
-  // Handle adding a file
   const handleAddFile = useCallback((file: ContentFile, provId: string, pathIndices?: number[]) => {
     const downloadUrl = file.downloadUrl || file.url;
     const path = mode === "browse" ? browser.currentPath : contentPath;
@@ -141,14 +131,12 @@ export const ActionSelector: React.FC<ActionSelectorProps> = ({ open, onClose, o
     onClose();
   }, [onSelect, onClose, mode, browser.currentPath, contentPath]);
 
-  // Handle provider change — clear instructions + delegate to hook
   const handleProviderChange = useCallback((newProviderId: string) => {
     setInstructions(null);
     setExpandedSections(new Set());
     browser.changeProvider(newProviderId);
   }, [browser.changeProvider]);
 
-  // Switch to browse mode
   const handleBrowseOther = useCallback(() => {
     setMode("browse");
     setInstructions(null);
@@ -156,7 +144,6 @@ export const ActionSelector: React.FC<ActionSelectorProps> = ({ open, onClose, o
     browser.setBreadcrumbTitles([]);
   }, [browser.setCurrentPath, browser.setBreadcrumbTitles]);
 
-  // Reset state on close
   const handleClose = useCallback(() => {
     setMode(contentPath ? "associated" : "browse");
     setInstructions(null);
@@ -166,7 +153,6 @@ export const ActionSelector: React.FC<ActionSelectorProps> = ({ open, onClose, o
     onClose();
   }, [onClose, contentPath, providerId, browser.reset, browser.setSelectedProviderId]);
 
-  // Load data on open or mode change
   useEffect(() => {
     if (!open) return;
     browser.loadLinkedProviders();
@@ -178,7 +164,6 @@ export const ActionSelector: React.FC<ActionSelectorProps> = ({ open, onClose, o
 
   }, [open, mode]);
 
-  // Breadcrumb items — wraps hook breadcrumbs to also clear instructions on click
   const breadcrumbItems = useMemo(() => {
     if (mode === "associated") return [];
     return browser.breadcrumbItems.map(item => ({
@@ -187,7 +172,6 @@ export const ActionSelector: React.FC<ActionSelectorProps> = ({ open, onClose, o
     }));
   }, [mode, browser.breadcrumbItems]);
 
-  // Associated mode — show instructions from contentPath
   if (mode === "associated" && contentPath) {
     return (
       <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
@@ -229,15 +213,12 @@ export const ActionSelector: React.FC<ActionSelectorProps> = ({ open, onClose, o
     );
   }
 
-  // Browse mode
   return (
     <Dialog open={open} onClose={handleClose} maxWidth="md" fullWidth>
       <DialogTitle>
         <Stack direction="row" alignItems="center" spacing={1}>
           {(browser.currentPath || (contentPath && mode === "browse")) && (
-            <IconButton size="small" onClick={handleBack}>
-              <ArrowBackIcon />
-            </IconButton>
+            <AppIconButton label={Locale.label("common.back")} icon={<ArrowBackIcon />} onClick={handleBack} />
           )}
           <span>{Locale.label("plans.actionSelector.selectExternalItem") || "Select External Item"}</span>
         </Stack>
@@ -255,7 +236,6 @@ export const ActionSelector: React.FC<ActionSelectorProps> = ({ open, onClose, o
             currentProviderRequiresAuth={!!browser.currentProviderInfo?.requiresAuth}
           />
 
-          {/* Breadcrumbs */}
           {breadcrumbItems.length > 0 && (
             <Breadcrumbs aria-label="breadcrumb">
               {breadcrumbItems.map((item, index) => (
@@ -270,7 +250,6 @@ export const ActionSelector: React.FC<ActionSelectorProps> = ({ open, onClose, o
             </Breadcrumbs>
           )}
 
-          {/* Content area */}
           {!browser.isCurrentProviderLinked && browser.currentProviderInfo?.requiresAuth ? (
             <Box sx={{ textAlign: "center", py: 4 }}>
               <Typography color="text.secondary">

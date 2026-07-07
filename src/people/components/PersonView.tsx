@@ -2,18 +2,26 @@ import React, { memo, useMemo, useState, useEffect } from "react";
 import { AssociatedForms } from ".";
 import { type PersonInterface } from "@churchapps/helpers";
 import { PersonHelper, Loading, DisplayBox, DateHelper, Locale, PersonAvatar, ApiHelper } from "@churchapps/apphelper";
-import { Button, Grid, Icon, Table, TableBody, TableRow, TableCell, Chip } from "@mui/material";
+import { Grid, Icon, Stack, Table, TableBody, TableRow, TableCell, Chip } from "@mui/material";
+import { Edit as EditIcon } from "@mui/icons-material";
+import { AppIconButton } from "../../components/ui/AppIconButton";
 import { formattedPhoneNumber } from "./PersonEdit";
+import { type PersonFieldInterface, type PersonFieldValueInterface } from "../../helpers/Interfaces";
+import { formatFieldValue } from "../../helpers/PersonFieldHelper";
 
 interface Props {
   id?: string;
   person: PersonInterface;
   editFunction: () => void;
   updatedFunction: () => void;
+  showForms?: boolean;
+  headerActions?: React.ReactNode;
 }
 
-export const PersonView = memo(({ person, editFunction, updatedFunction }: Props) => {
+export const PersonView = memo(({ person, editFunction, updatedFunction, showForms = true, headerActions }: Props) => {
   const [userEmail, setUserEmail] = useState<string>("");
+  const [customFields, setCustomFields] = useState<PersonFieldInterface[]>([]);
+  const [customValues, setCustomValues] = useState<Record<string, string>>({});
 
   useEffect(() => {
     if (person?.id) {
@@ -24,6 +32,35 @@ export const PersonView = memo(({ person, editFunction, updatedFunction }: Props
         .catch(() => setUserEmail(""));
     }
   }, [person?.id]);
+
+  useEffect(() => {
+    ApiHelper.get("/personfields", "MembershipApi")
+      .then((data: PersonFieldInterface[]) => setCustomFields(data || []))
+      .catch(() => setCustomFields([]));
+  }, []);
+
+  useEffect(() => {
+    if (!person?.id) return;
+    ApiHelper.get(`/personfieldvalues/person/${person.id}`, "MembershipApi")
+      .then((data: PersonFieldValueInterface[]) => {
+        const map: Record<string, string> = {};
+        (data || []).forEach((v) => { if (v.fieldId) map[v.fieldId] = v.value || ""; });
+        setCustomValues(map);
+      })
+      .catch(() => setCustomValues({}));
+  }, [person?.id]);
+
+  const customFieldAttributes = useMemo(
+    () => customFields
+      .map((f) => ({ f, text: formatFieldValue(f, customValues[f.id || ""]) }))
+      .filter((x) => x.text)
+      .map((x) => (
+        <div key={x.f.id}>
+          <label>{x.f.name}</label> <b>{x.text}</b>
+        </div>
+      )),
+    [customFields, customValues]
+  );
 
   const leftAttributes = useMemo(() => {
     if (!person) return [];
@@ -41,7 +78,7 @@ export const PersonView = memo(({ person, editFunction, updatedFunction }: Props
     if (p.birthDate) {
       attributes.push(
         <div key="age">
-          <label>{Locale.label("person.age")}</label> <b>{PersonHelper.getAge(p.birthDate)}</b>
+          <label>{Locale.label("person.age")}</label> <b>{PersonHelper.getAge(new Date(p.birthDate))}</b>
         </div>
       );
     }
@@ -188,7 +225,7 @@ export const PersonView = memo(({ person, editFunction, updatedFunction }: Props
     return (
       <Grid container spacing={3}>
         <Grid size={{ xs: 3 }}>
-          <div style={{ border: "3px solid #fff", borderRadius: "50%", boxShadow: "0 2px 4px rgba(0,0,0,0.2)" }}>
+          <div style={{ display: "inline-flex", border: "3px solid #fff", borderRadius: "50%", boxShadow: "0 2px 4px rgba(0,0,0,0.2)" }}>
             <PersonAvatar person={person} size="xxlarge" />
           </div>
         </Grid>
@@ -197,6 +234,7 @@ export const PersonView = memo(({ person, editFunction, updatedFunction }: Props
           <Grid container spacing={3}>
             <Grid size={{ xs: 12, md: 6 }}>
               {leftAttributes}
+              {customFieldAttributes}
               {userEmail && (
                 <div key="hasLogin">
                   <Chip label={Locale.label("people.personView.hasLoginLabel").replace("{email}", userEmail)} size="small" color="primary" icon={<Icon>person</Icon>} />
@@ -212,13 +250,20 @@ export const PersonView = memo(({ person, editFunction, updatedFunction }: Props
         </Grid>
       </Grid>
     );
-  }, [person, leftAttributes, contactMethods, userEmail]);
+  }, [person, leftAttributes, contactMethods, userEmail, customFieldAttributes]);
 
   return (
     <DisplayBox
       headerText={Locale.label("people.personView.persDet")}
-      editContent={editFunction ? <Button size="small" variant="outlined" startIcon={<Icon>edit</Icon>} onClick={editFunction} sx={{ minWidth: "auto" }}>{Locale.label("people.personView.edit")}</Button> : undefined}
-      footerContent={<AssociatedForms contentType="person" contentId={person?.id} formSubmissions={person?.formSubmissions} updatedFunction={updatedFunction} />}>
+      editContent={editFunction || headerActions ? (
+        <Stack direction="row" spacing={1} alignItems="center">
+          {headerActions}
+          {editFunction && (
+            <AppIconButton label={Locale.label("common.edit")} icon={<EditIcon />} tone="card" data-testid="edit-person-button" onClick={editFunction} />
+          )}
+        </Stack>
+      ) : undefined}
+      footerContent={showForms ? <AssociatedForms contentType="person" contentId={person?.id} formSubmissions={person?.formSubmissions} updatedFunction={updatedFunction} /> : undefined}>
       {personFields}
     </DisplayBox>
   );

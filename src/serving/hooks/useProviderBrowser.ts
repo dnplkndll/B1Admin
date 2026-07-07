@@ -17,17 +17,14 @@ interface UseProviderBrowserOptions {
 export function useProviderBrowser(options: UseProviderBrowserOptions) {
   const { ministryId, defaultProviderId, providerFilter = ["lessonschurch", "signpresenter", "bibleproject", "dropbox", "jesusfilm"], includeFiles = false, autoLoad = true } = options;
 
-  // Provider state
   const [selectedProviderId, setSelectedProviderId] = useState<string>(defaultProviderId || "");
   const [linkedProviders, setLinkedProviders] = useState<ContentProviderAuthInterface[]>([]);
   const [showAllProviders, setShowAllProviders] = useState(false);
 
-  // Navigation state
   const [currentPath, setCurrentPath] = useState<string>("");
   const [breadcrumbTitles, setBreadcrumbTitles] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
 
-  // Content state
   const [currentItems, setCurrentItems] = useState<ContentFolder[]>([]);
   const [currentFiles, setCurrentFiles] = useState<ContentFile[]>([]);
 
@@ -44,7 +41,6 @@ export function useProviderBrowser(options: UseProviderBrowserOptions) {
     return linkedProviders.some(lp => lp.providerId === selectedProviderId);
   }, [linkedProviders, selectedProviderId, availableProviders]);
 
-  // Load linked providers
   const loadLinkedProviders = useCallback(async () => {
     if (!ministryId) {
       setLinkedProviders([]);
@@ -59,7 +55,6 @@ export function useProviderBrowser(options: UseProviderBrowserOptions) {
     }
   }, [ministryId]);
 
-  // Browse content at a given path and return all items (without setting state)
   const browseRaw = useCallback(async (path: string, provId: string): Promise<ContentItem[]> => {
     const provider = getProvider(provId);
     if (!provider) return [];
@@ -69,7 +64,6 @@ export function useProviderBrowser(options: UseProviderBrowserOptions) {
     return await provider.browse(path || null, null);
   }, [ministryId]);
 
-  // Load browse content for a given path
   const loadContent = useCallback(async (path: string, provId?: string) => {
     const pid = provId || selectedProviderId;
     setLoading(true);
@@ -90,8 +84,6 @@ export function useProviderBrowser(options: UseProviderBrowserOptions) {
     }
   }, [selectedProviderId, includeFiles, browseRaw]);
 
-  // Navigate directly to a deep path, resolving breadcrumb titles along the way.
-  // Returns the folders loaded at the target path.
   const navigateToPath = useCallback(async (targetPath: string, provId?: string): Promise<ContentFolder[]> => {
     const pid = provId || selectedProviderId;
     if (pid !== selectedProviderId) setSelectedProviderId(pid);
@@ -121,7 +113,6 @@ export function useProviderBrowser(options: UseProviderBrowserOptions) {
 
       const titles = await Promise.all(titlePromises);
 
-      // Load the target path content
       const targetItems = await browseRaw(targetPath, pid);
       const targetFolders = targetItems.filter((item): item is ContentFolder => item.type === "folder");
 
@@ -138,14 +129,12 @@ export function useProviderBrowser(options: UseProviderBrowserOptions) {
     }
   }, [selectedProviderId, browseRaw]);
 
-  // Navigate into a folder (non-leaf)
   const navigateToFolder = useCallback((folder: ContentFolder) => {
     setCurrentPath(folder.path);
     setBreadcrumbTitles(prev => [...prev, folder.title]);
     loadContent(folder.path);
   }, [loadContent]);
 
-  // Navigate back one level
   const navigateBack = useCallback(() => {
     const segments = currentPath.split("/").filter(Boolean);
     segments.pop();
@@ -155,7 +144,6 @@ export function useProviderBrowser(options: UseProviderBrowserOptions) {
     loadContent(newPath);
   }, [currentPath, loadContent]);
 
-  // Navigate to a breadcrumb level (-1 = root)
   const navigateToBreadcrumb = useCallback((index: number) => {
     if (index < 0) {
       setCurrentPath("");
@@ -171,7 +159,6 @@ export function useProviderBrowser(options: UseProviderBrowserOptions) {
     }
   }, [currentPath, loadContent]);
 
-  // Change provider and reset navigation
   const changeProvider = useCallback(async (newProviderId: string) => {
     setSelectedProviderId(newProviderId);
     setCurrentPath("");
@@ -183,7 +170,6 @@ export function useProviderBrowser(options: UseProviderBrowserOptions) {
     }
   }, [includeFiles, autoLoad, loadContent]);
 
-  // Reset all state
   const reset = useCallback(() => {
     setCurrentPath("");
     setBreadcrumbTitles([]);
@@ -193,12 +179,10 @@ export function useProviderBrowser(options: UseProviderBrowserOptions) {
     if (defaultProviderId) setSelectedProviderId(defaultProviderId);
   }, [includeFiles, defaultProviderId]);
 
-  // Check if a folder is a leaf
   const isLeafFolder = useCallback((folder: ContentFolder): boolean => {
     return !!folder.isLeaf;
   }, []);
 
-  // Build breadcrumb items
   const breadcrumbItems = useMemo(() => {
     const providerName = currentProviderInfo?.name || selectedProviderId;
     const items: { label: string; onClick?: () => void }[] = [{ label: providerName, onClick: () => navigateToBreadcrumb(-1) }];
@@ -208,7 +192,6 @@ export function useProviderBrowser(options: UseProviderBrowserOptions) {
     return items;
   }, [breadcrumbTitles, navigateToBreadcrumb, currentProviderInfo, selectedProviderId]);
 
-  // Auto-select first implemented provider if none is set
   useEffect(() => {
     if (!selectedProviderId && availableProviders.length > 0) {
       const firstImplemented = availableProviders.find(p => p.implemented);
@@ -217,7 +200,6 @@ export function useProviderBrowser(options: UseProviderBrowserOptions) {
   }, [selectedProviderId, availableProviders]);
 
   return {
-    // Provider state
     selectedProviderId,
     setSelectedProviderId,
     linkedProviders,
@@ -227,7 +209,6 @@ export function useProviderBrowser(options: UseProviderBrowserOptions) {
     currentProviderInfo,
     isCurrentProviderLinked,
 
-    // Navigation state
     currentPath,
     setCurrentPath,
     breadcrumbTitles,
@@ -235,16 +216,13 @@ export function useProviderBrowser(options: UseProviderBrowserOptions) {
     loading,
     setLoading,
 
-    // Content
     currentItems,
     setCurrentItems,
     currentFiles,
     setCurrentFiles,
 
-    // Computed
     breadcrumbItems,
 
-    // Actions
     loadLinkedProviders,
     loadContent,
     navigateToFolder,

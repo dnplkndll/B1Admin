@@ -20,9 +20,6 @@
     }
   },
   "attendance": {
-    "attendanceNavigation": {
-      "kioskTheme": "Тема киоска"
-    },
     "attendancePage": {
       "att": "Присуство",
       "campus": "Филијала",
@@ -40,41 +37,54 @@
       "unscheduled": "Незаказано"
     },
     "attendanceSetup": {
-      "addCampusAria": "Додај филијалу",
-      "addService": "Додај службу",
-      "addServiceTime": "Додај време службе",
-      "newCampus": "Нова филијала",
-      "newService": "Нова служба",
-      "newServiceTime": "Ново време службе",
       "setupMessage": "Постави филијале, службе и времена служби да почнеш пратити присуство.",
       "unassigned": "Недодељено"
     },
-    "campusEdit": {
-      "confirmDelete": "Да ли сте сигурни да желите да обришете ову филијалу?",
-      "name": "Назив филијале",
-      "nameAria": "Назив филијале",
-      "validate": {
-        "name": "Назив филијале је обавезан."
-      }
-    },
-    "checkinThemeEdit": {
-      "addSlide": "Додај слајд",
-      "background": "Позадина",
-      "backgroundImage": "Позадинска слика",
-      "backgroundImageDesc": "Опциона позадинска слика за екран претраге/добродошлице. Препоручено: 1920x1080.",
-      "change": "Промени",
-      "changeImage": "Промени слику",
-      "duration": "Трајање (с)",
-      "enableIdleScreen": "Омогући екран мировања",
-      "headerSubtitle": "Бојама киоска се управља у Подешавања > Тема апликације. Конфигуришите позадинске слике и понашање екрана мировања испод.",
-      "idleScreen": "Екран мировања / Чувар екрана",
-      "kioskSettings": "Подешавања киоска",
-      "remove": "Уклони",
-      "slide": "Слајд {index}",
-      "slides": "Слајдови",
-      "timeoutSeconds": "Тајмаут (секунде)",
-      "upload": "Учитај",
-      "uploadImage": "Учитај слику"
+    "labels": {
+      "align": "Поравнање",
+      "always": "Увек",
+      "barcode": "Бар код",
+      "blank": "Празно",
+      "bold": "Подебљано",
+      "border": "Ивица",
+      "box": "Оквир",
+      "center": "Центар",
+      "condition": "Услов",
+      "confirmDelete": "Да ли сте сигурни да желите да обришете овај шаблон налепнице?",
+      "default": "Подразумевано",
+      "empty": "Празно",
+      "equals": "Једнако",
+      "field": "Поље",
+      "fill": "Испуна",
+      "fontSize": "Величина фонта",
+      "height": "Висина (in)",
+      "italic": "Курзив",
+      "left": "Лево",
+      "name": "Назив",
+      "nametag": "Налепница са именом",
+      "noTemplates": "Нема шаблона налепница",
+      "noTemplatesDesc": "Креирајте шаблон налепнице да прилагодите налепнице које штампају киосци за пријаву.",
+      "notEmpty": "Није празно",
+      "notEquals": "Није једнако",
+      "operator": "Оператор",
+      "palette": "Додај блок",
+      "pickup": "Листић за преузимање",
+      "properties": "Својства",
+      "qrCode": "QR код",
+      "removeBlock": "Уклони блок",
+      "right": "Десно",
+      "selectBlock": "Изаберите блок на платну да га измените.",
+      "setDefault": "Постави као подразумевано",
+      "size": "Величина",
+      "starterNametag": "Налепница са именом 3.5\" x 1.1\"",
+      "starterPickup": "Листић за преузимање 3.5\" x 1.1\"",
+      "subtitle": "Дизајнирајте налепнице са именом и листиће за преузимање који се штампају приликом пријаве",
+      "symbology": "Симбологија",
+      "text": "Текст",
+      "title": "Налепнице за пријаву",
+      "type": "Тип",
+      "value": "Вредност",
+      "width": "Ширина (in)"
     },
     "serviceEdit": {
       "campus": "Филијала",
@@ -106,8 +116,31 @@
     }
   },
   "calendars": {
+    "approvals": {
+      "approve": "Одобри",
+      "bookingRequests": "Захтеви за просторије и ресурсе",
+      "conflicts": "Конфликти",
+      "description": "Опис",
+      "event": "Догађај",
+      "eventRequests": "Захтеви за догађаје",
+      "noConflicts": "Нема конфликата",
+      "noPendingBookings": "Нема захтева за просторије или ресурсе на чекању.",
+      "noPendingEvents": "Нема захтева за догађаје на чекању.",
+      "reject": "Одбиј",
+      "roomResource": "Просторија / ресурс",
+      "status": "Статус",
+      "subtitle": "Прегледајте захтеве за просторије, ресурсе и догађаје на чекању",
+      "title": "Одобрења"
+    },
+    "availability": {
+      "allRoomsResources": "Све просторије и ресурси",
+      "blocked": "Блокирано",
+      "book": "Резервиши",
+      "filter": "Просторија / Ресурс",
+      "subtitle": "Погледај шта је резервисано у свим просторијама и ресурсима",
+      "title": "Доступност"
+    },
     "calendar": {
-      "add": "Додај",
       "copiedToClipboard": "Копирано у клипборд",
       "copyIcsLink": "Копирај ICS везу",
       "downloadIcsFile": "Преузми ICS датотеку",
@@ -137,6 +170,7 @@
       "cancel": "Откажи",
       "confirmDelete": "Да ли сте сигурни да желите да обришете овај догађај?",
       "delete": "Обриши",
+      "manageRegistrations": "Управљај регистрацијама",
       "noGroups": "Нема пронађених група."
     },
     "calendarList": {
@@ -144,7 +178,6 @@
       "aboutParagraph2": "Можете направити више календара за различите намене као што су службе поклоњења, младински догађаји и активности у заједници.",
       "aboutParagraph3": "Делите своје календаре са члановима кроз ICS канале или их уградите на своју веб страницу.",
       "aboutTitle": "О календарима",
-      "actions": "Акције",
       "active": "Активно",
       "addCalendar": "Додај календар",
       "calendar": "Календар",
@@ -152,7 +185,6 @@
       "createCalendar": "Направи календар",
       "createFirstCalendar": "Направи први календар",
       "curatedCalendar": "Кураторски календар",
-      "edit": "Уреди",
       "manageEvents": "Управљај догађајима",
       "noCalendars": "Нема пронађених календара",
       "status": "Статус",
@@ -161,16 +193,16 @@
       "title": "Календари"
     },
     "calendarPage": {
-      "actions": "Акције",
       "addEventsHint": "Додајте догађаје избором група",
       "calendar": "Календар",
       "calendarEvents": "Календарски догађаји",
       "confirmRemoveGroup": "Да ли сте сигурни да желите да уклоните ову групу из календара?",
       "groupName": "Назив групе",
       "groupsInCalendar": "Групе у календару",
+      "importIcs": "Увези .ics",
+      "newEvent": "Нови догађај",
       "noGroupsAdded": "Нема додатих група",
-      "removeGroup": "Уклони групу",
-      "removeGroupAria": "Уклони групу Ариа",
+      "print": "Штампај",
       "subtitle": "Управљај календарским догађајима и групама"
     },
     "editEvent": {
@@ -182,6 +214,103 @@
       "noEventsFound": "Нема пронађених догађаја",
       "save": "Сачувај",
       "selectGroup": "Одабери групу"
+    },
+    "eventReminders": {
+      "channels": "Канали",
+      "enableReminders": "Омогући подсетнике",
+      "maxOffsets": "Максимално 3 изабрана времена",
+      "message": "Порука (опционо)",
+      "messageHint": "Поље за спајање: {{eventTitle}}",
+      "modeAuto": "Аутоматски",
+      "modeGroup": "Чланови групе",
+      "modeRegistrants": "Само пријављени",
+      "modeRegistrantsHoh": "Само главе домаћинства / пријављени",
+      "timeOfDay": "Доба дана",
+      "timeOfDayHint": "Локално време цркве (нпр. 9:00)",
+      "title": "Подсетници",
+      "when": "Када (до 3)",
+      "who": "Ко"
+    },
+    "importIcs": {
+      "chooseFile": "Изаберите .ics датотеку",
+      "failed": "Увоз није успео. Проверите садржај датотеке.",
+      "group": "Група",
+      "import": "Увези",
+      "imported": "Увезено {} догађаја.",
+      "noEventsFound": "Нема пронађених догађаја у датотеци.",
+      "pasteHint": "Или налепите садржај .ics датотеке овде",
+      "title": "Увези .ics календар"
+    },
+    "newEvent": {
+      "customWindow": "Прилагођени прозор резервације",
+      "daily": "Дневно",
+      "description": "Опис",
+      "doesNotRepeat": "Не понавља се",
+      "end": "Крај",
+      "eventTitle": "Наслов",
+      "group": "Група",
+      "monthly": "Месечно",
+      "noTemplate": "(без шаблона)",
+      "private": "Приватно",
+      "public": "Јавно",
+      "repeats": "Понавља се",
+      "reserveFrom": "Резервиши од",
+      "reserveUntil": "Резервиши до",
+      "resources": "Ресурси",
+      "rooms": "Просторије",
+      "seats": "Места {}",
+      "setupMinutes": "Podešavanje (min pre)",
+      "start": "Почетак",
+      "teardownMinutes": "Raspremanje (min posle)",
+      "template": "Шаблон",
+      "title": "Нови догађај",
+      "visibility": "Видљивост",
+      "weekly": "Седмично"
+    },
+    "rooms": {
+      "addBlockout": "Додај блокирање",
+      "addResource": "Додај ресурс",
+      "addRoom": "Додај просторију",
+      "addTemplate": "Додај шаблон",
+      "allRoomsResources": "Све просторије и ресурси",
+      "approvalGroup": "Група за одобравање",
+      "approvalGroupHint": "Захтеви се аутоматски одобравају за чланове ове групе; сви остали треба одобрење.",
+      "blockoutTarget": "Примењује се на",
+      "blockouts": "Блокирања",
+      "capacity": "Капацитет",
+      "confirmDeleteBlockout": "Да ли сте сигурни да желите да обришете ово блокирање?",
+      "confirmDeleteResource": "Да ли сте сигурни да желите да обришете овај ресурс?",
+      "confirmDeleteRoom": "Да ли сте сигурни да желите да обришете ову просторију?",
+      "confirmDeleteTemplate": "Да ли сте сигурни да желите да обришете овај шаблон?",
+      "description": "Опис",
+      "durationMinutes": "Трајање (минути)",
+      "editBlockout": "Измени блокирање",
+      "editResource": "Измени ресурс",
+      "editRoom": "Измени просторију",
+      "editTemplate": "Измени шаблон",
+      "endTime": "Крај",
+      "eventDescription": "Опис догађаја",
+      "eventTitle": "Наслов догађаја",
+      "noApprovalNeeded": "Одобрење није потребно",
+      "noBlockouts": "Нема блокирања",
+      "noBlockoutsDesc": "Блокирајте датуме када просторије или ресурси нису доступни.",
+      "noResources": "Нема ресурса",
+      "noResourcesDesc": "Додајте заједничке ресурсе (пројектори, столови, комбија) са количинама.",
+      "noRooms": "Нема просторија",
+      "noRoomsDesc": "Додајте просторије да би догађаји могли да их резервишу и да се детектују конфликти.",
+      "noTemplates": "Нема шаблона",
+      "noTemplatesDesc": "Шаблони унапред попуњавају нове догађаје наслovima, трајањем, просторијама и ресурсима.",
+      "quantity": "Количина",
+      "reason": "Разлог",
+      "resourceName": "Назив ресурса",
+      "resources": "Ресурси",
+      "roomName": "Назив просторије",
+      "rooms": "Просторије",
+      "startTime": "Почетак",
+      "subtitle": "Управљајте просторијама за резервацију, заједничким ресурсима, блокираним датумима и шаблонима догађаја",
+      "templateName": "Назив шаблона",
+      "templates": "Шаблони",
+      "title": "Просторије и ресурси"
     }
   },
   "common": {
@@ -197,11 +326,13 @@
     "change": "Промени",
     "changePhoto": "Промени фотографију",
     "close": "Затвори",
+    "collapse": "Скупи",
     "comboBox": {
       "addNew": "Додај ново..."
     },
+    "confirm": "Потврди",
+    "copy": "Копирај",
     "createPerson": {
-      "confirmDuplicate": "{{existingName}} већ постоји са имејлом {{existingEmail}}. Да ли сте сигурни да желите да додате {{firstName}} {{lastName}}?",
       "validate": {
         "firstName": "Молимо унеси име.",
         "lastName": "Молимо унеси презиме.",
@@ -213,33 +344,36 @@
     "done": "Готово",
     "duplicate": "Дупликат",
     "edit": "Уреди",
+    "element": "Елемент",
+    "error": "Грешка",
     "errorBoundary": {
       "message": "Нешто је пошло наопако. Молимо покушај поново или контактирај подршку ако проблем траје.",
       "retry": "Покушај поново",
       "title": "Уп! Дошло је до грешке"
     },
+    "expand": "Прошири",
     "formSubmission": {
-      "edit": "Уреди",
       "noData": "Нема доступних података",
       "noQuestions": "Нема пронађених питања"
     },
     "help": "Помоћ",
     "iconPicker": {
-      "noResults": "Нема икона које одговарају \"{{searchText}}\"",
       "searchLabel": "Претрага икона",
       "searchPlaceholder": "Куцај да потражиш (нпр. особа, кућа, црква)...",
-      "showingDefault": "Приказује се {{count}} често коришћених икона. Користи претрагу да нађеш више.",
-      "showingMatching": "Приказује се {{count}} икона која одговарају \"{{searchText}}\"",
       "title": "Одабери икону",
       "tryDifferent": "Покушај другачији термин за претрагу"
     },
     "left": "Лево",
+    "loading": "Учитавање",
     "mobile": "Мобилни",
+    "more": "Још",
     "name": "Назив",
     "navigation": "Навигација",
     "no": "Не",
+    "noAccess": "Немате приступ овој секцији.",
     "notes": "Напомене",
     "person": "Особа",
+    "print": "Штампај",
     "remove": "Уклони",
     "reportFilter": {
       "title": "Филтрирај извештај"
@@ -253,21 +387,19 @@
     "saving": "Чување...",
     "search": "Претрага",
     "searching": "Претрага у току...",
+    "select": "Select",
     "sermons": "Проповеди",
     "title": "Наслов",
     "top": "Врх",
     "tryAgain": "Покушај поново",
     "update": "Ажурирај",
     "website": "Веб страница",
-    "yes": "Да",
-    "element": "Елемент"
+    "yes": "Да"
   },
   "components": {
-    "associatedForms": {
-      "addForm": "Додај формулар"
-    },
     "bezChat": {
       "ariaOpen": "Отвори Bez чет",
+      "ariaSend": "Пошаљи поруку",
       "errorAnswer": "Жао ми је, нисам могао да пронађем одговор.",
       "errorGeneric": "Нешто је пошло наопако. Покушајте поново.",
       "intro": "Здраво, ја сам Bez! Могу вам помоћи у навигацији кроз B1 Admin. Покушајте да ме питате:",
@@ -279,6 +411,7 @@
     },
     "docChat": {
       "ariaOpen": "Отвори чет помоћи",
+      "ariaSend": "Пошаљи поруку",
       "composing": "Састављање одговора...",
       "errorAnswer": "Жао ми је, нисам могао да пронађем одговор.",
       "errorGeneric": "Нешто је пошло наопако. Покушајте поново.",
@@ -296,13 +429,6 @@
     "droppableWrapper": {
       "ariaLabel": "Зона за испуштање"
     },
-    "fileUpload": {
-      "file": "Фајл"
-    },
-    "footer": {
-      "phone": "Телефон",
-      "rights": "Сва права су задржана."
-    },
     "loginHeroPanel": {
       "featureDonations": "Донације и праћење финансија",
       "featurePeople": "Управљање људима и домаћинствима",
@@ -315,11 +441,7 @@
       "contactAdmin": "Молимо контактирајте администратора своје цркве да затражите приступ.",
       "defaultMessage": "Немате потребне дозволе за приступ овој функцији:"
     },
-    "personAdd": {
-      "select": "Изабери"
-    },
     "search": {
-      "ariaSearch": "Претрага",
       "ariaSearchInput": "Претражи особу",
       "ariaSelectPerson": "Изабери особу"
     },
@@ -337,6 +459,7 @@
     },
     "superBeeChat": {
       "ariaOpen": "Отвори SuperBee чет",
+      "ariaSend": "Пошаљи поруку",
       "errorAnswer": "Чак и суперхерој понекад удари у зид. Покушајте поново!",
       "errorGeneric": "Нешто је пошло наопако. Али не брините — вратићу се јачи!",
       "intro": "Здраво, шампионе! Ја сам SuperBee — твоја B1 Admin суперснага. Постави ми најтежа питања!",
@@ -353,6 +476,7 @@
       "form": "Образац",
       "forms": "Образци",
       "groups": "Групе",
+      "myWork": "Мој рад",
       "plans": "Планови",
       "ppl": "Људи",
       "servAdmin": "Администратор сервера",
@@ -360,7 +484,8 @@
       "set": "Подешавања",
       "songs": "Песме",
       "tasks": "Задаци",
-      "teams": "Тимови"
+      "teams": "Тимови",
+      "workflows": "Токови рада"
     }
   },
   "createPerson": {
@@ -371,54 +496,35 @@
   },
   "dashboard": {
     "adminWelcome": {
-      "addCongregationDesc": "Увезите или додајте своје људе да бисте пратили присуство, групе и давање.",
       "addCongregationTitle": "Додајте своју конгрегацију",
-      "addLogoDesc": "Учитајте свој лого и ажурирајте контакт информације цркве.",
       "addLogoTitle": "Додајте лого цркве",
-      "createGroupDesc": "Поставите мале групе, часове или тимове за служење.",
       "createGroupTitle": "Креирајте своју прву групу",
-      "createWebpageDesc": "Изградите јавну веб локацију где посетиоци могу да сазнају више о вама.",
       "createWebpageTitle": "Креирајте своју прву веб страницу",
-      "freePlayDesc": "Креирајте службу и учионицу за FreePlay лекције на вашем ТВ-у.",
       "freePlayTitle": "Поставите своју FreePlay учионицу",
-      "freeShowDesc": "Повежите FreeShow да бисте резервно копирали своје песме и планове службе.",
       "freeShowTitle": "Поставите FreeShow резервне копије",
-      "intro": "Кликните на било коју картицу испод да започнете. Увек их можете пронаћи у менију касније.",
-      "inviteTeamDesc": "Додајте особље и волонтере као администраторе да помогну у управљању.",
       "inviteTeamTitle": "Позови чланове тима",
-      "onlineGivingDesc": "Повежите Stripe тако да ваша конгрегација може давати онлајн.",
       "onlineGivingTitle": "Поставите онлајн давање",
       "peopleAndGroups": "Људи и групе",
       "servingAndContent": "Служење и садржај",
-      "setAvatarDesc": "Учитајте профилну фотографију тако да вас ваш тим може препознати.",
       "setAvatarTitle": "Поставите свој аватар",
       "subtitle": "Хајде да поставимо вашу цркву. Ево неколико ствари које ћете вероватно желети да урадите прво.",
       "title": "Добродошли у B1.church!",
-      "uploadSermonDesc": "Поделите своје проповеди онлајн тако да људи могу гледати било кад.",
       "uploadSermonTitle": "Учитај проповед",
       "yourChurch": "Ваша црква",
       "yourProfile": "Ваш профил"
     },
     "dashboardPage": {
-      "dash": "Контролна панел",
-      "subtitle": "Добро дошли на твоју контролну панел управљања црквом. Потражи особе, види своје групе и управљај отворenim задацима."
+      "dash": "Контролна панел"
     },
     "memberWelcome": {
-      "downloadAppDesc": "Преузмите B1.church апликацију на свој телефон да останете повезани где год идете.",
       "downloadAppTitle": "Преузмите мобилну апликацију",
       "fallbackChurchName": "ваша црква",
-      "findPeopleDesc": "Претражите црквени именик да бисте пронашли и повезали се са другима у конгрегацији.",
       "findPeopleTitle": "Пронађите људе које познајете",
-      "intro": "Започните попуњавањем свог профила и истраживањем шта ваша црква нуди.",
-      "joinGroupDesc": "Прегледајте мале групе, часове и тимове за служење да пронађете своју заједницу.",
       "joinGroupTitle": "Придружи се групи",
-      "onlineGivingDesc": "Дајте онлајн брзо и лако, и опционо поставите понављајуће донације.",
       "onlineGivingTitle": "Поставите онлајн давање",
-      "setPhotoDesc": "Учитајте профилну фотографију тако да вас људи у цркви могу препознати и упознати.",
       "setPhotoTitle": "Додај своју фотографију",
       "subtitle": "Ево неколико ствари које можете урадити да се повежете.",
       "title": "Добродошли у {churchName}!",
-      "upcomingEventsDesc": "Погледајте предстојеће догађаје, времена службе и начине за укључивање.",
       "upcomingEventsTitle": "Видите шта се дешава"
     },
     "myGroups": "Моје групе",
@@ -483,34 +589,8 @@
     }
   },
   "donation": {
-    "donationForm": {
-      "annually": "Годишње",
-      "biWeekly": "Двонедељно",
-      "cover": "Покрити трошкове трансакције",
-      "fees": "Трошкови",
-      "frequencyLabel": "Учесталост",
-      "funds": "Средства",
-      "make": "Направи донацију",
-      "makeRecurring": "Направи ово повремену донацију",
-      "monthly": "Месечно",
-      "quarterly": "Квартално",
-      "startDate": "Датум почетка",
-      "thankYou": "Хвала на твојој донацији!",
-      "totalAmount": "Укупан износ",
-      "validate": {
-        "amount": "Молимо унеси износ донације.",
-        "email": "Имејл је обавезан.",
-        "firstName": "Име је обавезно.",
-        "lastName": "Презиме је обавезно.",
-        "validEmail": "Молимо унеси важећу имејл адресу."
-      },
-      "weekly": "Недељно"
-    },
     "donationPage": {
       "donations": "Донације"
-    },
-    "nonAuthDonation": {
-      "donate": "Донирај"
     },
     "page": {
       "amount": "Износ",
@@ -555,6 +635,45 @@
       "addDonation": "Додај донацију",
       "pressEnter": "Притисни Ентер да сачуваш и додаш другу донацију",
       "selectPerson": "Одабери особу или Анонимно"
+    },
+    "campaignEdit": {
+      "allowSelfPledge": "Дозволи донаторима да заветују",
+      "confirmMsg": "Да ли сте сигурни да желите трајно да обришете ову кампању и све завете у њој?",
+      "description": "Опис",
+      "endDate": "Датум завршетка (опционо)",
+      "errBlank": "Унесите назив кампање",
+      "errFund": "Изаберите фонд",
+      "errStartDate": "Унесите датум почетка",
+      "fund": "Фонд",
+      "goalAmount": "Циљни износ (опционо)",
+      "showPublic": "Прикажи напредак на страници за прилоге",
+      "startDate": "Датум почетка"
+    },
+    "campaignPage": {
+      "addPledge": "Додај завет",
+      "anon": "Анонимно",
+      "donor": "Донатор",
+      "editCampaign": "Измени кампању",
+      "noPledges": "Нема завета за ову кампању.",
+      "ofGoal": "од циља",
+      "pledges": "Завети",
+      "status": "Статус",
+      "subtitle": "Завети и напредак прилога за ову кампању"
+    },
+    "campaignsPage": {
+      "addCampaign": "Додај кампању",
+      "campaigns": "Кампање",
+      "dates": "Датуми",
+      "export": "Извези",
+      "fund": "Фонд",
+      "given": "Дато",
+      "goal": "Циљ",
+      "noCampaigns": "Нема креираних кампања.",
+      "ongoing": "У току",
+      "pledged": "Завећено",
+      "progress": "Напредак",
+      "subtitle": "Пратите кампање завета и напредак ка циљевима прилога",
+      "totalCampaigns": "Укупно кампања"
     },
     "donationBatchPage": {
       "batchDate": "Датум серије:",
@@ -601,9 +720,9 @@
       "amt": "Износ",
       "anon": "Анонимно",
       "batches": "Серије",
+      "campaigns": "Кампање",
       "date": "Датум",
       "don": "Донације",
-      "edit": "Уреди",
       "errMsg": "Нема пронађеног средства. Молимо направи средство пре прављења донације",
       "export": "Извоз",
       "funds": "Средства",
@@ -615,7 +734,6 @@
       "total": "Укупно"
     },
     "donationsPage": {
-      "batch": "Серија",
       "date": "Датум",
       "don": "Донације",
       "noBatch": "Нема пронађених серија.",
@@ -625,11 +743,13 @@
     "fundEdit": {
       "ariaFundName": "Назив фонда",
       "ariaTaxDeductible": "Порески одбитак",
+      "ariaVisible": "Видљиво донаторима",
       "confirmMsg": "Да ли сте сигурни да желите да трајно обришете ово средство и све донације унутар њега?",
       "errBlank": "Унеси назив средства",
       "taxDeductible": "Одбитно од пореза",
       "trackDonations": "Прати донације.",
-      "trackNonDonations": "Прати непромотивне трансакције као што су регистрације табора, мајице, карте за gebeurtenaje итд."
+      "trackNonDonations": "Прати непромотивне трансакције као што су регистрације табора, мајице, карте за gebeurtenaje итд.",
+      "visible": "Видљиво донаторима"
     },
     "fundPage": {
       "donors": "Донатори",
@@ -638,8 +758,8 @@
       "totalAmount": "Укупан износ"
     },
     "funds": {
-      "addFund": "Додај фонд",
       "fund": "Средства",
+      "hidden": "Скривено",
       "noFund": "Нема пронађених средстава."
     },
     "fundsPage": {
@@ -661,47 +781,66 @@
       "taxStatus": "Порески статус",
       "totalFunds": "Укупно фондова"
     },
-    "kpi": {
-      "avgGift": "Просечан поклон",
-      "donationCount": "Укупне донације",
-      "donorCount": "Јединствени донатори",
-      "totalGiving": "Укупно давање"
-    },
     "period": {
       "monthly": "Месечно",
       "quarterly": "Квартално",
       "weekly": "Недељно"
     },
+    "pledgeEdit": {
+      "addPledge": "Додај завет",
+      "amount": "Износ завета",
+      "confirmMsg": "Да ли сте сигурни да желите трајно да обришете овај завет?",
+      "editPledge": "Измени завет",
+      "errAmount": "Унесите износ завета већи од нуле",
+      "errPerson": "Изаберите особу"
+    },
+    "pledgeStatus": {
+      "beyondPledged": "Изнад завећеног",
+      "fulfilled": "Испуњено",
+      "inProgress": "У току",
+      "nonPledged": "Незавећено",
+      "notStarted": "Није започето"
+    },
     "printAllStatementsPage": {
       "annualStatementTitle": "{year} Годишњи извештај давања",
+      "campaign": "Кампања",
       "contributionDetails": "Детаљи доприноса",
       "disclaimer": "Никакво робе или услуге нису пружене од стране {churchName} у замену за ове доприносе. Једина примљена корист била је нематеријална верска корист. {churchName} је непрофитна организација.",
       "donorInformation": "Информације о донатору",
       "fund": "Фонд",
       "fundBreakdown": "Расподела фонда",
+      "given": "Дато",
       "issued": "Издато:",
       "loadingStatements": "Учитавање извештаја...",
       "noteLabel": "Напомена:",
       "noteText": "Овај извештај резимира доприносе учињене {churchName} током календарске {year} године. Молимо сачувајте овај документ за своје пореске евиденције. За питања у вези са овим извештајем, контактирајте црквену канцеларију.",
       "organization": "Организација",
       "period": "Период: 1. јануар - 31. децембар, {year}",
+      "pledgeProgress": "Кампање завета",
+      "pledged": "Завећено",
       "statementSummary": "Резиме извештаја",
+      "status": "Статус",
       "totalContributions": "Укупни доприноси",
       "totalContributionsLabel": "Укупни доприноси:"
     },
     "printDonationPage": {
       "annualStatementTitle": "{year} Годишњи извештај давања",
+      "campaign": "Кампања",
       "contributionDetails": "Детаљи доприноса",
       "disclaimer": "Никакво робе или услуге нису пружене од стране {churchName} у замену за ове доприносе. Једина примљена корист била је нематеријална верска корист. {churchName} је непрофитна организација.",
       "donorInformation": "Информације о донатору",
       "fund": "Фонд",
       "fundBreakdown": "Расподела фонда",
+      "given": "Дато",
       "issued": "Издато:",
       "noteLabel": "Напомена:",
       "noteText": "Овај извештај резимира доприносе учињене {churchName} током календарске {year} године. Молимо сачувајте овај документ за своје пореске евиденције. За питања у вези са овим извештајем, контактирајте црквену канцеларију.",
       "organization": "Организација",
       "period": "Период: 1. јануар - 31. децембар, {year}",
+      "pledgeProgress": "Кампање завета",
+      "pledged": "Завећено",
       "statementSummary": "Резиме извештаја",
+      "status": "Статус",
       "totalContributions": "Укупни доприноси",
       "totalContributionsLabel": "Укупни доприноси:"
     },
@@ -759,13 +898,20 @@
       "accessLevelAria": "Ниво приступа",
       "alone": "Самостално",
       "associate": "Повежи са",
+      "autoCreatePerson": "Create a person record from submissions",
       "available": "Постави врмински оквир доступности образца",
       "availableEnd": "Датум краја доступности",
       "availableStart": "Датум почетка доступности",
       "confirmMsg": "Да ли сте сигурни да желите да трајно обришете овај образац?",
       "contentTypeAria": "Тип садржаја",
+      "displayConversational": "Conversational (one question at a time)",
+      "displayMode": "Display Mode",
+      "displayStandard": "Standard",
       "editForm": "Уреди образац",
       "endReqMsg": "Датум краја је обавезан.",
+      "followUpBody": "Follow-up Email Body",
+      "followUpHelper": "You can use {firstName} and {churchName} tokens.",
+      "followUpSubject": "Follow-up Email Subject",
       "formNameAria": "Назив формулара",
       "name": "Назив образца",
       "nameReqMsg": "Назив образца је обавезан.",
@@ -780,7 +926,6 @@
       "addPpl": "Додај особу",
       "admin": "Администратор",
       "emailNotif": "Имејл обавештење",
-      "emailNotifInfoAria": "Информације о имејл обавештењу",
       "emailNotifMsg": "Кад год се образац прослеђи, добићеш обавештење путем поште.",
       "formMem": "Чланови образца",
       "perm": "Дозвола",
@@ -797,7 +942,6 @@
       "date": "Датум",
       "decNum": "Децимала",
       "desc": "Опис",
-      "fieldReq": "Врста поља је обавезна.",
       "fund": "Средство",
       "multiChoice": "Више избора",
       "payment": "Плаћање",
@@ -831,13 +975,7 @@
       "archiveFormAria": "Архивирај формулар {name}",
       "confirmMsg1": "Да ли сте сигурни да желите да архивирате овај образац?",
       "confirmMsg2": "Да ли сте сигурни да желите да復ставрите овај образац?",
-      "edit": "Уреди",
-      "editFormAria": "Уреди формулар {name}",
-      "form": "формулар",
-      "formArchivedCount": "{count} архивирани формулар",
-      "formArchivedCountPlural": "{count} архивираних формулара",
-      "formCount": "{count} формулар",
-      "formCountPlural": "{count} формулара",
+      "duplicate": "Дуплирај",
       "forms": "Образци",
       "noArch": "Нема архивираних образаца.",
       "noCustomMsg": "Нема направљених прилагођених образаца. Појавиће се овде када буду додати.",
@@ -853,6 +991,11 @@
       "unAuth": "Неовлашћено"
     }
   },
+  "gallery": {
+    "aspectRatio": "Однос страна",
+    "confirmDelete": "Потврди брисање",
+    "freeForm": "Слободна форма"
+  },
   "groups": {
     "groupAdd": {
       "add": "Додај",
@@ -867,6 +1010,9 @@
     },
     "groupBanner": {
       "associatedServices": "Повезане службе",
+      "confirmDuplicate": "Дуплирати ову групу? Чланови неће бити копирани.",
+      "copySuffix": "(Копија)",
+      "duplicateTooltip": "Дуплирај ову групу",
       "emailTooltip": "Пошаљи имејл овој групи",
       "labels": "Наслови",
       "meetingInfo": "Информације о окупљању",
@@ -877,6 +1023,22 @@
       "team": "Тим",
       "textTooltip": "Пошаљи СМС овој групи",
       "trackAttendance": "Прати присуство"
+    },
+    "groupCalendar": {
+      "addEvents": "Додај догађаје",
+      "bulkAddTitle": "Додај понављајуће догађаје",
+      "confirmDelete": "Обрисати \"{title}\" и сва његова понављања?",
+      "datesPreview": "Биће креирано {count} састанака. Одштиклирајте датуме које желите да прескочите.",
+      "events": "Догађаји",
+      "everyTwoWeeks": "Сваке 2 седмице",
+      "firstMeeting": "Први sastanak",
+      "lastMeeting": "Последњи састанак",
+      "noDates": "Нема датума састанака у изабраном периоду.",
+      "noEvents": "Нема догађаја. Користите Додај догађаје да закажете sastanke ове групе.",
+      "oneTime": "Једном",
+      "skipHolidays": "Прескочи празнике",
+      "skippedDates": "Прескочени датуми",
+      "until": "до"
     },
     "groupDetails": {
       "about": "О томе",
@@ -895,15 +1057,19 @@
     },
     "groupDetailsEdit": {
       "addPhoto": "Додај фотографију",
+      "archive": "Архивирај",
+      "archiveAria": "Архивирај групу",
       "attTrack": "Прати присуство",
       "attendance": "Присуство",
+      "attendanceReminders": "Имејл подсетници за присуство",
       "catName": "Назив категорије",
       "catNameMsg": "Молимо унеси назив категорије.",
       "changePhotoAria": "Промени фотографију групе",
       "clickToAddPhoto": "Кликни да додаш фотографију",
+      "confirmArchive": "Да ли сте сигурни да желите да архивирате ову групу? Биће скривена са листе група док се не врати.",
       "confirmMsg": "Да ли сте сигурни да желите да трајно обришете ову групу?",
+      "enrollment": "Упис",
       "groupDesc": "Опис групе",
-      "groupDescriptionAria": "Опис групе",
       "groupDet": "Детаљи групе",
       "groupName": "Назив групе",
       "groupNameAria": "Назив групе",
@@ -916,7 +1082,25 @@
       "meetingTimeAria": "Време састанка",
       "parPick": "Преузимање од стране родитеља",
       "prinName": "Штампај картицу са именом",
+      "publicRoster": "Прикажи списак на сајту",
       "slug": "Слаг (назив кључа коришћен за адресе)"
+    },
+    "groupHealth": {
+      "attendance": "Присуство",
+      "attendanceTrend": "Тренд присуства",
+      "avgAge": "Просечна старост",
+      "avgAttendance": "Просечно присуство",
+      "churn90": "Одлив (90д)",
+      "joined": "Придружили се",
+      "joined90": "Придружили се (90д)",
+      "left": "Напустили",
+      "left90": "Напустили (90д)",
+      "members": "Чланови",
+      "membershipChanges": "Промене чланства (12 месеци)",
+      "month": "Месец",
+      "subtitle": "Упоредите раст, одлив и присуство по групама",
+      "title": "Здравље групе",
+      "week": "Седмица"
     },
     "groupLabelsEdit": {
       "addNewLabel": "Додај нови наслов",
@@ -926,16 +1110,19 @@
     },
     "groupMembers": {
       "groupMem": "Чланови групе",
-      "noMem": "Нема пронађених чланова групе.",
-      "promoteToLeader": "Унапреди у вођу",
-      "promoteToLeaderAria": "Унапреди {name} у вођу",
-      "remove": "Уклони",
-      "removeFromGroupAria": "Уклони {name} из групе",
+      "leader": "Вођа",
+      "leaderLower": "вођа",
+      "leadersLower": "вође",
+      "makeLeader": "Постави за вођу",
+      "member": "члан",
+      "members": "чланови",
+      "messagePlaceholder": "Напишите поруку за слање свим члановима групе…",
+      "noMemDesc": "Додајте чланове из панела са десне стране да почнете да градите ову групу.",
+      "noMemTitle": "Нема чланова",
       "removeLeaderAccess": "Уклони приступ вође",
-      "removeLeaderAccessAria": "Уклони приступ вође за {name}",
+      "role": "Улога",
       "send": "Пошаљи",
       "sendMemMsg": "Пошаљи поруку члановима",
-      "sendMessageAria": "Пошаљи поруку члановима",
       "showTemplates": "Прикажи шаблоне",
       "templates": {
         "none": "Ничему",
@@ -948,6 +1135,8 @@
       "unknown": "Непознато"
     },
     "groupNavigation": {
+      "calendar": "Календар",
+      "health": "Здравље",
       "members": "Чланови",
       "sessions": "Сесије"
     },
@@ -962,8 +1151,6 @@
       "noAttendance": "Нема пронађених записа о присуству",
       "noSesMsg": "Нема сесија.",
       "noSessionsFound": "Нема пронађених сесија",
-      "removeAria": "Уклони {name} из сесије",
-      "removeButton": "Уклони",
       "selectSession": "Одабери сесију",
       "session": "Сесија",
       "sessions": "Сесије",
@@ -973,30 +1160,28 @@
     "groupsPage": {
       "addGroup": "Додај групу",
       "cat": "Категорија",
-      "categories": "Категорије",
+      "export": "Извези",
       "groups": "Групе",
       "labels": "Наслови",
       "noGroupMsg": "Нема пронађених група. Молимо направи групу.",
       "pers": "1 особа",
       "ppl": "Људи",
+      "restore": "Врати",
+      "showArchived": "Прикажи архивиране",
       "spPpl": " особе",
       "subtitle": {
         "create": "Почни прављењем прве групе",
         "manage": "Организуј и управљај својим групама цркве"
       },
-      "totalGroups": "Укупно група",
-      "totalMembers": "Укупни чланови"
+      "totalGroups": "Укупно група"
     },
     "membersAdd": {
-      "addMemberAria": "Додај члана у групу",
       "availableMem": "Доступни чланови групе",
       "noMem": "Нема доступних чланова групе.",
       "unknown": "Непознато"
     },
     "sendEmailDialog": {
       "bodyMergeFieldHint": "Уметни поље за спајање у тело:",
-      "cancel": "Откажи",
-      "close": "Затвори",
       "composePlaceholder": "Саставите свој имејл овде...",
       "eligibleSummary": "{eligibleCount} од {totalMembers} чланова ће примити овај имејл.",
       "eligibleSummarySingular": "{eligibleCount} од {totalMembers} члана ће примити овај имејл.",
@@ -1014,6 +1199,7 @@
       "noEmailNoticeSingular": "{count} нема имејл адресу у евиденцији.",
       "noEmailSkipped": "{count} прескочено (нема имејл адресу у евиденцији).",
       "none": "Нема",
+      "permissionError": "Немате дозволу за слање групних имејлова.",
       "send": "Пошаљи имејл",
       "sendDefault": "Ово ће послати имејл подобним члановима групе.",
       "sendFailedDetail": "{count} није успело да се пошаље.",
@@ -1025,10 +1211,8 @@
       "subjectPlaceholder": "нпр. Здраво {firstName}, ажурирање из {churchName}"
     },
     "sendTextDialog": {
-      "cancel": "Откажи",
       "characterCount": "{count} карактера ({segments} СМС сегмената)",
       "characterCountSingular": "{count} карактер ({segments} СМС сегмент)",
-      "close": "Затвори",
       "eligibleSummary": "{eligibleCount} од {totalMembers} чланова ће примити овај СМС.",
       "eligibleSummarySingular": "{eligibleCount} од {totalMembers} члана ће примити овај СМС.",
       "fallbackError": "Слање СМС-а није успело.",
@@ -1063,10 +1247,6 @@
       "sesDate": "Датум сесије",
       "sessionDateAria": "Датум сесије",
       "srvTime": "Време службе"
-    },
-    "sessionAttendance": {
-      "removeVisitorAria": "Уклони {name} из сесије",
-      "visitor": "посетилац"
     },
     "sessionCard": {
       "active": "Активно",
@@ -1107,17 +1287,20 @@
     },
     "secondaryMenuHelper": {
       "appearance": "Изглед",
+      "approvals": "Одобрења",
+      "availability": "Доступност",
       "blocks": "Блокови",
+      "blog": "Blog",
       "bulkImport": "Масовни увоз",
       "calendars": "Календари",
       "devices": "Уређаји",
       "files": "Фајлови",
       "liveStreamTimes": "Времена живог стрима",
       "pages": "Странице",
-      "playlists": "Плејлисте",
       "profile": "Профил",
       "quickActions": "Брзе акције",
       "registrations": "Регистрације",
+      "roomsResources": "Просторије и ресурси",
       "sermons": "Проповеди",
       "stripeImport": "Stripe увоз",
       "website": "Веб локација"
@@ -1139,10 +1322,33 @@
       "title": "B1 Mobile"
     },
     "checkInPage": {
+      "copyLink": "Копирај везу",
       "disabled": "Онемогућено",
+      "downloadQr": "Преузми PNG",
       "enabled": "Омогућено — QR код ће се појавити на kiosku",
+      "kiosk": {
+        "addSlide": "Додај слајд",
+        "backgroundImage": "Позадинска слика",
+        "backgroundImageDesc": "Опциона позадинска слика за екран претраге/добродошлице. Препоручено: 1920x1080.",
+        "changeImage": "Промени слику",
+        "duration": "Трајање (с)",
+        "enableIdleScreen": "Омогући екран мировања",
+        "headerSubtitle": "Бојама киоска се управља у Подешавања > Тема апликације. Конфигуришите позадинске слике и понашање екрана мировања испод.",
+        "idleScreen": "Екран мировања / Чувар екрана",
+        "sectionTitle": "Тема киоска",
+        "slides": "Слајдови",
+        "timeoutSeconds": "Тајмаут (секунде)",
+        "upload": "Учитај",
+        "uploadImage": "Учитај слику"
+      },
+      "linkCopied": "Копирано!",
+      "manageLabels": "Дизајн налепница",
       "qrGuestRegistration": "QR регистрација гостију",
+      "qrShareDescription": "Одштампајте овај QR код на летцима, бројевима или натписима. Гости могу да га скенирају да се региструју са телефона. Такође ће се приказати у апликацији.",
+      "qrShareTitle": "Подели QR код за регистрацију",
       "qrTooltip": "Прикажи QR код на check-in kiosku да гости могу сами да се региструју на свом телефону",
+      "registrationUrl": "Веза за регистрацију",
+      "saveToActivate": "Сачувајте измене да бисте активирали ову везу.",
       "subtitle": "Конфигуриши подешавања за B1 CheckIn kioск апликацију",
       "title": "B1 CheckIn"
     }
@@ -1181,6 +1387,7 @@
       "valuePlaceholder": "Вредност"
     },
     "aiSearch": {
+      "clearSearch": "Обриши претрагу",
       "exampleMen": "- Покажи ми мушкарце старије од 30 година са рођенданима у јулу.",
       "exampleWomen": "- Покажи ми жене које су удате.",
       "examples": "Примери:",
@@ -1188,6 +1395,46 @@
       "search": "Претрага",
       "searching": "Претрага...",
       "title": "AI претрага"
+    },
+    "bulk": {
+      "actions": "Радње",
+      "addToGroup": "Додај у групу",
+      "addToWorkflow": "Додај у ток рада",
+      "addToWorkflowPrompt": "Додај {count} изабраних особа у ток рада као картице.",
+      "apply": "Примени",
+      "campusTitle": "Додели филијали",
+      "clearSelection": "Поништи избор",
+      "createNewGroup": "Креирај нову групу",
+      "delete": "Обриши",
+      "error": "Грешка",
+      "fieldPrompt": "Ажурирај поље за {count} изабраних особа.",
+      "fieldSuccess": "Ажурирано {count} особа.",
+      "genderTitle": "Постави пол",
+      "group": "Група",
+      "maritalStatusTitle": "Постави брачни статус",
+      "membershipStatusTitle": "Постави статус чланства",
+      "newGroupName": "Назив нове групе",
+      "optedOutField": "Поље одбијања",
+      "optedOutNo": "Одбијање: Не",
+      "optedOutTitle": "Постави одбијање",
+      "optedOutYes": "Одбијање: Да",
+      "removeFromGroup": "Уклони из групе",
+      "selected": "Изабрано",
+      "workflowSuccess": "Додато {count} особа у ток рада."
+    },
+    "demographics": {
+      "age": "Старост",
+      "campus": "Филијала",
+      "female": "Женски",
+      "gender": "Пол",
+      "male": "Мушки",
+      "maritalStatus": "Брачни статус",
+      "membershipStatus": "Врсте чланства",
+      "noData": "Нема доступних података",
+      "subtitle": "Преглед ваше заједнице",
+      "title": "Демографија",
+      "total": "Укупно",
+      "unassigned": "Недодељено"
     },
     "editCondition": {
       "act": "Активност",
@@ -1237,27 +1484,48 @@
     },
     "household": {
       "age": "Старост:",
-      "demoGroups": "Групе: Омладинска служба, Тим за поклоњење",
-      "demoLastActivity": "Последња активност: 24. нов. 2024.",
+      "groups": "Групе:",
       "house": " Домаћинство",
+      "lastActivity": "Последња активност:",
       "noContactInfo": "Нема контакт информација",
       "status": "Статус:"
     },
     "householdEdit": {
       "addMatch": "адресу да се поклапа",
       "addMember": "Додај члана домаћинства",
-      "addMemberAria": "Додај члана домаћинства",
       "blankMsg": "Молимо обезбеди назив домаћинства.",
-      "cancelAddMember": "Откажи додавање члана",
       "child": "Дете",
       "head": "Глава",
       "house": " Домаћинство",
       "houseName": "Назив домаћинства",
       "householdNameAria": "Назив домаћинства",
       "other": "Други",
-      "removeMemberAria": "Уклони члана домаћинства",
       "spouse": "Супруг(а)",
       "updQuestion": "Да ли желиш да ажурираш"
+    },
+    "lists": {
+      "autoRefresh": "Освежи ноћу",
+      "category": "Категорија",
+      "categoryPlaceholder": "Опционо — групишите повезане листе",
+      "confirmDelete": "Обрисати листу \"{name}\"? Ово се не може поништити.",
+      "createdBy": "од {name}",
+      "delete": "Обриши листу",
+      "empty": "Нема сачуваних листа. Изврши напредну претрагу, па \"Сачувај као листу.\"",
+      "household": "Укључи домаћинство",
+      "householdAll": "Цело домаћинство",
+      "householdChildren": "Деца подударних особа",
+      "householdNone": "Само подударне особе",
+      "match": "Поклапање",
+      "matchAll": "Сви филтери",
+      "matchAny": "Било који филтер",
+      "name": "Назив листе",
+      "notifyOnChange": "Пошаљи ми имејл када се чланство промени",
+      "saveAs": "Сачувај као листу",
+      "settings": "Подешавања листе",
+      "sharing": "Ко може да види ову листу",
+      "sharingOrg": "Сво особље",
+      "sharingPrivate": "Само ја",
+      "title": "Сачуване листе"
     },
     "merge": {
       "merge": "спајање",
@@ -1287,6 +1555,7 @@
     },
     "peoplePage": {
       "addPerson": "Додај особу",
+      "allMembers": "Сви чланови",
       "bDay": "Рођендан",
       "bDayNo": "Рођендан (без године)",
       "deleteOp": "Избриши опцију",
@@ -1301,10 +1570,11 @@
       "photo": "Фотографија",
       "primEmail": "Примарна имејл адреса",
       "primPhone": "Примарни телефон",
-      "recentPpl": "Недавно додане особе",
+      "printDirectory": "Штампај именик",
       "searchPpl": "Претрага особа",
       "searchResults": "Резултати претраге",
-      "showingRecent": "Приказује се {count} најновијих особа"
+      "showAll": "Прикажи све чланове",
+      "showingMembers": "Приказано {count} чланова"
     },
     "peopleSearch": {
       "active": "активно:",
@@ -1336,17 +1606,13 @@
     },
     "personAdd": {
       "createNewPersonAria": "Креирај нову особу",
-      "searchForPersonAria": "Претражи особу",
       "searchForPersonToAddAria": "Претражи особу за додавање"
-    },
-    "personAddResults": {
-      "add": "Додај",
-      "addPersonAria": "Додај особу {name}"
     },
     "personAttendance": {
       "noAttMsg": "Нема записа о присуству. Присуство ће се појавити када буде праћено присуство за сесију групе."
     },
     "personBanner": {
+      "addToWorkflow": "Додај у ток рада",
       "age": "Старост",
       "gender": "Пол",
       "hasLogin": "Има пријаву",
@@ -1362,24 +1628,21 @@
       "family": "породица",
       "firstReq": "Име је обавезно",
       "for": "за",
-      "home": "Кућа",
       "invalForm": "Неважећа форма",
       "lastReq": "Презиме је обавезно",
       "maritalStatus": "Брачни статус",
       "merge": "Спајање",
       "mergePersonAria": "Споји особу",
-      "mobile": "Мобилни",
       "nameNote": "Напомене картице са именом",
+      "noCampus": "Без филијале",
       "persDet": "Лични детаљи",
       "upAddress": "Ажурирао си адресу на",
-      "valEmail": "Молимо унеси важећу имејл адресу.",
-      "work": "Посао"
+      "valEmail": "Молимо унеси важећу имејл адресу."
     },
     "personForm": {
-      "addForm": "Додај образац",
-      "addFormAria": "Додај {name} слање",
+      "editAria": "Измени {name}",
       "form": "Образац",
-      "noFormMsg": "Нема пронађеног прослеђивања образца за ову особу"
+      "notFilledOut": "Још није попуњено."
     },
     "personNav": {
       "customForms": "Прилагођени образци",
@@ -1392,14 +1655,17 @@
       "donations": "Донације",
       "forms": "Формулари",
       "groups": "Групе",
-      "notes": "Напомене"
+      "notes": "Напомене",
+      "profile": "Профил"
     },
     "personPage": {
       "notesSuffix": " Напомене",
       "thisPerson": "ова особа"
     },
+    "personProfile": {
+      "railLabel": "Профил и формулари"
+    },
     "personView": {
-      "edit": "Уреди",
       "hasLoginLabel": "Има пријаву: {email}",
       "home": "Кућа",
       "memShip": "Чланство:",
@@ -1421,6 +1687,7 @@
     "age": "Старост",
     "anniversary": "Годишњица",
     "birthDate": "Датум рођења",
+    "campus": "Филијала",
     "city": "Град",
     "country": "Земља",
     "deceased": "Преминула особа",
@@ -1429,7 +1696,6 @@
     "email": "Имејл",
     "female": "Женскo",
     "firstName": "Име",
-    "formerMember": "Бивши члан",
     "gender": "Пол",
     "inactive": "Неактивно",
     "lastName": "Презиме",
@@ -1469,9 +1735,6 @@
     },
     "block": {
       "name": "Hero секција"
-    },
-    "campus": {
-      "name": "Центар"
     },
     "choices": {
       "text": "Опција 1",
@@ -1622,12 +1885,15 @@
     "assignment": {
       "addPosition": "Додај позицију",
       "autoAssign": "Аутоматско додељивање",
+      "fullyStaffed": "Потпуно попуњено",
+      "needed": "потребно",
       "notesPlaceholder": "Додај напомене за овај план службе...",
       "notesPlaceholderReadOnly": "Напомене плана (само за читање)",
-      "planNotes": "Напомене плана",
+      "penciledIn": "Предложено",
       "planNotesAria": "Напомене плана",
+      "positionsFilled": "Попуњено {filled} од {total} позиција",
       "saveNotes": "Сачувај напомене",
-      "saveSuccess": "Напомене успешно сачуване"
+      "undoAutoAssign": "Поништи аутоматско додељивање"
     },
     "assignmentEdit": {
       "assignPos": "Додели позицију",
@@ -1647,22 +1913,20 @@
       "loadFailed": "Учитавање података о лекцији није успело. Покушајте поново.",
       "loadingSeries": "Учитавање серије лекција...",
       "noLessonsInSeries": "Нису пронађене лекције у овој серији.",
-      "noPreviousLesson": "Није пронађена претходна лекција за наставак. Прво закажите барем једну лекцију.",
-      "noRemainingLessons": "Нема преосталих лекција у овој серији. Завршили сте их све!",
       "pathNotSupported": "Изабрани формат путање лекције није подржан за масовно заказивање.",
       "savingFailed": "Креирање неких планова није успело. Молимо проверите и покушајте поново.",
       "schedulingProgress": "Заказивање...",
       "startDate": "Почетни датум",
       "startingLesson": "Почетна лекција",
+      "substituted": "Замењено",
       "title": "Масовно заказивање лекција",
       "venue": "Место",
+      "venueMismatch": "Неподударање локације",
       "weekly": "Недељно"
     },
     "contentProviderAuth": {
-      "accountLinked": "Налог повезан",
       "authExpired": "Аутентикација истекла или није успела",
       "authFailed": "Аутентикација није успела",
-      "contentProviderAccounts": "Налози провајдера садржаја",
       "deviceFlowFailed": "Покретање тока уређаја није успело",
       "deviceFlowInstructions": "Посетите URL испод и унесите код за ауторизацију:",
       "deviceFlowUnsupported": "Провајдер не подржава ток уређаја",
@@ -1674,7 +1938,6 @@
       "linked": "Повезано",
       "noLinkedDescription": "Повежите провајдера садржаја да бисте приступили њиховом садржају у плановима службе.",
       "noProvidersAvailable": "Нема доступних провајдера садржаја",
-      "noProvidersAvailableLong": "Нема доступних провајдера садржаја који захтевају аутентикацију.",
       "pkceInstructions": "Кликните на дугме испод за ауторизацију у искачућем прозору:",
       "pkceUnsupported": "Провајдер не подржава PKCE аутентикацију",
       "pkceWaiting": "Чека се ауторизација у искачућем прозору...",
@@ -1741,6 +2004,7 @@
       "subtitle": "Организуј тимове службе и планове службе"
     },
     "planEdit": {
+      "autoReplaceOnDecline": "Аутоматски закажи замену када волонтер одбије",
       "copyAll": "Позиције и додељивања",
       "copyNothing": "Ништа",
       "copyPositions": "Само позиције",
@@ -1750,6 +2014,7 @@
       "planEdit": "Уреди план",
       "planNameAria": "Назив плана",
       "planReq": "Назив плана је обавезан.",
+      "prepared": "Предложено (сакриј задатке од волонтера до објављивања)",
       "servDate": "Датум службе",
       "servReq": "Датум службе је обавезан.",
       "serviceDateAria": "Датум службе",
@@ -1778,11 +2043,11 @@
       "editHeader": "Уреди заглавље",
       "editSong": "Уреди песму",
       "enterSearch": "Унесите термин за претрагу",
+      "includeInServices": "Укључи у службе",
       "minutes": "Минута",
       "planItemDescriptionAria": "Опис ставке плана",
       "planItemNameAria": "Назив ставке плана",
       "searchBoxAria": "поље за претрагу",
-      "searchSongsAria": "Претрага песама",
       "seconds": "Секунди"
     },
     "planList": {
@@ -1813,11 +2078,28 @@
     },
     "planTypeEdit": {
       "add": "Додај",
+      "confirmDelete": "Потврди брисање",
       "edit": "Уреди",
+      "errorDeleting": "Грешка при брисању",
       "errorSaving": "Грешка при чувању типа плана",
       "nameRequired": "Назив типа плана је обавезан",
       "planType": "Тип плана",
       "planTypeName": "Назив типа плана"
+    },
+    "planTypeGroups": {
+      "addGroup": "Додај групу",
+      "description": "Планови за овај тип плана ће се приказивати на страници групе у B1App за групе наведене испод.",
+      "heading": "Повезане групе",
+      "noGroups": "Нема повезаних група",
+      "noGroupsDescription": "Повежите групе са овим типом плана да чланови виде планове на страници своје групе у B1App.",
+      "removeConfirm": "Уклонити ову повезаност са групом?",
+      "selectGroup": "Изаберите групу",
+      "showsLabel": "Приказује",
+      "timeFilter": {
+        "both": "Прошли и предстојећи планови",
+        "future": "Само предстојећи планови",
+        "past": "Само прошли планови"
+      }
     },
     "planTypeList": {
       "addPlanType": "Додај тип плана",
@@ -1829,17 +2111,24 @@
     "planTypePage": {
       "notFound": "Тип плана није пронађен",
       "overview": "Преглед",
-      "pairTvApp": "Упари ТВ апликацију",
       "planType": "Тип плана",
-      "subtitle": "Конфигуриши подешавања типа плана",
-      "tvAppDescription": "Прикажите садржај лекције на било ком ТВ-у или дисплеју помоћу наше бесплатне апликације"
+      "subtitle": "Конфигуриши подешавања типа плана"
     },
-    "planTypePairDialog": {
-      "downloadTitle": "Преузмите Lessons.church ТВ апликацију",
-      "instructions": "Унесите 4-знаковни код приказан на екрану ТВ апликације:",
-      "pairTitle": "Упари свој уређај",
-      "success": "Успешно упарено! ТВ апликација ће сада приказивати садржај из овог типа плана.",
-      "title": "Упари ТВ апликацију"
+    "planTypeReminders": {
+      "channels": "Channels",
+      "day1": "1 day before",
+      "dayOf": "Day of service",
+      "days2": "2 days before",
+      "days3": "3 days before",
+      "days7": "7 days before",
+      "enable": "Send reminders",
+      "message": "Message (optional)",
+      "messageHint": "Leave blank to use a default reminder message.",
+      "save": "Save Reminder",
+      "saved": "Reminder saved.",
+      "timeOfDay": "Time of day",
+      "title": "Reminders",
+      "when": "When to remind (before the service)"
     },
     "planValidation": {
       "and": "и",
@@ -1847,14 +2136,21 @@
       "blockCon": "Сукоб блокираног датума од",
       "cons": "Сукоби",
       "during": "током",
+      "householdApart": "не жели да служи истог дана као",
       "more": "више",
       "needed": "потребно.",
       "notify": "Обавести",
+      "overMaxPerMonth": "је заказан",
+      "penciledIn": "Предложено — волонтери не могу да виде ове задатке.",
       "person": "особа",
       "pleaseConfirm": "Молимо пријавите се и потврдите.",
       "ppl": "људи",
+      "prefTimeMismatch": "жели да служи у",
+      "publish": "Објави план",
+      "publishNotify": "Објави и обавести",
       "timeCon": "Временски сукоб између",
       "timeCon2": "Временски сукоб у",
+      "timesThisMonth": "пута овог месеца, изнад жељеног максимума од",
       "to": "до",
       "val": "Валидација",
       "valPlan": "План је важећи.",
@@ -1894,6 +2190,17 @@
       "serviceOrder": "РЕДОСЛЕД СЛУЖБЕ",
       "time": "Време"
     },
+    "schedulingPreference": {
+      "household": "Заказивање домаћинства",
+      "householdApart": "Не заказуј домаћинство истог дана",
+      "householdNone": "Нема преференције",
+      "householdTogether": "Заказуј домаћинство заједно",
+      "maxPerMonth": "Максимум пута месечно",
+      "maxPerMonthHelper": "Оставите празно за без ограничења",
+      "preferredTimes": "Жељена времена службе",
+      "preferredTimesHelper": "нпр. 9:00 или Прва служба. Одвојите вишеструке зарезима.",
+      "title": "Преференције заказивања"
+    },
     "serviceOrder": {
       "addFromLesson": "Додај из лекције",
       "addSection": "Додај део",
@@ -1906,17 +2213,27 @@
       "noItems": "Нема ставки у редоследу службе",
       "orderOfService": "Редослед службе",
       "previewBanner": "Ово је преглед повезане лекције. Кликните \"Прилагоди\" за уређивање.",
-      "print": "Штампај",
+      "runTimes": "Трајање",
       "scrollDown": "Помери надоле",
-      "scrollUp": "Помери нагоре"
+      "scrollUp": "Помери нагоре",
+      "viewingAs": "Приказ као"
     },
     "servingOverviewPage": {
+      "autoSchedule": "Аутоматско распоређивање",
+      "autoScheduleResult": "Аутоматски распоређено {filled} од {total} планова",
+      "emailAll": "Имејл волонтерима",
+      "emailEmpty": "Нема додељених волонтера у овом опсегу за слање имејла.",
+      "emailResult": "Имејл послат за {sent} волонтера ({failed} неуспешно)",
       "endDate": "Крајњи датум",
       "exportCsv": "Извези CSV",
       "filename": "pregled-sluzenja.csv",
+      "gapsOnly": "Само непопуњено",
+      "highlightAll": "Сви",
+      "highlightPerson": "Истакни",
       "noData": "Нису пронађени подаци о служењу за изабрани датумски опсег.",
       "overviewSuffix": "Преглед",
       "position": "Позиција",
+      "remove": "Уклони",
       "startDate": "Почетни датум",
       "subtitle": "Позиције по датуму са додељеним волонтерима",
       "title": "Преглед служења"
@@ -1942,6 +2259,26 @@
       "noTeam": "Нису пронађени тимови. Молимо креирајте тим.",
       "teams": "Тимови"
     },
+    "templates": {
+      "apply": "Примени",
+      "applyTitle": "Примени шаблон",
+      "applyTo": "Примени на планове",
+      "button": "Шаблони",
+      "confirmDelete": "Обрисати овај шаблон?",
+      "noPlans": "Нема предстојећих планова.",
+      "none": "Још нема шаблона. Отворите план и изаберите „Сачувај као шаблон“.",
+      "optPositions": "Позиције",
+      "optServiceOrder": "Ред службе",
+      "plan": "План",
+      "positionsWarning": "Примена позиција замењује постојеће позиције и њихове доделе у изабраним плановима.",
+      "rename": "Преименуј шаблон",
+      "saveTitle": "Сачувај као шаблон",
+      "startBlank": "Ниједно",
+      "startFrom": "Почни од шаблона",
+      "title": "Шаблони планова",
+      "updateFromPlan": "Ажурирај из плана",
+      "updateFromPlanHelp": "Замењује садржај овог шаблона тренутним редом службе и позицијама из плана."
+    },
     "timeEdit": {
       "disName": "Име за приказ",
       "disNameReq": "Име за приказ је обавезно.",
@@ -1952,16 +2289,19 @@
       "startTimeAria": "Почетно време",
       "teamNeed": "Потребни тимови",
       "teamPrefix": "Тим",
-      "teamReq": "Молимо изаберите тим(ове).",
       "timeAdd": "Додај време",
       "timeDisplayNameAria": "Име за приказ времена",
       "timeEdit": "Уреди време",
       "timeEnd": "Крајње време",
       "timeStart": "Почетно време",
-      "tip": "Савет"
+      "tip": "Савет",
+      "type": "Тип",
+      "typeAria": "Тип времена службе",
+      "typeOther": "Остало",
+      "typeRehearsal": "Проба",
+      "typeService": "Служба"
     },
     "timeList": {
-      "addTimeAria": "Додај време",
       "noTime": "Још нису додата времена",
       "sunServ": "Недељна служба",
       "times": "Времена"
@@ -1983,9 +2323,6 @@
       "lastActiveDate": "Датум последње активности",
       "registrationDate": "Датум регистрације",
       "title": "Уређаји"
-    },
-    "devicesPage": {
-      "addDevice": "Додај уређај"
     },
     "linkedAccounts": {
       "link": "Повежи",
@@ -2030,7 +2367,8 @@
   },
   "registrations": {
     "registrationDetailsPage": {
-      "actions": "Акције",
+      "addAttendee": "Додај учесника",
+      "addAttendeeError": "Регистровање учесника није успело.",
       "cancelConfirm": "Откажи ову регистрацију?",
       "cancelRegistration": "Откажи регистрацију",
       "csvDate": "Датум",
@@ -2038,8 +2376,8 @@
       "csvName": "Име",
       "csvStatus": "Статус",
       "date": "Датум",
-      "delete": "Обриши",
       "deleteConfirm": "Трајно обриши ову регистрацију?",
+      "eventFull": "Овај догађај је достигао капацитет.",
       "eventNotFound": "Догађај није пронађен",
       "eventRegistrations": "Регистрације на догађај",
       "exportCsv": "Извези CSV",
@@ -2050,14 +2388,18 @@
       "registrations": "Регистрације",
       "status": "Статус",
       "subtitle": "Управљај регистрацијама за овај догађај",
-      "unknown": "Непознато"
+      "unansweredOnly": "Само неодговорена питања",
+      "unknown": "Непознато",
+      "viewAnswers": "Прикажи одговоре"
     },
     "registrationSettingsEdit": {
       "capacity": "Капацитет",
       "capacityPlaceholder": "Оставите празно за неограничено",
       "enableRegistration": "Омогући регистрацију",
+      "none": "Ништа",
       "registrationCloses": "Регистрација се затвара",
       "registrationOpens": "Регистрација се отвара",
+      "registrationQuestions": "Питања за регистрацију",
       "registrationSettings": "Подешавања регистрације",
       "saveSettings": "Сачувај подешавања",
       "tags": "Ознаке",
@@ -2087,10 +2429,6 @@
       "totalGiving": "Укупно давање"
     },
     "noData": "Нема доступних података",
-    "reportOutput": {
-      "anonymous": "Анонимно",
-      "print": "штампај"
-    },
     "runReport": "Покрени извештај",
     "sampleTemplate": "Узорак шаблон",
     "summary": "Резиме",
@@ -2123,7 +2461,6 @@
     "addSermon": "Додај проповед",
     "adjustSearchTerms": "Покушајте да прилагодите своје термине претраге",
     "bulkImport": {
-      "backToSelection": "Назад на избор",
       "chooseSource": "Изабери извор увоза",
       "fetch": "Преузми",
       "fetching": "Преузимање...",
@@ -2147,8 +2484,6 @@
       "minutes": "Минута",
       "seconds": "Секунди"
     },
-    "edit": "Уреди",
-    "editSermonAria": "Уреди {title}",
     "getStarted": "Започни додавањем своје прве проповеди",
     "liveStreamTimes": {
       "externalLinks": {
@@ -2192,7 +2527,6 @@
       },
       "navigationLinks": {
         "add": "Додај",
-        "edit": "Уреди",
         "home": "Почетна",
         "title": "Навигационе везе"
       },
@@ -2233,7 +2567,6 @@
       "settings": "Подешавања",
       "sidebarTabs": {
         "add": "Додај",
-        "edit": "Уреди",
         "title": "Картице садржаја"
       },
       "subtitle": "Конфигуриши времена своје службе које се понављају",
@@ -2279,12 +2612,7 @@
     "notScheduled": "Није заказано",
     "playlist": "Плејлиста",
     "playlists": {
-      "actions": "Акције",
-      "addPlaylist": "Додај плејлисту",
-      "adjustSearchTerms": "Покушајте да прилагодите своје термине претраге",
       "createFirstPlaylist": "Креирај прву плејлисту",
-      "editPlaylist": "Уреди плејлисту",
-      "getStarted": "Започни прављењем своје прве плејлисте",
       "noPlaylistsFound": "Нису пронађене плејлисте",
       "noPlaylistsMatch": "Ниједна плејлиста не одговара вашој претрази",
       "playlistEdit": {
@@ -2308,9 +2636,7 @@
         "unauthorized": "Нисте овлашћени да креирате плејлисте",
         "unauthorizedDelete": "Нисте овлашћени да бришете плејлисте"
       },
-      "search": "Претрага",
       "searchPlaceholder": "Претражи плејлисте...",
-      "subtitle": "Управљај видео плејлистама и организуј свој садржај",
       "title": "Плејлисте"
     },
     "publishDate": "Датум објаве",
@@ -2369,9 +2695,9 @@
       "church": "Црква",
       "churchName": "Назив цркве",
       "churches": "Цркве",
+      "impersonateUser": "Лажно представљање корисника",
       "location": "Локација",
       "noChurch": "Нису пронађене цркве. Молимо претражите по другом имену.",
-      "noUserChurches": "Овај корисник нема цркве повезане са својим налогом.",
       "noUsers": "Нису пронађени корисници. Молимо претражите по другом имену или имејлу.",
       "noteFour": "Упоредни софтвер је ProPresenter. Кошта 399$ за лиценцу. Претпоставио сам да просечна црква инсталира софтвер на 3 рачунара и поделио сам наш укупан број инсталација са 3 да добијем број цркава. Такође претпостављам да ће цркве надоградити на новију верзију у просеку сваких 5 година. Дакле 399$ / 5 година / 3 рачунара = 26.60$ годишњи трошак по рачунару. Ако можемо да квантификујемо ове претпоставке, требало би да ажурирамо овај број.",
       "noteOne": "Упоредни софтвер је Breeze. Они наплаћују 72$/месец или 864$/годишње.",
@@ -2381,23 +2707,39 @@
       "regist": "Регистровано",
       "searchResults": "Резултати претраге",
       "servAdmin": "Администратор сервера",
+      "serverHealth": "Здравље сервера",
       "subtitle": "Управљај подешавањима сервера и црквама",
       "translationLookups": "Претраге превода",
       "usageTrends": "Трендови коришћења",
-      "userChurches": "Цркве",
-      "userSearch": "Претрага по имену или имејлу",
-      "userSearchPlaceholder": "Претрага по имену или имејлу",
-      "users": "Корисници",
       "valueNotes": "Напомене о томе како се вредности израчунавају"
     },
     "churchesTab": {
       "churchNameSearchAria": "Претрага по називу цркве",
       "searchChurchesAria": "Претражи цркве"
     },
+    "impersonateTab": {
+      "confirmMessage": "Бићете одјављени са свог налога и пријављени као {email}. Да бисте се вратили на свој налог, одјавите се и поново пријавите.",
+      "confirmTitle": "Лажно се представити као овај корисник?",
+      "description": "Потражите кориснички налог по имејлу и лажно се представите као тај корисник. Ваша сесија ће бити замењена њиховом и проћи ћете кроз нормалан ток пријаве.",
+      "impersonate": "Лажно се представи",
+      "searchAria": "Претражи кориснике за лажно представљање",
+      "searchLabel": "Имејл корисника",
+      "searchPlaceholder": "Тражи по имејлу за пријаву"
+    },
     "reportPage": {
       "adminOnly": "Само администратор",
-      "report": "Извештај",
-      "serverAdmin": "Администратор сервера"
+      "report": "Извештај"
+    },
+    "serverHealth": {
+      "detail": "Детаљ",
+      "environment": "Окружење",
+      "loadError": "Није могуће учитати здравље сервера.",
+      "no": "Не",
+      "setting": "Подешавање",
+      "status": "Статус",
+      "subtitle": "Показује да ли је свако подешавање API-ја конфигурисано. Вредности нису приказане.",
+      "title": "Здравље сервера",
+      "yes": "Да"
     },
     "translation": {
       "abbreviations": "Скраћенице",
@@ -2409,14 +2751,25 @@
     },
     "translationTab": {
       "searchTranslationStatsAria": "Претражи статистике превода"
-    },
-    "usersTab": {
-      "noPersonLinked": "Нема повезане особе",
-      "searchUsersAria": "Претражи кориснике",
-      "userNameOrEmailSearchAria": "Претрага по имену или имејлу"
     }
   },
   "settings": {
+    "apiKeyEdit": {
+      "close": "Затвори",
+      "copied": "Копирано",
+      "copy": "Копирај",
+      "expires": "Истиче",
+      "expiresHelp": "Оставите празно за кључ који никада не истиче.",
+      "generalScopes": "опште",
+      "keyIntro": "Копирајте свој API кључ сада — неће бити поново приказан.",
+      "keyTitle": "API кључ",
+      "name": "Назив",
+      "namePlaceholder": "нпр. Zapier интеграција",
+      "nameRequired": "Назив је обавезан",
+      "newKey": "Нови API кључ",
+      "scopes": "Опсези",
+      "scopesRequired": "Изаберите барем један опсег"
+    },
     "app": {
       "confirmDeleteTab": "Да ли сте сигурни да желите да обришете ову картицу?",
       "tabNameHelper": "Изаберите описни назив за вашу картицу",
@@ -2443,10 +2796,12 @@
       "myGroups": "Моје групе",
       "noGroupsFound": "Нису пронађене групе",
       "page": "Страница",
+      "plans": "Планови служења",
       "saveTab": "Сачувај картицу",
       "saving": "Чување...",
       "selectGroups": "Изабери групе:",
       "selectImage": "Изабери слику",
+      "sermons": "Проповеди",
       "staffOnly": "Само особље",
       "tabIconAlt": "Икона картице",
       "tabName": "Назив картице",
@@ -2458,7 +2813,6 @@
       "volunteerOpportunities": "Прилике за волонтирање"
     },
     "appTabs": {
-      "editTab": "Уреди картицу",
       "moveDown": "Помери надоле",
       "moveUp": "Помери нагоре",
       "noTabs": "Нису конфигурисане картице",
@@ -2505,6 +2859,25 @@
       "subtitle": "Прати промене и активности у својој цркви",
       "title": "Дневник провере"
     },
+    "campusEdit": {
+      "address2": "Адреса — ред 2",
+      "confirmDelete": "Да ли сте сигурни да желите да обришете ову филијалу?",
+      "name": "Назив",
+      "noTimezone": "Нема",
+      "timezone": "Временска зона",
+      "validate": {
+        "name": "Молимо унесите назив филијале."
+      },
+      "website": "Веб-сајт"
+    },
+    "campuses": {
+      "addCampus": "Додај филијалу",
+      "campus": "Филијала",
+      "campuses": "Филијале",
+      "location": "Локација",
+      "none": "Нема додатих филијала.",
+      "subtitle": "Управљајте физичким локацијама ваше цркве"
+    },
     "church": {
       "subdomainHelper": "Јединствена веб адреса ваше цркве"
     },
@@ -2527,6 +2900,25 @@
       "subdomainAria": "Поддомен",
       "textingSubtitle": "Конфигуриши SMS провајдера",
       "textingTitle": "СМС поруке"
+    },
+    "developer": {
+      "actions": "Радње",
+      "apiKeys": "API кључеви",
+      "app": "Апликација",
+      "authorized": "Ауторизовано",
+      "connectedApps": "Повезане апликације",
+      "deleteKeyConfirm": "Обрисати API кључ \"{name}\"? Свака интеграција која га користи ће престати да ради.",
+      "expires": "Истиче",
+      "lastUsed": "Последња употреба",
+      "name": "Назив",
+      "newKey": "Нови API кључ",
+      "noConnections": "Нема ауторизованих апликација.",
+      "noKeys": "Нема API кључева.",
+      "prefix": "Кључ",
+      "revoke": "Опозови",
+      "revokeConfirm": "Опозвати приступ за \"{name}\"?",
+      "scopes": "Опсези",
+      "title": "Програмери"
     },
     "directoryApprovalSettingsEdit": {
       "directoryApprovalGroup": "Група за одобравање именика",
@@ -2584,7 +2976,6 @@
       "yourChurch": "Ваша црква"
     },
     "emailTemplatesPage": {
-      "actions": "Акције",
       "category": "Категорија",
       "createTemplate": "Креирај шаблон",
       "deleteConfirm": "Обриши шаблон \"{name}\"?",
@@ -2595,15 +2986,15 @@
       "newTemplate": "Нови шаблон",
       "subject": "Тема",
       "subtitle": "Креирај и управљај шаблонима имејла за поновну употребу",
-      "title": "Имејл шаблони",
-      "tooltipDelete": "Обриши",
-      "tooltipEdit": "Уреди"
+      "title": "Имејл шаблони"
     },
     "feeOptionsSettings": {
       "achFlatRate": "Фиксна стопа [ ACH ]",
       "achHardLimit": "Чврсти лимит [ ACH ]",
       "creditCardFlatRate": "Фиксна стопа [ Кредитна картица ]",
       "creditCardTransactionFee": "Накнада за трансакцију [ Кредитна картица ]",
+      "kfFlatRate": "Фиксна стопа [ Kingdom Funding ]",
+      "kfTransactionFee": "Накнада по трансакцији [ Kingdom Funding ]",
       "paypalFlatRate": "Фиксна стопа [ PayPal ]",
       "paypalTransactionFee": "Накнада за трансакцију [ PayPal ]"
     },
@@ -2611,42 +3002,47 @@
       "secretPlaceholder": "********"
     },
     "givingSettingsEdit": {
-      "apiCredentials": "API акредитиви",
       "clientId": "Client ID",
       "clientSecret": "Client Secret",
+      "copyWebhookUrl": "Копирај URL webhook-а",
       "currency": "Валута",
       "currencyHelper": "Уверите се да је ова валута омогућена и у вашој Stripe Dashboard. Омогући валуту овде:",
-      "developersApiKeys": "Developers → API keys",
       "forceMsg": "Аутоматски тера кориснике да покрију накнаде за трансакцију",
-      "forceSslHelpAria": "Помоћ за приморавање SSL-а",
       "giving": "Давање",
+      "kfSetup": "Унесите кључ токенизације и изворни кључ са ваше Kingdom Funding контролне табле. Почните на",
+      "kfWebhookInstructions": "Наведите овај URL webhook-а свом представнику Kingdom Funding током увођења у употребу да би ажурирања трансакција пристизала у ваше извештаје о прилозима:",
       "none": "Нема",
-      "paypal": "PayPal",
-      "paypalCreateApp": "креирајте апликацију да добијете свој Client ID и Secret.",
-      "paypalDeveloper": "PayPal Developer",
-      "paypalGoTo": "Идите на",
-      "paypalLogin": "пријавите се, затим испод",
+      "paypalSetup": "Креирајте PayPal REST апликацију и налепите њен Client ID и тајну испод. Почните на",
+      "privateKeyRequired": "Унесите тајни/приватни кључ за овог добављача пре чувања.",
       "prov": "Провајдер",
       "pubKey": "Јавни кључ",
       "saveError": "Чување подешавања давања није успело",
       "secKey": "Тајни кључ",
-      "stripe": "Stripe",
-      "stripeCopyKeys": "да копирате своје Publishable и Secret кључеве (test и live).",
+      "sourceKey": "Изворни кључ",
       "stripeDashboard": "Stripe Dashboard",
-      "stripeGoTo": "и идите на",
-      "stripeVisit": "Посетите",
-      "transFee": "Накнада за трансакцију"
+      "stripeSetup": "Копирајте своје јавне и тајне кључеве са Stripe контролне табле (Програмери → API кључеви) и налепите их испод. Отворите",
+      "tokenizationKey": "Кључ токенизације",
+      "transFee": "Накнада за трансакцију",
+      "webhookKey": "Кључ webhook-а",
+      "webhookKeyHelper": "Тајна за потписивање webhook-а из Kingdom Funding контролне табле. Обавезно за ажурирања статуса трансакција.",
+      "webhookUrlCopied": "URL webhook-а копиран у клипборд"
     },
-    "imageEditor": {
-      "crop": "Исеци",
-      "upload": "Учитај",
-      "uploadImageAria": "Учитај слику"
+    "landing": {
+      "campusesCount": "{count} локација",
+      "campusesOne": "1 локација",
+      "campusesSubtitle": "Физичке локације",
+      "configuration": "Конфигурација",
+      "developerSubtitle": "API кључеви, webhook-ови, повезане апликације",
+      "domainsCount": "{count} повезано",
+      "domainsNone": "Нема прилагођених домена",
+      "domainsOne": "1 повезано",
+      "givingProvider": "{provider} · {currency}",
+      "notConfigured": "Није конфигурисано",
+      "notSet": "Није постављено"
     },
     "manageChurch": {
       "auditLog": "Дневник провере",
-      "editSettings": "Уреди подешавања",
       "imEx": "Увоз/Извоз",
-      "mobileApps": "Мобилне апликације",
       "noData": "Нема доступних података о цркви",
       "subtitle": "Конфигуриши подешавања и поставке цркве",
       "title": "Управљај црквом"
@@ -2655,9 +3051,6 @@
       "addTab": "Додај картицу",
       "subtitle": "Конфигуриши подешавања мобилне апликације",
       "title": "Подешавања мобилне апликације"
-    },
-    "preview": {
-      "preview": "Преглед"
     },
     "roleCheck": {
       "permissionAria": "Дозвола {label}"
@@ -2672,11 +3065,8 @@
     "roleMembers": {
       "addRoleMemberAria": "Додај члана улоге",
       "confirmMsg": "Да ли сте сигурни да желите да обришете овог корисника из",
-      "edit": "Уреди",
-      "editRoleMemberAria": "Уреди члана улоге {firstName} {lastName}",
       "lastAdminWarning": "Потребан је најмање један Domain Admin. Додајте другог админа пре него уклоните овог.",
       "mem": "Чланови",
-      "removeRoleMemberAria": "Уклони члана улоге {firstName} {lastName}",
       "roleAppMsg": "Ова улога се односи на све чланове цркве."
     },
     "rolePage": {
@@ -2698,8 +3088,6 @@
       "contAdmin": "Администратор садржаја",
       "contAdminDesc": "Може уређивати садржај веб локације, мобилни садржај и проповеди.",
       "custAdd": "Додај прилагођену улогу",
-      "edit": "Уреди",
-      "editRoleAria": "Уреди улогу",
       "everyone": "Сви",
       "itMsg": "? Она ",
       "lesAdmin": "Администратор лекција",
@@ -2707,6 +3095,9 @@
       "role": "Улога",
       "roleCreate": "Да ли желите да креирате нову улогу ",
       "roles": "Улоге"
+    },
+    "rolesPage": {
+      "subtitle": "Управљајте улогама и дозволама"
     },
     "supportContactSettingsEdit": {
       "forceMsg": "Ова веза ће се користити од стране корисника за контакт са црквом",
@@ -2752,9 +3143,92 @@
       "members": "Чланови",
       "phoneNum": "Број телефона",
       "visibilityPreference": "Преференца видљивости"
+    },
+    "webhookEdit": {
+      "active": "Активно",
+      "attempts": "Покушаји",
+      "close": "Затвори",
+      "connectorDiscord": "Discord",
+      "connectorSlack": "Slack",
+      "connectorStandard": "Стандардно (сирови JSON)",
+      "connectorType": "Тип конектора",
+      "copied": "Копирано",
+      "copy": "Копирај",
+      "date": "Датум",
+      "deliveries": "Недавне испоруке",
+      "deliveryDetail": "Детаљ испоруке",
+      "discordUrlHelp": "Налепите URL долазног webhook-а Discord канала. Догађаји се испоручују као читљиве поруке у чету.",
+      "editWebhook": "Измени webhook",
+      "event": "Догађај",
+      "events": "Догађаји",
+      "eventsRequired": "Изаберите барем један догађај",
+      "name": "Назив",
+      "namePlaceholder": "нпр. Zapier — нови чланови",
+      "nameRequired": "Назив је обавезан",
+      "newWebhook": "Нови webhook",
+      "noDeliveries": "Нема испорука.",
+      "payload": "Садржај",
+      "redeliver": "Поново испоручи",
+      "regenerateConfirm": "Регенерисати тајну за потписивање? Тренутна тајна одмах престаје да ради.",
+      "regenerateSecret": "Регенериши тајну",
+      "response": "Одговор",
+      "responseBody": "Тело одговора",
+      "secretIntro": "Копирајте своју тајну за потписивање сада — неће бити поново приказана.",
+      "secretSignNote": "Користите је за верификацију X-B1-Signature заглавља на свакој испоруци.",
+      "secretTitle": "Тајна за потписивање",
+      "sendTest": "Пошаљи тестни догађај",
+      "sendingTest": "Слање…",
+      "slackUrlHelp": "Налепите URL долазног webhook-а Slack канала. Догађаји се испоручују као читљиве поруке у чету.",
+      "url": "URL садржаја",
+      "urlPlaceholder": "https://example.com/webhooks/b1",
+      "urlRequired": "URL је обавезан"
+    },
+    "webhooksPage": {
+      "active": "Активно",
+      "deleteConfirm": "Обрисати webhook \"{name}\"?",
+      "disabled": "Онемогућено",
+      "emptyDescription": "Креирајте webhook да обавестите спољне алате када се особе, групе или домаћинства промене.",
+      "emptyTitle": "Нема webhook-ова",
+      "events": "Догађаји",
+      "name": "Назив",
+      "newWebhook": "Нови webhook",
+      "status": "Статус",
+      "title": "Webhook-ови",
+      "url": "URL"
     }
   },
   "site": {
+    "a11y": {
+      "buttonTip": "Провери приступачност",
+      "buttonTipIssues": "{count} проблема приступачности за преглед",
+      "close": "Затвори",
+      "contrastLow": "Текст {fg} на позадини {bg} има однос контраста {ratio}:1, испод минимума од 4.5:1.",
+      "contrastLowHeading": "Боја наслова {fg} на позадини {bg} има однос контраста {ratio}:1, испод минимума од 4.5:1.",
+      "emptyButtonText": "Ово дугме води на {url}, али нема текстуалну ознаку.",
+      "emptyCardText": "Ова картица води на {url}, али нема наслов ни текст.",
+      "emptyLinkAnchor": "Веза нема читљив текст. Додајте текст да би њена сврха била јасна.",
+      "errorLabel": "Грешка",
+      "headingMultipleH1": "Ова страница има више од једног H1 наслова. Користите само један H1 као наслов странице.",
+      "headingNoH1": "Ова страница нема H1 наслов. Додајте један наслов највишег нивоа као наслов странице.",
+      "headingSkipped": "Ниво наслова прескаче са H{from} на H{to}. Повећавајте нивое наслова корак по корак.",
+      "highlight": "Прикажи на страници",
+      "missingAltGallery": "Слици {n} у галерији недостаје алт текст.",
+      "missingAltImage": "Слици недостаје алт текст. Додајте опис да би је читачи екрана могли пренети.",
+      "noIssues": "Нису пронађени проблеми приступачности",
+      "noIssuesDetail": "Слике имају алт текст, боје испуњавају минимуме контраста, а наслови су у исправном редоследу.",
+      "pageLevel": "Цела страница",
+      "panelAria": "Проблеми приступачности",
+      "rule_contrast": "Низак контраст",
+      "rule_emptyLink": "Празан текст везе",
+      "rule_headingOrder": "Редослед наслова",
+      "rule_missingAlt": "Недостаје алт текст",
+      "sectionLabel": "Секција {n}",
+      "subtitle": "Исправите ово пре објављивања странице",
+      "summaryErrors": "{count} грешака",
+      "summaryWarnings": "{count} упозорења",
+      "title": "Приступачност",
+      "warningLabel": "Упозорење"
+    },
     "addPage": {
       "aiPlaceholder": "Пример: Креирај добродошлу почетну страницу са нашим именом цркве, изјавом мисије, временима службе и дугметом за донацију",
       "newLink": "Нова веза",
@@ -2788,6 +3262,19 @@
       "statusOpening": "Отварање ваше нове странице...",
       "statusPlanning": "Планирање структуре странице...",
       "unauthorizedCreate": "Неовлашћено креирање страница"
+    },
+    "aiRewrite": {
+      "description": "Rewrite this section's text with AI. Layout and images are preserved.",
+      "failed": "The rewrite failed. Nothing was changed.",
+      "instruction": "Instructions",
+      "placeholder": "e.g. Make it more welcoming and add a call to action",
+      "preset_formal": "More formal",
+      "preset_grammar": "Fix grammar",
+      "preset_shorter": "Shorter",
+      "preset_warmer": "Warmer",
+      "rewrite": "Rewrite",
+      "title": "AI Rewrite",
+      "working": "Rewriting section..."
     },
     "animations": {
       "colorize": "Обојити",
@@ -2847,7 +3334,6 @@
     "blocksPage": {
       "actions": "Акције",
       "addBlock": "Додај блок",
-      "block": "блок",
       "blocks": "Блокови",
       "createFirstBlock": "Креирај први блок",
       "elements": "Елемент(и)",
@@ -2860,22 +3346,83 @@
       "totalBlocks": "Укупно блокова",
       "type": "Тип"
     },
+    "blog": {
+      "addPost": "Add Post",
+      "confirmDelete": "Delete this post and its linked page? This cannot be undone.",
+      "date": "Date",
+      "deleteTitle": "Delete Post",
+      "editContent": "Edit content",
+      "noPosts": "No posts yet",
+      "posts": "Posts",
+      "state": "State",
+      "subtitle": "Create and manage blog posts for your website",
+      "title": "Blog"
+    },
+    "blogEdit": {
+      "category": "Category",
+      "draft": "Draft",
+      "editPost": "Edit Post",
+      "errSave": "Failed to save post.",
+      "errSlug": "Please enter a slug.",
+      "errTitle": "Please enter a title.",
+      "excerpt": "Excerpt",
+      "image": "Image",
+      "newPost": "New Post",
+      "publishDate": "Publish Date",
+      "published": "Published",
+      "selectImage": "Select Image",
+      "slug": "Slug",
+      "tags": "Tags",
+      "tagsHelper": "Comma-separated",
+      "title": "Title"
+    },
     "calendarElementEdit": {
       "curatedCalendar": "Кураторски календар",
       "groupCalendar": "Календар групе",
       "select": "Изабери",
       "selectCalendar": "Изабери календар"
     },
+    "campaignProgressEdit": {
+      "donateUrl": "URL за донацију",
+      "endDate": "Крајњи датум",
+      "fund": "Фонд",
+      "goalAmount": "Циљани износ",
+      "selectFund": "Изаберите фонд",
+      "showAmounts": "Прикажи износе",
+      "startDate": "Почетни датум",
+      "title": "Наслов"
+    },
     "colorPicker": {
       "color": "Боја",
       "placeholder": "#FF0000"
     },
     "contentEditor": {
+      "addSectionHere": "Додај секцију",
+      "backToSite": "Назад на веб локацију",
       "blockPreview": "Преглед блока",
+      "discard": "Одбаци",
+      "discardElementMessage": "Одбацити несачуване измене овог елемента?",
+      "discardElementTitle": "Одбацити измене?",
+      "discardSectionMessage": "Одбацити несачуване измене ове секције?",
       "dropToAddElement": "Спустите овде да додате елемент",
       "dropToAddSection": "Спустите овде да додате секцију",
+      "keepEditing": "Настави уређивање",
       "scrollDown": "Помери надоле",
-      "scrollUp": "Помери нагоре"
+      "scrollUp": "Помери нагоре",
+      "smallScreenMessage": "Отворите ову страницу на таблету или десктоп рачунару да бисте уређивали своју веб локацију.",
+      "smallScreenTitle": "Овом уређивачу је потребан већи екран"
+    },
+    "countdownEdit": {
+      "completedText": "Текст по завршетку",
+      "date": "Одређени датум",
+      "dayOfWeek": "Дан у недељи",
+      "mode": "Режим",
+      "showDays": "Прикажи дане",
+      "showHours": "Прикажи сате",
+      "targetDate": "Циљни датум",
+      "time": "Време",
+      "title": "Наслов",
+      "weekly": "Недељна служба"
     },
     "cssEdit": {
       "advancedFeature": "Напредна функција:",
@@ -2932,18 +3479,39 @@
       "urlLabel": "Url",
       "urlPlaceholder": "/donate"
     },
+    "donationEdit": {
+      "allowRecurring": "Дозволи периодичне прилоге",
+      "allowSingleGift": "Дозволи појединачне (једнократне) прилоге",
+      "allowedFunds": "Ограничи на одређене фондове",
+      "allowedFundsHelper": "Оставите празно да дозволите све фондове. Донатори ће видети само фондове које овде изаберете.",
+      "defaultFund": "Подразумевани фонд",
+      "defaultFundHelper": "Унапред изаберите овај фонд када се страница учита. Комбинујте са скривањем бирача фонда да усмерите сваки прилог овде.",
+      "fundOptions": "Опције фонда",
+      "giftOptions": "Опције прилога",
+      "noDefaultFund": "Без подразумеваног",
+      "showFundSelector": "Прикажи бирач фонда донаторима"
+    },
     "editorToolbar": {
       "addContent": "Додај садржај",
       "ago": "пре",
       "block": "Блок",
-      "desktop": "Десктоп",
+      "disablePublish": "Искључи објављивање",
+      "disablePublishConfirm": "Искључити објављивање за ову страницу? Измене ће поново одмах ићи уживо.",
+      "discardChanges": "Одбаци необјављене измене",
+      "discardChangesConfirm": "Одбацити све измене направљене од последњег објављивања? Уређивач ће бити враћен на верзију уживо.",
       "exit": "Изађи",
       "justNow": "управо сада",
-      "mobile": "Мобилни",
-      "notSavedYet": "Нема промена",
       "page": "Страница",
+      "publish": "Објави",
+      "publishOffTip": "Измене тренутно одмах иду уживо. Објавите да бисте сачували верзију уживо и задржали будуће измене приватним до следећег објављивања.",
+      "publishedLabel": "Објављено",
       "redoTip": "Понови (Ctrl+Shift+Z)",
+      "saveError": "Чување није успело",
       "savedAllChanges": "Све промене сачуване",
+      "saving": "Чување…",
+      "statusLiveOnSave": "Уживо при чувању",
+      "statusPublished": "Објављено",
+      "statusUnpublishedChanges": "Необјављене измене",
       "switchToDesktop": "Пребаци на десктоп приказ",
       "switchToMobile": "Пребаци на мобилни приказ",
       "undoTip": "Поништи (Ctrl+Z)",
@@ -2953,25 +3521,32 @@
       "addElements": "Додај елементе",
       "advanced": "Напредно",
       "all": "Све",
+      "block": "Блок",
       "blocks": "Блокови",
       "box": "Кутија",
       "calendar": "Календар",
+      "campaignProgress": "Напредак кампање",
       "card": "Картица",
       "carousel": "Карусел",
       "church": "Црква",
+      "column": "Колона",
       "common": "Уобичајено",
-      "content": "Садржај",
+      "countdown": "Одбројавање",
       "descBox": "Флексибилна контејнер кутија",
       "descCalendar": "Приказ календара догађаја",
+      "descCampaignProgress": "Трака напретка прикупљања средстава повезана са циљем фонда.",
       "descCard": "Картица са садржајем и сликом",
       "descCarousel": "Клизајућа галерија садржаја",
+      "descCountdown": "Тајмер одбројавања до датума или недељне службе.",
       "descDonateLink": "Дугме за везу донације",
       "descDonation": "Формулар за донацију",
       "descEmbedPage": "Уграђена спољна страница",
       "descExpandable": "Проширива Q&A секција",
       "descForm": "Изградитељ прилагођених формулара",
+      "descGallery": "Мрежа фотографија са опционим натписима.",
       "descGroupList": "Именик група",
       "descHtml": "Прилагођен HTML код",
+      "descIconFeature": "Икона са насловом и кратким описом.",
       "descImage": "Слика са натписом",
       "descLocation": "Интерактивна мапа",
       "descLogo": "Лого/брендирање цркве",
@@ -2980,22 +3555,26 @@
       "descRow": "Хоризонтални распоред колона",
       "descSection": "Контејнер за груписање садржаја",
       "descSermons": "Видео галерија проповеди",
+      "descServiceTimes": "Листа ваших недељних термина богослужења.",
+      "descSocialIcons": "Везе ка вашим профилима на друштвеним мрежама.",
+      "descStaffGrid": "Мрежа чланова групе са фотографијама и улогама.",
+      "descStats": "Истакните кључне бројеве са ознакама.",
       "descStream": "Уграђен стрим уживо",
       "descTable": "Распоред табеле података",
+      "descTestimonial": "Цитати чланова са аутором и опционом фотографијом.",
       "descText": "Богат текстуални садржај",
       "descTextWithPhoto": "Текст са страном сликом",
       "descVideo": "Уграђивање или учитавање видеа",
       "donateLink": "Веза за донацију",
       "donation": "Донација",
-      "dragAndDrop": "Превуци и испусти на страницу",
-      "dragHint": "Превуци елементе на страницу да их додаш",
       "embedPage": "Уграђена страница",
       "expandable": "Проширива",
       "form": "Формулар",
+      "gallery": "Галерија",
       "groupList": "Списак група",
       "html": "HTML",
+      "iconFeature": "Икона са описом",
       "image": "Слика",
-      "layout": "Распоред",
       "location": "Локација",
       "logo": "Лого",
       "media": "Медији",
@@ -3003,8 +3582,13 @@
       "row": "Ред",
       "searchElements": "Претражи елементе",
       "section": "Секција",
+      "serviceTimes": "Времена богослужења",
+      "socialIcons": "Иконе друштвених мрежа",
+      "staffGrid": "Мрежа особља",
+      "stats": "Статистика",
       "stream": "Стрим",
       "table": "Табела",
+      "testimonial": "Сведочанство",
       "text": "Текст",
       "textWithPhoto": "Текст са фотографијом",
       "tryDifferentSearch": "Покушајте другачији термин претраге",
@@ -3012,7 +3596,10 @@
       "video": "Видео"
     },
     "elementEdit": {
-      "enableLightbox": "Омогући Lightbox"
+      "enableLightbox": "Омогући Lightbox",
+      "groupAnimation": "Анимација",
+      "groupContent": "Садржај",
+      "groupStyle": "Стил"
     },
     "elementSelection": {
       "moveDown": "Помери надоле",
@@ -3116,10 +3703,6 @@
       "uploadFiles": "Учитај фајлове"
     },
     "filesManager": {
-      "actions": "Акције",
-      "deleteFile": "Обриши фајл",
-      "fileCountPlural": "фајлова",
-      "fileCountSingular": "фајл",
       "files": "Фајлови",
       "getStarted": "Започните учитавањем првог фајла",
       "name": "Име",
@@ -3129,7 +3712,6 @@
       "storageLimit": "/ 100MB"
     },
     "filesPage": {
-      "loading": "Учитавање...",
       "subtitle": "Управљај фајловима и медијима за вашу веб локацију",
       "title": "Фајлови"
     },
@@ -3157,6 +3739,58 @@
       "noFormsAvailable": "Нема доступних формулара!",
       "select": "Изабери"
     },
+    "galleryEdit": {
+      "addPhoto": "Додај фотографију",
+      "altText": "Алтернативни текст",
+      "caption": "Натпис",
+      "columns": "Колоне",
+      "grid": "Мрежа",
+      "imageUrl": "URL слике",
+      "large": "Велики",
+      "layout": "Распоред",
+      "masonry": "Masonry",
+      "medium": "Средњи",
+      "noPhotos": "Још увек нису додате фотографије.",
+      "photos": "Фотографије",
+      "removePhoto": "Уклони фотографију",
+      "selectImage": "Изабери слику",
+      "small": "Мали",
+      "spacing": "Размак",
+      "square": "Квадрат",
+      "wide": "Широко"
+    },
+    "generateSite": {
+      "audience_community": "Community",
+      "audience_families": "Families",
+      "audience_newcomers": "Newcomers",
+      "audience_seniors": "Seniors",
+      "audience_youngAdults": "Young Adults",
+      "audience_youth": "Youth",
+      "audiences": "Audiences",
+      "building": "Building your site...",
+      "buildingSection": "Building {title} — section {n} of {total}...",
+      "button": "Generate Site",
+      "churchName": "Church Name",
+      "createPlan": "Create Plan",
+      "creatingPage": "Creating {title} ({n} of {total})...",
+      "describe": "Describe your church",
+      "describePlaceholder": "Tell us about your church, your mission, and what makes you unique",
+      "done": "Your site is ready.",
+      "errDescription": "Please describe your church (at least 10 characters).",
+      "errPlan": "Could not generate a site plan. Please try again.",
+      "generate": "Generate Pages",
+      "pageFailed": "Could not create the {title} page — skipped.",
+      "planIntro": "Choose which pages to generate:",
+      "sectionSkipped": "{title}: section {n} was skipped.",
+      "serviceTimes": "Service Times",
+      "serviceTimesPlaceholder": "Sundays at 9 & 11 AM",
+      "title": "Generate Site with AI",
+      "tone": "Tone",
+      "tone_casual": "Casual",
+      "tone_formal": "Formal",
+      "tone_inspirational": "Inspirational",
+      "tone_warm": "Warm"
+    },
     "helpDialog": {
       "addBody": "Кликните Додај садржај у траци алата, затим превуците секцију или елемент на страницу.",
       "addTitle": "Додај садржај",
@@ -3165,6 +3799,8 @@
       "fullDocs": "Пуна документација",
       "moveBody": "Превуците секције и елементе да их преуредите. Користите стрелице горе/доле на траци алата избора за прецизне покрете.",
       "moveTitle": "Преуреди",
+      "shortcutsBody": "Delete уклања изабрани елемент, Ctrl+D га дуплира, Alt+горе/доле га помера, а Esc поништава избор.",
+      "shortcutsTitle": "Пречице на тастатури",
       "title": "Основе уређивача страница",
       "undoBody": "Користите Ctrl+Z за поништавање и Ctrl+Shift+Z за понављање. Отворите панел Историја из менија да бисте скочили у било које раније стање.",
       "undoTitle": "Поништавање и историја"
@@ -3175,6 +3811,15 @@
       "restoreToPoint": "Врати на ову тачку",
       "title": "Историја уређивања"
     },
+    "iconFeatureEdit": {
+      "chooseIcon": "Изабери икону",
+      "iconColor": "Боја иконе",
+      "iconSize": "Величина иконе",
+      "large": "Велика",
+      "medium": "Средња",
+      "small": "Мала",
+      "title": "Наслов"
+    },
     "navLink": {
       "addLink": "Додај везу",
       "linkSettings": "Подешавања везе"
@@ -3182,9 +3827,26 @@
     "navLinkEdit": {
       "errLinkText": "Молимо унесите текст везе",
       "linkText": "Текст везе",
+      "noParent": "(нема)",
+      "parentPage": "Надређена страница",
       "unauthorizedCreate": "Неовлашћено креирање страница",
       "unauthorizedDelete": "Неовлашћено брисање страница",
       "url": "URL"
+    },
+    "navStyleEdit": {
+      "activeColor": "Боја активне везе",
+      "backgroundColor": "Боја позадине",
+      "headerSubtitle": "Ускладите навигацију са брендингом ваше цркве",
+      "headerTitle": "Стил навигације",
+      "linkColor": "Боја везе",
+      "linkHoverColor": "Боја везе при преласку мишем",
+      "override": "Замени",
+      "saveNav": "Сачувај навигацију",
+      "solidSection": "Заглавље (непрозирно)",
+      "solidSectionDesc": "Користи се на већини страница. Свака боја је опциона — искључите Замену да задржите тренутни приказ сајта.",
+      "transparentSection": "Заглавље преко хероја (прозирно)",
+      "transparentSectionDesc": "Користи се када навигација лебди изнад слике хероја. Искључите Замену за аутоматско подударање са бојом текста хероја.",
+      "unset": "Подразумевано"
     },
     "pageLink": {
       "check": "Провери",
@@ -3200,14 +3862,29 @@
       "errCheckUrl": "Молимо проверите Url путању",
       "errPath": "Молимо унесите путању.",
       "errTitle": "Молимо унесите наслов.",
+      "everyone": "Сви",
+      "generateMeta": "Generate with AI",
+      "groups": "Одређене групе",
       "headerFooter": "Заглавље и подножје",
       "layout": "Распоред",
       "linkText": "Текст везе",
+      "loggedInUsers": "Пријављени корисници",
+      "membersStaff": "Чланови и особље",
+      "metaDescription": "Meta Description",
+      "metaDescriptionHelper": "Aim for around 155 characters for best search results",
+      "metaDescriptionPlaceholder": "A concise summary shown in search engine results",
+      "metaGenerateFailed": "Could not generate a description. Please try again.",
+      "metaNoContent": "Add some page content before generating a description.",
+      "noGroupsFound": "Нису пронађене групе",
       "pageTitle": "Наслов странице",
+      "selectGroups": "Изаберите групе",
+      "staffOnly": "Само особље",
+      "team": "Чланови тима",
       "unauthorizedCreate": "Неовлашћено креирање страница",
       "unauthorizedDelete": "Неовлашћено брисање страница",
       "url": "Url",
-      "urlPath": "URL путања"
+      "urlPath": "URL путања",
+      "visibility": "Видљивост"
     },
     "pagePreview": {
       "editContent": "Уреди садржај",
@@ -3223,7 +3900,6 @@
     "pagesPage": {
       "actions": "Акције",
       "addFirstPage": "Додај прву страницу",
-      "addNavigationLink": "Додај навигациону везу",
       "addPage": "Додај страницу",
       "autoGenerated": "Аутоматски генерисано",
       "confirmConvert": "Да ли желите да конвертујете ову аутоматски генерисану страницу у прилагођену страницу?",
@@ -3239,6 +3915,7 @@
       "previewPage": "Прегледај страницу",
       "showLogin": "Прикажи пријаву",
       "showLoginTooltip": "Прикажи дугме пријаве у навигационој траци",
+      "startFromTemplate": "Почни од шаблона",
       "subtitle": "Управљај страницама ваше веб локације, садржајем и навигацијом",
       "toggleLoginVisibility": "Пребаци видљивост дугмета пријаве",
       "totalPages": "Укупно страница",
@@ -3270,16 +3947,19 @@
     },
     "pickColors": {
       "background": "Позадина",
-      "backgroundField": "Позадина",
       "backgroundOpacity": "Прозирност позадине",
       "backgroundType": "Тип позадине",
       "color": "Боја",
       "content": "Садржај",
       "currentColors": "Тренутне боје",
+      "focalPoint": "Фокална тачка",
+      "focalPointHelper": "Кликните на слику да поставите фокалну тачку — део који остаје у видном пољу при обрезивању слике.",
       "headingColor": "Боја наслова",
       "image": "Слика",
       "linkColor": "Боја везе",
-      "opacityHelper": "Прозирност црног слоја градијента изнад слике. Максимална вредност: 1",
+      "opacityHelper": "Непрозирност слоја преклопа на слици. Максимална вредност: 1",
+      "overlayColor": "Боја преклопа",
+      "overlayColorHelper": "Боја слоја тинта преко слике (подразумевано је црна).",
       "sampleLink": "Узорак везе",
       "sampleText": "Узорак текста",
       "selectPhoto": "Изабери фотографију",
@@ -3287,6 +3967,18 @@
       "textColor": "Боја текста",
       "youtubeId": "Youtube ID",
       "youtubeVideo": "Youtube видео"
+    },
+    "redirects": {
+      "analytics": "Analytics",
+      "analyticsDesc": "Connect Google Analytics 4 to track visits to your website.",
+      "description": "Send visitors from old URLs to new ones.",
+      "errSave": "Failed to save redirect.",
+      "fromPath": "From Path",
+      "ga4": "GA4 Measurement ID",
+      "ga4Hint": "Format: G-XXXXXXXXXX",
+      "normalizeHint": "Paths are normalized: lowercased, with a leading slash and no trailing slash.",
+      "title": "Redirects",
+      "toPath": "To Path"
     },
     "row": {
       "addColumn": "Додај колону",
@@ -3345,13 +4037,11 @@
     "section": {
       "confirmDelete": "Да ли сте сигурни да желите да трајно обришете ову секцију?",
       "confirmDuplicate": "Да ли сте сигурни да желите да направите копију ове секције и свог њеног садржаја?",
+      "deleteSectionBody": "Ово трајно брише секцију и све што се у њој налази. Можете то поништити помоћу Ctrl+Z.",
+      "deleteSectionTitle": "Обрисати секцију?",
       "editSection": "Уреди секцију",
       "layoutContainer": "Контејнер распореда",
       "section": "Секција"
-    },
-    "sectionBlock": {
-      "deleteSection": "Обриши секцију",
-      "edit": "Уреди"
     },
     "sectionEdit": {
       "block": "Блок",
@@ -3359,9 +4049,173 @@
       "convertTo": "Конвертуј у",
       "convertToBlock": "Конвертуј у блок",
       "convertToBlockPrompt": "Да ли сте сигурни да желите да копирате ову секцију и сав њен садржај у блок?",
+      "dividerBottom": "Доњи раздвајач",
+      "dividerColor": "Боја",
+      "dividerFlip": "Обрни хоризонтално",
+      "dividerHeight": "Висина",
+      "dividerNone": "Ниједан",
+      "dividerShape": "Облик",
+      "dividerTop": "Горњи раздвајач",
+      "divider_curve": "Крива",
+      "divider_peaks": "Врхови",
+      "divider_slant": "Коса линија",
+      "divider_triangle": "Троугао",
+      "divider_wave": "Талас",
+      "divider_waves": "Таласи",
+      "dividers": "Обликовани раздвајачи",
       "duplicate": "Дуплирај",
       "duplicateSection": "Дуплирај секцију",
       "id": "ID"
+    },
+    "sectionTemplates": {
+      "aboutSplit": "Наша прича",
+      "all": "Све",
+      "blank": "Празна секција",
+      "category": {
+        "about": "О нама",
+        "cta": "Позив на акцију",
+        "giving": "Давање",
+        "hero": "Насловна",
+        "media": "Медији",
+        "people": "Људи и групе",
+        "services": "Службе"
+      },
+      "connectColumns": "Колоне за контакт",
+      "ctaBanner": "Банер за следећи корак",
+      "faqSection": "Честа питања",
+      "findUs": "Пронађите нас",
+      "galleryRow": "Ред фотографија",
+      "givingBanner": "Банер за давање",
+      "givingOptions": "Начини давања",
+      "groupListSection": "Листа група",
+      "groupsBrowser": "Прегледач група",
+      "heroCentered": "Насловна са фотографијом",
+      "heroGradient": "Насловна са градијентом",
+      "heroSplit": "Подељена насловна",
+      "ministriesCards": "Картице служења",
+      "sermonsLatest": "Недавне проповеди",
+      "serviceTimes": "Времена служби",
+      "staffGrid": "Мрежа особља",
+      "storyColumns": "Три колоне",
+      "switchHint": "Садржај који не стане у нови распоред биће уклоњен. Користите опозив да га вратите.",
+      "switchTitle": "Испробајте други распоред",
+      "testimony": "Цитат сведочанства",
+      "title": "Додај секцију",
+      "verseBanner": "Банер са стихом",
+      "watchOnline": "Гледајте онлајн",
+      "welcome": "Текст добродошлице"
+    },
+    "sectionToolbar": {
+      "aiRewrite": "AI rewrite",
+      "delete": "Обриши секцију",
+      "dragToReorder": "Превуци за преуређивање",
+      "duplicate": "Дуплирај секцију",
+      "moveDown": "Помери секцију надоле",
+      "moveUp": "Помери секцију нагоре",
+      "settings": "Подешавања секције",
+      "switchLayout": "Испробајте други распоред"
+    },
+    "sermonsEdit": {
+      "allPlaylists": "Све плејлисте",
+      "browse": "Прегледај (плејлисте)",
+      "featuredLatest": "Најновије издвојено",
+      "grid": "Мрежа",
+      "itemCount": "Број проповеди",
+      "layout": "Распоред",
+      "list": "Листа",
+      "playlist": "Плејлиста",
+      "showDates": "Прикажи датуме",
+      "showTitles": "Прикажи наслове"
+    },
+    "serviceTimesEdit": {
+      "showCampus": "Прикажи филијалу",
+      "title": "Наслов"
+    },
+    "siteTemplates": {
+      "back": "Назад",
+      "create": "Креирај веб локацију",
+      "creating": "Креирање {title}...",
+      "descriptions": {
+        "classic": "Комплетна традиционална веб локација са почетном страницом добродошлице, страницом о нама и страницом за планирање посете.",
+        "community": "Ставља групе и служења у први план како би се људи брзо повезали.",
+        "heritage": "Класичан дизајн усредсређен на Свето писмо, за цркве са дугом традицијом.",
+        "media": "Изграђена око вашег стрима уживо и архиве проповеди, за цркве са снажним онлајн присуством.",
+        "modern": "Савремен изглед са упечатљивим градијентима, онлајн службама и страницом за повезивање.",
+        "simple": "Једноставна почетна локација са две странице, савршена за новоосноване цркве и мале заједнице.",
+        "visitor": "Усмерена на одговоре на питања гостију који долазе први пут, пре него што стигну."
+      },
+      "errFailed": "Креирање веб локације није успело. Покушајте поново.",
+      "exists": "Већ постоји",
+      "existsNote": "Странице означене као „већ постоји“ остаће непромењене.",
+      "intro": "Изаберите почетну веб локацију испод. Креираћемо странице и навигационе везе за вас — све се касније може уредити.",
+      "names": {
+        "classic": "Класична црква",
+        "community": "Живот заједнице",
+        "heritage": "Наслеђе",
+        "media": "Прво онлајн",
+        "modern": "Модерна добродошлица",
+        "simple": "Једноставан почетак",
+        "visitor": "Фокус на посетиоце"
+      },
+      "nav": {
+        "about": "О нама",
+        "connect": "Повежите се",
+        "give": "Давање",
+        "home": "Почетна",
+        "live": "Уживо",
+        "sermons": "Проповеди",
+        "visit": "Посета"
+      },
+      "navLinksNote": "Такође додаје навигационе везе ка уграђеним страницама:",
+      "pageCount": "{count} страница",
+      "pages": {
+        "about": "О нама",
+        "connect": "Повежите се",
+        "home": "Почетна",
+        "visit": "Планирајте своју посету"
+      },
+      "title": "Почни од шаблона"
+    },
+    "siteWidgets": {
+      "addAction": "Додај акцију",
+      "announcementBar": "Трака за обавештења",
+      "announcementDesc": "Прикажи банер на врху сваке странице на целом сајту.",
+      "backgroundColor": "Боја позадине",
+      "bottomLeft": "Доле лево",
+      "bottomRight": "Доле десно",
+      "color": "Боја",
+      "enabled": "Омогућено",
+      "endDate": "Крајњи датум",
+      "icon": "Икона",
+      "label": "Ознака",
+      "launcher": "Покретач",
+      "launcherDesc": "Плутајуће дугме које се проширује до брзих веза.",
+      "linkText": "Текст везе",
+      "linkUrl": "URL везе",
+      "position": "Позиција",
+      "saved": "Сачувано",
+      "startDate": "Почетни датум",
+      "text": "Текст",
+      "textColor": "Боја текста",
+      "title": "Виџети сајта",
+      "url": "URL"
+    },
+    "socialIconsEdit": {
+      "alignment": "Поравнање",
+      "color": "Боја",
+      "facebook": "Facebook",
+      "filled": "Попуњено",
+      "iconStyle": "Стил иконе",
+      "instagram": "Instagram",
+      "large": "Велика",
+      "medium": "Средња",
+      "outlined": "Контурисано",
+      "size": "Величина",
+      "small": "Мала",
+      "tiktok": "TikTok",
+      "vimeo": "Vimeo",
+      "x": "X (Twitter)",
+      "youtube": "YouTube"
     },
     "spacingScaleEdit": {
       "buttonOne": "Дугме 1",
@@ -3395,6 +4249,24 @@
       "twoXLarge": "2X велико",
       "twoXLargeDesc": "Максимални размак за драматичне распореде"
     },
+    "staffGridEdit": {
+      "columns": "Колоне",
+      "group": "Група",
+      "rosterHint": "Изабрана група мора имати омогућену опцију \"Прикажи списак на сајту\".",
+      "selectGroup": "Изаберите групу",
+      "showRoles": "Прикажи улоге"
+    },
+    "statsEdit": {
+      "addItem": "Додај статистику",
+      "columns": "Колоне",
+      "items": "Статистике",
+      "label": "Ознака",
+      "noItems": "Још увек нису додате статистике.",
+      "prefix": "Префикс",
+      "removeItem": "Уклони статистику",
+      "suffix": "Суфикс",
+      "value": "Вредност"
+    },
     "style": {
       "editStyle": "Уреди стил"
     },
@@ -3413,8 +4285,11 @@
     "stylesAnimations": {
       "animations": "Анимације",
       "animationsDesc": "Ефекат при приказивању елемента.",
+      "hideOnDesktop": "Сакриј на десктопу",
+      "hideOnMobile": "Сакриј на мобилном",
       "styles": "Стилови",
-      "stylesDesc": "Напредне опције изгледа."
+      "stylesDesc": "Напредне опције изгледа.",
+      "visibility": "Видљивост:"
     },
     "stylesManager": {
       "color": "Палета боја",
@@ -3428,6 +4303,8 @@
       "loadingPreview": "Учитавање прегледа...",
       "logo": "Лого",
       "logoDesc": "Учитај и управљај својим логом",
+      "nav": "Навигација",
+      "navDesc": "Стилизујте навигациону траку сајта",
       "siteFooterName": "Подножје локације",
       "spacing": "Скала размака",
       "spacingDesc": "Дефиниши доследне вредности размака",
@@ -3450,6 +4327,19 @@
     },
     "templates": {
       "viewSermons": "Прегледај проповеди"
+    },
+    "testimonialEdit": {
+      "addQuote": "Додај цитат",
+      "author": "Аутор",
+      "displayMode": "Начин приказа",
+      "noQuotes": "Још увек нису додати цитати.",
+      "quoteText": "Цитат",
+      "quotes": "Цитати",
+      "removeQuote": "Уклони цитат",
+      "role": "Улога",
+      "rotate": "Ротирај",
+      "selectPhoto": "Изабери фотографију",
+      "single": "Прикажи све"
     },
     "tokenPicker": {
       "accent": "Акцент",
@@ -3475,7 +4365,6 @@
       "noneRadius": "Нема (0px)",
       "primary": "Примарно",
       "secondary": "Секундарно",
-      "selectToken": "Изабери токен",
       "small": "Мало (8px)",
       "smallRadius": "Мало (4px)",
       "smallSize": "Мала величина",
@@ -3545,10 +4434,8 @@
     "keys": {
       "add": "Додај",
       "addExternalLink": "Додај спољну везу",
-      "addExternalLinkAria": "Додај спољну везу",
       "addFiles": "Додај фајлове",
       "availableDownloads": "Доступна преузимања",
-      "editSelectedKeyAria": "Уреди изабрани тоналитет",
       "externalLinks": "Спољне везе",
       "import": "Увоз",
       "importFromPraiseCharts": "Увези фајлове из PraiseCharts",
@@ -3576,15 +4463,13 @@
       "key": "Тоналитет"
     },
     "oldArrangements": {
-      "addArrangement": "Додај аранжман",
-      "addArrangementAria": "Додај аранжман",
       "arrangements": "Аранжмани",
-      "edit": "Уреди",
       "editArrangementAria": "Уреди аранжман",
       "noArrangements": "Нису пронађени аранжмани."
     },
     "praiseChartsProducts": {
       "close": "Затвори",
+      "download": "Преузми",
       "free": "Бесплатно",
       "linkAccountPrefix": "Немате повезан PraiseCharts налог. Идите на свој",
       "linkAccountSuffix": "да повежете налог.",
@@ -3612,13 +4497,11 @@
       "service": "Служба"
     },
     "songDetails": {
-      "editSongDetailsAria": "Уреди детаље песме",
       "fallbackTitle": "Детаљи песме",
       "noDetails": "Нема додатних детаља за ову песму."
     },
     "songPage": {
       "addArrangement": "Додај аранжман",
-      "deleteSongAria": "Обриши песму",
       "loading": "Учитавање...",
       "noArrangementDescription": "Изаберите аранжман из бочне траке да започнете.",
       "noArrangementSelected": "Није изабран аранжман",
@@ -3627,11 +4510,12 @@
     "songSearchDialog": {
       "closeDialogAria": "Затвори дијалог",
       "poweredBy": "Покреће:",
-      "searchSongsAria": "Претрага песама",
       "songTitleOrArtistAria": "Наслов песме или извођач"
     },
     "songsPage": {
       "addSongAria": "Додај песму",
+      "deleteSelected": "Delete Selected",
+      "deleteSelectedConfirm": "Delete the selected songs? This cannot be undone.",
       "search": "Претрага",
       "searchSongs": "Претражи песме",
       "songs": "Песме",
@@ -3639,52 +4523,11 @@
     },
     "title": "Песме"
   },
+  "stockPhotos": {
+    "photoBy": "Фотографија: ",
+    "providedBy": "Обезбеђено: "
+  },
   "tasks": {
-    "actionEdit": {
-      "actType": "Тип акције",
-      "actTypeHelp": "Изаберите тип акције за извршавање",
-      "actionTypeAria": "Тип акције",
-      "assignTo": "Додели",
-      "assignToAria": "Додели",
-      "editAct": "Уреди акцију",
-      "taskAssign": "Додели задатак",
-      "taskNote": "Напомена задатка",
-      "taskNoteAria": "Напомена задатка",
-      "taskTitle": "Наслов задатка",
-      "taskTitleAria": "Наслов задатка"
-    },
-    "automationDetails": {
-      "active": "Активно",
-      "acts": "Акције",
-      "addAct": "Додај акцију",
-      "auto": "Детаљи аутоматизације",
-      "inactive": "Неактивно",
-      "noAct": "Нема конфигурисаних акција",
-      "recurs": "Понавља се"
-    },
-    "automationEdit": {
-      "active": "Активно",
-      "autoEdit": "Уреди аутоматизацију",
-      "automationTitleAria": "Наслов аутоматизације",
-      "inactive": "Неактивно",
-      "monthly": "Месечно",
-      "never": "Никад",
-      "recurHelp": "Поставите колико често ова аутоматизација треба да се покреће",
-      "recurrenceAria": "Понављање",
-      "rep": "Понови",
-      "weekly": "Недељно",
-      "yearly": "Годишње"
-    },
-    "automationsPage": {
-      "active": "Активно",
-      "addAuto": "Додај аутоматизацију",
-      "auto": "Аутоматизовани задаци",
-      "inactive": "Неактивно",
-      "manageAuto": "Управљани аутоматизовани задаци",
-      "noAuto": "Нема конфигурисаних аутоматизација",
-      "recurs": "Понавља се",
-      "subtitle": "Аутоматизуј задатке на основу услова"
-    },
     "conditionAttendance": {
       "anywhere": "Било где",
       "campus": "Филијала",
@@ -3720,22 +4563,6 @@
       "weekDay": "Дан у недељи",
       "yearsE": "Прошле године"
     },
-    "conditionDetails": {
-      "addCon": "Додај услов",
-      "addCondition": "Додај услов",
-      "addConditionAria": "Додај услов",
-      "addConj": "Додај везник",
-      "addConjunctionAria": "Додај везник",
-      "all": "Све",
-      "and": "И",
-      "any": "Било који",
-      "con": "Услови:",
-      "editConditionAria": "Уреди услов",
-      "editConjunctionAria": "Уреди везник",
-      "noCond": "Нема додатих услова",
-      "or": "ИЛИ",
-      "trueCon": "од ових услова су истинити"
-    },
     "conditionEdit": {
       "conDetails": "Детаљи услова",
       "conEdit": "Уреди услов",
@@ -3760,18 +4587,72 @@
       "op": "Оператор",
       "startW": "почиње са"
     },
-    "conjunctionEdit": {
-      "and": "И - Сви услови су тачни",
-      "conjEdit": "Уреди везник",
-      "conjType": "Тип везника",
-      "conjunctionTypeAria": "Тип везника",
-      "or": "ИЛИ - Било који услов је тачан"
-    },
     "contentPicker": {
       "group": "Група",
       "pers": "Особа",
       "sel": "Изабери",
       "selPers": "Изабери особу или групу"
+    },
+    "eventTriggers": {
+      "active": "Активно",
+      "addCondition": "Додај услов",
+      "addTrigger": "Додај окидач",
+      "conditions": "Само ако",
+      "editTrigger": "Измени окидач",
+      "event": "Када се ово догоди",
+      "field": "Поље",
+      "firstStep": "Први корак",
+      "kindEvent": "Када се нешто догоди",
+      "kindSchedule": "По распореду",
+      "matchAll": "Подударају се СВИ услови",
+      "matchAny": "Подудара се БИЛО КОЈИ услов",
+      "name": "Назив",
+      "noConditions": "Покреће се за сваки одговарајући догађај.",
+      "noTriggers": "Нема конфигурисаних окидача догађаја.",
+      "oncePerSubject": "Само једном по особи",
+      "operator": "Оператор",
+      "pauseAll": "Паузирај аутоматизацију",
+      "paused": "Паузирано",
+      "recur_daily": "Дневно",
+      "recur_monthly": "Месечно",
+      "recur_weekly": "Седмично",
+      "recur_yearly": "Годишње",
+      "recurs": "Понавља се",
+      "resumeAll": "Настави аутоматизацију",
+      "runNow": "Покрени сада",
+      "runNowFailed": "Покретање није успело.",
+      "runNowResult": "Примењено на {created} особа; {skipped} прескочено (већ у току рада).",
+      "saveRuleFirst": "Прво сачувајте правило да бисте додали услове.",
+      "step": "Почетни корак",
+      "subtitle": "Покрените ток рада аутоматски када се запис дода, промени или уклони — укључујући слање формулара.",
+      "title": "Окидачи",
+      "value": "Вредност"
+    },
+    "executions": {
+      "attempts": "Покушаји",
+      "deletedTrigger": "(обрисан окидач)",
+      "noExecutions": "Нема извршавања. Приказаће се овде када окидач покрене акцију.",
+      "pause": "Паузирај",
+      "refresh": "Освежи",
+      "resume": "Настави",
+      "retry": "Покушај поново",
+      "statusHeader": "Статус",
+      "status_failed": "Неуспешно",
+      "status_paused": "Паузирано",
+      "status_pending": "На чекању",
+      "status_success": "Успешно",
+      "subject": "Особа",
+      "title": "Историја извршавања",
+      "trigger": "Окидач",
+      "when": "Када"
+    },
+    "myCards": {
+      "noCards": "Немате додељених картица.",
+      "title": "Моје картице"
+    },
+    "myWork": {
+      "subtitle": "Ваше картице тока рада и задаци",
+      "title": "Мој рад"
     },
     "newTask": {
       "assignPers": "Молимо доделите овај задатак особи.",
@@ -3786,6 +4667,22 @@
       "taskNotesAria": "Напомене задатка",
       "taskTitleAria": "Наслов задатка",
       "titleTask": "Молимо унесите наслов за овај задатак."
+    },
+    "reminders": {
+      "channels": "Channels",
+      "day1": "1 day before",
+      "dayOf": "On due date",
+      "days3": "3 days before",
+      "days7": "7 days before",
+      "enable": "Send reminders",
+      "message": "Message (optional)",
+      "messageHint": "Leave blank to use a default reminder message.",
+      "noDueDate": "This task has no due date, so reminders won't send until one is set.",
+      "save": "Save Reminder",
+      "saved": "Reminder saved.",
+      "timeOfDay": "Time of day",
+      "title": "Reminders",
+      "when": "When to remind (before the due date)"
     },
     "requestedChanges": {
       "applied": "Примењене промене",
@@ -3833,11 +4730,118 @@
       "unassigned": "Недодељено"
     },
     "tasksPage": {
-      "auto": "Аутоматизације",
       "showClosed": "Прикажи затворене",
-      "showOpen": "Прикажи отворене",
-      "subtitle": "Управљај задацима и аутоматизацијама",
-      "tasks": "Задаци"
+      "showOpen": "Прикажи отворене"
+    },
+    "workflowActions": {
+      "add": "Додај радњу",
+      "days": "Дана чекања",
+      "noAssignee": "Недодељено",
+      "noGroup": "Нема изабране групе",
+      "note": "Белешка",
+      "pickAssignee": "Изаберите задужену особу",
+      "pickGroup": "Изаберите групу",
+      "saveFirst": "Сачувајте корак пре додавања радњи.",
+      "selectField": "Поље",
+      "selectTemplate": "Изаберите шаблон имејла",
+      "selectWorkflow": "Изаберите ток рада",
+      "subjectOverride": "Предмет (опционо)",
+      "taskDescription": "Опис (опционо)",
+      "taskTitle": "Наслов задатка",
+      "title": "Аутоматске радње",
+      "type": {
+        "addNote": "Додај белешку",
+        "addToGroup": "Додај у групу",
+        "addToWorkflow": "Додај у ток рада",
+        "createTask": "Креирај задатак",
+        "delay": "Чекај",
+        "removeFromGroup": "Уклони из групе",
+        "sendEmail": "Пошаљи имејл",
+        "setField": "Постави поље",
+        "webhook": "Webhook"
+      },
+      "value": "Вредност",
+      "webhookUrl": "URL webhook-а (https)"
+    },
+    "workflowBoard": {
+      "addCard": "Додај картицу",
+      "addStep": "Додај корак",
+      "boardTab": "Табла",
+      "clearSelection": "Поништи",
+      "moveTo": "Премести у…",
+      "selectedCount": "{count} изабрано",
+      "step": "Корак",
+      "subtitle": "Превуците картице између корака",
+      "unassigned": "Недодељено"
+    },
+    "workflowCard": {
+      "assign": "Додели",
+      "assignedTo": "Додељено",
+      "complete": "Заврши",
+      "history": "Активност",
+      "outcome": "Исход",
+      "overdue": "Касни",
+      "pin": "Закачи задужење",
+      "pinnedNote": "Закачено — задржава овог власника кроз корake",
+      "sendBack": "Врати назад",
+      "skip": "Прескочи",
+      "snooze": "Одложи",
+      "snooze1Day": "1 дан",
+      "snooze1Week": "1 седмица",
+      "snooze3Days": "3 дана",
+      "snoozed": "Одложено"
+    },
+    "workflowCategories": {
+      "addCategory": "Додај категорију",
+      "newCategory": "Назив нове категорије",
+      "title": "Категорија",
+      "uncategorized": "Некатегорисано"
+    },
+    "workflowEdit": {
+      "active": "Активно",
+      "editWorkflow": "Измени ток рада",
+      "inactive": "Неактивно",
+      "name": "Назив"
+    },
+    "workflowReports": {
+      "noData": "Нема података",
+      "overdue": "Касни",
+      "perStep": "Картице по кораку",
+      "subtitle": "Аналитика тока рада",
+      "throughput": "Завршено (30 дана)",
+      "title": "Извештаји"
+    },
+    "workflowRouting": {
+      "addOutcome": "Додај исход",
+      "always": "увек",
+      "automatic": "Аутоматско усмеравање (при уласку)",
+      "automaticHelp": "Када картица уђе у овај корак, аутоматски је проследите ако особа одговара условима.",
+      "closes": "затвори",
+      "completeCard": "Заврши картицу",
+      "conditions": "Услови",
+      "ifMatch": "ако се подудара",
+      "noConditions": "Нема услова — ова рута одговара свима.",
+      "outcomeLabel": "Натпис дугмета",
+      "outcomesHelp": "Дугмад приказана при завршетку картице на овом кораку. Свако може послати картицу на други корак, предати је другом току рада или је затворити.",
+      "saveStepFirst": "Сачувајте корак пре додавања усмеравања.",
+      "sendToWorkflow": "Пошаљи у други ток рада",
+      "targetStep": "Иди на корак",
+      "title": "Усмеравање"
+    },
+    "workflowStepEdit": {
+      "defaultAssignee": "Подразумевана задужена особа",
+      "dueDays": "Рок за (дана)",
+      "dueDaysHelp": "Поставља рок када картица уђе у овај корак",
+      "editStep": "Измени корак",
+      "stepName": "Назив корака"
+    },
+    "workflowsPage": {
+      "addWorkflow": "Додај ток рада",
+      "added": "Додато у ток рада.",
+      "blankWorkflow": "Празан ток рада",
+      "noWorkflows": "Нема токова рада. Додајте један да почнете.",
+      "subtitle": "Водите особе кроз низ корака",
+      "title": "Токови рада"
     }
   },
   "ui": {

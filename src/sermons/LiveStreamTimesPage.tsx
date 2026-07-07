@@ -14,7 +14,7 @@ import { NavigationTabs } from "../components/ui/NavigationTabs";
 export const LiveStreamTimesPage = memo(() => {
   const [selectedTab, setSelectedTab] = React.useState("services");
 
-  const services = useQuery<StreamingServiceInterface[]>({
+  useQuery<StreamingServiceInterface[]>({
     queryKey: ["/streamingServices", "ContentApi"],
     placeholderData: []
   });
@@ -49,8 +49,12 @@ export const LiveStreamTimesPage = memo(() => {
 
   return (
     <>
-      <PageHeader title={Locale.label("sermons.liveStreamTimes.title")} subtitle={Locale.label("sermons.liveStreamTimes.subtitle")} />
-      <NavigationTabs selectedTab={selectedTab} onTabChange={setSelectedTab} tabs={tabs} />
+      <PageHeader
+        icon={<LiveTvIcon />}
+        title={Locale.label("sermons.liveStreamTimes.title")}
+        subtitle={Locale.label("sermons.liveStreamTimes.subtitle")}
+        tabs={<NavigationTabs selectedTab={selectedTab} onTabChange={setSelectedTab} tabs={tabs} onHeader />}
+      />
       <Box sx={{ p: 3 }}>
         {getCurrentTab()}
       </Box>

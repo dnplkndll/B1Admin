@@ -3,6 +3,7 @@ import { ApiHelper, DateHelper, UserHelper, CurrencyHelper, Loading, PageHeader,
 import { Permissions } from "@churchapps/apphelper";
 import { Box, Typography, Card, Stack, Button, TextField, Table, TableBody, TableCell, TableRow, TableHead, Chip, Alert } from "@mui/material";
 import { CloudDownload as ImportIcon, Search as PreviewIcon, CheckCircle, Error as ErrorIcon, Info, SkipNext } from "@mui/icons-material";
+import { CardWithHeader, hoverRowSx } from "../components/ui";
 
 interface StripeEventResult {
   eventId: string;
@@ -110,8 +111,8 @@ export const StripeImportPage = () => {
       );
     }
 
-    return importData.results.map((event, index) => (
-      <TableRow key={event.eventId} sx={{ "&:hover": { backgroundColor: "action.hover" } }}>
+    return importData.results.map((event) => (
+      <TableRow key={event.eventId} sx={hoverRowSx}>
         <TableCell>
           <Typography variant="body2" sx={{ fontFamily: "monospace", fontSize: "0.75rem" }}>
             {event.eventId}
@@ -120,7 +121,7 @@ export const StripeImportPage = () => {
         <TableCell>
           <Typography variant="body2">{event.type}</Typography>
         </TableCell>
-        <TableCell>
+        <TableCell align="right">
           <Typography variant="body2" sx={{ fontWeight: 600, color: "success.main" }}>
             {CurrencyHelper.formatCurrencyWithLocale(event.amount, event.currency || "usd")}
           </Typography>
@@ -184,6 +185,7 @@ export const StripeImportPage = () => {
   return (
     <>
       <PageHeader
+        icon={<ImportIcon />}
         title={Locale.label("donations.stripeImportPage.title")}
         subtitle={Locale.label("donations.stripeImportPage.subtitle")}
       />
@@ -245,42 +247,26 @@ export const StripeImportPage = () => {
         {loading && <Loading />}
 
         {!loading && importData && (
-          <Card>
-            <Box sx={{ p: 2, borderBottom: 1, borderColor: "divider" }}>
-              <Stack direction="row" justifyContent="space-between" alignItems="center">
-                <Stack direction="row" spacing={1} alignItems="center">
-                  <ImportIcon />
-                  <Typography variant="h6">
-                    {importData.dryRun ? Locale.label("donations.stripeImportPage.previewResults") : Locale.label("donations.stripeImportPage.importResults")}
-                  </Typography>
-                </Stack>
-              </Stack>
-            </Box>
-            <Box sx={{ p: 2 }}>
-              {getSummary()}
-              <Table sx={{ minWidth: 650 }}>
-                <TableHead
-                  sx={{
-                    backgroundColor: "grey.50",
-                    "& .MuiTableCell-root": {
-                      borderBottom: "2px solid",
-                      borderBottomColor: "divider"
-                    }
-                  }}
-                >
-                  <TableRow>
-                    <TableCell sx={{ fontWeight: 600 }}>{Locale.label("donations.stripeImportPage.eventId")}</TableCell>
-                    <TableCell sx={{ fontWeight: 600 }}>{Locale.label("donations.stripeImportPage.type")}</TableCell>
-                    <TableCell sx={{ fontWeight: 600 }}>Amount</TableCell>
-                    <TableCell sx={{ fontWeight: 600 }}>Date</TableCell>
-                    <TableCell sx={{ fontWeight: 600 }}>{Locale.label("donations.stripeImportPage.status")}</TableCell>
-                    <TableCell sx={{ fontWeight: 600 }}>Notes</TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>{getRows()}</TableBody>
-              </Table>
-            </Box>
-          </Card>
+          <CardWithHeader
+            icon={<ImportIcon sx={{ color: "primary.main", fontSize: 20 }} />}
+            title={importData.dryRun ? Locale.label("donations.stripeImportPage.previewResults") : Locale.label("donations.stripeImportPage.importResults")}
+            count={importData.results?.length}
+          >
+            {getSummary()}
+            <Table sx={{ minWidth: 650 }}>
+              <TableHead>
+                <TableRow>
+                  <TableCell>{Locale.label("donations.stripeImportPage.eventId")}</TableCell>
+                  <TableCell>{Locale.label("donations.stripeImportPage.type")}</TableCell>
+                  <TableCell align="right">Amount</TableCell>
+                  <TableCell>Date</TableCell>
+                  <TableCell>{Locale.label("donations.stripeImportPage.status")}</TableCell>
+                  <TableCell>Notes</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>{getRows()}</TableBody>
+            </Table>
+          </CardWithHeader>
         )}
       </Box>
     </>

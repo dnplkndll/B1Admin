@@ -1,8 +1,10 @@
 import React from "react";
 import { Search, MergeModal } from ".";
 import { type GroupMemberInterface, type VisitInterface, type FormSubmissionInterface } from "@churchapps/helpers";
-import { InputBox, ApiHelper, Locale } from "@churchapps/apphelper";
+import { ApiHelper, Locale } from "@churchapps/apphelper";
+import { FormCard } from "../../components/ui";
 import { type PersonInterface, type DonationInterface } from "@churchapps/helpers";
+import { type PersonFieldValueInterface } from "../../helpers/Interfaces";
 import { useNavigate } from "react-router-dom";
 import { useMountedState } from "@churchapps/apphelper";
 import UserContext from "../../UserContext";
@@ -96,6 +98,15 @@ export const Merge: React.FunctionComponent<Props> = (props) => {
     }
   };
 
+  const fetchPersonFieldValues = async (personId: string) => {
+    try {
+      const values: PersonFieldValueInterface[] = await ApiHelper.get(`/personfieldvalues/person/${personId}`, "MembershipApi");
+      return values || [];
+    } catch {
+      return [];
+    }
+  };
+
   const merge = async (person: PersonInterface, personToRemove: PersonInterface) => {
     if (personToRemove.id === context?.person?.id) {
       alert(Locale.label("people.personEdit.cannotDeleteSelf"));
@@ -110,6 +121,7 @@ export const Merge: React.FunctionComponent<Props> = (props) => {
       const visits = await fetchVisits(id);
       const donations = await fetchDonations(id);
       const formSubmission = await fetchFormSubmissions(id);
+      const [winnerFieldValues, loserFieldValues] = await Promise.all([fetchPersonFieldValues(person.id), fetchPersonFieldValues(id)]);
 
       const promises = [];
       householdMembers.forEach((member) => {
@@ -138,6 +150,16 @@ export const Merge: React.FunctionComponent<Props> = (props) => {
         form.contentId = person.id;
         promises.push(ApiHelper.post("/formsubmissions", { formSubmissions: [form] }, "MembershipApi"));
       });
+      // Custom field values: winner's own values win; copy the loser's only where the winner
+      // has none, then blank the loser's rows so they don't orphan after the delete below.
+      const winnerFieldIds = new Set(winnerFieldValues.map((v) => v.fieldId));
+      const fieldValueChanges: PersonFieldValueInterface[] = [];
+      loserFieldValues.forEach((v) => {
+        if (!v.value) return;
+        if (!winnerFieldIds.has(v.fieldId)) fieldValueChanges.push({ personId: person.id, fieldId: v.fieldId, value: v.value });
+        fieldValueChanges.push({ personId: id, fieldId: v.fieldId, value: "" });
+      });
+      if (fieldValueChanges.length > 0) promises.push(ApiHelper.post("/personfieldvalues", fieldValueChanges, "MembershipApi"));
       promises.push(ApiHelper.post(`/people`, [person], "MembershipApi"));
       promises.push(ApiHelper.delete(`/people/${id}`, "MembershipApi"));
       Promise.all(promises).then(() => {
@@ -159,9 +181,9 @@ export const Merge: React.FunctionComponent<Props> = (props) => {
   return (
     <>
       <MergeModal show={showMergeModal} onHide={() => setShowMergeModal(false)} person1={person1} person2={personToMerge} merge={merge} mergeInProgress={mergeInProgress} />
-      <InputBox id="mergeBox" headerIcon="person_add" headerText={Locale.label("people.merge.mergeRec")} saveFunction={handleSave} cancelFunction={props.hideMergeBox}>
+      <FormCard id="mergeBox" icon="person_add" title={Locale.label("people.merge.mergeRec")} onSave={handleSave} onCancel={props.hideMergeBox}>
         <Search handleSearch={search} searchResults={searchResults} buttonText={Locale.label("people.merge.merge")} handleClickAction={handleMerge} />
-      </InputBox>
+      </FormCard>
     </>
   );
 };

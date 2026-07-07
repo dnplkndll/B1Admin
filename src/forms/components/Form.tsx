@@ -3,6 +3,9 @@ import { FormQuestionEdit } from ".";
 import { type FormInterface, type QuestionInterface } from "@churchapps/helpers";
 import { ApiHelper, Permissions, Loading, UserHelper, Locale } from "@churchapps/apphelper";
 import { Icon, Table, TableBody, TableCell, TableRow, TableHead, Box, Typography, Stack, Button, Card } from "@mui/material";
+import { ArrowUpward as ArrowUpwardIcon, ArrowDownward as ArrowDownwardIcon } from "@mui/icons-material";
+import { AppIconButton } from "../../components/ui/AppIconButton";
+import { CountChip, hoverRowSx } from "../../components/ui";
 
 interface Props {
   id: string;
@@ -12,22 +15,23 @@ export const Form: React.FC<Props> = (props) => {
   const [form, setForm] = React.useState<FormInterface>({} as FormInterface);
   const [questions, setQuestions] = React.useState<QuestionInterface[]>(null);
   const [editQuestionId, setEditQuestionId] = React.useState("notset");
+  const questionList = questions || []; // Hoisted to avoid guard reads on closure deps while questions is undefined
   const formPermission = UserHelper.checkAccess(Permissions.membershipApi.forms.admin) || UserHelper.checkAccess(Permissions.membershipApi.forms.edit);
   const questionUpdated = () => {
     loadQuestions();
     setEditQuestionId("notset");
   };
   const loadData = () => {
-    ApiHelper.get("/forms/" + props.id, "MembershipApi").then((data) => setForm(data));
+    ApiHelper.get("/forms/" + props.id, "MembershipApi").then((data: any) => setForm(data));
     loadQuestions();
   };
-  const loadQuestions = () => ApiHelper.get("/questions?formId=" + props.id, "MembershipApi").then((data) => setQuestions(data));
+  const loadQuestions = () => ApiHelper.get("/questions?formId=" + props.id, "MembershipApi").then((data: any) => setQuestions(data));
   const handleClick = (e: React.MouseEvent) => {
     e.preventDefault();
     const anchor = e.currentTarget as HTMLAnchorElement;
     const row = anchor.parentNode.parentNode as HTMLElement;
     const idx = parseInt(row.getAttribute("data-index"));
-    setEditQuestionId(questions[idx].id);
+    setEditQuestionId(questionList[idx].id);
   };
   const moveUp = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -53,7 +57,7 @@ export const Form: React.FC<Props> = (props) => {
   };
   const getRows = () => {
     const rows: JSX.Element[] = [];
-    if (questions.length === 0) {
+    if (questionList.length === 0) {
       rows.push(
         <TableRow key="0">
           <TableCell colSpan={4} sx={{ textAlign: "center", py: 4 }}>
@@ -68,51 +72,44 @@ export const Form: React.FC<Props> = (props) => {
       );
       return rows;
     }
-    for (let i = 0; i < questions.length; i++) {
+    for (let i = 0; i < questionList.length; i++) {
       const upArrow =
         i === 0 ? (
           <span style={{ display: "inline-block", width: 20 }} />
         ) : (
-          <Button size="small" onClick={moveUp} sx={{ minWidth: "auto", p: 0.5, mr: 0.5 }} aria-label={Locale.label("forms.form.moveUpAria")}>
-            <Icon sx={{ fontSize: 18 }}>arrow_upward</Icon>
-          </Button>
+          <AppIconButton label={Locale.label("forms.form.moveUpAria")} icon={<ArrowUpwardIcon />} onClick={moveUp} sx={{ p: 0.5, mr: 0.5 }} />
         );
       const downArrow =
-        i === questions.length - 1 ? (
+        i === questionList.length - 1 ? (
           <></>
         ) : (
-          <Button size="small" onClick={moveDown} sx={{ minWidth: "auto", p: 0.5 }} aria-label={Locale.label("forms.form.moveDownAria")}>
-            <Icon sx={{ fontSize: 18 }}>arrow_downward</Icon>
-          </Button>
+          <AppIconButton label={Locale.label("forms.form.moveDownAria")} icon={<ArrowDownwardIcon />} onClick={moveDown} sx={{ p: 0.5 }} />
         );
       rows.push(
         <TableRow
           key={i}
           data-index={i}
-          sx={{
-            "&:hover": { backgroundColor: "action.hover" },
-            transition: "background-color 0.2s ease"
-          }}>
+          sx={hoverRowSx}>
           <TableCell>
             <Box
               component="button"
               type="button"
               onClick={handleClick}
-              sx={{ background: "none", border: 0, p: 0, color: "primary.light", cursor: "pointer", fontWeight: 500 }}>
-              {questions[i].title}
+              sx={{ background: "none", border: 0, p: 0, color: "var(--link)", cursor: "pointer", fontWeight: 500 }}>
+              {questionList[i].title}
             </Box>
           </TableCell>
           <TableCell>
-            <Typography variant="body2">{questions[i].fieldType}</Typography>
+            <Typography variant="body2">{questionList[i].fieldType}</Typography>
           </TableCell>
-          <TableCell>
+          <TableCell className="rowActions">
             <Stack direction="row" spacing={0.5} alignItems="center">
               {upArrow}
               {downArrow}
             </Stack>
           </TableCell>
           <TableCell>
-            <Typography variant="body2">{questions[i].required ? Locale.label("common.yes") : Locale.label("common.no")}</Typography>
+            <Typography variant="body2">{questionList[i].required ? Locale.label("common.yes") : Locale.label("common.no")}</Typography>
           </TableCell>
         </TableRow>
       );
@@ -121,31 +118,15 @@ export const Form: React.FC<Props> = (props) => {
   };
   const getTableHeader = () => {
     const rows: JSX.Element[] = [];
-    if (questions.length === 0) {
+    if (questionList.length === 0) {
       return rows;
     }
     rows.push(
       <TableRow key="header">
-        <TableCell sx={{ fontWeight: 600 }}>
-          <Typography variant="subtitle2" sx={{ fontWeight: 600 }}>
-            {Locale.label("forms.form.question")}
-          </Typography>
-        </TableCell>
-        <TableCell sx={{ fontWeight: 600 }}>
-          <Typography variant="subtitle2" sx={{ fontWeight: 600 }}>
-            {Locale.label("forms.form.type")}
-          </Typography>
-        </TableCell>
-        <TableCell sx={{ fontWeight: 600 }}>
-          <Typography variant="subtitle2" sx={{ fontWeight: 600 }}>
-            {Locale.label("forms.form.act")}
-          </Typography>
-        </TableCell>
-        <TableCell sx={{ fontWeight: 600 }}>
-          <Typography variant="subtitle2" sx={{ fontWeight: 600 }}>
-            {Locale.label("forms.form.req")}
-          </Typography>
-        </TableCell>
+        <TableCell>{Locale.label("forms.form.question")}</TableCell>
+        <TableCell>{Locale.label("forms.form.type")}</TableCell>
+        <TableCell>{Locale.label("forms.form.act")}</TableCell>
+        <TableCell>{Locale.label("forms.form.req")}</TableCell>
       </TableRow>
     );
     return rows;
@@ -164,33 +145,22 @@ export const Form: React.FC<Props> = (props) => {
     if (questions) {
       contents = (
         <Table sx={{ minWidth: 650 }}>
-          <TableHead
-            sx={{
-              backgroundColor: "grey.50",
-              "& .MuiTableCell-root": {
-                borderBottom: "2px solid",
-                borderBottomColor: "divider"
-              }
-            }}>
-            {getTableHeader()}
-          </TableHead>
+          <TableHead>{getTableHeader()}</TableHead>
           <TableBody>{getRows()}</TableBody>
         </Table>
       );
     }
     return (
       <>
-        {/* Edit Question Content - Appears above when editing */}
         {getSidebarModules()}
 
-        {/* Main Questions Content - Full Width Card */}
         <Card sx={{ width: "100%" }}>
-          {/* Card Header */}
-          <Box sx={{ p: 2, borderBottom: 1, borderColor: "divider" }}>
+          <Box sx={{ p: 2, borderBottom: 1, borderColor: "var(--border-light)" }}>
             <Stack direction="row" justifyContent="space-between" alignItems="center">
               <Stack direction="row" spacing={1} alignItems="center">
-                <Icon>help</Icon>
+                <Icon sx={{ color: "primary.main", fontSize: 20 }}>help</Icon>
                 <Typography variant="h6">{Locale.label("forms.form.questions")}</Typography>
+                {questionList.length > 0 && <CountChip count={questionList.length} />}
               </Stack>
               {formPermission && (
                 <Button
@@ -207,7 +177,6 @@ export const Form: React.FC<Props> = (props) => {
             </Stack>
           </Box>
 
-          {/* Card Content */}
           <Box sx={{ p: 0 }}>{contents}</Box>
         </Card>
       </>

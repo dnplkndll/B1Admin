@@ -1,8 +1,12 @@
 import React, { memo, useCallback, useMemo } from "react";
 import { Link } from "react-router-dom";
-import { DisplayBox, UserHelper, ApiHelper, Permissions, type ChurchInterface, type RoleInterface, type RolePermissionInterface, Locale } from "@churchapps/apphelper";
-import { Button, Divider, Icon, IconButton, Menu, MenuItem, Table, TableBody, TableCell, TableHead, TableRow } from "@mui/material";
+import { DisplayBox, UserHelper, ApiHelper, Permissions, type ChurchInterface, Locale } from "@churchapps/apphelper";
+import { type RoleInterface, type RolePermissionInterface } from "@churchapps/helpers";
+import { Divider, Menu, MenuItem, Table, TableBody, TableCell, TableHead, TableRow } from "@mui/material";
+import { Add as AddIcon, Edit as EditIcon, Groups as GroupsIcon, Lock as LockIcon } from "@mui/icons-material";
 import { useQuery } from "@tanstack/react-query";
+import { AppIconButton } from "../../components/ui/AppIconButton";
+import { useConfirmDelete } from "../../hooks";
 
 interface Props {
   selectRoleId: (id: string) => void;
@@ -13,6 +17,7 @@ interface Props {
 export const Roles = memo(({ selectRoleId, selectedRoleId, church }: Props) => {
   const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
+  const { confirm, ConfirmDialogElement } = useConfirmDelete();
 
   const roles = useQuery<RoleInterface[]>({
     queryKey: [`/roles/church/${church?.id}`, "MembershipApi"],
@@ -75,7 +80,7 @@ export const Roles = memo(({ selectRoleId, selectedRoleId, church }: Props) => {
   const addRole = useCallback(
     async (role: any) => {
       handleClose();
-      if (window.confirm(Locale.label("settings.roles.roleCreate") + role.name + Locale.label("settings.roles.itMsg") + role.description.toLowerCase())) {
+      if (await confirm(Locale.label("settings.roles.roleCreate") + role.name + Locale.label("settings.roles.itMsg") + role.description.toLowerCase(), { destructive: false, confirmLabel: Locale.label("common.confirm", "Confirm") })) {
         const rolesData = await ApiHelper.post("/roles", [{ name: role.name }], "MembershipApi");
         const r = rolesData[0];
         const perms: RolePermissionInterface[] = [];
@@ -91,7 +96,7 @@ export const Roles = memo(({ selectRoleId, selectedRoleId, church }: Props) => {
         roles.refetch();
       }
     },
-    [handleClose, roles]
+    [handleClose, roles, confirm]
   );
 
   const handleAddCustomRole = useCallback(() => {
@@ -104,20 +109,21 @@ export const Roles = memo(({ selectRoleId, selectedRoleId, church }: Props) => {
 
     return (
       <>
-        <IconButton
-          aria-label="addButton"
+        <AppIconButton
+          label={Locale.label("common.add")}
+          icon={<AddIcon />}
+          tone="card"
+          intent="add"
           id="addBtnGroup"
           data-cy="add-button"
           aria-controls={open ? "add-menu" : undefined}
           aria-expanded={open ? "true" : undefined}
           aria-haspopup="true"
           onClick={handleClick}
-          data-testid="add-role-button">
-          <Icon color="primary">add</Icon>
-        </IconButton>
+          data-testid="add-role-button" />
         <Menu id="add-menu" MenuListProps={{ "aria-labelledby": "addBtnGroup" }} anchorEl={anchorEl} open={open} onClose={handleClose}>
           <MenuItem data-cy="add-campus" onClick={handleAddCustomRole} data-testid="add-custom-role-menu-item" aria-label={Locale.label("settings.roles.addCustomRoleAria")}>
-            <Icon sx={{ mr: "3px" }}>lock</Icon> {Locale.label("settings.roles.custAdd")}
+            <LockIcon fontSize="small" sx={{ mr: "3px" }} /> {Locale.label("settings.roles.custAdd")}
           </MenuItem>
           <Divider />
           {predefined.map((role) => (
@@ -129,7 +135,7 @@ export const Roles = memo(({ selectRoleId, selectedRoleId, church }: Props) => {
               title={role.description}
               data-testid={`add-predefined-role-${role.name.toLowerCase().replace(/\s+/g, "-")}`}
               aria-label={Locale.label("settings.roles.addPredefinedRoleAria").replace("{name}", role.name)}>
-              <Icon sx={{ mr: "3px" }}>lock</Icon> {Locale.label("common.add")} "<strong>{role.name}</strong>" {Locale.label("settings.roles.role")}
+              <LockIcon fontSize="small" sx={{ mr: "3px" }} /> {Locale.label("common.add")} "<strong>{role.name}</strong>" {Locale.label("settings.roles.role")}
             </MenuItem>
           ))}
         </Menu>
@@ -151,7 +157,7 @@ export const Roles = memo(({ selectRoleId, selectedRoleId, church }: Props) => {
       result.push(
         <TableRow key="everyone">
           <TableCell>
-            <i className="groups" /> <Link to={`/settings/role/everyone`}>({Locale.label("settings.roles.everyone")})</Link>
+            <GroupsIcon fontSize="small" sx={{ verticalAlign: "middle", mr: "3px" }} /> <Link to={`/settings/role/everyone`} style={{ color: "var(--link)", fontWeight: 500 }}>({Locale.label("settings.roles.everyone")})</Link>
           </TableCell>
           <TableCell></TableCell>
         </TableRow>
@@ -160,26 +166,14 @@ export const Roles = memo(({ selectRoleId, selectedRoleId, church }: Props) => {
 
     sortedRoles.forEach((role) => {
       const editLink = canEdit ? (
-        <Button
-          size="small"
-          variant="outlined"
-          startIcon={<Icon>edit</Icon>}
-          onClick={() => {
-            selectRoleId(role.id);
-          }}
-          data-testid="edit-role-button"
-          aria-label={Locale.label("settings.roles.editRoleAria")}
-          sx={{ minWidth: "auto" }}
-        >
-          {Locale.label("common.edit")}
-        </Button>
+        <AppIconButton label={Locale.label("common.edit")} icon={<EditIcon />} onClick={() => { selectRoleId(role.id); }} data-testid="edit-role-button" />
       ) : null;
       result.push(
         <TableRow key={role.id}>
           <TableCell>
-            <i className="lock" /> <Link to={`/settings/role/${role.id}`}>{role.name}</Link>
+            <LockIcon fontSize="small" sx={{ verticalAlign: "middle", mr: "3px" }} /> <Link to={`/settings/role/${role.id}`} style={{ color: "var(--link)", fontWeight: 500 }}>{role.name}</Link>
           </TableCell>
-          <TableCell align="right">{editLink}</TableCell>
+          <TableCell align="right" className="rowActions">{editLink}</TableCell>
         </TableRow>
       );
     });
@@ -188,16 +182,19 @@ export const Roles = memo(({ selectRoleId, selectedRoleId, church }: Props) => {
   }, [sortedRoles, canEdit, selectRoleId]);
 
   return (
-    <DisplayBox id="rolesBox" headerText={Locale.label("settings.roles.roles")} headerIcon="lock" editContent={editContent} help="docs/b1-admin/settings/roles-permissions">
-      <Table id="roleMemberTable">
-        <TableHead>
-          <TableRow>
-            <TableCell>{Locale.label("common.name")}</TableCell>
-            <TableCell></TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>{rows}</TableBody>
-      </Table>
-    </DisplayBox>
+    <>
+      {ConfirmDialogElement}
+      <DisplayBox id="rolesBox" headerText={Locale.label("settings.roles.roles")} headerIcon="lock" editContent={editContent} help="docs/b1-admin/settings/roles-permissions">
+        <Table id="roleMemberTable">
+          <TableHead>
+            <TableRow>
+              <TableCell>{Locale.label("common.name")}</TableCell>
+              <TableCell align="right"></TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>{rows}</TableBody>
+        </Table>
+      </DisplayBox>
+    </>
   );
 });

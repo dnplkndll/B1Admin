@@ -8,34 +8,25 @@ import {
   navigateToSermons,
   navigateToServing,
   navigateToSettings,
-  navigateToSite,
+  navigateToSite
 } from "./navigation";
 
-// Pre-extended `test` objects, one per primary section. Each overrides the
-// built-in `page` fixture so it arrives logged in and already on the right
-// section. Specs import the variant they need and drop their
-// `beforeEach(login + navigate)` boilerplate. Test signatures stay
-// `async ({ page }) => { ... }` — no rename needed.
-//
-// Usage:
-//   import { attendanceTest as test, expect } from './helpers/test-fixtures';
-//
-// For specs that only need login (no navigation), use `loggedInTest`.
-
+// Each test fixture pre-extends page with login + section navigation; import as `test`.
+// For login-only (no navigation), use loggedInTest.
 const sectionTest = (setup: (p: Page) => Promise<void>) =>
   base.extend({
     page: async ({ page }, use) => {
       await login(page);
       await setup(page);
       await use(page);
-    },
+    }
   });
 
 export const loggedInTest = base.extend({
   page: async ({ page }, use) => {
     await login(page);
     await use(page);
-  },
+  }
 });
 
 export const peopleTest = sectionTest(navigateToPeople);

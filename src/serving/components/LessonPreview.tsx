@@ -1,9 +1,10 @@
-import React, { memo } from "react";
+import { memo } from "react";
 import { Box, Button, Typography } from "@mui/material";
 import { Locale } from "@churchapps/apphelper";
 import { type PlanItemInterface } from "../../helpers";
 import { getSectionDuration } from "./PlanUtils";
 import { PlanItem } from "./PlanItem";
+import { type ProviderMediaInfo } from "./planItemUtils";
 
 interface Props {
   lessonItems: PlanItemInterface[];
@@ -12,6 +13,7 @@ interface Props {
   associatedProviderId?: string;
   associatedContentPath?: string;
   ministryId?: string;
+  mediaLookup?: Record<string, ProviderMediaInfo>;
 }
 
 export const LessonPreview = memo((props: Props) => {
@@ -34,6 +36,7 @@ export const LessonPreview = memo((props: Props) => {
           associatedProviderId={props.associatedProviderId}
           associatedContentPath={props.associatedContentPath}
           ministryId={props.ministryId}
+          mediaLookup={props.mediaLookup}
         />
       );
       cumulativeTime += getSectionDuration(item);
@@ -44,7 +47,6 @@ export const LessonPreview = memo((props: Props) => {
 
   return (
     <Box sx={{ position: "relative" }}>
-      {/* Top header with label and Customize button */}
       <Box
         sx={{
           display: "flex",
@@ -70,14 +72,12 @@ export const LessonPreview = memo((props: Props) => {
         </Button>
       </Box>
 
-      {/* Preview explanation banner */}
       <Box sx={{ textAlign: "center", py: 1, px: 2, bgcolor: "info.light", borderRadius: 1, mb: 1 }}>
         <Typography variant="body2" color="info.contrastText">
           {Locale.label("plans.serviceOrder.previewBanner") || "This is a preview of the associated lesson. Click \"Customize\" to edit."}
         </Typography>
       </Box>
 
-      {/* Grayed out preview content */}
       <Box
         sx={{
           opacity: 0.7,

@@ -19,10 +19,7 @@ interface Props {
   onClick?: () => void;
 }
 
-/**
- * A simple content item row displaying thumbnail/icon, label, description, and duration.
- * Used in both plan item rows and modal section previews.
- */
+/** Content item row with thumbnail, label, description, and duration. */
 export const ContentItemRow: React.FC<Props> = ({ item, onClick }) => {
   return (
     <Box

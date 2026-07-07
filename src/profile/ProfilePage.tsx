@@ -1,13 +1,16 @@
-import { Grid, Icon, TextField, Typography, InputAdornment, IconButton, Box, Card, CardContent, Alert, Stack, FormControlLabel, Switch } from "@mui/material";
+import { Grid, Icon, TextField, Typography, InputAdornment, Box, Card, CardContent, Alert, Stack, FormControlLabel, Switch } from "@mui/material";
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ApiHelper, UserHelper, Locale } from "@churchapps/apphelper";
 import { LinkedAccounts } from "./components/LinkedAccounts";
-import { DarkMode, LightMode } from "@mui/icons-material";
+import { DarkMode, LightMode, Person as PersonIcon } from "@mui/icons-material";
 import { PageHeader } from "@churchapps/apphelper";
 import { LoadingButton } from "../components";
+import { AppIconButton } from "../components/ui/AppIconButton";
+import { FormCard } from "../components/ui/FormCard";
 import { useMutation } from "@tanstack/react-query";
 import { useThemeMode } from "../ThemeContext";
+import { useConfirmDelete } from "../hooks";
 
 export const ProfilePage = () => {
   const navigate = useNavigate();
@@ -22,6 +25,7 @@ export const ProfilePage = () => {
   const [errors, setErrors] = useState([]);
   const [showPassword, setShowPassword] = useState(false);
   const [saveMessage, setSaveMessage] = useState("");
+  const { confirm, ConfirmDialogElement } = useConfirmDelete();
 
   React.useEffect(() => {
     const { email, firstName, lastName } = UserHelper.user;
@@ -118,8 +122,8 @@ export const ProfilePage = () => {
     return errors.length === 0;
   };
 
-  const handleAccountDelete = () => {
-    if (window.confirm(Locale.label("profile.profilePage.confirmMsg"))) {
+  const handleAccountDelete = async () => {
+    if (await confirm(Locale.label("profile.profilePage.confirmMsg"))) {
       deleteAccountMutation.mutate();
     }
   };
@@ -127,7 +131,7 @@ export const ProfilePage = () => {
   if (isDemo) {
     return (
       <>
-        <PageHeader title={Locale.label("profile.profilePage.profEdit")} subtitle={Locale.label("profile.profilePage.subtitle")} />
+        <PageHeader icon={<PersonIcon />} title={Locale.label("profile.profilePage.profEdit")} subtitle={Locale.label("profile.profilePage.subtitle")} />
         <Box sx={{ p: 3 }}>
           <Alert severity="info">{Locale.label("profile.profilePage.demoModeAlert")}</Alert>
         </Box>
@@ -137,11 +141,11 @@ export const ProfilePage = () => {
 
   return (
     <>
-      <PageHeader title={Locale.label("profile.profilePage.profEdit")} subtitle={Locale.label("profile.profilePage.subtitle")} />
+      {ConfirmDialogElement}
+      <PageHeader icon={<PersonIcon />} title={Locale.label("profile.profilePage.profEdit")} subtitle={Locale.label("profile.profilePage.subtitle")} />
 
       <Box sx={{ p: 3 }}>
         <Stack spacing={3}>
-          {/* Display validation errors if any */}
           {errors.length > 0 && (
             <Alert severity="error">
               <ul style={{ margin: 0, paddingLeft: "20px" }}>
@@ -152,89 +156,67 @@ export const ProfilePage = () => {
             </Alert>
           )}
 
-          {/* Display mutation errors if any */}
           {updateProfileMutation.error && <Alert severity="error">{updateProfileMutation.error.message || Locale.label("profile.profilePage.saveError")}</Alert>}
 
           {deleteAccountMutation.error && <Alert severity="error">{deleteAccountMutation.error.message || Locale.label("profile.profilePage.deleteError")}</Alert>}
 
-          {/* Display success message if any */}
           {saveMessage && <Alert severity="success">{saveMessage}</Alert>}
 
-          {/* Profile Information Card */}
-          <Card>
-            <CardContent>
-              <Stack spacing={2}>
-                <Typography variant="h6" gutterBottom>
-                  {Locale.label("profile.profilePage.profEdit")}
-                </Typography>
+          <FormCard title={Locale.label("profile.profilePage.profEdit")} icon="person" onSave={handleSave} saveText={Locale.label("profile.profilePage.saveChanges")} isSubmitting={updateProfileMutation.isPending}>
+            <Grid container spacing={2}>
+              <Grid size={{ xs: 12 }}>
+                <TextField fullWidth type="email" name="email" label={Locale.label("person.email")} value={email} onChange={handleChange} disabled={isDemo} placeholder={Locale.label("placeholders.person.simpleEmail")} />
+              </Grid>
 
-                <Grid container spacing={2}>
-                  <Grid size={{ xs: 12 }}>
-                    <TextField fullWidth type="email" name="email" label={Locale.label("person.email")} value={email} onChange={handleChange} disabled={isDemo} placeholder={Locale.label("placeholders.person.simpleEmail")} />
-                  </Grid>
+              <Grid size={{ xs: 12, md: 6 }}>
+                <TextField fullWidth name="firstName" label={Locale.label("person.firstName")} value={firstName} onChange={handleChange} placeholder={Locale.label("placeholders.person.firstName")} />
+              </Grid>
+              <Grid size={{ xs: 12, md: 6 }}>
+                <TextField fullWidth name="lastName" label={Locale.label("person.lastName")} value={lastName} onChange={handleChange} placeholder={Locale.label("placeholders.person.lastName")} />
+              </Grid>
 
-                  <Grid size={{ xs: 12, md: 6 }}>
-                    <TextField fullWidth name="firstName" label={Locale.label("person.firstName")} value={firstName} onChange={handleChange} placeholder={Locale.label("placeholders.person.firstName")} />
-                  </Grid>
-                  <Grid size={{ xs: 12, md: 6 }}>
-                    <TextField fullWidth name="lastName" label={Locale.label("person.lastName")} value={lastName} onChange={handleChange} placeholder={Locale.label("placeholders.person.lastName")} />
-                  </Grid>
-
-                  <Grid size={{ xs: 12, md: 6 }}>
-                    <TextField
-                      type={showPassword ? "text" : "password"}
-                      fullWidth
-                      name="password"
-                      label={Locale.label("profile.profilePage.passNew")}
-                      value={password}
-                      onChange={handleChange}
-                      disabled={isDemo}
-                      helperText={isDemo ? Locale.label("profile.profilePage.demoPasswordHelper") : Locale.label("profile.profilePage.passwordHelper")}
-                      InputProps={{
-                        endAdornment: (
-                          <InputAdornment position="end">
-                            <IconButton aria-label={Locale.label("profile.profilePage.togglePasswordVisibility")} onClick={() => setShowPassword(!showPassword)} disabled={isDemo}>
-                              {showPassword ? <Icon>visibility</Icon> : <Icon>visibility_off</Icon>}
-                            </IconButton>
-                          </InputAdornment>
-                        )
-                      }}
-                    />
-                  </Grid>
-                  <Grid size={{ xs: 12, md: 6 }}>
-                    <TextField
-                      type={showPassword ? "text" : "password"}
-                      fullWidth
-                      name="passwordVerify"
-                      label={Locale.label("profile.profilePage.passVer")}
-                      value={passwordVerify}
-                      onChange={handleChange}
-                      disabled={isDemo}
-                      InputProps={{
-                        endAdornment: (
-                          <InputAdornment position="end">
-                            <IconButton aria-label={Locale.label("profile.profilePage.togglePasswordVisibility")} onClick={() => setShowPassword(!showPassword)} disabled={isDemo}>
-                              {showPassword ? <Icon>visibility</Icon> : <Icon>visibility_off</Icon>}
-                            </IconButton>
-                          </InputAdornment>
-                        )
-                      }}
-                    />
-                  </Grid>
-                </Grid>
-
-                <Box sx={{ pt: 2 }}>
-                  <LoadingButton variant="contained" color="primary" loading={updateProfileMutation.isPending} onClick={handleSave}>
-                    {Locale.label("profile.profilePage.saveChanges")}
-                  </LoadingButton>
-                </Box>
-              </Stack>
-            </CardContent>
-          </Card>
+              <Grid size={{ xs: 12, md: 6 }}>
+                <TextField
+                  type={showPassword ? "text" : "password"}
+                  fullWidth
+                  name="password"
+                  label={Locale.label("profile.profilePage.passNew")}
+                  value={password}
+                  onChange={handleChange}
+                  disabled={isDemo}
+                  helperText={isDemo ? Locale.label("profile.profilePage.demoPasswordHelper") : Locale.label("profile.profilePage.passwordHelper")}
+                  InputProps={{
+                    endAdornment: (
+                      <InputAdornment position="end">
+                        <AppIconButton label={Locale.label("profile.profilePage.togglePasswordVisibility")} icon={showPassword ? <Icon>visibility</Icon> : <Icon>visibility_off</Icon>} onClick={() => setShowPassword(!showPassword)} disabled={isDemo} />
+                      </InputAdornment>
+                    )
+                  }}
+                />
+              </Grid>
+              <Grid size={{ xs: 12, md: 6 }}>
+                <TextField
+                  type={showPassword ? "text" : "password"}
+                  fullWidth
+                  name="passwordVerify"
+                  label={Locale.label("profile.profilePage.passVer")}
+                  value={passwordVerify}
+                  onChange={handleChange}
+                  disabled={isDemo}
+                  InputProps={{
+                    endAdornment: (
+                      <InputAdornment position="end">
+                        <AppIconButton label={Locale.label("profile.profilePage.togglePasswordVisibility")} icon={showPassword ? <Icon>visibility</Icon> : <Icon>visibility_off</Icon>} onClick={() => setShowPassword(!showPassword)} disabled={isDemo} />
+                      </InputAdornment>
+                    )
+                  }}
+                />
+              </Grid>
+            </Grid>
+          </FormCard>
 
           <LinkedAccounts />
 
-          {/* Theme Preferences Card */}
           <Card>
             <CardContent>
               <Stack spacing={2}>
@@ -262,7 +244,6 @@ export const ProfilePage = () => {
             </CardContent>
           </Card>
 
-          {/* Account Deletion Card */}
           <Card>
             <CardContent>
               <Stack spacing={2}>
@@ -271,7 +252,7 @@ export const ProfilePage = () => {
                 </Typography>
                 <Typography color="text.secondary">{Locale.label("profile.profilePage.permWarn")}</Typography>
                 <Box>
-                  <LoadingButton variant="outlined" color="error" loading={deleteAccountMutation.isPending} onClick={handleAccountDelete} data-testid="delete-account-button">
+                  <LoadingButton variant="outlined" loading={deleteAccountMutation.isPending} onClick={handleAccountDelete} data-testid="delete-account-button">
                     {Locale.label("profile.profilePage.delAcc")}
                   </LoadingButton>
                 </Box>

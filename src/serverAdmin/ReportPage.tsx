@@ -1,48 +1,27 @@
-import React from "react";
 import { useParams } from "react-router-dom";
-import { ApiHelper, Locale, PageHeader, UserHelper, Permissions } from "@churchapps/apphelper";
-import { PermissionDenied } from "../components";
-import { Box, Container, Card, CardContent, Skeleton, Chip } from "@mui/material";
-import { ArrowBack as BackIcon } from "@mui/icons-material";
+import { useQuery } from "@tanstack/react-query";
+import { Locale, PageHeader, Permissions } from "@churchapps/apphelper";
+import { BarChart as BarChartIcon } from "@mui/icons-material";
+import { Box, Container, Card, CardContent, Skeleton, Chip, Stack } from "@mui/material";
 import { ReportWithFilter } from "../components/reporting/ReportWithFilter";
 import { type ReportInterface } from "@churchapps/helpers";
+import { useRequirePermission } from "../hooks";
 
 export const ReportPage = () => {
   const params = useParams();
-  const [report, setReport] = React.useState<ReportInterface>(null);
-  const [loading, setLoading] = React.useState(true);
+  const reportQuery = useQuery<ReportInterface>({ queryKey: ["/reports/" + params.keyName, "ReportingApi"], enabled: !!params.keyName });
+  const report = reportQuery.data;
+  const loading = reportQuery.isLoading;
 
-  const loadData = React.useCallback(() => {
-    if (params.keyName) {
-      setLoading(true);
-      ApiHelper.get("/reports/" + params.keyName, "ReportingApi")
-        .then((data) => {
-          setReport(data);
-          setLoading(false);
-        })
-        .catch(() => {
-          setLoading(false);
-        });
-    }
-  }, [params.keyName]);
-
-  React.useEffect(loadData, [loadData]);
-
-  if (!UserHelper.checkAccess(Permissions.membershipApi.server.admin)) return <PermissionDenied permissions={[Permissions.membershipApi.server.admin]} />;
+  const denied = useRequirePermission(Permissions.membershipApi.server.admin);
+  if (denied) return denied;
 
   return (
     <>
       <PageHeader
-        title={loading ? <Skeleton width={300} /> : report?.displayName || Locale.label("serverAdmin.reportPage.report")}
-        subtitle={!loading && report?.description ? report.description : undefined}
-        breadcrumbs={[
-          {
-            href: "/admin",
-            text: Locale.label("serverAdmin.reportPage.serverAdmin"),
-            icon: <BackIcon />
-          }
-        ]}
-        bgColor="error.main">
+        icon={<BarChartIcon />}
+        title={report?.displayName || Locale.label("serverAdmin.reportPage.report")}
+        subtitle={!loading && report?.description ? report.description : undefined}>
         <Chip
           label={Locale.label("serverAdmin.reportPage.adminOnly")}
           size="small"
@@ -58,7 +37,6 @@ export const ReportPage = () => {
 
       <Container maxWidth="xl">
         <Box sx={{ py: 3 }}>
-          {/* Report Content */}
           <Card
             elevation={2}
             sx={{

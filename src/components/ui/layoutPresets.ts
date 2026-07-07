@@ -1,7 +1,4 @@
-/**
- * Standard responsive Grid sizes. Use with `<Grid size={GRID_SIZES.threeColumn}>`.
- * Defining presets here keeps mobile/tablet breakpoints consistent across pages.
- */
+/** Standard responsive Grid sizes for consistent mobile/tablet/desktop breakpoints. Use with `<Grid size={GRID_SIZES.threeColumn}>`. */
 export const GRID_SIZES = {
   /** 1-up mobile, 2-up tablet, 3-up desktop. Cards, feature lists. */
   threeColumn: { xs: 12, sm: 6, md: 4 },

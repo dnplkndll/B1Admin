@@ -51,7 +51,14 @@ const createMdTheme = (mode: PaletteMode) =>
           "body.dark-theme #banner": {
             backgroundColor: "#1e1e1e",
             borderBottom: "1px solid #333"
-          }
+          },
+          ".google-visualization-tooltip, .google-visualization-tooltip *": { pointerEvents: "none" },
+          ".rowActions .MuiIconButton-root": {
+            opacity: 0.45,
+            transition: "opacity 0.12s"
+          },
+          "tr:hover .rowActions .MuiIconButton-root, .rowActions .MuiIconButton-root:focus-visible": { opacity: 1 },
+          "@media (prefers-reduced-motion: reduce)": { ".rowActions .MuiIconButton-root": { transition: "none" } }
         }
       },
       MuiTextField: {
@@ -59,24 +66,46 @@ const createMdTheme = (mode: PaletteMode) =>
         styleOverrides: { root: { "& .MuiOutlinedInput-root": { "&:hover fieldset": { borderColor: mode === "light" ? "rgba(0, 0, 0, 0.23)" : "rgba(255, 255, 255, 0.23)" } } } }
       },
       MuiFormControl: { defaultProps: { margin: "normal" } },
+      // always-shrunk labels: react-hook-form reset() fills inputs without events, so MUI's filled-state detection misses them
+      MuiInputLabel: { defaultProps: { shrink: true } },
+      MuiOutlinedInput: { defaultProps: { notched: true } },
       MuiButton: { styleOverrides: { root: { textTransform: "none" } } },
       MuiCard: {
         styleOverrides: {
           root: {
-            borderRadius: 8,
-            boxShadow: mode === "light" ? "0 2px 8px rgba(0,0,0,0.1)" : "0 2px 8px rgba(0,0,0,0.4)"
+            borderRadius: 10,
+            border: `1px solid ${mode === "light" ? "#dddddd" : "#333333"}`,
+            boxShadow: mode === "light" ? "0 1px 2px rgba(13,32,58,.06), 0 4px 14px rgba(13,32,58,.05)" : "0 1px 2px rgba(0,0,0,.5), 0 4px 14px rgba(0,0,0,.35)"
           }
+        }
+      },
+      MuiTableCell: {
+        styleOverrides: {
+          root: {
+            padding: "12px 16px",
+            borderBottom: "1px solid var(--border-light)"
+          },
+          head: {
+            fontSize: "11px",
+            fontWeight: 650,
+            textTransform: "uppercase",
+            letterSpacing: ".07em",
+            color: mode === "light" ? "rgba(0, 0, 0, 0.6)" : "rgba(255, 255, 255, 0.7)",
+            backgroundColor: "transparent",
+            borderBottom: `1px solid ${mode === "light" ? "#dddddd" : "#333333"}`
+          },
+          body: { fontVariantNumeric: "tabular-nums" }
         }
       }
     },
     typography: {
       fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif',
-      h1: { fontSize: "2rem", fontWeight: 500, lineHeight: 1.2 },
-      h2: { fontSize: "1.75rem", fontWeight: 500, lineHeight: 1.25 },
-      h3: { fontSize: "1.5rem", fontWeight: 500, lineHeight: 1.3 },
-      h4: { fontSize: "1.25rem", fontWeight: 500, lineHeight: 1.35 },
-      h5: { fontSize: "1.125rem", fontWeight: 500, lineHeight: 1.4 },
-      h6: { fontSize: "1rem", fontWeight: 600, lineHeight: 1.45 },
+      h1: { fontSize: "2.5rem", fontWeight: 500, lineHeight: 1.2 },
+      h2: { fontSize: "2.25rem", fontWeight: 500, lineHeight: 1.25 },
+      h3: { fontSize: "clamp(1.75rem, 3vw, 2.25rem)", fontWeight: 500, lineHeight: 1.3 },
+      h4: { fontSize: "1.75rem", fontWeight: 500, lineHeight: 1.35 },
+      h5: { fontSize: "1.5rem", fontWeight: 500, lineHeight: 1.4 },
+      h6: { fontSize: "1.25rem", fontWeight: 500, lineHeight: 1.45 },
       subtitle1: { fontSize: "1rem", fontWeight: 500, lineHeight: 1.5 },
       subtitle2: { fontSize: "0.875rem", fontWeight: 600, lineHeight: 1.5 },
       body1: { fontSize: "1rem", fontWeight: 400, lineHeight: 1.5 },

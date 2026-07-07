@@ -1,13 +1,14 @@
 import React, { useEffect, useState, useContext } from "react";
 import { useParams, useNavigate, useSearchParams } from "react-router-dom";
-import { Box, Button, Stack, Typography, Paper } from "@mui/material";
-import { Edit as EditIcon, Settings as SettingsIcon } from "@mui/icons-material";
+import { Box, Chip, Stack, Typography, Paper } from "@mui/material";
+import { Edit as EditIcon, Settings as SettingsIcon, Web as WebIcon } from "@mui/icons-material";
 import { ApiHelper, PageHeader, Locale } from "@churchapps/apphelper";
 import UserContext from "../UserContext";
 import { EnvironmentHelper } from "../helpers/EnvironmentHelper";
-import type { PageInterface } from "../helpers/Interfaces";
+import type { PageInterface, SiteInterface } from "../helpers/Interfaces";
 import type { LinkInterface } from "@churchapps/helpers";
 import { PageLinkEdit } from "./components/PageLinkEdit";
+import { HeaderPrimaryButton, HeaderSecondaryButton } from "../components/ui";
 
 export const PagePreview: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -17,6 +18,7 @@ export const PagePreview: React.FC = () => {
   const [pageData, setPageData] = useState<PageInterface | null>(null);
   const [link, setLink] = useState<LinkInterface | null>(null);
   const [showSettings, setShowSettings] = useState(false);
+  const [siteSubDomain, setSiteSubDomain] = useState<string>("");
 
   const loadData = () => {
     if (!id) return;
@@ -58,6 +60,18 @@ export const PagePreview: React.FC = () => {
     loadData();
   }, [id, searchParams]);
 
+  // A secondary-site page previews on its own subdomain, not the church's.
+  useEffect(() => {
+    if (pageData?.siteId) {
+      ApiHelper.get("/sites", "MembershipApi").then((sites: SiteInterface[]) => {
+        const match = (Array.isArray(sites) ? sites : []).find((s) => s.id === pageData.siteId);
+        setSiteSubDomain(match?.subDomain || "");
+      }).catch(() => setSiteSubDomain(""));
+    } else {
+      setSiteSubDomain("");
+    }
+  }, [pageData?.siteId]);
+
   if (!pageData) {
     return (
       <Box display="flex" justifyContent="center" alignItems="center" minHeight="200px">
@@ -66,14 +80,15 @@ export const PagePreview: React.FC = () => {
     );
   }
 
-  const previewUrl = EnvironmentHelper.B1Url.replace("{subdomain}", context.userChurch?.church?.subDomain || "") + pageData.url + "?t=" + Date.now();
+  const previewSubDomain = siteSubDomain || context.userChurch?.church?.subDomain || "";
+  const previewUrl = EnvironmentHelper.B1Url.replace("{subdomain}", previewSubDomain) + pageData.url + "?t=" + Date.now();
 
   return (
     <>
-      <PageHeader title={Locale.label("site.pagePreview.title")} subtitle={Locale.label("site.pagePreview.subtitle").replace("{title}", pageData.title)}>
+      <PageHeader icon={<WebIcon />} title={Locale.label("site.pagePreview.title")} subtitle={Locale.label("site.pagePreview.subtitle").replace("{title}", pageData.title)}>
         <Stack direction={{ xs: "column", sm: "row" }} spacing={1} sx={{ width: { xs: "100%", sm: "auto" } }}>
-          <Button variant="outlined" startIcon={<EditIcon />} onClick={handleEditContent} sx={{ color: "#FFF", borderColor: "rgba(255,255,255,0.5)", textTransform: "none", fontWeight: 600, "&:hover": { borderColor: "#FFF", backgroundColor: "rgba(255,255,255,0.1)" } }}>{Locale.label("site.pagePreview.editContent")}</Button>
-          <Button variant="outlined" startIcon={<SettingsIcon />} onClick={() => setShowSettings(true)} sx={{ color: "#FFF", borderColor: "rgba(255,255,255,0.5)", textTransform: "none", fontWeight: 600, "&:hover": { borderColor: "#FFF", backgroundColor: "rgba(255,255,255,0.1)" } }}>{Locale.label("site.pagePreview.pageSettings")}</Button>
+          <HeaderSecondaryButton startIcon={<EditIcon />} onClick={handleEditContent}>{Locale.label("site.pagePreview.editContent")}</HeaderSecondaryButton>
+          <HeaderPrimaryButton startIcon={<SettingsIcon />} onClick={() => setShowSettings(true)}>{Locale.label("site.pagePreview.pageSettings")}</HeaderPrimaryButton>
         </Stack>
       </PageHeader>
 
@@ -82,10 +97,18 @@ export const PagePreview: React.FC = () => {
       <Box sx={{ p: 3 }}>
         <Paper elevation={0} sx={{ borderRadius: 2, overflow: "hidden", border: "1px solid", borderColor: "grey.200" }}>
           <Box sx={{ backgroundColor: "grey.50", p: 2, borderBottom: "1px solid", borderColor: "divider" }}>
-            <Stack direction="row" alignItems="center" justifyContent="center">
+            <Stack direction="row" alignItems="center" justifyContent="center" spacing={1.5}>
               <Typography variant="h6" sx={{ fontWeight: 600, color: "primary.main" }}>
                 {pageData.title}
               </Typography>
+              <Chip
+                size="small"
+                data-testid="preview-publish-status"
+                label={pageData.publishedAt ? Locale.label("site.editorToolbar.statusPublished") : Locale.label("site.editorToolbar.statusLiveOnSave")}
+                sx={pageData.publishedAt
+                  ? { fontWeight: 600, fontSize: "0.7rem", backgroundColor: "rgba(46, 125, 50, 0.1)", color: "success.dark" }
+                  : { fontWeight: 600, fontSize: "0.7rem", backgroundColor: "var(--bg-sub)", color: "text.secondary" }}
+              />
             </Stack>
           </Box>
 

@@ -1,4 +1,5 @@
 import { CommonEnvironmentHelper, ApiHelper, Locale } from "@churchapps/apphelper";
+import { EnvironmentHelper as WebsiteEnvironmentHelper } from "@churchapps/apphelper/dist/website/helpers/EnvironmentHelper.js";
 
 export class EnvironmentHelper {
   private static LessonsApi = "";
@@ -18,9 +19,7 @@ export class EnvironmentHelper {
     }
     EnvironmentHelper.Common.init(stage);
 
-    // Inlined from apphelper/website EnvironmentHelper.init() — that helper crashes
-    // here because its internal `Common` reference is undefined (circular import with
-    // apphelper main snapshots the binding before it initializes).
+    // Inlined from apphelper/website EnvironmentHelper.init — that helper crashes due to circular import.
     ApiHelper.apiConfigs = [
       { keyName: "MembershipApi", url: CommonEnvironmentHelper.MembershipApi, jwt: "", permissions: [] },
       { keyName: "AttendanceApi", url: CommonEnvironmentHelper.AttendanceApi, jwt: "", permissions: [] },
@@ -32,6 +31,8 @@ export class EnvironmentHelper {
       { keyName: "LessonsApi", url: EnvironmentHelper.LessonsApi, jwt: "", permissions: [] },
       { keyName: "AskApi", url: CommonEnvironmentHelper.AskApi, jwt: "", permissions: [] }
     ];
+    WebsiteEnvironmentHelper.Common = CommonEnvironmentHelper;
+    WebsiteEnvironmentHelper.hasInit = true;
 
     await Locale.init([`/locales/{{lng}}.json?v=1`, `/apphelper/locales/{{lng}}.json`]);
   };

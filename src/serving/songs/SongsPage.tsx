@@ -1,12 +1,14 @@
 import React, { memo, useMemo, useCallback } from "react";
 import { ApiHelper, Loading, Locale, PageHeader, UserHelper, Permissions } from "@churchapps/apphelper";
 import { Link, Navigate } from "react-router-dom";
-import { Button, Box, Card, CardContent, Typography, Stack, Avatar, Chip, IconButton, TextField, InputAdornment } from "@mui/material";
-import { MusicNote as MusicIcon, LibraryMusic as LibraryIcon, Add as AddIcon, Search as SearchIcon, PlayCircle as PlayIcon, Timer as TimerIcon, Person as ArtistIcon } from "@mui/icons-material";
+import { Button, Box, Card, CardContent, Typography, Stack, Avatar, Chip, IconButton, TextField, InputAdornment, Tooltip, Checkbox } from "@mui/material";
+import { MusicNote as MusicIcon, LibraryMusic as LibraryIcon, Add as AddIcon, Search as SearchIcon, PlayCircle as PlayIcon, Timer as TimerIcon, Person as ArtistIcon, Delete as DeleteIcon } from "@mui/icons-material";
 import { SongSearchDialog } from "./SongSearchDialog";
 import { EmptyState } from "../../components/ui/EmptyState";
+import { HeaderPrimaryButton, HeaderSecondaryButton } from "../../components/ui";
 import { type ArrangementInterface, type ArrangementKeyInterface, type SongDetailInterface, type SongInterface } from "../../helpers";
 import { useQuery } from "@tanstack/react-query";
+import { useConfirmDelete } from "../../hooks";
 
 export const SongsPage = memo(() => {
   const [showSearch, setShowSearch] = React.useState(false);
@@ -15,6 +17,8 @@ export const SongsPage = memo(() => {
   const [searchFilter, setSearchFilter] = React.useState("");
   const [showSearchField, setShowSearchField] = React.useState(false);
   const [failedImages, setFailedImages] = React.useState<Set<string>>(new Set());
+  const [selected, setSelected] = React.useState<Set<string>>(new Set());
+  const { confirm, ConfirmDialogElement } = useConfirmDelete();
 
   const songs = useQuery<SongDetailInterface[]>({
     queryKey: ["/songDetails", "ContentApi"],
@@ -23,7 +27,7 @@ export const SongsPage = memo(() => {
 
   const handleAdd = useCallback(
     async (songDetail: SongDetailInterface) => {
-      let selectedSong = null;
+      let selectedSong;
       if (!songDetail.id) {
         songDetail = await ApiHelper.post("/songDetails/create", songDetail, "ContentApi");
       }
@@ -33,10 +37,10 @@ export const SongsPage = memo(() => {
         const song = await ApiHelper.get("/songs/" + existing[0].songId, "ContentApi");
         selectedSong = song;
       } else {
-        const s: SongInterface = { name: songDetail.title, dateAdded: new Date() };
-        const songs = await ApiHelper.post("/songs", [s], "ContentApi");
+        const s: SongInterface = { name: songDetail.title, songDetailId: songDetail.id, dateAdded: new Date() };
+        const newSongs = await ApiHelper.post("/songs", [s], "ContentApi");
         const a: ArrangementInterface = {
-          songId: songs[0].id,
+          songId: newSongs[0].id,
           songDetailId: songDetail.id,
           name: "(Default)",
           lyrics: ""
@@ -48,7 +52,7 @@ export const SongsPage = memo(() => {
           shortDescription: "Default"
         };
         await ApiHelper.post("/arrangementKeys", [key], "ContentApi");
-        selectedSong = songs[0];
+        selectedSong = newSongs[0];
       }
 
       songs.refetch();
@@ -57,6 +61,23 @@ export const SongsPage = memo(() => {
     },
     [songs]
   );
+
+  const toggleSelected = useCallback((songId: string) => {
+    setSelected((prev) => {
+      const next = new Set(prev);
+      if (next.has(songId)) next.delete(songId);
+      else next.add(songId);
+      return next;
+    });
+  }, []);
+
+  const handleBulkDelete = useCallback(async () => {
+    if (selected.size === 0) return;
+    if (!(await confirm(Locale.label("songs.songsPage.deleteSelectedConfirm") || "Delete the selected songs? This cannot be undone."))) return;
+    await Promise.all([...selected].map((id) => ApiHelper.delete("/songs/" + id, "ContentApi")));
+    setSelected(new Set());
+    songs.refetch();
+  }, [selected, songs, confirm]);
 
   const handleImageError = useCallback((e: React.SyntheticEvent<HTMLImageElement, Event>) => {
     const imgSrc = e.currentTarget.src;
@@ -71,9 +92,7 @@ export const SongsPage = memo(() => {
 
   const filteredSongs = useMemo(() => {
     if (!songs.data) return null;
-    // The /songDetails endpoint joins songs→arrangements→songDetails, so a song
-    // with multiple arrangements appears once per arrangement. Dedupe by songId
-    // (each row from that join carries `songId` from the song table).
+    // Dedupe by songId: /songDetails join produces one row per arrangement.
     const seen = new Set<string>();
     const unique = songs.data.filter((song) => {
       const id = (song as any).songId || song.id;
@@ -116,7 +135,13 @@ export const SongsPage = memo(() => {
             <Card key={(songDetail as any).songId || songDetail.id} sx={{ transition: "all 0.2s ease-in-out", "&:hover": { transform: "translateY(-1px)", boxShadow: 2 } }}>
               <CardContent sx={{ pb: 2, "&:last-child": { pb: 2 } }}>
                 <Stack direction="row" spacing={2} alignItems="center">
-                  {/* Thumbnail/Avatar */}
+                  {canEdit && (
+                    <Checkbox
+                      checked={selected.has((songDetail as any).songId || songDetail.id)}
+                      onChange={() => toggleSelected((songDetail as any).songId || songDetail.id)}
+                      aria-label={Locale.label("common.select") || "Select"}
+                    />
+                  )}
                   <Avatar
                     src={songDetail.thumbnail && !failedImages.has(songDetail.thumbnail) ? songDetail.thumbnail : undefined}
                     sx={{ width: 60, height: 60, bgcolor: "primary.light" }}
@@ -124,7 +149,6 @@ export const SongsPage = memo(() => {
                     <MusicIcon sx={{ fontSize: 28, color: "primary.main" }} />
                   </Avatar>
 
-                  {/* Song Info */}
                   <Box sx={{ flex: 1, minWidth: 0 }}>
                     <Typography
                       variant="h6"
@@ -151,14 +175,15 @@ export const SongsPage = memo(() => {
                     </Stack>
                   </Box>
 
-                  {/* Action Button */}
-                  <IconButton
-                    component={Link}
-                    to={`/serving/songs/${(songDetail as any).songId}`}
-                    sx={{ color: "primary.main", "&:hover": { backgroundColor: "primary.light", color: "primary.dark" } }}
-                    aria-label={`Play ${songDetail.title}`}>
-                    <PlayIcon />
-                  </IconButton>
+                  <Tooltip title={`Play ${songDetail.title}`}>
+                    <IconButton
+                      component={Link}
+                      to={`/serving/songs/${(songDetail as any).songId}`}
+                      sx={{ color: "primary.main", "&:hover": { backgroundColor: "primary.light", color: "primary.dark" } }}
+                      aria-label={`Play ${songDetail.title}`}>
+                      <PlayIcon />
+                    </IconButton>
+                  </Tooltip>
                 </Stack>
               </CardContent>
             </Card>
@@ -166,30 +191,32 @@ export const SongsPage = memo(() => {
         </Stack>
       </Box>
     );
-  }, [songs.isLoading, songs.data, filteredSongs, formatSeconds, handleImageError, failedImages, canEdit]);
+  }, [
+    songs.isLoading, songs.data, filteredSongs, formatSeconds, handleImageError, failedImages, canEdit, selected, toggleSelected
+  ]);
 
   if (redirect) return <Navigate to={redirect} />;
 
   return (
     <>
-      <PageHeader title={Locale.label("songs.title") || Locale.label("songs.songsPage.songs")} subtitle={Locale.label("songs.songsPage.subtitle")}>
-        <Button
-          variant="outlined"
-          startIcon={<SearchIcon />}
-          onClick={() => setShowSearchField(!showSearchField)}
-          sx={{ color: "#FFF", borderColor: "rgba(255,255,255,0.5)", "&:hover": { borderColor: "#FFF", backgroundColor: "rgba(255,255,255,0.1)" } }}>
+      {ConfirmDialogElement}
+      <PageHeader icon={<MusicIcon />} title={Locale.label("songs.title") || Locale.label("songs.songsPage.songs")} subtitle={Locale.label("songs.songsPage.subtitle")}>
+        <HeaderSecondaryButton startIcon={<SearchIcon />} onClick={() => setShowSearchField(!showSearchField)}>
           {Locale.label("songs.songsPage.search")}
-        </Button>
+        </HeaderSecondaryButton>
+        {canEdit && selected.size > 0 && (
+          <HeaderSecondaryButton onClick={handleBulkDelete} startIcon={<DeleteIcon />} data-testid="delete-selected-button">
+            {(Locale.label("songs.songsPage.deleteSelected") || "Delete Selected") + " (" + selected.size + ")"}
+          </HeaderSecondaryButton>
+        )}
         {canEdit && (
-          <Button
+          <HeaderPrimaryButton
             onClick={() => setShowSearch(true)}
-            variant="outlined"
             startIcon={<AddIcon />}
             data-testid="add-song-button"
-            aria-label={Locale.label("songs.songsPage.addSongAria")}
-            sx={{ color: "#FFF", borderColor: "rgba(255,255,255,0.5)", "&:hover": { borderColor: "#FFF", backgroundColor: "rgba(255,255,255,0.1)" } }}>
+            aria-label={Locale.label("songs.songsPage.addSongAria")}>
             {Locale.label("songs.addSong") || "Add Song"}
-          </Button>
+          </HeaderPrimaryButton>
         )}
       </PageHeader>
 
@@ -198,8 +225,8 @@ export const SongsPage = memo(() => {
           <Card sx={{ mb: 3, borderRadius: 2, border: "1px solid", borderColor: "divider" }}>
             <CardContent sx={{ pb: 2, "&:last-child": { pb: 2 } }}>
               <Stack direction="row" alignItems="center" spacing={1} sx={{ mb: 2 }}>
-                <SearchIcon sx={{ color: "primary.main", fontSize: 24 }} />
-                <Typography variant="h6" sx={{ fontWeight: 600, color: "primary.main" }}>
+                <SearchIcon sx={{ color: "primary.main", fontSize: 20 }} />
+                <Typography variant="h6">
                   {Locale.label("songs.songsPage.searchSongs")}
                 </Typography>
               </Stack>

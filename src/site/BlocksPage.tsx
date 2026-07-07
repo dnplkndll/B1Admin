@@ -1,39 +1,29 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import type { JSX } from "react";
-import { ApiHelper, Loading, PageHeader, UserHelper, Permissions, Locale } from "@churchapps/apphelper";
+import { Loading, PageHeader, Permissions, Locale } from "@churchapps/apphelper";
+import { useQuery } from "@tanstack/react-query";
 import type { BlockInterface } from "../helpers";
-import { TableRow, TableCell, Table, TableBody, TableHead, Box, Typography, Stack, Button, Card, Icon } from "@mui/material";
+import { TableRow, TableCell, Table, TableBody, TableHead, Box, Typography, Stack, Button, Card, Icon, IconButton, Tooltip } from "@mui/material";
 import { SmartButton as BlockIcon, Add as AddIcon, Edit as EditIcon, Settings as SettingsIcon } from "@mui/icons-material";
 import { Link } from "react-router-dom";
-import { BlockEdit } from "./components";
-import { PermissionDenied } from "../components";
+import { BlockEdit, SiteSwitcher, SitesDialog, useSiteSelection } from "./components";
+import { CountChip, EmptyState, HeaderPrimaryButton, hoverRowSx } from "../components/ui";
+import { useRequirePermission } from "../hooks";
 
 export const BlocksPage = () => {
-  const [blocks, setBlocks] = useState<BlockInterface[]>([]);
   const [editBlock, setEditBlock] = useState<BlockInterface>(null);
-  const [loading, setLoading] = useState(true);
+  const [showSites, setShowSites] = useState(false);
+  const { siteId, setSiteId, sites, reloadSites } = useSiteSelection();
+  const denied = useRequirePermission(Permissions.contentApi.content.edit);
 
-  const loadData = () => {
-    setLoading(true);
-    ApiHelper.get("/blocks", "ContentApi").then((blocksData: any[]) => {
-      const filtered = blocksData.filter((block: BlockInterface) => block.blockType !== "footerBlock");
-      setBlocks(filtered || []);
-      setLoading(false);
-    });
-  };
-
-  useEffect(() => {
-    loadData();
-  }, []);
-
-  const [stats, setStats] = useState({ totalBlocks: 0 });
-
-  useEffect(() => {
-    if (blocks) {
-      const totalBlocks = blocks.length;
-      setStats({ totalBlocks });
-    }
-  }, [blocks]);
+  const blocksQuery = useQuery<BlockInterface[]>({
+    queryKey: ["/blocks" + (siteId ? "?siteId=" + siteId : ""), "ContentApi"],
+    placeholderData: [],
+    select: (data) => (data || []).filter((block: BlockInterface) => block.blockType !== "footerBlock")
+  });
+  const blocks = blocksQuery.data || [];
+  const loading = blocksQuery.isLoading;
+  const totalBlocks = blocks.length;
 
   const getRows = () => {
     const result: JSX.Element[] = [];
@@ -41,18 +31,13 @@ export const BlocksPage = () => {
     if (blocks.length === 0) {
       result.push(
         <TableRow key="empty">
-          <TableCell colSpan={3} sx={{ textAlign: "center", py: 6 }}>
-            <Stack spacing={2} alignItems="center">
-              <BlockIcon sx={{ fontSize: 48, color: "text.secondary" }} />
-              <Typography variant="h6" color="text.secondary">
-                {Locale.label("site.blocksPage.noBlocksFound")}
-              </Typography>
-              <Typography variant="body1" color="text.secondary">
-                {Locale.label("site.blocksPage.getStarted")}
-              </Typography>
-              <Button variant="contained" startIcon={<AddIcon />} onClick={() => setEditBlock({ blockType: "elementBlock" })} sx={{ mt: 2 }}>{Locale.label("site.blocksPage.createFirstBlock")}</Button>
-            </Stack>
-          </TableCell>
+          <EmptyState
+            variant="table"
+            colSpan={3}
+            icon={<BlockIcon />}
+            title={Locale.label("site.blocksPage.noBlocksFound")}
+            description={Locale.label("site.blocksPage.getStarted")}
+            action={<Button variant="contained" startIcon={<AddIcon />} onClick={() => setEditBlock({ blockType: "elementBlock", siteId })}>{Locale.label("site.blocksPage.createFirstBlock")}</Button>} />
         </TableRow>
       );
       return result;
@@ -60,7 +45,7 @@ export const BlocksPage = () => {
 
     blocks.forEach((block) => {
       result.push(
-        <TableRow key={block.id} sx={{ "&:hover": { backgroundColor: "action.hover" }, transition: "background-color 0.2s ease" }}>
+        <TableRow key={block.id} sx={hoverRowSx}>
           <TableCell>
             <Stack direction="row" spacing={1} alignItems="center">
               <BlockIcon sx={{ color: "primary.main", fontSize: 20 }} />
@@ -68,7 +53,7 @@ export const BlocksPage = () => {
                 to={`/site/blocks/${block.id}`}
                 style={{
                   textDecoration: "none",
-                  color: "var(--primary-main, #1976d2)",
+                  color: "var(--link)",
                   fontWeight: 500
                 }}
               >
@@ -78,7 +63,7 @@ export const BlocksPage = () => {
           </TableCell>
           <TableCell>
             <Stack direction="row" spacing={1} alignItems="center">
-              <Icon sx={{ color: "text.secondary", fontSize: 16 }}>
+              <Icon sx={{ color: "text.secondary", fontSize: 18 }}>
                 {block.blockType === "elementBlock" ? "widgets" : "view_module"}
               </Icon>
               <Typography variant="body2" sx={{ fontWeight: 500 }}>
@@ -86,9 +71,11 @@ export const BlocksPage = () => {
               </Typography>
             </Stack>
           </TableCell>
-          <TableCell align="right">
+          <TableCell align="right" className="rowActions">
             <Stack direction="row" spacing={1} justifyContent="flex-end">
-              <Button size="small" variant="outlined" component={Link} to={`/site/blocks/${block.id}`} startIcon={<EditIcon />} sx={{ textTransform: "none", minWidth: "auto" }}>{Locale.label("common.edit")}</Button>
+              <Tooltip title={Locale.label("common.edit")}>
+                <IconButton size="small" aria-label={Locale.label("common.edit")} component={Link} to={`/site/blocks/${block.id}`}><EditIcon fontSize="small" /></IconButton>
+              </Tooltip>
               <Button size="small" variant="outlined" startIcon={<SettingsIcon />} onClick={() => setEditBlock(block)} data-testid={`rename-block-${block.id}-button`} sx={{ textTransform: "none", minWidth: "auto" }}>{Locale.label("site.blocksPage.rename")}</Button>
             </Stack>
           </TableCell>
@@ -128,7 +115,7 @@ export const BlocksPage = () => {
 
     return (
       <Table sx={{ minWidth: 650 }}>
-        <TableHead sx={{ backgroundColor: "background.paper", "& .MuiTableCell-root": { borderBottom: "2px solid", borderBottomColor: "divider" } }}>
+        <TableHead>
           {getTableHeader()}
         </TableHead>
         <TableBody>{getRows()}</TableBody>
@@ -136,12 +123,13 @@ export const BlocksPage = () => {
     );
   };
 
-  if (!UserHelper.checkAccess(Permissions.contentApi.content.edit)) return <PermissionDenied permissions={[Permissions.contentApi.content.edit]} />;
+  if (denied) return denied;
 
   if (loading) {
     return (
       <>
         <PageHeader
+          icon={<BlockIcon />}
           title={Locale.label("site.blocksPage.reusableBlocks")}
           subtitle={Locale.label("site.blocksPage.subtitle")}
         />
@@ -154,30 +142,29 @@ export const BlocksPage = () => {
 
   return (
     <>
-      <PageHeader title={Locale.label("site.blocksPage.reusableBlocks")} subtitle={Locale.label("site.blocksPage.subtitle")} statistics={[{ icon: <BlockIcon />, value: stats.totalBlocks.toString(), label: Locale.label("site.blocksPage.totalBlocks") }]}>
-        <Button variant="outlined" startIcon={<AddIcon />} onClick={() => setEditBlock({ blockType: "elementBlock" })} data-testid="add-block-button" sx={{ color: "#FFF", borderColor: "rgba(255,255,255,0.5)", "&:hover": { borderColor: "#FFF", backgroundColor: "rgba(255,255,255,0.1)" } }}>{Locale.label("site.blocksPage.addBlock")}</Button>
+      <PageHeader icon={<BlockIcon />} title={Locale.label("site.blocksPage.reusableBlocks")} subtitle={Locale.label("site.blocksPage.subtitle")} statistics={[{ icon: <BlockIcon />, value: totalBlocks.toString(), label: Locale.label("site.blocksPage.totalBlocks") }]}>
+        <SiteSwitcher siteId={siteId} onChange={setSiteId} sites={sites} onManage={() => setShowSites(true)} />
+        <HeaderPrimaryButton startIcon={<AddIcon />} onClick={() => setEditBlock({ blockType: "elementBlock", siteId })} data-testid="add-block-button">{Locale.label("site.blocksPage.addBlock")}</HeaderPrimaryButton>
       </PageHeader>
+      {showSites && (
+        <SitesDialog open={showSites} onClose={() => setShowSites(false)} sites={sites} siteId={siteId} onChanged={reloadSites} onSelectSite={setSiteId} />
+      )}
 
-      {/* Main Content */}
       <Box sx={{ p: 3 }}>
-        {/* Edit Block Modal/Form */}
         {editBlock && (
           <Box sx={{ mb: 3 }}>
-            <BlockEdit block={editBlock} updatedCallback={() => { setEditBlock(null); loadData(); }} />
+            <BlockEdit block={editBlock} updatedCallback={() => { setEditBlock(null); blocksQuery.refetch(); }} />
           </Box>
         )}
 
-        {/* Main Table Card */}
         <Card sx={{ borderRadius: 2, border: "1px solid", borderColor: "divider" }}>
-          <Box sx={{ p: 2, borderBottom: 1, borderColor: "divider" }}>
+          <Box sx={{ p: 2, borderBottom: 1, borderColor: "var(--border-light)" }}>
             <Stack direction="row" justifyContent="space-between" alignItems="center">
               <Stack direction="row" spacing={1} alignItems="center">
-                <BlockIcon />
+                <BlockIcon sx={{ color: "primary.main", fontSize: 20 }} />
                 <Typography variant="h6">{Locale.label("site.blocksPage.blocks")}</Typography>
+                {totalBlocks > 0 && <CountChip count={totalBlocks} />}
               </Stack>
-              <Typography variant="body2" color="text.secondary">
-                {stats.totalBlocks} {stats.totalBlocks === 1 ? Locale.label("site.blocksPage.block") : Locale.label("site.blocksPage.blocks")}
-              </Typography>
             </Stack>
           </Box>
           <Box>{getTable()}</Box>

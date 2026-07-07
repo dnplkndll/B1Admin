@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
-import { ErrorMessages, InputBox, UserHelper, SlugHelper, ApiHelper, Locale } from "@churchapps/apphelper";
+import { ErrorMessages, UserHelper, SlugHelper, ApiHelper, Locale } from "@churchapps/apphelper";
+import { FormCard } from "../../components/ui";
 import { Permissions, type LinkInterface } from "@churchapps/helpers";
 import { Button, Dialog, Grid, Icon, InputLabel, type SelectChangeEvent, TextField, Typography, CircularProgress, Box } from "@mui/material";
 import { useNavigate } from "react-router-dom";
@@ -9,6 +10,7 @@ type Props = {
   updatedCallback: () => void;
   onDone: () => void;
   requestedSlug?: string;
+  siteId?: string;
 };
 
 interface PageInterface {
@@ -16,6 +18,7 @@ interface PageInterface {
   title?: string;
   url?: string;
   layout?: string;
+  siteId?: string;
 }
 
 export function AddPageModal(props: Props) {
@@ -100,6 +103,12 @@ export function AddPageModal(props: Props) {
         "textWithPhoto",
         "card",
         "faq",
+        "iconFeature",
+        "testimonial",
+        "stats",
+        "gallery",
+        "socialIcons",
+        "countdown",
         "table",
         "image",
         "video",
@@ -214,6 +223,7 @@ export function AddPageModal(props: Props) {
       const pageToSave = {
         title: assembledPage.title,
         churchId: church.id,
+        siteId: props.siteId || undefined,
         layout: assembledPage.layout,
         url: SlugHelper.slugifyString(
           "/" + assembledPage.title.toLowerCase().replace(/\s+/g, "-"),
@@ -259,7 +269,7 @@ export function AddPageModal(props: Props) {
       navigate(`/site/pages/preview/${pageId}`);
 
     } catch (error) {
-      setAiErrors([error?.message || Locale.label("site.addPageModal.errFailedGenerate")]);
+      setAiErrors([(error as Error)?.message || Locale.label("site.addPageModal.errFailedGenerate")]);
     } finally {
       setIsSubmitting(false);
       setAiGenerationStatus("");
@@ -275,6 +285,7 @@ export function AddPageModal(props: Props) {
         let pageData = null;
         if (pageTemplate !== "link") {
           const p = { ...page };
+          p.siteId = props.siteId || undefined;
           const slugString = link?.text || page.title || "new-page";
           p.url = props.requestedSlug || SlugHelper.slugifyString("/" + slugString.toLowerCase().replace(" ", "-"), "urlPath");
           if (!p.url) p.url = "/untitled";
@@ -286,7 +297,7 @@ export function AddPageModal(props: Props) {
         }
 
         if (props.mode === "navigation") {
-          const l = { ...link };
+          const l: LinkInterface & { siteId?: string } = { ...link, siteId: props.siteId || undefined };
           if (pageTemplate !== "link") l.url = pageData.url;
           await ApiHelper.post("/links", [l], "ContentApi");
         }
@@ -334,7 +345,8 @@ export function AddPageModal(props: Props) {
     return (
 
       <Dialog open={true} onClose={props.onDone} className="dialogForm">
-        <InputBox id="dialogForm" headerText={(pageTemplate === "link") ? Locale.label("site.addPage.newLink") : Locale.label("site.addPage.newPage")} headerIcon="article" saveFunction={handleSave} cancelFunction={handleCancel} data-testid="add-page-modal" isSubmitting={isSubmitting}>
+        <FormCard id="dialogForm" title={(pageTemplate === "link") ? Locale.label("site.addPage.newLink") : Locale.label("site.addPage.newPage")} icon="article" onSave={handleSave} onCancel={handleCancel} data-testid="add-page-modal" isSubmitting={isSubmitting} elevation={0}>
+
           <ErrorMessages errors={errors} />
 
           <InputLabel>{Locale.label("site.addPage.pageType")}</InputLabel>
@@ -346,6 +358,7 @@ export function AddPageModal(props: Props) {
             {getTemplateButton("about", "quiz", Locale.label("site.addPageModal.aboutUs"))}
             {getTemplateButton("donate", "volunteer_activism", Locale.label("site.addPageModal.donate"))}
             {getTemplateButton("location", "location_on", Locale.label("site.addPageModal.location"))}
+            {/* ponytail: AI page generation temporarily disabled — restore to re-enable */}
             {/* {getTemplateButton("ai", "auto_awesome", "AI")} */}
             {(props.mode === "navigation") && getTemplateButton("link", "link", Locale.label("site.addPageModal.linkType"))}
           </Grid>
@@ -404,7 +417,7 @@ export function AddPageModal(props: Props) {
               </Grid>}
             </Grid>
           )}
-        </InputBox>
+        </FormCard>
 
       </Dialog>
     );

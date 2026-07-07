@@ -7,10 +7,7 @@ interface Props {
 
 const iconSx = { fontSize: 32, color: "text.secondary" };
 
-/**
- * Renders the appropriate icon based on plan item type.
- * Supports both current provider-based types and legacy Lessons.church types.
- */
+/** Returns appropriate icon for plan item type. */
 export const PlanItemIcon: React.FC<Props> = ({ itemType }) => {
   switch (itemType) {
     case "song":

@@ -1,7 +1,8 @@
-import React, { memo, useCallback, useMemo } from "react";
+import { memo, useCallback, useMemo } from "react";
 import { Link } from "react-router-dom";
 import { Accordion, AccordionDetails, AccordionSummary, Button, Icon } from "@mui/material";
 import { DateHelper, ApiHelper, DisplayBox, Locale } from "@churchapps/apphelper";
+import { getPaymentProvider } from "@churchapps/apphelper/donations";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 
 export const DonationEvents = memo(() => {
@@ -53,10 +54,11 @@ export const DonationEvents = memo(() => {
   const getErrorLogs = useCallback(() => {
     return errorLogs.data?.map((log: any) => {
       const eventType = log.eventType?.replace(".", " ") || "";
+      const eventUrl = getPaymentProvider(log.provider).descriptor.eventUrl?.(log.id);
       return (
         <Accordion key={log.id}>
           <AccordionSummary>
-            <Icon sx={{ marginRight: "5px", color: !log.resolved ? "#dc3545" : "#000" }}>error</Icon>
+            <Icon sx={{ marginRight: "5px", color: !log.resolved ? "error.main" : "text.primary" }}>error</Icon>
             <span className="capitalize">{eventType}</span> - {DateHelper.prettyDate(log.created)}
           </AccordionSummary>
           <AccordionDetails>
@@ -67,7 +69,7 @@ export const DonationEvents = memo(() => {
               </li>
               <li key={`event-${log.id}`} className="capitalize">
                 {Locale.label("donations.donationEvents.event")}
-                <a href={"https://dashboard.stripe.com/events/" + log.id}>{eventType}</a>
+                {eventUrl ? <a href={eventUrl}>{eventType}</a> : eventType}
               </li>
               <li key={`message-${log.id}`}>
                 {Locale.label("donations.donationEvents.msg")}

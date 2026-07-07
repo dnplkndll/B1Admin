@@ -130,7 +130,7 @@ export const PrintDirectoryPage = () => {
     if (!people.isLoading && households.length > 0) {
       const t = setTimeout(() => {
         window.print();
-        navigate(-1);
+        navigate("/people");
       }, 1500);
       return () => clearTimeout(t);
     }
@@ -173,7 +173,6 @@ export const PrintDirectoryPage = () => {
             padding: 0;
           }
 
-          /* ---------- Cover page ---------- */
           .directory-cover {
             min-height: 9.5in;
             display: flex;
@@ -259,7 +258,6 @@ export const PrintDirectoryPage = () => {
             text-transform: uppercase;
           }
 
-          /* ---------- Sections + grid ---------- */
           .directory-body {
             padding: 0 0.25in;
           }
@@ -295,7 +293,6 @@ export const PrintDirectoryPage = () => {
             padding: 8px 0 16px 0;
           }
 
-          /* ---------- Household card ---------- */
           .household-card {
             display: flex;
             flex-direction: column;
@@ -384,7 +381,6 @@ export const PrintDirectoryPage = () => {
       </style>
 
       <div className="directory-root">
-        {/* Cover page */}
         <div className="directory-cover">
           <div className="cover-eyebrow">Established Community</div>
           <h1 className="cover-church-name">{church?.name || "Our Church"}</h1>
@@ -399,7 +395,6 @@ export const PrintDirectoryPage = () => {
           <div className="cover-footer">Printed {printedOn} · {households.length} Households</div>
         </div>
 
-        {/* Directory body */}
         <div className="directory-body">
           <div className="household-grid">
             {households.map((h) => {
@@ -423,7 +418,15 @@ export const PrintDirectoryPage = () => {
                     <div className="member-photos">
                       {h.members.map((m) => (
                         <div key={m.id} className="member-photo-block">
-                          <img className="member-photo" src={PersonHelper.getPhotoUrl(m)} alt="" />
+                          <img
+                            className="member-photo"
+                            src={PersonHelper.getPhotoUrl(m)}
+                            alt=""
+                            onError={(e) => {
+                              e.currentTarget.onerror = null;
+                              e.currentTarget.src = "/images/sample-profile.png";
+                            }}
+                          />
                           <div className="member-photo-name">{firstName(m)}</div>
                         </div>
                       ))}

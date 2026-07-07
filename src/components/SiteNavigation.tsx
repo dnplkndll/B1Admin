@@ -12,6 +12,7 @@ interface Props {
   refresh: () => void;
   select: (link: LinkInterface) => void;
   handleDrop: (index: number, parentId: string, link: LinkInterface) => void;
+  siteId?: string;
 }
 
 // Separate component for nav row to prevent re-renders
@@ -144,6 +145,7 @@ export const SiteNavigation: React.FC<Props> = (props) => {
       {editLink && (
         <NavLinkEdit
           link={editLink}
+          siteId={props.siteId || ""}
           updatedCallback={() => { setEditLink(null); props.refresh(); }}
           onDone={() => { setEditLink(null); }}
           data-testid="nav-link-edit-modal"

@@ -1,12 +1,15 @@
 import React, { useCallback, memo } from "react";
 import { Box, Card, CardContent, Typography, Stack, Chip, Avatar, Button, Menu, MenuItem, ListItemIcon, ListItemText, FormControlLabel, Switch } from "@mui/material";
 import { EmptyState } from "../../components/ui/EmptyState";
-import { Add as AddIcon, ArrowDropDown as ArrowDropDownIcon, Assignment as AssignmentIcon, CalendarMonth as CalendarIcon, Edit as EditIcon, EventNote as EventNoteIcon, MenuBook as MenuBookIcon, DateRange as DateRangeIcon, History as HistoryIcon } from "@mui/icons-material";
+import { CountChip } from "../../components/ui";
+import { AppIconButton } from "../../components/ui/AppIconButton";
+import { Add as AddIcon, ArrowDropDown as ArrowDropDownIcon, Assignment as AssignmentIcon, CalendarMonth as CalendarIcon, Edit as EditIcon, EventNote as EventNoteIcon, MenuBook as MenuBookIcon, DateRange as DateRangeIcon, History as HistoryIcon, Bookmarks as BookmarksIcon } from "@mui/icons-material";
 import { Link } from "react-router-dom";
 import { type GroupInterface } from "@churchapps/helpers";
-import { type PlanInterface } from "../../helpers";
-import { ArrayHelper, DateHelper, Locale, Loading, UserHelper, Permissions } from "@churchapps/apphelper";
+import { type PlanInterface, hasPlansEditAccess } from "../../helpers";
+import { ArrayHelper, DateHelper, Locale, Loading } from "@churchapps/apphelper";
 import { PlanEdit } from "./PlanEdit";
+import { PlanTemplateManager } from "./PlanTemplateManager";
 import { LessonScheduleEdit } from "./LessonScheduleEdit";
 import { BulkLessonSchedule } from "./BulkLessonSchedule";
 import { useQuery } from "@tanstack/react-query";
@@ -24,8 +27,9 @@ export const PlanList = memo((props: Props) => {
   const [showPast, setShowPast] = React.useState(false);
   const [showLessonSchedule, setShowLessonSchedule] = React.useState(false);
   const [showBulkSchedule, setShowBulkSchedule] = React.useState(false);
+  const [showTemplates, setShowTemplates] = React.useState(false);
   const [lessonMenuAnchor, setLessonMenuAnchor] = React.useState<null | HTMLElement>(null);
-  const hasPlansEdit = UserHelper.checkAccess(Permissions.membershipApi.plans.edit);
+  const hasPlansEdit = hasPlansEditAccess();
 
   const myMinistriesQuery = useQuery<GroupInterface[]>({
     queryKey: ["/groups/my/ministry", "MembershipApi"],
@@ -170,10 +174,11 @@ export const PlanList = memo((props: Props) => {
       <Box sx={{ mb: 3 }}>
         <Stack direction="row" alignItems="center" justifyContent="space-between" flexWrap="wrap" useFlexGap spacing={1} sx={{ mb: 2 }}>
           <Stack direction="row" alignItems="center" spacing={2}>
-            <AssignmentIcon sx={{ color: "primary.main" }} />
-            <Typography variant="h5" sx={{ fontWeight: 600, color: "text.primary" }}>
+            <AssignmentIcon sx={{ color: "primary.main", fontSize: 20 }} />
+            <Typography variant="h6">
               {Locale.label("plans.planList.plans")}
             </Typography>
+            {plans.length > 0 && <CountChip count={plans.length} />}
             <FormControlLabel
               control={<Switch size="small" checked={showPast} onChange={(e) => setShowPast(e.target.checked)} />}
               label={<Stack direction="row" alignItems="center" spacing={0.5}><HistoryIcon fontSize="small" /><Typography variant="body2">{Locale.label("plans.planList.showPast")}</Typography></Stack>}
@@ -197,6 +202,13 @@ export const PlanList = memo((props: Props) => {
                 endIcon={<ArrowDropDownIcon />}
                 onClick={(e) => setLessonMenuAnchor(e.currentTarget)}>
                 {Locale.label("plans.planList.scheduleLesson") || "Schedule Lesson"}
+              </Button>
+              <Button
+                variant="outlined"
+                size="medium"
+                startIcon={<BookmarksIcon />}
+                onClick={() => setShowTemplates(true)}>
+                {Locale.label("plans.templates.button") || "Templates"}
               </Button>
             </Stack>
           )}
@@ -292,22 +304,7 @@ export const PlanList = memo((props: Props) => {
 
                 {canEdit && (
                   <Box sx={{ flexShrink: 0 }}>
-                    <Button
-                      size="small"
-                      startIcon={<EditIcon />}
-                      onClick={() => setPlan(p)}
-                      variant="outlined"
-                      sx={{
-                        color: "primary.main",
-                        borderColor: "primary.main",
-                        whiteSpace: "nowrap",
-                        "&:hover": {
-                          backgroundColor: "primary.light",
-                          borderColor: "primary.dark"
-                        }
-                      }}>
-                      {Locale.label("common.edit")}
-                    </Button>
+                    <AppIconButton label={Locale.label("common.edit")} icon={<EditIcon />} tone="card" onClick={() => setPlan(p)} />
                   </Box>
                 )}
               </Stack>
@@ -330,6 +327,10 @@ export const PlanList = memo((props: Props) => {
           <ListItemText>{Locale.label("plans.planList.bulkSchedule") || "Bulk Schedule"}</ListItemText>
         </MenuItem>
       </Menu>
+
+      {showTemplates && canEdit && (
+        <PlanTemplateManager ministryId={props.ministry.id} plans={plans} onClose={() => setShowTemplates(false)} />
+      )}
     </Box>
   );
 });

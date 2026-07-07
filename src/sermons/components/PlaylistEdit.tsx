@@ -16,7 +16,7 @@ import {
   Title as TitleIcon,
   Description as DescriptionIcon
 } from "@mui/icons-material";
-import { InputBox, Locale } from "@churchapps/apphelper";
+import { Locale } from "@churchapps/apphelper";
 import { ApiHelper } from "@churchapps/apphelper";
 import { DateHelper } from "@churchapps/apphelper";
 import { UniqueIdHelper } from "@churchapps/apphelper";
@@ -24,6 +24,8 @@ import { UserHelper } from "@churchapps/apphelper";
 import { Permissions } from "@churchapps/helpers";
 import type { PlaylistInterface } from "@churchapps/helpers";
 import { useForm, Controller } from "react-hook-form";
+import { FormCard } from "../../components/ui";
+import { useConfirmDelete } from "../../hooks";
 
 interface Props {
   currentPlaylist: PlaylistInterface,
@@ -35,11 +37,13 @@ interface Props {
 type AnyRecord = Record<string, any>;
 
 export const PlaylistEdit: React.FC<Props> = (props) => {
+  "use no memo"; // compiler caches register() results, breaking RHF field re-registration after reset()
   const thumbnailRef = React.useRef<string>(null);
   const [thumbnailDisplay, setThumbnailDisplay] = React.useState<string>(null);
 
   const { control, register, handleSubmit, reset, watch } = useForm<AnyRecord>({ defaultValues: { title: "", description: "", publishDate: "" } });
   const watchedId = watch("id");
+  const { confirm, ConfirmDialogElement } = useConfirmDelete();
 
   React.useEffect(() => {
     if (props.currentPlaylist) {
@@ -60,15 +64,15 @@ export const PlaylistEdit: React.FC<Props> = (props) => {
     }
   }, [props.updatedPhoto]);
 
-  const checkDelete = () => { if (!UniqueIdHelper.isMissing(watchedId)) return handleDelete; else return null; };
+  const checkDelete = () => { if (!UniqueIdHelper.isMissing(watchedId)) return handleDelete; else return undefined; };
   const handleCancel = () => { props.updatedFunction(); };
 
-  const handleDelete = () => {
+  const handleDelete = async () => {
     const errs: string[] = [];
     if (!UserHelper.checkAccess(Permissions.contentApi.streamingServices.edit)) errs.push(Locale.label("sermons.playlists.playlistEdit.unauthorizedDelete"));
     if (errs.length > 0) return;
 
-    if (window.confirm(Locale.label("sermons.playlists.playlistEdit.deleteConfirm"))) {
+    if (await confirm(Locale.label("sermons.playlists.playlistEdit.deleteConfirm"))) {
       ApiHelper.delete("/playlists/" + watchedId, "ContentApi").then(() => { props.updatedFunction(); });
     }
   };
@@ -85,17 +89,17 @@ export const PlaylistEdit: React.FC<Props> = (props) => {
 
   return (
     <>
-      <InputBox
-        headerIcon="calendar_month"
-        headerText={UniqueIdHelper.isMissing(watchedId) ? Locale.label("sermons.playlists.playlistEdit.createNew") : Locale.label("sermons.playlists.playlistEdit.editPlaylist")}
-        saveFunction={handleSubmit(onValid)}
-        cancelFunction={handleCancel}
-        deleteFunction={checkDelete()}
+      {ConfirmDialogElement}
+      <FormCard
+        icon="calendar_month"
+        title={UniqueIdHelper.isMissing(watchedId) ? Locale.label("sermons.playlists.playlistEdit.createNew") : Locale.label("sermons.playlists.playlistEdit.editPlaylist")}
+        onSave={handleSubmit(onValid)}
+        onCancel={handleCancel}
+        onDelete={checkDelete()}
         help="docs/b1-admin/sermons/playlists"
         data-testid="edit-playlist-inputbox"
       >
         <Grid container spacing={3}>
-          {/* Basic Information Section */}
           <Grid size={12}>
             <Stack direction="row" spacing={1} alignItems="center" sx={{ mb: 2 }}>
               <TitleIcon sx={{ color: "primary.main", fontSize: 20 }} />
@@ -129,7 +133,6 @@ export const PlaylistEdit: React.FC<Props> = (props) => {
             </Grid>
           </Grid>
 
-          {/* Publishing & Schedule Section */}
           <Grid size={12}>
             <Divider sx={{ my: 2 }} />
 
@@ -145,7 +148,6 @@ export const PlaylistEdit: React.FC<Props> = (props) => {
             )} />
           </Grid>
 
-          {/* Thumbnail Section */}
           <Grid size={12}>
             <Divider sx={{ my: 2 }} />
 
@@ -224,7 +226,7 @@ export const PlaylistEdit: React.FC<Props> = (props) => {
             </Card>
           </Grid>
         </Grid>
-      </InputBox>
+      </FormCard>
     </>
   );
 };

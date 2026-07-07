@@ -1,31 +1,28 @@
-import { loggedInTest as test, expect } from './helpers/test-fixtures';
+import { loggedInTest as test, expect } from "./helpers/test-fixtures";
 
 // ZACCHAEUS/ZEBEDEE are the names used for testing. If you see Zacchaeus or Zebedee entered anywhere, it is a result of these tests.
-test.describe('Dashboard Management', () => {
+test.describe("Dashboard Management", () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto('/dashboard');
-    // Wait for the main page header to confirm dashboard rendered.
-    await expect(page.locator('h1, h2, h3').getByText('Dashboard').first()).toBeVisible({ timeout: 15000 });
+    await page.goto("/dashboard");
+    // Wait for the dashboard to render (welcome greeting — now a paragraph, not a heading).
+    await expect(page.getByText(/Welcome to/).first()).toBeVisible({ timeout: 15000 });
     // Wait for the People search card to render — it's the first thing in the main column.
-    await expect(page.locator('#searchText')).toBeVisible({ timeout: 15000 });
+    await expect(page.locator("#searchText")).toBeVisible({ timeout: 15000 });
   });
 
-  test('should render dashboard widgets', async ({ page }) => {
-    // People search card with input and disabled-by-default Search button
-    await expect(page.locator('#searchText')).toBeVisible();
+  test("should render dashboard widgets", async ({ page }) => {
+    await expect(page.locator("#searchText")).toBeVisible();
     await expect(page.locator('[data-testid="dashboard-search-button"]')).toBeVisible();
     await expect(page.locator('[data-testid="dashboard-search-button"]')).toBeDisabled();
 
-    // Tasks card with Add Task button
     await expect(page.locator('[data-testid="add-task-button"]')).toBeVisible();
 
-    // My Groups list — demo user (Demo User) is a member of multiple groups
     const groupLinks = page.locator('a[href^="/groups/GRP"]');
     await expect(groupLinks.first()).toBeVisible({ timeout: 10000 });
     expect(await groupLinks.count()).toBeGreaterThan(0);
   });
 
-  test('should load group from dashboard', async ({ page }) => {
+  test("should load group from dashboard", async ({ page }) => {
     // Click the actual group link rather than the nested h6 — h6 may have
     // pointer-events suppressed inside the MUI ListItemButton.
     const firstGroupLink = page.locator('a[href^="/groups/GRP"]').first();
@@ -34,30 +31,30 @@ test.describe('Dashboard Management', () => {
     await expect(page).toHaveURL(/\/groups\/GRP\w+/, { timeout: 10000 });
   });
 
-  test('should search people from dashboard', async ({ page }) => {
-    const searchBox = page.locator('#searchText');
-    await searchBox.fill('Dorothy Jackson');
+  test("should search people from dashboard", async ({ page }) => {
+    const searchBox = page.locator("#searchText");
+    await searchBox.fill("Dorothy Jackson");
     const searchBtn = page.locator('[data-testid="dashboard-search-button"]');
     await expect(searchBtn).toBeEnabled();
     await searchBtn.click();
-    const results = page.locator('h6').getByText('Dorothy Jackson');
+    const results = page.getByRole("link", { name: "Dorothy Jackson" }).first();
     await expect(results).toBeVisible({ timeout: 10000 });
     await results.click();
     await expect(page).toHaveURL(/\/people\/PER\w+/, { timeout: 10000 });
-    const validatedName = page.locator('p').getByText('Dorothy Jackson');
+    const validatedName = page.locator("p").getByText("Dorothy Jackson");
     await expect(validatedName).toHaveCount(1);
   });
 
-  test('should show empty state when no people match search', async ({ page }) => {
-    const searchBox = page.locator('#searchText');
-    await searchBox.fill('Zacchaeus-NoSuchPerson');
+  test("should show empty state when no people match search", async ({ page }) => {
+    const searchBox = page.locator("#searchText");
+    await searchBox.fill("Zacchaeus-NoSuchPerson");
     const searchBtn = page.locator('[data-testid="dashboard-search-button"]');
     await searchBtn.click();
-    await expect(page.getByText('No people found matching your search criteria.')).toBeVisible({ timeout: 10000 });
+    await expect(page.getByText("No people found matching your search criteria.")).toBeVisible({ timeout: 10000 });
   });
 
-  test.describe.serial('Dashboard Task lifecycle', () => {
-    test('should add task from dashboard', async ({ page }) => {
+  test.describe.serial("Dashboard Task lifecycle", () => {
+    test("should add task from dashboard", async ({ page }) => {
       // Note: this spec runs in parallel with serving-songs-tasks.spec, which also
       // creates a task assigned to Demo User. We use a distinct name here so the
       // two specs don't collide on count assertions. We also can't assert on the
@@ -73,41 +70,42 @@ test.describe('Dashboard Management', () => {
       await assignInput.click();
 
       const personSearch = page.locator('[name="personAddText"]');
-      await personSearch.fill('Demo User');
+      await personSearch.fill("Demo User");
       const searchBtn = page.locator('[data-testid="search-button"]');
       await searchBtn.click();
-      const selectBtn = page.locator('button').getByText('Select');
-      await selectBtn.first().click();
+      // Result rows render an icon-only AppIconButton (aria-label "Select").
+      const selectBtn = page.locator('[data-testid^="add-person-"]').first();
+      await selectBtn.click();
 
       const taskName = page.locator('[name="title"]');
-      await taskName.fill('Dashboard Task');
+      await taskName.fill("Dashboard Task");
       const taskNotes = page.locator('[name="note"]');
-      await taskNotes.fill('Zacchaeus Testing (Playwright)');
+      await taskNotes.fill("Zacchaeus Testing (Playwright)");
 
-      const saveBtn = page.locator('button').getByText('Save');
+      const saveBtn = page.locator("button").getByText("Save");
       await expect(saveBtn).toBeVisible();
       await saveBtn.click();
 
-      // After save, the task should appear under both "Assigned to me" and
-      // "Created by me" sections of the dashboard TaskList → 2 link copies.
-      const validatedTask = page.locator('a').getByText('Dashboard Task');
-      await expect(validatedTask).toHaveCount(2, { timeout: 15000 });
+      // The dashboard TaskList is tabbed; the new task is assigned to Demo User,
+      // so it shows under the active "Assigned to Me" tab → 1 link copy.
+      const validatedTask = page.locator("a").getByText("Dashboard Task");
+      await expect(validatedTask).toHaveCount(1, { timeout: 15000 });
     });
 
-    test('should load task from dashboard', async ({ page }) => {
-      const task = page.locator('a').getByText('Dashboard Task').first();
+    test("should load task from dashboard", async ({ page }) => {
+      const task = page.locator("a").getByText("Dashboard Task").first();
       await expect(task).toBeVisible({ timeout: 10000 });
       await task.click();
       await expect(page).toHaveURL(/\/tasks\/[^/]+/, { timeout: 10000 });
     });
   });
 
-  test('should cancel adding task from dashboard', async ({ page }) => {
+  test("should cancel adding task from dashboard", async ({ page }) => {
     const addBtn = page.locator('[data-testid="add-task-button"]');
     await addBtn.click();
     const assignInput = page.locator('[data-testid="assign-to-input"]');
     await expect(assignInput).toBeVisible({ timeout: 10000 });
-    const cancelBtn = page.locator('button').getByText('Cancel');
+    const cancelBtn = page.locator("button").getByText("Cancel");
     await cancelBtn.click();
     await expect(assignInput).toHaveCount(0, { timeout: 10000 });
   });

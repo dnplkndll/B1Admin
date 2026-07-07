@@ -1,35 +1,37 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import type { FileInterface } from "../../helpers/Interfaces";
-import { FileUpload } from "../../components/FileUpload";
-import { Box, Grid, Table, TableBody, TableCell, TableHead, TableRow, Typography, Stack, LinearProgress, IconButton, Tooltip } from "@mui/material";
-import { InputBox, ApiHelper, Locale } from "@churchapps/apphelper";
+import { Box, Grid, Table, TableBody, TableCell, TableHead, TableRow, Typography, Stack, LinearProgress } from "@mui/material";
+import { ApiHelper, Locale } from "@churchapps/apphelper";
+import { useQuery } from "@tanstack/react-query";
 import { Folder as FolderIcon, InsertDriveFile as FileIcon, Delete as DeleteIcon } from "@mui/icons-material";
-import { CardWithHeader, EmptyState } from "../../components/ui";
+import { CardWithHeader, CountChip, EmptyState, FormCard, hoverRowSx } from "../../components/ui";
+import { AppIconButton } from "../../components/ui/AppIconButton";
+import { useConfirmDelete } from "../../hooks";
+import { CustomFileUpload } from "./CustomFileUpload";
+
 
 export function FilesManager() {
   const [pendingFileSave, setPendingFileSave] = useState(false);
-  const [files, setFiles] = useState<FileInterface[]>(null);
+  const filesQuery = useQuery<FileInterface[]>({ queryKey: ["/files", "ContentApi"], placeholderData: [] });
+  const files = filesQuery.data || [];
+  const { confirm, ConfirmDialogElement } = useConfirmDelete();
 
   let usedSpace = 0;
   files?.forEach((f) => (usedSpace += f.size));
 
   const handleFileSaved = () => {
     setPendingFileSave(false);
-    loadData();
+    filesQuery.refetch();
   };
 
   const handleSave = () => {
     setPendingFileSave(true);
   };
 
-  const loadData = () => {
-    ApiHelper.get("/files", "ContentApi").then((d: any) => setFiles(d));
-  };
-
   const handleDelete = async (file: FileInterface) => {
-    if (confirm(Locale.label("site.files.confirmDelete") + " '" + file.fileName + "'?")) {
+    if (await confirm(Locale.label("site.files.confirmDelete") + " '" + file.fileName + "'?")) {
       await ApiHelper.delete("/files/" + file.id, "ContentApi");
-      loadData();
+      filesQuery.refetch();
     }
   };
 
@@ -61,32 +63,26 @@ export function FilesManager() {
     );
   };
 
-  useEffect(() => {
-    ApiHelper.get("/files", "ContentApi").then((d: any) => setFiles(d));
-  }, []);
-
   const fileRows = files?.length > 0
     ? files.map((file) => (
-      <TableRow key={file.id} sx={{ "&:hover": { backgroundColor: "action.hover" }, transition: "background-color 0.2s ease" }}>
+      <TableRow key={file.id} sx={hoverRowSx}>
         <TableCell>
           <Stack direction="row" spacing={1} alignItems="center">
-            <FileIcon sx={{ fontSize: 18, color: "text.secondary" }} />
+            <FileIcon sx={{ fontSize: 20, color: "primary.main" }} />
             <a href={file.contentPath} target="_blank" rel="noopener noreferrer" style={{ textDecoration: "none" }}>
-              <Typography variant="body2" sx={{ color: "primary.main", "&:hover": { textDecoration: "underline" } }}>
+              <Typography variant="body2" sx={{ color: "var(--link)", fontWeight: 500, "&:hover": { textDecoration: "underline" } }}>
                 {file.fileName}
               </Typography>
             </a>
           </Stack>
         </TableCell>
-        <TableCell>
+        <TableCell align="right">
           <Typography variant="body2" color="text.secondary">
             {formatSize(file.size)}
           </Typography>
         </TableCell>
-        <TableCell align="right">
-          <Tooltip title={Locale.label("common.delete")}>
-            <IconButton size="small" color="error" onClick={() => handleDelete(file)} data-testid={`delete-file-${file.id}-button`} aria-label={Locale.label("site.filesManager.deleteFile")}><DeleteIcon fontSize="small" /></IconButton>
-          </Tooltip>
+        <TableCell align="right" className="rowActions">
+          <AppIconButton label={Locale.label("common.delete")} icon={<DeleteIcon />} intent="remove" onClick={() => handleDelete(file)} data-testid={`delete-file-${file.id}-button`} />
         </TableCell>
       </TableRow>
     ))
@@ -98,28 +94,23 @@ export function FilesManager() {
 
   return (
     <Box sx={{ p: 3 }}>
+      {ConfirmDialogElement}
       <Grid container spacing={3}>
         <Grid size={{ md: 8, xs: 12 }}>
           <CardWithHeader
             title={Locale.label("site.filesManager.files")}
-            icon={<FileIcon sx={{ color: "primary.main" }} />}
-            actions={
-              <Typography variant="body2" color="text.secondary">
-                {files?.length || 0} {files?.length !== 1 ? Locale.label("site.filesManager.fileCountPlural") : Locale.label("site.filesManager.fileCountSingular")}
-              </Typography>
-            }>
+            icon={<FileIcon sx={{ color: "primary.main", fontSize: 20 }} />}
+            actions={files?.length > 0 && <CountChip count={files.length} />}>
             <Table sx={{ minWidth: 650 }}>
-              <TableHead sx={{ backgroundColor: "background.paper", "& .MuiTableCell-root": { borderBottom: "2px solid", borderBottomColor: "divider" } }}>
+              <TableHead>
                 <TableRow>
                   <TableCell>
                     <Typography variant="subtitle2" sx={{ fontWeight: 600 }}>{Locale.label("site.filesManager.name")}</Typography>
                   </TableCell>
-                  <TableCell>
+                  <TableCell align="right">
                     <Typography variant="subtitle2" sx={{ fontWeight: 600 }}>{Locale.label("site.filesManager.size")}</Typography>
                   </TableCell>
-                  <TableCell align="right">
-                    <Typography variant="subtitle2" sx={{ fontWeight: 600 }}>{Locale.label("site.filesManager.actions")}</Typography>
-                  </TableCell>
+                  <TableCell align="right"></TableCell>
                 </TableRow>
               </TableHead>
               <TableBody data-testid="files-table-body">
@@ -129,25 +120,16 @@ export function FilesManager() {
           </CardWithHeader>
         </Grid>
         <Grid size={{ md: 4, xs: 12 }}>
-          <InputBox headerIcon="cloud_upload" headerText={Locale.label("site.files.uploadFiles")} saveFunction={handleSave} saveText={Locale.label("site.files.upload")} data-testid="file-upload-inputbox">
+          <FormCard icon="cloud_upload" title={Locale.label("site.files.uploadFiles")} onSave={handleSave} saveText={Locale.label("site.files.upload")} data-testid="file-upload-inputbox" isSubmitting={pendingFileSave}>
+
             {getStorage()}
             <Typography variant="body2" sx={{ mb: 2, color: "text.secondary" }}>
               {Locale.label("site.files.storageInfo")}
             </Typography>
             {usedSpace < 100000000 && (
-              <Box sx={{
-                border: "2px dashed",
-                borderColor: "divider",
-                borderRadius: 2,
-                p: 3,
-                textAlign: "center",
-                "&:hover": { borderColor: "primary.main", backgroundColor: "action.hover" },
-                transition: "all 0.2s ease"
-              }}>
-                <FileUpload contentType="website" contentId="" pendingSave={pendingFileSave} saveCallback={handleFileSaved} />
-              </Box>
+              <CustomFileUpload contentType="website" contentId="" pendingSave={pendingFileSave} saveCallback={handleFileSaved} />
             )}
-          </InputBox>
+          </FormCard>
         </Grid>
       </Grid>
     </Box>

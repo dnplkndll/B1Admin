@@ -1,10 +1,12 @@
 import React, { useState, useCallback, useMemo } from "react";
-import { UserHelper, Permissions, ApiHelper, Loading, ExportLink, PageHeader, Locale } from "@churchapps/apphelper";
+import { UserHelper, Permissions, ApiHelper, Loading, PageHeader, Locale } from "@churchapps/apphelper";
 import {
   Box, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TablePagination,
-  TextField, Select, MenuItem, FormControl, InputLabel, Button, Card, Stack, Chip, Typography
+  TextField, Select, MenuItem, FormControl, InputLabel, Button, Card, Stack, Chip, Typography,
+  IconButton, Collapse, CircularProgress
 } from "@mui/material";
-import { FileDownload as ExportIcon, Search as SearchIcon } from "@mui/icons-material";
+import { Search as SearchIcon, KeyboardArrowDown as ExpandIcon, KeyboardArrowUp as CollapseIcon, History as HistoryIcon } from "@mui/icons-material";
+import { ExportButton } from "../components/ui";
 
 interface AuditLog {
   id: string;
@@ -16,6 +18,8 @@ interface AuditLog {
   entityId: string;
   details: string;
   ipAddress: string;
+  module: string;
+  batchId: string;
   created: string;
 }
 
@@ -35,6 +39,17 @@ const getCategories = () => [
   { value: "group", label: Locale.label("settings.auditLogPage.categoryGroup") },
   { value: "form", label: Locale.label("settings.auditLogPage.categoryForm") },
   { value: "settings", label: Locale.label("settings.auditLogPage.categorySettings") }
+];
+
+const getModules = () => [
+  { value: "", label: Locale.label("settings.auditLogPage.allModules") },
+  { value: "membership", label: Locale.label("settings.auditLogPage.moduleMembership") },
+  { value: "giving", label: Locale.label("settings.auditLogPage.moduleGiving") },
+  { value: "attendance", label: Locale.label("settings.auditLogPage.moduleAttendance") },
+  { value: "messaging", label: Locale.label("settings.auditLogPage.moduleMessaging") },
+  { value: "content", label: Locale.label("settings.auditLogPage.moduleContent") },
+  { value: "doing", label: Locale.label("settings.auditLogPage.moduleDoing") },
+  { value: "lessons", label: Locale.label("settings.auditLogPage.moduleLessons") }
 ];
 
 const formatDate = (dateStr: string) => {
@@ -58,6 +73,121 @@ const categoryColor = (category: string): "default" | "primary" | "secondary" | 
   }
 };
 
+const parseDetails = (details: string): any => {
+  if (!details) return null;
+  try { return JSON.parse(details); } catch { return null; }
+};
+
+const displayValue = (v: any): string => {
+  if (v === null || v === undefined) return "";
+  if (typeof v === "object") return JSON.stringify(v);
+  return String(v);
+};
+
+const isDelete = (action: string) => (action || "").toLowerCase().includes("delet");
+
+const AuditLogDetails: React.FC<{ log: AuditLog }> = ({ log }) => {
+  const [loading, setLoading] = useState(true);
+  const [oldValues, setOldValues] = useState<any>(null);
+  const [newValues, setNewValues] = useState<any>(null);
+  const [before, setBefore] = useState<any>(null);
+  const [truncated, setTruncated] = useState(false);
+
+  React.useEffect(() => {
+    let active = true;
+    const resolve = async () => {
+      setLoading(true);
+      const parsed = parseDetails(log.details);
+      if (parsed?.truncated) setTruncated(true);
+
+      if (isDelete(log.action)) {
+        if (active) { setBefore(parsed?.before ?? null); setLoading(false); }
+        return;
+      }
+
+      const after = parsed?.after ?? null;
+      if (active) setNewValues(after);
+
+      // Reconstruct old values from this entity's previous audit entry.
+      if (log.entityType && log.entityId) {
+        try {
+          const params = new URLSearchParams();
+          params.set("entityType", log.entityType);
+          params.set("entityId", log.entityId);
+          params.set("limit", "10");
+          const data: AuditLogResponse = await ApiHelper.get(`/auditlogs?${params.toString()}`, "MembershipApi");
+          const thisCreated = new Date(log.created).getTime();
+          const prev = (data.logs || []).find((l) => l.id !== log.id && new Date(l.created).getTime() < thisCreated);
+          const prevAfter = prev ? parseDetails(prev.details)?.after ?? null : null;
+          if (active) setOldValues(prevAfter);
+        } catch (e) {
+          console.error("Failed to load previous audit entry:", e);
+        }
+      }
+      if (active) setLoading(false);
+    };
+    resolve();
+    return () => { active = false; };
+  }, [log]);
+
+  if (loading) return <Box sx={{ py: 2, px: 3 }}><CircularProgress size={20} /></Box>;
+
+  if (isDelete(log.action)) {
+    if (!before) return <Typography variant="body2" color="text.secondary" sx={{ py: 2, px: 3 }}>{Locale.label("settings.auditLogPage.noDetails")}</Typography>;
+    const keys = Object.keys(before);
+    return (
+      <Box sx={{ py: 2, px: 3 }}>
+        <Typography variant="subtitle2" gutterBottom>{Locale.label("settings.auditLogPage.deletedRecord")}</Typography>
+        {truncated && <Typography variant="caption" color="warning.main" display="block" sx={{ mb: 1 }}>{Locale.label("settings.auditLogPage.truncated")}</Typography>}
+        <Table size="small">
+          <TableBody>
+            {keys.map((k) => (
+              <TableRow key={k}>
+                <TableCell sx={{ fontWeight: 500, width: "30%" }}>{k}</TableCell>
+                <TableCell><Typography variant="body2" sx={{ wordBreak: "break-word" }}>{displayValue(before[k])}</Typography></TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </Box>
+    );
+  }
+
+  if (!newValues) return <Typography variant="body2" color="text.secondary" sx={{ py: 2, px: 3 }}>{Locale.label("settings.auditLogPage.noDetails")}</Typography>;
+
+  const keys = Array.from(new Set([...Object.keys(oldValues || {}), ...Object.keys(newValues || {})]));
+  return (
+    <Box sx={{ py: 2, px: 3 }}>
+      <Typography variant="subtitle2" gutterBottom>{Locale.label("settings.auditLogPage.changes")}</Typography>
+      {truncated && <Typography variant="caption" color="warning.main" display="block" sx={{ mb: 1 }}>{Locale.label("settings.auditLogPage.truncated")}</Typography>}
+      {!oldValues && <Typography variant="caption" color="text.secondary" display="block" sx={{ mb: 1 }}>{Locale.label("settings.auditLogPage.noPrevious")}</Typography>}
+      <Table size="small">
+        <TableHead>
+          <TableRow>
+            <TableCell sx={{ fontWeight: 500 }}>{Locale.label("settings.auditLogPage.field")}</TableCell>
+            <TableCell sx={{ fontWeight: 500 }}>{Locale.label("settings.auditLogPage.oldValue")}</TableCell>
+            <TableCell sx={{ fontWeight: 500 }}>{Locale.label("settings.auditLogPage.newValue")}</TableCell>
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {keys.map((k) => {
+            const oldV = displayValue(oldValues?.[k]);
+            const newV = displayValue(newValues?.[k]);
+            const changed = oldV !== newV;
+            return (
+              <TableRow key={k} sx={changed ? { backgroundColor: "action.hover" } : undefined}>
+                <TableCell sx={{ fontWeight: 500, width: "25%" }}>{k}</TableCell>
+                <TableCell><Typography variant="body2" color={changed ? "error.main" : "text.secondary"} sx={{ wordBreak: "break-word" }}>{oldV}</Typography></TableCell>
+                <TableCell><Typography variant="body2" color={changed ? "success.main" : "text.secondary"} sx={{ wordBreak: "break-word" }}>{newV}</Typography></TableCell>
+              </TableRow>
+            );
+          })}
+        </TableBody>
+      </Table>
+    </Box>
+  );
+};
+
 export const AuditLogPage: React.FC = () => {
   const [logs, setLogs] = useState<AuditLog[]>([]);
   const [totalCount, setTotalCount] = useState(0);
@@ -65,14 +195,18 @@ export const AuditLogPage: React.FC = () => {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(50);
   const [category, setCategory] = useState("");
+  const [module, setModule] = useState("");
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
+  const [expandedId, setExpandedId] = useState<string | null>(null);
 
   const fetchLogs = useCallback(async (pageNum: number, limit: number) => {
     setLoading(true);
+    setExpandedId(null);
     try {
       const params = new URLSearchParams();
       if (category) params.set("category", category);
+      if (module) params.set("module", module);
       if (startDate) params.set("startDate", startDate);
       if (endDate) params.set("endDate", endDate);
       params.set("limit", limit.toString());
@@ -88,7 +222,7 @@ export const AuditLogPage: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  }, [category, startDate, endDate]);
+  }, [category, module, startDate, endDate]);
 
   const handleSearch = useCallback(() => {
     setPage(0);
@@ -112,6 +246,7 @@ export const AuditLogPage: React.FC = () => {
   const exportData = useMemo(() =>
     logs.map((l) => ({
       Date: formatDate(l.created),
+      Module: l.module || "",
       Category: l.category,
       Action: formatAction(l.action),
       "Entity Type": l.entityType || "",
@@ -122,16 +257,22 @@ export const AuditLogPage: React.FC = () => {
     }))
   , [logs]);
 
-  if (!UserHelper.checkAccess(Permissions.membershipApi.server.admin)) return <></>;
+  if (!UserHelper.checkAccess(Permissions.membershipApi.settings.edit)) return <></>;
 
   return (
     <>
-      <PageHeader title={Locale.label("settings.auditLogPage.title")} subtitle={Locale.label("settings.auditLogPage.subtitle")} />
+      <PageHeader icon={<HistoryIcon />} title={Locale.label("settings.auditLogPage.title")} subtitle={Locale.label("settings.auditLogPage.subtitle")} />
 
       <Box sx={{ p: 3 }}>
         <Card sx={{ mb: 3, p: 2 }}>
           <Stack direction={{ xs: "column", md: "row" }} spacing={2} alignItems="center">
-            <FormControl size="small" sx={{ minWidth: 180 }}>
+            <FormControl size="small" sx={{ minWidth: 160 }}>
+              <InputLabel>{Locale.label("settings.auditLogPage.module")}</InputLabel>
+              <Select value={module} label={Locale.label("settings.auditLogPage.module")} onChange={(e) => setModule(e.target.value)}>
+                {getModules().map((m) => <MenuItem key={m.value} value={m.value}>{m.label}</MenuItem>)}
+              </Select>
+            </FormControl>
+            <FormControl size="small" sx={{ minWidth: 160 }}>
               <InputLabel>{Locale.label("settings.auditLogPage.category")}</InputLabel>
               <Select value={category} label={Locale.label("settings.auditLogPage.category")} onChange={(e) => setCategory(e.target.value)}>
                 {getCategories().map((c) => <MenuItem key={c.value} value={c.value}>{c.label}</MenuItem>)}
@@ -141,7 +282,7 @@ export const AuditLogPage: React.FC = () => {
             <TextField size="small" type="date" label={Locale.label("settings.auditLogPage.endDate")} value={endDate} onChange={(e) => setEndDate(e.target.value)} InputLabelProps={{ shrink: true }} />
             <Button variant="contained" startIcon={<SearchIcon />} onClick={handleSearch}>{Locale.label("settings.auditLogPage.search")}</Button>
             {logs.length > 0 && (
-              <Button variant="outlined" startIcon={<ExportIcon />} component={ExportLink} data={exportData} filename="audit-log.csv">{Locale.label("settings.auditLogPage.exportCsv")}</Button>
+              <ExportButton data={exportData} filename="audit-log.csv" text={Locale.label("settings.auditLogPage.exportCsv")} />
             )}
           </Stack>
         </Card>
@@ -153,36 +294,49 @@ export const AuditLogPage: React.FC = () => {
                 <Table size="small">
                   <TableHead>
                     <TableRow>
+                      <TableCell sx={{ width: 40 }} />
                       <TableCell>{Locale.label("settings.auditLogPage.date")}</TableCell>
+                      <TableCell>{Locale.label("settings.auditLogPage.module")}</TableCell>
                       <TableCell>{Locale.label("settings.auditLogPage.category")}</TableCell>
                       <TableCell>{Locale.label("settings.auditLogPage.action")}</TableCell>
                       <TableCell>{Locale.label("settings.auditLogPage.entity")}</TableCell>
                       <TableCell>{Locale.label("settings.auditLogPage.ipAddress")}</TableCell>
-                      <TableCell>{Locale.label("settings.auditLogPage.details")}</TableCell>
                     </TableRow>
                   </TableHead>
                   <TableBody>
                     {logs.length === 0 ? (
                       <TableRow>
-                        <TableCell colSpan={6} align="center">
+                        <TableCell colSpan={7} align="center">
                           <Typography variant="body2" color="text.secondary" sx={{ py: 3 }}>{Locale.label("settings.auditLogPage.noEntries")}</Typography>
                         </TableCell>
                       </TableRow>
                     ) : (
                       logs.map((log) => (
-                        <TableRow key={log.id} hover>
-                          <TableCell sx={{ whiteSpace: "nowrap" }}>{formatDate(log.created)}</TableCell>
-                          <TableCell><Chip label={log.category} color={categoryColor(log.category)} size="small" /></TableCell>
-                          <TableCell>{formatAction(log.action)}</TableCell>
-                          <TableCell>
-                            {log.entityType && <Typography variant="caption" color="text.secondary">{log.entityType}</Typography>}
-                            {log.entityId && <Typography variant="body2">{log.entityId}</Typography>}
-                          </TableCell>
-                          <TableCell><Typography variant="body2" sx={{ fontFamily: "monospace", fontSize: "0.8rem" }}>{log.ipAddress}</Typography></TableCell>
-                          <TableCell sx={{ maxWidth: 300 }}>
-                            <Typography variant="body2" noWrap title={log.details}>{log.details}</Typography>
-                          </TableCell>
-                        </TableRow>
+                        <React.Fragment key={log.id}>
+                          <TableRow hover>
+                            <TableCell>
+                              <IconButton size="small" onClick={() => setExpandedId(expandedId === log.id ? null : log.id)} aria-label={Locale.label("settings.auditLogPage.details")}>
+                                {expandedId === log.id ? <CollapseIcon /> : <ExpandIcon />}
+                              </IconButton>
+                            </TableCell>
+                            <TableCell sx={{ whiteSpace: "nowrap" }}>{formatDate(log.created)}</TableCell>
+                            <TableCell>{log.module && <Typography variant="body2">{log.module}</Typography>}</TableCell>
+                            <TableCell><Chip label={log.category} color={categoryColor(log.category)} size="small" /></TableCell>
+                            <TableCell>{formatAction(log.action)}</TableCell>
+                            <TableCell>
+                              {log.entityType && <Typography variant="caption" color="text.secondary">{log.entityType}</Typography>}
+                              {log.entityId && <Typography variant="body2">{log.entityId}</Typography>}
+                            </TableCell>
+                            <TableCell><Typography variant="body2" sx={{ fontFamily: "monospace", fontSize: "0.8rem" }}>{log.ipAddress}</Typography></TableCell>
+                          </TableRow>
+                          <TableRow>
+                            <TableCell colSpan={7} sx={{ py: 0, borderBottom: expandedId === log.id ? undefined : "none" }}>
+                              <Collapse in={expandedId === log.id} timeout="auto" unmountOnExit>
+                                {expandedId === log.id && <AuditLogDetails log={log} />}
+                              </Collapse>
+                            </TableCell>
+                          </TableRow>
+                        </React.Fragment>
                       ))
                     )}
                   </TableBody>

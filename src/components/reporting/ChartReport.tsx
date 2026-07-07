@@ -1,6 +1,5 @@
 "use client";
 
-import React from "react";
 import { Chart } from "react-google-charts";
 import type { ReportOutputInterface, ReportResultInterface } from "@churchapps/helpers";
 import { ReportHelper } from "./ReportHelper";
@@ -111,13 +110,15 @@ export const ChartReport = (props: Props) => {
   let result = <p>{Locale.label("reporting.noData")}</p>;
   if (props.reportResult.table?.length > 0) {
     result = (
-      <Chart
-        chartType={chartType}
-        data={getChartData()}
-        width="100%"
-        height="400px"
-        options={options}
-      />
+      <div className="report-chart-container">
+        <Chart
+          chartType={chartType}
+          data={getChartData()}
+          width="100%"
+          height="400px"
+          options={options}
+        />
+      </div>
     );
   }
 

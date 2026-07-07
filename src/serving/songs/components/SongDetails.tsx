@@ -1,8 +1,9 @@
 import React, { memo, useCallback, useMemo } from "react";
 import { Locale } from "@churchapps/apphelper";
 import { type SongDetailInterface } from "../../../helpers";
-import { Box, Card, CardContent, Typography, Stack, Chip, Avatar, IconButton, List, ListItem, ListItemIcon, ListItemText, Divider } from "@mui/material";
+import { Box, Card, CardContent, Typography, Stack, Chip, Avatar, List, ListItem, ListItemIcon, ListItemText, Divider } from "@mui/material";
 import { EmptyState } from "../../../components/ui/EmptyState";
+import { AppIconButton } from "../../../components/ui/AppIconButton";
 import {
   Edit as EditIcon,
   Album as AlbumIcon,
@@ -36,7 +37,7 @@ export const SongDetails = memo((props: Props) => {
   }, []);
 
   const songDetailItems = useMemo(() => {
-    const items = [];
+    const items: any[] = [];
     if (!props.songDetail) return items;
 
     if (props.songDetail.artist) {
@@ -142,7 +143,6 @@ export const SongDetails = memo((props: Props) => {
   return (
     <Card sx={{ borderRadius: 2, border: "1px solid", borderColor: "divider" }}>
       <CardContent>
-        {/* Header */}
         <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 3 }}>
           <Stack direction="row" spacing={2} alignItems="center">
             <AlbumIcon sx={{ color: "primary.main", fontSize: 28 }} />
@@ -150,18 +150,9 @@ export const SongDetails = memo((props: Props) => {
               {props.songDetail?.title || Locale.label("songs.songDetails.fallbackTitle")}
             </Typography>
           </Stack>
-          <IconButton
-            onClick={handleEdit}
-            sx={{
-              color: "primary.main",
-              "&:hover": { backgroundColor: "primary.light" }
-            }}
-            aria-label={Locale.label("songs.songDetails.editSongDetailsAria")}>
-            <EditIcon />
-          </IconButton>
+          <AppIconButton label={Locale.label("common.edit")} icon={<EditIcon />} tone="card" onClick={handleEdit} />
         </Stack>
 
-        {/* Song Thumbnail */}
         {props.songDetail?.thumbnail && (
           <Box sx={{ display: "flex", justifyContent: "center", mb: 3 }}>
             <Avatar
@@ -179,7 +170,6 @@ export const SongDetails = memo((props: Props) => {
           </Box>
         )}
 
-        {/* Song Details */}
         {songDetailItems.length > 0 ? (
           <List sx={{ p: 0 }}>
             {songDetailItems.map((item, index) => (
@@ -215,7 +205,6 @@ export const SongDetails = memo((props: Props) => {
           <EmptyState icon={<AlbumIcon />} title={Locale.label("songs.songDetails.noDetails")} />
         )}
 
-        {/* Links Section */}
         <Box sx={{ mt: 3 }}>
           <SongDetailLinks songDetail={props.songDetail} />
         </Box>

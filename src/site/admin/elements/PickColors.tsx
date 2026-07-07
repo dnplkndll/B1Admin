@@ -1,9 +1,11 @@
 import React, { useState } from "react";
 import type { SelectChangeEvent } from "@mui/material";
 import type { GlobalStyleInterface } from "../../../helpers";
-import { GalleryModal, Locale } from "@churchapps/apphelper";
+import { Locale } from "@churchapps/apphelper";
+import { GalleryModal } from "../../../components/gallery";
 import { FormControl, InputLabel, Select, MenuItem, TextField, Tabs, Tab, Button, Grid } from "@mui/material";
 import { HexColorPicker } from "react-colorful";
+import { FocalPointPicker } from "./FocalPointPicker";
 
 type Props = {
   background: string;
@@ -13,6 +15,8 @@ type Props = {
   updatedCallback: (background: string, textColor: string, headingColor: string, linkColor: string) => void;
   globalStyles: GlobalStyleInterface;
   backgroundOpacity?: any;
+  overlayColor?: string;
+  focalPoint?: string;
   onChange?: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement> | SelectChangeEvent<string>) => void;
 };
 
@@ -23,6 +27,10 @@ export function PickColors(props: Props) {
   const handlePhotoSelected = (image: string) => {
     props.updatedCallback(image, props.textColor, props.headingColor, props.linkColor);
     setSelectPhotoField(null);
+  };
+
+  const handleFocalChange = (value: string) => {
+    props.onChange?.({ target: { name: "focalPoint", value }, preventDefault: () => {} } as any);
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement> | SelectChangeEvent<string>) => {
@@ -141,19 +149,34 @@ export function PickColors(props: Props) {
             {Locale.label("site.pickColors.selectPhoto")}
           </Button>
           {props?.onChange && (
-            <TextField
-              fullWidth
-              size="small"
-              label={Locale.label("site.pickColors.backgroundOpacity")}
-              name="backgroundOpacity"
-              value={props?.backgroundOpacity || "0.55"}
-              onChange={props.onChange}
-              type="number"
-              sx={{ marginTop: 2 }}
-              helperText={Locale.label("site.pickColors.opacityHelper")}
-              FormHelperTextProps={{ sx: { marginLeft: 1 } }}
-              InputProps={{ inputProps: { min: "0", max: "1", step: "1" } }}
-            />
+            <>
+              <FocalPointPicker imageUrl={props.background} value={props.focalPoint} onChange={handleFocalChange} />
+              <TextField
+                fullWidth
+                size="small"
+                label={Locale.label("site.pickColors.backgroundOpacity")}
+                name="backgroundOpacity"
+                value={props?.backgroundOpacity || "0.55"}
+                onChange={props.onChange}
+                type="number"
+                sx={{ marginTop: 2 }}
+                helperText={Locale.label("site.pickColors.opacityHelper")}
+                FormHelperTextProps={{ sx: { marginLeft: 1 } }}
+                InputProps={{ inputProps: { min: "0", max: "1", step: "1" } }}
+              />
+              <TextField
+                fullWidth
+                size="small"
+                label={Locale.label("site.pickColors.overlayColor")}
+                name="overlayColor"
+                value={props?.overlayColor || "#000000"}
+                onChange={props.onChange}
+                type="color"
+                sx={{ marginTop: 2 }}
+                helperText={Locale.label("site.pickColors.overlayColorHelper")}
+                FormHelperTextProps={{ sx: { marginLeft: 1 } }}
+              />
+            </>
           )}
         </>
       );
@@ -294,7 +317,7 @@ export function PickColors(props: Props) {
         }}>
         {Locale.label("site.pickColors.sampleText")}
       </div>
-      <Tabs value={tabValue} onChange={(event: React.SyntheticEvent, newValue: string) => setTabValue(newValue)}>
+      <Tabs value={tabValue} onChange={(_event: React.SyntheticEvent, newValue: string) => setTabValue(newValue)}>
         <Tab value="suggested" label={Locale.label("site.pickColors.suggested")} />
         <Tab value="custom" label={Locale.label("common.custom")} />
       </Tabs>

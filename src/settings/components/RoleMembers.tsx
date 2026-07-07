@@ -1,8 +1,10 @@
 import React, { memo, useCallback, useMemo } from "react";
 import { ApiHelper, DisplayBox, UserHelper, Permissions, Locale } from "@churchapps/apphelper";
 import { type RoleMemberInterface, type RoleInterface } from "@churchapps/helpers";
-import { Alert, Button, Icon, Stack, Table, TableBody, TableCell, TableHead, TableRow, IconButton, Tooltip } from "@mui/material";
-import { Add as AddIcon, Delete as DeleteIcon } from "@mui/icons-material";
+import { Alert, Button, Stack, Table, TableBody, TableCell, TableHead, TableRow } from "@mui/material";
+import { Add as AddIcon, Delete as DeleteIcon, Edit as EditIcon } from "@mui/icons-material";
+import { AppIconButton } from "../../components/ui/AppIconButton";
+import { useConfirmDelete } from "../../hooks";
 
 interface Props {
   role: RoleInterface;
@@ -15,6 +17,7 @@ interface Props {
 export const RoleMembers: React.FC<Props> = memo((props) => {
   const { roleMembers } = props;
   const isRoleEveryone = props.role.id === null;
+  const { confirm, ConfirmDialogElement } = useConfirmDelete();
 
   const handleAdd = useCallback(
     (e: React.MouseEvent) => {
@@ -30,12 +33,12 @@ export const RoleMembers: React.FC<Props> = memo((props) => {
   }, [isRoleEveryone, handleAdd]);
 
   const handleRemove = useCallback(
-    (roleMember: RoleMemberInterface) => {
-      if (window.confirm(`${Locale.label("settings.roleMembers.confirmMsg")} ${props.role.name}?`)) {
+    async (roleMember: RoleMemberInterface) => {
+      if (await confirm(`${Locale.label("settings.roleMembers.confirmMsg")} ${props.role.name}?`)) {
         ApiHelper.delete("/rolemembers/" + roleMember.id, "MembershipApi").then(() => props.updatedFunction());
       }
     },
-    [props.role.name, props.updatedFunction]
+    [props.role.name, props.updatedFunction, confirm]
   );
 
   const canEdit = useMemo(() => UserHelper.checkAccess(Permissions.membershipApi.roles.edit), []);
@@ -55,24 +58,10 @@ export const RoleMembers: React.FC<Props> = memo((props) => {
     for (let i = 0; i < roleMembers.length; i++) {
       const rm = roleMembers[i];
       const removeLink = canDelete ? (
-        <Tooltip title={Locale.label("common.delete")}>
-          <IconButton size="small" color="error" onClick={() => handleRemove(rm)} data-testid={`remove-role-member-button-${rm.id}`} aria-label={Locale.label("settings.roleMembers.removeRoleMemberAria").replace("{firstName}", rm.user?.firstName).replace("{lastName}", rm.user?.lastName)}><DeleteIcon fontSize="small" /></IconButton>
-        </Tooltip>
+        <AppIconButton label={Locale.label("common.delete")} icon={<DeleteIcon />} intent="remove" onClick={() => handleRemove(rm)} data-testid={`remove-role-member-button-${rm.id}`} />
       ) : null;
       const editLink = canEdit ? (
-        <Button
-          size="small"
-          variant="outlined"
-          startIcon={<Icon>edit</Icon>}
-          onClick={() => {
-            props.setSelectedRoleMember(rm.userId);
-          }}
-          data-testid={`edit-role-member-button-${rm.id}`}
-          aria-label={Locale.label("settings.roleMembers.editRoleMemberAria").replace("{firstName}", rm.user?.firstName).replace("{lastName}", rm.user?.lastName)}
-          sx={{ minWidth: "auto" }}
-        >
-          {Locale.label("common.edit")}
-        </Button>
+        <AppIconButton label={Locale.label("common.edit")} icon={<EditIcon />} onClick={() => { props.setSelectedRoleMember(rm.userId); }} data-testid={`edit-role-member-button-${rm.id}`} />
       ) : null;
 
       const { firstName, lastName } = rm.user;
@@ -80,7 +69,7 @@ export const RoleMembers: React.FC<Props> = memo((props) => {
         <TableRow key={i}>
           <TableCell>{`${firstName} ${lastName}`}</TableCell>
           <TableCell>{rm.user.email}</TableCell>
-          <TableCell>
+          <TableCell align="right" className="rowActions">
             <Stack direction="row" spacing={1} justifyContent="end">
               {editLink}
               {removeLink}
@@ -98,7 +87,7 @@ export const RoleMembers: React.FC<Props> = memo((props) => {
       <TableRow>
         <TableCell>{Locale.label("common.name")}</TableCell>
         <TableCell>{Locale.label("person.email")}</TableCell>
-        <TableCell></TableCell>
+        <TableCell align="right"></TableCell>
       </TableRow>
     );
   }, [isRoleEveryone]);
@@ -115,12 +104,15 @@ export const RoleMembers: React.FC<Props> = memo((props) => {
   }, [props.role.name, roleMembers.length]);
 
   return (
-    <DisplayBox id="roleMembersBox" headerText={Locale.label("settings.roleMembers.mem")} headerIcon="person" editContent={editContent} help="docs/b1-admin/settings/roles-permissions">
-      <Table id="roleMemberTable">
-        <TableHead>{tableHeader}</TableHead>
-        <TableBody>{tableRows}</TableBody>
-      </Table>
-      {lastAdminWarning}
-    </DisplayBox>
+    <>
+      {ConfirmDialogElement}
+      <DisplayBox id="roleMembersBox" headerText={Locale.label("settings.roleMembers.mem")} headerIcon="person" editContent={editContent} help="docs/b1-admin/settings/roles-permissions">
+        <Table id="roleMemberTable">
+          <TableHead>{tableHeader}</TableHead>
+          <TableBody>{tableRows}</TableBody>
+        </Table>
+        {lastAdminWarning}
+      </DisplayBox>
+    </>
   );
 });

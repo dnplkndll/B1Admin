@@ -55,6 +55,17 @@ build/Release
 node_modules/
 jspm_packages/
 
+# Yarn Berry (Corepack-managed, node-modules linker + global cache)
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/sdks
+!.yarn/versions
+.pnp.*
+# npm is blocked (preinstall guard); never commit an npm lockfile
+package-lock.json
+
 # TypeScript v1 declaration files
 typings/
 
@@ -86,6 +97,10 @@ typings/
 #yarn.lock
 
 # dotenv environment variables file
+.env
+.env.*
+!.env.sample
+!.env.example
 
 # parcel-bundler cache (https://parceljs.org/)
 .cache
@@ -118,4 +133,3 @@ dist
 # TernJS port file
 .tern-port
 .auth-state.json
-.env

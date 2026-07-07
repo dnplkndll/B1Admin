@@ -21,7 +21,6 @@ interface Props {
 export const ActionDialog: React.FC<Props> = (props) => {
   const [iframeHeight, setIframeHeight] = useState(window.innerHeight * 0.7);
 
-  // Use the hook to fetch content from provider
   const { content, loading, error } = useProviderContent({
     providerId: props.providerId,
     providerPath: props.providerPath,
@@ -29,6 +28,13 @@ export const ActionDialog: React.FC<Props> = (props) => {
     ministryId: props.ministryId,
     fallbackUrl: props.downloadUrl
   });
+
+  // Provider download links often carry no file extension, so URL sniffing wrongly
+  // defaults videos to "image". The item name still has the extension — trust it.
+  const nameSaysVideo = /\.(mp4|webm|mov|m4v|avi|mkv)\s*$/i.test(props.contentName || "");
+  const effectiveMediaType = nameSaysVideo && (!content?.mediaType || content.mediaType === "image")
+    ? "video"
+    : content?.mediaType;
 
   useEffect(() => {
     const handleMessage = (event: MessageEvent) => {
@@ -49,7 +55,7 @@ export const ActionDialog: React.FC<Props> = (props) => {
       <DialogContent sx={{ p: 0, overflow: "hidden" }}>
         <ContentRenderer
           url={content?.url}
-          mediaType={content?.mediaType}
+          mediaType={effectiveMediaType}
           title={props.contentName}
           description={content?.description}
           loading={loading}

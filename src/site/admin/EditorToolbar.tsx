@@ -1,7 +1,10 @@
 import { useEffect, useState } from "react";
-import { Box, Button, Divider, Icon, IconButton, Menu, MenuItem, ListItemIcon, ListItemText, ToggleButton, ToggleButtonGroup, Tooltip } from "@mui/material";
+import { Badge, Box, Button, Chip, Divider, Icon, Menu, MenuItem, ListItemIcon, ListItemText, ToggleButton, ToggleButtonGroup, Tooltip } from "@mui/material";
+import { Undo as UndoIcon, Redo as RedoIcon, MoreVert as MoreVertIcon } from "@mui/icons-material";
 import { Locale } from "@churchapps/apphelper";
 import type { PageInterface, BlockInterface } from "../../helpers/Interfaces";
+import { AppIconButton } from "../../components/ui/AppIconButton";
+import type { SaveStatus } from "./saveStatusTracker";
 
 interface EditorToolbarProps {
   onDone: () => void;
@@ -18,7 +21,14 @@ interface EditorToolbarProps {
   onUndo?: () => void;
   onRedo?: () => void;
   onShowHistory?: () => void;
+  saveStatus?: SaveStatus;
   lastSavedAt?: number | null;
+  hasUnpublishedChanges?: boolean;
+  onPublish?: () => void;
+  onDiscardChanges?: () => void;
+  onUnpublish?: () => void;
+  onShowAccessibility?: () => void;
+  accessibilityIssueCount?: number;
 }
 
 function formatRelative(ts: number): string {
@@ -46,8 +56,20 @@ export function EditorToolbar(props: EditorToolbarProps) {
     onRedo,
     onShowHistory,
     onToggleHelp,
-    lastSavedAt
+    saveStatus,
+    lastSavedAt,
+    hasUnpublishedChanges,
+    onPublish,
+    onDiscardChanges,
+    onUnpublish,
+    onShowAccessibility,
+    accessibilityIssueCount
   } = props;
+
+  const publishedAt = isPageMode ? (container as PageInterface)?.publishedAt : null;
+  const publishTooltip = publishedAt
+    ? `${Locale.label("site.editorToolbar.publishedLabel")} ${formatRelative(new Date(publishedAt).getTime())}`
+    : Locale.label("site.editorToolbar.publishOffTip");
 
   const [menuAnchor, setMenuAnchor] = useState<null | HTMLElement>(null);
   const [, setTick] = useState(0);
@@ -63,9 +85,29 @@ export function EditorToolbar(props: EditorToolbarProps) {
     ? (container as PageInterface)?.title
     : (container as BlockInterface)?.name;
 
-  const savedLabel = lastSavedAt
-    ? `${Locale.label("site.editorToolbar.savedAllChanges")} · ${formatRelative(lastSavedAt)}`
-    : Locale.label("site.editorToolbar.notSavedYet");
+  const status: SaveStatus = saveStatus || "saved";
+  const savedLabel = status === "saving"
+    ? Locale.label("site.editorToolbar.saving")
+    : status === "error"
+      ? Locale.label("site.editorToolbar.saveError")
+      : lastSavedAt
+        ? `${Locale.label("site.editorToolbar.savedAllChanges")} · ${formatRelative(lastSavedAt)}`
+        : Locale.label("site.editorToolbar.savedAllChanges");
+  const savedIcon = status === "saving" ? "sync" : status === "error" ? "cloud_off" : "cloud_done";
+  const savedColor = status === "saving" ? "text.secondary" : status === "error" ? "warning.main" : "success.main";
+
+  const needsPublish = !publishedAt || hasUnpublishedChanges;
+  const pillStatus = publishedAt ? (hasUnpublishedChanges ? "unpublished-changes" : "published") : "live-on-save";
+  const pillLabel = pillStatus === "published"
+    ? Locale.label("site.editorToolbar.statusPublished")
+    : pillStatus === "unpublished-changes"
+      ? Locale.label("site.editorToolbar.statusUnpublishedChanges")
+      : Locale.label("site.editorToolbar.statusLiveOnSave");
+  const pillSx = pillStatus === "published"
+    ? { backgroundColor: "rgba(46, 125, 50, 0.1)", color: "success.dark" }
+    : pillStatus === "unpublished-changes"
+      ? { backgroundColor: "rgba(237, 108, 2, 0.12)", color: "warning.dark" }
+      : { backgroundColor: "var(--bg-sub)", color: "text.secondary" };
 
   return (
     <Box
@@ -83,7 +125,6 @@ export function EditorToolbar(props: EditorToolbarProps) {
         minHeight: 56
       }}
     >
-      {/* LEFT: Exit + page title */}
       <Box sx={{ display: "flex", alignItems: "center", gap: 1.5, minWidth: 0, flex: "0 0 auto" }}>
         <Button
           variant="text"
@@ -91,7 +132,7 @@ export function EditorToolbar(props: EditorToolbarProps) {
           onClick={onDone}
           startIcon={<Icon>arrow_back</Icon>}
           data-testid="content-editor-done-button"
-          sx={{ textTransform: "none", color: "#374151", fontWeight: 500 }}
+          sx={{ textTransform: "none", color: "text.primary", fontWeight: 500 }}
         >
           {Locale.label("site.editorToolbar.exit")}
         </Button>
@@ -104,7 +145,7 @@ export function EditorToolbar(props: EditorToolbarProps) {
               fontWeight: 600,
               letterSpacing: "0.06em",
               textTransform: "uppercase",
-              color: "#9ca3af",
+              color: "text.secondary",
               lineHeight: 1
             }}
           >
@@ -117,7 +158,7 @@ export function EditorToolbar(props: EditorToolbarProps) {
             sx={{
               fontSize: "0.95rem",
               fontWeight: 500,
-              color: "#374151",
+              color: "text.primary",
               lineHeight: 1.3,
               whiteSpace: "nowrap",
               overflow: "hidden",
@@ -128,9 +169,19 @@ export function EditorToolbar(props: EditorToolbarProps) {
             {containerName || ""}
           </Box>
         </Box>
+        {isPageMode && container && (
+          <Tooltip title={publishTooltip} placement="bottom">
+            <Chip
+              size="small"
+              label={pillLabel}
+              data-testid="publish-status-pill"
+              data-status={pillStatus}
+              sx={{ fontWeight: 600, fontSize: "0.7rem", ...pillSx }}
+            />
+          </Tooltip>
+        )}
       </Box>
 
-      {/* CENTER: undo/redo + saved indicator */}
       <Box
         sx={{
           flex: "1 1 auto",
@@ -142,42 +193,50 @@ export function EditorToolbar(props: EditorToolbarProps) {
         }}
       >
         <Box sx={{ display: "flex", alignItems: "center" }}>
-          <Tooltip title={Locale.label("site.editorToolbar.undoTip")} placement="bottom">
-            <span>
-              <IconButton size="small" onClick={onUndo} disabled={!canUndo} sx={{ color: "#4b5563" }}>
-                <Icon fontSize="small">undo</Icon>
-              </IconButton>
-            </span>
-          </Tooltip>
-          <Tooltip title={Locale.label("site.editorToolbar.redoTip")} placement="bottom">
-            <span>
-              <IconButton size="small" onClick={onRedo} disabled={!canRedo} sx={{ color: "#4b5563" }}>
-                <Icon fontSize="small">redo</Icon>
-              </IconButton>
-            </span>
-          </Tooltip>
+          <AppIconButton label={Locale.label("site.editorToolbar.undoTip")} icon={<UndoIcon />} onClick={onUndo} disabled={!canUndo} />
+          <AppIconButton label={Locale.label("site.editorToolbar.redoTip")} icon={<RedoIcon />} onClick={onRedo} disabled={!canRedo} />
         </Box>
 
         <Box
+          data-testid="save-status"
+          data-status={status}
           sx={{
             display: { xs: "none", md: "flex" },
             alignItems: "center",
             gap: 0.5,
-            color: lastSavedAt ? "#16a34a" : "#9ca3af",
+            color: savedColor,
             fontSize: "0.8rem",
             fontWeight: 500,
-            whiteSpace: "nowrap"
+            whiteSpace: "nowrap",
+            "@keyframes saveSpin": { from: { transform: "rotate(0deg)" }, to: { transform: "rotate(360deg)" } }
           }}
         >
-          <Icon fontSize="inherit" sx={{ fontSize: "0.95rem" }}>
-            {lastSavedAt ? "cloud_done" : "cloud_outlined"}
+          <Icon fontSize="inherit" sx={{ fontSize: "0.95rem", animation: status === "saving" ? "saveSpin 1s linear infinite" : "none" }}>
+            {savedIcon}
           </Icon>
           <span>{savedLabel}</span>
         </Box>
       </Box>
 
-      {/* RIGHT: Device toggle + Add + overflow */}
       <Box sx={{ display: "flex", alignItems: "center", gap: 1, flex: "0 0 auto" }}>
+        {isPageMode && onPublish && (
+          <Tooltip title={publishTooltip} placement="bottom">
+            <Button
+              variant={needsPublish ? "contained" : "outlined"}
+              color={needsPublish ? "success" : "inherit"}
+              disableElevation
+              onClick={onPublish}
+              startIcon={<Icon>{needsPublish ? "publish" : "check"}</Icon>}
+              sx={needsPublish
+                ? { textTransform: "none", fontWeight: 600 }
+                : { textTransform: "none", fontWeight: 600, color: "text.secondary", borderColor: "var(--border-main)", opacity: 0.85 }}
+              data-testid="publish-button"
+            >
+              {needsPublish ? Locale.label("site.editorToolbar.publish") : Locale.label("site.editorToolbar.publishedLabel")}
+            </Button>
+          </Tooltip>
+        )}
+
         <ToggleButtonGroup
           size="small"
           value={deviceType}
@@ -188,13 +247,13 @@ export function EditorToolbar(props: EditorToolbarProps) {
           data-testid="device-type-toggle"
           sx={{
             "& .MuiToggleButton-root": {
-              border: "1px solid #e5e7eb",
-              color: "#6b7280",
+              border: "1px solid var(--border-main)",
+              color: "text.secondary",
               px: 1,
               "&.Mui-selected": {
-                backgroundColor: "#eff6ff",
-                color: "#1d4ed8",
-                "&:hover": { backgroundColor: "#dbeafe" }
+                backgroundColor: "var(--c1l7)",
+                color: "primary.main",
+                "&:hover": { backgroundColor: "var(--c1l6)" }
               }
             }
           }}
@@ -220,24 +279,38 @@ export function EditorToolbar(props: EditorToolbarProps) {
           sx={{
             textTransform: "none",
             fontWeight: 600,
-            backgroundColor: showAdd ? "#1565c0" : "#1976d2",
-            "&:hover": { backgroundColor: "#1565c0" }
+            backgroundColor: showAdd ? "primary.dark" : "primary.main",
+            "&:hover": { backgroundColor: "primary.dark" }
           }}
           data-testid="content-editor-add-button"
         >
           {Locale.label("site.editorToolbar.addContent")}
         </Button>
 
-        <Tooltip title={Locale.label("common.more", "More")} placement="bottom">
-          <IconButton
-            size="small"
-            onClick={(e) => setMenuAnchor(e.currentTarget)}
-            sx={{ color: "#4b5563" }}
-            data-testid="content-editor-overflow-button"
+        {onShowAccessibility && (
+          <Tooltip
+            title={accessibilityIssueCount
+              ? Locale.label("site.a11y.buttonTipIssues").replace("{count}", String(accessibilityIssueCount))
+              : Locale.label("site.a11y.buttonTip")}
+            placement="bottom"
           >
-            <Icon fontSize="small">more_vert</Icon>
-          </IconButton>
-        </Tooltip>
+            <Badge badgeContent={accessibilityIssueCount || 0} color="warning" overlap="circular" data-testid="a11y-badge">
+              <AppIconButton
+                label={Locale.label("site.a11y.buttonTip")}
+                icon={<Icon>accessibility_new</Icon>}
+                onClick={onShowAccessibility}
+                data-testid="content-editor-a11y-button"
+              />
+            </Badge>
+          </Tooltip>
+        )}
+
+        <AppIconButton
+          label={Locale.label("common.more", "More")}
+          icon={<MoreVertIcon />}
+          onClick={(e) => setMenuAnchor(e.currentTarget)}
+          data-testid="content-editor-overflow-button"
+        />
         <Menu
           anchorEl={menuAnchor}
           open={Boolean(menuAnchor)}
@@ -258,6 +331,34 @@ export function EditorToolbar(props: EditorToolbarProps) {
               {Locale.label("site.editorToolbar.viewHistory")}
             </ListItemText>
           </MenuItem>
+          {isPageMode && publishedAt && onDiscardChanges && (
+            <MenuItem
+              onClick={() => {
+                setMenuAnchor(null);
+                onDiscardChanges();
+              }}
+              data-testid="discard-changes-menu-item"
+            >
+              <ListItemIcon>
+                <Icon fontSize="small">restore_page</Icon>
+              </ListItemIcon>
+              <ListItemText>{Locale.label("site.editorToolbar.discardChanges")}</ListItemText>
+            </MenuItem>
+          )}
+          {isPageMode && publishedAt && onUnpublish && (
+            <MenuItem
+              onClick={() => {
+                setMenuAnchor(null);
+                onUnpublish();
+              }}
+              data-testid="disable-publish-menu-item"
+            >
+              <ListItemIcon>
+                <Icon fontSize="small">public_off</Icon>
+              </ListItemIcon>
+              <ListItemText>{Locale.label("site.editorToolbar.disablePublish")}</ListItemText>
+            </MenuItem>
+          )}
           <MenuItem
             onClick={() => {
               setMenuAnchor(null);

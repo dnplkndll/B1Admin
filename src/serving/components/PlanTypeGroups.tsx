@@ -1,11 +1,13 @@
 import React from "react";
-import { Box, Button, Typography, Stack, IconButton, Paper, Table, TableBody, TableCell, TableRow, TableHead, Select, MenuItem, Autocomplete, TextField, Dialog, DialogTitle, DialogContent, DialogActions } from "@mui/material";
+import { Box, Button, Typography, Stack, Paper, Table, TableBody, TableCell, TableRow, TableHead, Select, MenuItem, Autocomplete, TextField, Dialog, DialogTitle, DialogContent, DialogActions } from "@mui/material";
 import { Add as AddIcon, Groups as GroupsIcon, Delete as DeleteIcon } from "@mui/icons-material";
-import { ApiHelper, Locale, Loading, UserHelper, Permissions } from "@churchapps/apphelper";
+import { ApiHelper, Locale, Loading } from "@churchapps/apphelper";
+import { AppIconButton } from "../../components/ui/AppIconButton";
 import { useQuery } from "@tanstack/react-query";
 import { type GroupInterface } from "@churchapps/helpers";
-import { type AssociatedGroupInterface } from "../../helpers";
-import { EmptyState } from "../../components/ui";
+import { type AssociatedGroupInterface, hasPlansEditAccess } from "../../helpers";
+import { CountChip, EmptyState } from "../../components/ui";
+import { useConfirmDelete } from "../../hooks";
 
 interface Props {
   planTypeId: string;
@@ -16,7 +18,7 @@ type TimeFilter = "past" | "future" | "both";
 const CONTENT_TYPE = "planType";
 
 export const PlanTypeGroups = React.memo(({ planTypeId, ministryId }: Props) => {
-  const hasPlansEdit = UserHelper.checkAccess(Permissions.membershipApi.plans.edit);
+  const hasPlansEdit = hasPlansEditAccess();
 
   const myMinistriesQuery = useQuery<GroupInterface[]>({
     queryKey: ["/groups/my/ministry", "MembershipApi"],
@@ -28,6 +30,7 @@ export const PlanTypeGroups = React.memo(({ planTypeId, ministryId }: Props) => 
   const canEdit = hasPlansEdit || isMinistryMember;
   const [showPicker, setShowPicker] = React.useState(false);
   const [pickerValue, setPickerValue] = React.useState<GroupInterface | null>(null);
+  const { confirm, ConfirmDialogElement } = useConfirmDelete();
 
   const associations = useQuery<AssociatedGroupInterface[]>({
     queryKey: [`/associatedGroups/content/${CONTENT_TYPE}/${planTypeId}`, "MembershipApi"],
@@ -69,10 +72,10 @@ export const PlanTypeGroups = React.memo(({ planTypeId, ministryId }: Props) => 
 
   const handleRemove = React.useCallback(async (assoc: AssociatedGroupInterface) => {
     if (!assoc.id) return;
-    if (!window.confirm(Locale.label("plans.planTypeGroups.removeConfirm"))) return;
+    if (!(await confirm(Locale.label("plans.planTypeGroups.removeConfirm")))) return;
     await ApiHelper.delete("/associatedGroups/" + assoc.id, "MembershipApi");
     associations.refetch();
-  }, [associations]);
+  }, [associations, confirm]);
 
   if (associations.isLoading || groups.isLoading) return <Loading />;
 
@@ -104,10 +107,8 @@ export const PlanTypeGroups = React.memo(({ planTypeId, ministryId }: Props) => 
           )}
         </TableCell>
         {canEdit && (
-          <TableCell align="right">
-            <IconButton size="small" onClick={() => handleRemove(assoc)}>
-              <DeleteIcon fontSize="small" />
-            </IconButton>
+          <TableCell align="right" className="rowActions">
+            <AppIconButton label={Locale.label("common.delete")} icon={<DeleteIcon />} intent="remove" onClick={() => handleRemove(assoc)} />
           </TableCell>
         )}
       </TableRow>
@@ -116,12 +117,14 @@ export const PlanTypeGroups = React.memo(({ planTypeId, ministryId }: Props) => 
 
   return (
     <Box>
+      {ConfirmDialogElement}
       <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ mb: 1 }}>
         <Stack direction="row" alignItems="center" spacing={1}>
-          <GroupsIcon sx={{ color: "primary.main" }} />
-          <Typography variant="h6" sx={{ fontWeight: 600 }}>
+          <GroupsIcon sx={{ color: "primary.main", fontSize: 20 }} />
+          <Typography variant="h6">
             {Locale.label("plans.planTypeGroups.heading")}
           </Typography>
+          {associationsList.length > 0 && <CountChip count={associationsList.length} />}
         </Stack>
         {canEdit && associationsList.length > 0 && availableGroups.length > 0 && (
           <Button variant="contained" startIcon={<AddIcon />} onClick={() => setShowPicker(true)} size="small">
@@ -148,7 +151,7 @@ export const PlanTypeGroups = React.memo(({ planTypeId, ministryId }: Props) => 
         <Paper sx={{ width: "100%", overflow: "hidden" }}>
           <Table size="small">
             <TableHead>
-              <TableRow sx={{ backgroundColor: "background.subtle" }}>
+              <TableRow>
                 <TableCell sx={{ fontWeight: 600 }}>{Locale.label("common.name")}</TableCell>
                 <TableCell sx={{ fontWeight: 600 }}>{Locale.label("plans.planTypeGroups.showsLabel")}</TableCell>
                 {canEdit && <TableCell align="right" sx={{ width: 50 }} />}

@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import {
   Typography,
   Table,
@@ -7,19 +7,18 @@ import {
   TableRow,
   TableCell,
   TableHead,
-  Card,
   Box,
-  Stack,
   Chip,
   LinearProgress
 } from "@mui/material";
 import { HowToReg as RegIcon } from "@mui/icons-material";
-import { ApiHelper, Loading, Locale, PageHeader, UserHelper, Permissions } from "@churchapps/apphelper";
+import { ApiHelper, Loading, Locale, PageHeader, Permissions } from "@churchapps/apphelper";
 import { type EventInterface } from "@churchapps/helpers";
-import { PermissionDenied } from "../components";
+import { CountChip, CardWithHeader } from "../components/ui";
+import { useRequirePermission } from "../hooks";
+import { formatDateSafe } from "../helpers/DateFormatHelper";
 
 export const RegistrationsPage = () => {
-  const navigate = useNavigate();
   const [events, setEvents] = useState<EventInterface[]>([]);
   const [counts, setCounts] = useState<Record<string, number>>({});
   const [loading, setLoading] = useState(true);
@@ -43,7 +42,8 @@ export const RegistrationsPage = () => {
 
   useEffect(() => { loadData(); }, []);
 
-  if (!UserHelper.checkAccess(Permissions.contentApi.content.edit)) return <PermissionDenied permissions={[Permissions.contentApi.content.edit]} />;
+  const denied = useRequirePermission(Permissions.contentApi.content.edit);
+  if (denied) return denied;
 
   const getCapacityDisplay = (event: EventInterface) => {
     const count = counts[event.id] || 0;
@@ -58,9 +58,13 @@ export const RegistrationsPage = () => {
   };
 
   const getRows = () => events.map((event) => (
-    <TableRow key={event.id} hover sx={{ cursor: "pointer" }} onClick={() => navigate("/registrations/" + event.id)}>
-      <TableCell><Typography variant="body2" fontWeight={500}>{event.title}</Typography></TableCell>
-      <TableCell>{event.start ? new Date(event.start).toLocaleDateString() : ""}</TableCell>
+    <TableRow key={event.id} hover>
+      <TableCell>
+        <Typography component={Link} to={"/registrations/" + event.id} variant="body2" fontWeight={500} sx={{ textDecoration: "none", color: "var(--link)" }}>
+          {event.title}
+        </Typography>
+      </TableCell>
+      <TableCell>{formatDateSafe(event.start)}</TableCell>
       <TableCell>{getCapacityDisplay(event)}</TableCell>
       <TableCell>
         {event.tags && event.tags.split(",").map((tag) => (
@@ -72,17 +76,12 @@ export const RegistrationsPage = () => {
 
   return (
     <>
-      <PageHeader title={Locale.label("registrations.registrationsPage.title")} subtitle={Locale.label("registrations.registrationsPage.subtitle")} />
+      <PageHeader icon={<RegIcon />} title={Locale.label("registrations.registrationsPage.title")} subtitle={Locale.label("registrations.registrationsPage.subtitle")} />
       <Box sx={{ p: 3 }}>
-        <Card sx={{ borderRadius: 2, border: "1px solid", borderColor: "grey.200" }}>
-          <Box sx={{ p: 2, borderBottom: 1, borderColor: "divider" }}>
-            <Stack direction="row" spacing={1} alignItems="center">
-              <RegIcon sx={{ color: "primary.main" }} />
-              <Typography variant="h6" sx={{ fontWeight: 600, color: "primary.main" }}>
-                {Locale.label("registrations.registrationsPage.enabledEvents")}
-              </Typography>
-            </Stack>
-          </Box>
+        <CardWithHeader
+          title={Locale.label("registrations.registrationsPage.enabledEvents")}
+          icon={<RegIcon sx={{ color: "primary.main", fontSize: 20 }} />}
+          actions={events.length > 0 ? <CountChip count={events.length} /> : undefined}>
           {loading ? (
             <Box sx={{ p: 3, textAlign: "center" }}><Loading /></Box>
           ) : events.length === 0 ? (
@@ -97,18 +96,18 @@ export const RegistrationsPage = () => {
             </Box>
           ) : (
             <Table>
-              <TableHead sx={{ backgroundColor: "#f5f5f5" }}>
+              <TableHead>
                 <TableRow>
-                  <TableCell sx={{ fontWeight: 600 }}>{Locale.label("registrations.registrationsPage.event")}</TableCell>
-                  <TableCell sx={{ fontWeight: 600 }}>{Locale.label("registrations.registrationsPage.date")}</TableCell>
-                  <TableCell sx={{ fontWeight: 600 }}>{Locale.label("registrations.registrationsPage.registrations")}</TableCell>
-                  <TableCell sx={{ fontWeight: 600 }}>{Locale.label("registrations.registrationsPage.tags")}</TableCell>
+                  <TableCell>{Locale.label("registrations.registrationsPage.event")}</TableCell>
+                  <TableCell>{Locale.label("registrations.registrationsPage.date")}</TableCell>
+                  <TableCell>{Locale.label("registrations.registrationsPage.registrations")}</TableCell>
+                  <TableCell>{Locale.label("registrations.registrationsPage.tags")}</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>{getRows()}</TableBody>
             </Table>
           )}
-        </Card>
+        </CardWithHeader>
       </Box>
     </>
   );

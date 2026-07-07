@@ -1,9 +1,11 @@
-import { Checkbox, FormControl, FormControlLabel, InputLabel, MenuItem, Select, TextField } from "@mui/material";
+import { Checkbox, FormControl, FormControlLabel, Grid, InputLabel, MenuItem, Select, TextField } from "@mui/material";
 import React from "react";
 import { useForm, Controller, useFormState } from "react-hook-form";
 import { ChoicesEdit } from ".";
 import { type QuestionInterface } from "@churchapps/helpers";
-import { useMountedState, ApiHelper, InputBox, UniqueIdHelper, ErrorMessages, Locale } from "@churchapps/apphelper";
+import { useMountedState, ApiHelper, UniqueIdHelper, ErrorMessages, Locale } from "@churchapps/apphelper";
+import { FormCard } from "../../components/ui";
+import { useConfirmDelete, useErrorSummary } from "../../hooks";
 import { PaymentEdit } from "./PaymentEdit";
 
 interface Props {
@@ -15,6 +17,7 @@ interface Props {
 type AnyRecord = Record<string, any>;
 
 export function FormQuestionEdit(props: Props) {
+  "use no memo"; // compiler caches register() results, breaking RHF field re-registration after reset()
   const [isSubmitting, setIsSubmitting] = React.useState(false);
   const isMounted = useMountedState();
 
@@ -22,12 +25,8 @@ export function FormQuestionEdit(props: Props) {
 
   const { errors } = useFormState({ control });
   const e = errors as any;
-  const summaryErrors: string[] = React.useMemo(() => {
-    const errs: string[] = [];
-    if (e.title?.message) errs.push(e.title.message);
-    if (e.fieldType?.message) errs.push(e.fieldType.message);
-    return errs;
-  }, [errors]);
+  const summaryErrors = useErrorSummary(errors, ["title", "fieldType"]);
+  const { confirm, ConfirmDialogElement } = useConfirmDelete();
 
   const fieldType = watch("fieldType");
   const watchedQuestion = watch() as QuestionInterface;
@@ -60,8 +59,8 @@ export function FormQuestionEdit(props: Props) {
       .finally(() => { setIsSubmitting(false); });
   };
 
-  function handleDelete() {
-    if (window.confirm(Locale.label("forms.formQuestionEdit.confirmMsg"))) {
+  async function handleDelete() {
+    if (await confirm(Locale.label("forms.formQuestionEdit.confirmMsg"))) {
       ApiHelper.delete("/questions/" + watchedQuestion.id + "/?formId=" + props.formId, "MembershipApi").then(props.updatedFunction);
     }
   }
@@ -69,28 +68,34 @@ export function FormQuestionEdit(props: Props) {
   React.useEffect(loadData, [props.questionId || props.formId]);
 
   return (
-    <InputBox id="questionBox" headerIcon="help" headerText={Locale.label("forms.formQuestionEdit.questionEdit")} saveFunction={handleSubmit(onValid)} cancelFunction={props.updatedFunction} isSubmitting={isSubmitting} deleteFunction={!UniqueIdHelper.isMissing(watchedQuestion.id) ? handleDelete : undefined} help="docs/b1-admin/forms/">
+    <FormCard id="questionBox" icon="help" title={Locale.label("forms.formQuestionEdit.questionEdit")} onSave={handleSubmit(onValid)} onCancel={props.updatedFunction} isSubmitting={isSubmitting} onDelete={!UniqueIdHelper.isMissing(watchedQuestion.id) ? handleDelete : undefined} help="docs/b1-admin/forms/">
+      {ConfirmDialogElement}
       <ErrorMessages errors={summaryErrors} />
-      <FormControl fullWidth>
-        <InputLabel id="provider">{Locale.label("forms.formQuestionEdit.prov")}</InputLabel>
-        <Controller name="fieldType" control={control} render={({ field }) => (
-          <Select {...field} value={field.value ?? "Textbox"} labelId="provider" label={Locale.label("forms.formQuestionEdit.prov")}>
-            <MenuItem value="Textbox">{Locale.label("forms.formQuestionEdit.textBox")}</MenuItem>
-            <MenuItem value="Whole Number">{Locale.label("forms.formQuestionEdit.wholeNum")}</MenuItem>
-            <MenuItem value="Decimal">{Locale.label("forms.formQuestionEdit.decNum")}</MenuItem>
-            <MenuItem value="Date">{Locale.label("forms.formQuestionEdit.date")}</MenuItem>
-            <MenuItem value="Yes/No">{Locale.label("forms.formQuestionEdit.yesNo")}</MenuItem>
-            <MenuItem value="Email">{Locale.label("person.email")}</MenuItem>
-            <MenuItem value="Phone Number">{Locale.label("forms.formQuestionEdit.phoneNum")}</MenuItem>
-            <MenuItem value="Text Area">{Locale.label("forms.formQuestionEdit.textArea")}</MenuItem>
-            <MenuItem value="Multiple Choice">{Locale.label("forms.formQuestionEdit.multiChoice")}</MenuItem>
-            <MenuItem value="Checkbox">{Locale.label("forms.formQuestionEdit.checkBox")}</MenuItem>
-            <MenuItem value="Payment">{Locale.label("forms.formQuestionEdit.payment")}</MenuItem>
-          </Select>
-        )} />
-      </FormControl>
-
-      <TextField fullWidth label={Locale.label("common.title")} id="title" type="text" placeholder={Locale.label("placeholders.form.questionTitle")} data-testid="question-title-input" aria-label={Locale.label("forms.formQuestionEdit.questionTitleAria")} error={!!e.title} helperText={e.title?.message} {...register("title", { required: Locale.label("forms.formQuestionEdit.questionReq") })} />
+      <Grid container spacing={2}>
+        <Grid size={{ xs: 12, sm: 6 }}>
+          <FormControl fullWidth>
+            <InputLabel id="provider">{Locale.label("forms.formQuestionEdit.prov")}</InputLabel>
+            <Controller name="fieldType" control={control} render={({ field }) => (
+              <Select {...field} value={field.value ?? "Textbox"} labelId="provider" label={Locale.label("forms.formQuestionEdit.prov")}>
+                <MenuItem value="Textbox">{Locale.label("forms.formQuestionEdit.textBox")}</MenuItem>
+                <MenuItem value="Whole Number">{Locale.label("forms.formQuestionEdit.wholeNum")}</MenuItem>
+                <MenuItem value="Decimal">{Locale.label("forms.formQuestionEdit.decNum")}</MenuItem>
+                <MenuItem value="Date">{Locale.label("forms.formQuestionEdit.date")}</MenuItem>
+                <MenuItem value="Yes/No">{Locale.label("forms.formQuestionEdit.yesNo")}</MenuItem>
+                <MenuItem value="Email">{Locale.label("person.email")}</MenuItem>
+                <MenuItem value="Phone Number">{Locale.label("forms.formQuestionEdit.phoneNum")}</MenuItem>
+                <MenuItem value="Text Area">{Locale.label("forms.formQuestionEdit.textArea")}</MenuItem>
+                <MenuItem value="Multiple Choice">{Locale.label("forms.formQuestionEdit.multiChoice")}</MenuItem>
+                <MenuItem value="Checkbox">{Locale.label("forms.formQuestionEdit.checkBox")}</MenuItem>
+                <MenuItem value="Payment">{Locale.label("forms.formQuestionEdit.payment")}</MenuItem>
+              </Select>
+            )} />
+          </FormControl>
+        </Grid>
+        <Grid size={{ xs: 12, sm: 6 }}>
+          <TextField fullWidth label={Locale.label("common.title")} id="title" type="text" placeholder={Locale.label("placeholders.form.questionTitle")} data-testid="question-title-input" aria-label={Locale.label("forms.formQuestionEdit.questionTitleAria")} error={!!e.title} helperText={e.title?.message} {...register("title", { required: Locale.label("forms.formQuestionEdit.questionReq") })} />
+        </Grid>
+      </Grid>
       <TextField fullWidth label={Locale.label("forms.formQuestionEdit.desc")} id="description" type="text" placeholder={Locale.label("placeholders.form.questionDescription")} data-testid="question-description-input" aria-label={Locale.label("forms.formQuestionEdit.questionDescriptionAria")} {...register("description")} />
 
       {getChoices(fieldType)}
@@ -99,6 +104,6 @@ export function FormQuestionEdit(props: Props) {
           <FormControlLabel control={<Checkbox checked={!!field.value} onChange={(ev) => field.onChange(ev.target.checked)} data-testid="question-required-checkbox" aria-label={Locale.label("forms.formQuestionEdit.questionRequiredAria")} />} label={Locale.label("forms.formQuestionEdit.ansReq")} />
         )} />
       )}
-    </InputBox>
+    </FormCard>
   );
 }

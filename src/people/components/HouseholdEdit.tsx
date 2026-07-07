@@ -2,10 +2,13 @@ import React from "react";
 import { useForm, useFormState } from "react-hook-form";
 import { UpdateHouseHold } from "./modals/UpdateHouseHold";
 import { type HouseholdInterface, type PersonInterface } from "@churchapps/helpers";
-import { InputBox, PersonHelper, ApiHelper, ErrorMessages, Locale, PersonAvatar } from "@churchapps/apphelper";
+import { PersonHelper, ApiHelper, ErrorMessages, Locale, PersonAvatar } from "@churchapps/apphelper";
+import { FormCard } from "../../components/ui";
+import { useErrorSummary } from "../../hooks";
 import { PersonAdd } from "../../components";
-import { Table, TableBody, TableCell, TableRow, TextField, FormControl, Select, MenuItem, InputLabel, Button, IconButton, Tooltip, type SelectChangeEvent } from "@mui/material";
+import { Table, TableBody, TableCell, TableRow, TextField, FormControl, Select, MenuItem, InputLabel, type SelectChangeEvent } from "@mui/material";
 import { PersonRemove as PersonRemoveIcon, PersonAdd as PersonAddIcon, Close as CloseIcon } from "@mui/icons-material";
+import { AppIconButton } from "../../components/ui/AppIconButton";
 
 type AnyRecord = Record<string, any>;
 
@@ -17,6 +20,7 @@ interface Props {
 }
 
 export function HouseholdEdit(props: Props) {
+  "use no memo"; // compiler caches register() results, breaking RHF field re-registration after reset()
   const [members, setMembers] = React.useState<PersonInterface[]>([...(props.currentMembers || [])]);
   const [showAdd, setShowAdd] = React.useState(false);
   const [showUpdateAddressModal, setShowUpdateAddressModal] = React.useState<boolean>(false);
@@ -28,12 +32,7 @@ export function HouseholdEdit(props: Props) {
 
   const { errors } = useFormState({ control });
   const e = errors as any;
-
-  const summaryErrors: string[] = React.useMemo(() => {
-    const errs: string[] = [];
-    if (e.name?.message) errs.push(e.name.message);
-    return errs;
-  }, [errors]);
+  const summaryErrors = useErrorSummary(errors, ["name"]);
 
   React.useEffect(() => {
     if (props.household) reset({ name: props.household.name || "" });
@@ -126,7 +125,7 @@ export function HouseholdEdit(props: Props) {
         </FormControl>
       </TableCell>
       <TableCell>
-        <Button size="small" variant="outlined" color="error" startIcon={<PersonRemoveIcon />} onClick={() => handleRemove(index)} data-testid="remove-household-member-button" aria-label={Locale.label("people.householdEdit.removeMemberAria")}>{Locale.label("common.remove")}</Button>
+        <AppIconButton intent="remove" label={Locale.label("common.remove")} icon={<PersonRemoveIcon />} onClick={() => handleRemove(index)} data-testid="remove-household-member-button" />
       </TableCell>
     </TableRow>
   ));
@@ -135,9 +134,7 @@ export function HouseholdEdit(props: Props) {
     <div>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "16px" }}>
         <h3>{Locale.label("people.householdEdit.addMember")}</h3>
-        <Tooltip title="Cancel">
-          <IconButton size="small" onClick={() => setShowAdd(false)} aria-label={Locale.label("people.householdEdit.cancelAddMember")}><CloseIcon fontSize="small" /></IconButton>
-        </Tooltip>
+        <AppIconButton label={Locale.label("common.close")} icon={<CloseIcon />} onClick={() => setShowAdd(false)} />
       </div>
       <PersonAdd getPhotoUrl={PersonHelper.getPhotoUrl} addFunction={handlePersonAdd} person={props.currentPerson} showCreatePersonOnNotFound={true} />
     </div>
@@ -146,13 +143,13 @@ export function HouseholdEdit(props: Props) {
   return (
     <>
       <UpdateHouseHold show={showUpdateAddressModal} onHide={() => setShowUpdateAddressModal(false)} handleNo={handleNo} handleYes={handleYes} text={text} />
-      <InputBox
+      <FormCard
         id="householdBox"
-        headerIcon="group"
-        headerText={(props.household?.name || "") + Locale.label("people.householdEdit.house")}
+        icon="group"
+        title={(props.household?.name || "") + Locale.label("people.householdEdit.house")}
         isSubmitting={isSubmitting}
-        saveFunction={handleSubmit(onValid)}
-        cancelFunction={props.updatedFunction}>
+        onSave={handleSubmit(onValid)}
+        onCancel={props.updatedFunction}>
         <ErrorMessages errors={summaryErrors} />
         <TextField fullWidth id="name" type="text" label={Locale.label("people.householdEdit.houseName")} placeholder={Locale.label("placeholders.household.name")} data-testid="household-name-input" aria-label={Locale.label("people.householdEdit.householdNameAria")} error={!!e.name} helperText={e.name?.message} {...register("name", { required: Locale.label("people.householdEdit.blankMsg") })} />
         <Table size="small" id="householdMemberTable">
@@ -162,13 +159,13 @@ export function HouseholdEdit(props: Props) {
               <TableCell></TableCell>
               <TableCell></TableCell>
               <TableCell>
-                <Button size="small" variant="contained" startIcon={<PersonAddIcon />} onClick={() => setShowAdd(true)} data-testid="add-household-member-button" aria-label={Locale.label("people.householdEdit.addMemberAria")}>{Locale.label("common.add")}</Button>
+                <AppIconButton intent="add" label={Locale.label("common.add")} icon={<PersonAddIcon />} tone="card" onClick={() => setShowAdd(true)} data-testid="add-household-member-button" />
               </TableCell>
             </TableRow>
           </TableBody>
         </Table>
         {personAdd}
-      </InputBox>
+      </FormCard>
     </>
   );
 }

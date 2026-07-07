@@ -20,9 +20,6 @@
     }
   },
   "attendance": {
-    "attendanceNavigation": {
-      "kioskTheme": "Kioskin teema"
-    },
     "attendancePage": {
       "att": "Osallistuminen",
       "campus": "Kampus",
@@ -40,41 +37,54 @@
       "unscheduled": "Unscheduled"
     },
     "attendanceSetup": {
-      "addCampusAria": "Lisää kampus",
-      "addService": "Lisää palvelu",
-      "addServiceTime": "Lisää palvelun aika",
-      "newCampus": "Uusi kampus",
-      "newService": "Uusi palvelu",
-      "newServiceTime": "Uusi palvelun aika",
       "setupMessage": "Set up campuses, services, and service times to begin tracking attendance.",
       "unassigned": "Määrittämätön"
     },
-    "campusEdit": {
-      "confirmDelete": "Are you sure you want to delete this campus?",
-      "name": "Campus Name",
-      "nameAria": "Kampuksen nimi",
-      "validate": {
-        "name": "Campus Name is required."
-      }
-    },
-    "checkinThemeEdit": {
-      "addSlide": "Lisää dia",
-      "background": "Tausta",
-      "backgroundImage": "Taustakuva",
-      "backgroundImageDesc": "Valinnainen taustakuva haku-/tervetuloa-näytölle. Suositus: 1920x1080.",
-      "change": "Vaihda",
-      "changeImage": "Vaihda kuva",
-      "duration": "Kesto (s)",
-      "enableIdleScreen": "Ota käyttöön lepotilan näyttö",
-      "headerSubtitle": "Kioskin värejä hallitaan kohdassa Asetukset > Sovelluksen teema. Määritä taustakuvat ja lepotilan näytön käyttäytyminen alla.",
-      "idleScreen": "Lepotilan näyttö / näytönsäästäjä",
-      "kioskSettings": "Kioskin asetukset",
-      "remove": "Poista",
-      "slide": "Dia {index}",
-      "slides": "Diat",
-      "timeoutSeconds": "Aikakatkaisu (sekunteja)",
-      "upload": "Lataa",
-      "uploadImage": "Lataa kuva"
+    "labels": {
+      "align": "Tasaus",
+      "always": "Aina",
+      "barcode": "Viivakoodi",
+      "blank": "Tyhjä",
+      "bold": "Lihavoitu",
+      "border": "Reunus",
+      "box": "Laatikko",
+      "center": "Keskitä",
+      "condition": "Ehto",
+      "confirmDelete": "Haluatko varmasti poistaa tämän tarremallipohjan?",
+      "default": "Oletus",
+      "empty": "Tyhjä",
+      "equals": "On yhtä kuin",
+      "field": "Kenttä",
+      "fill": "Täyttö",
+      "fontSize": "Fonttikoko",
+      "height": "Korkeus (tuumaa)",
+      "italic": "Kursiivi",
+      "left": "Vasen",
+      "name": "Nimi",
+      "nametag": "Nimikortti",
+      "noTemplates": "Ei tarremalleja",
+      "noTemplatesDesc": "Luo tarremallipohja mukauttaaksesi kirjautumiskioskeilla tulostettavia tarroja.",
+      "notEmpty": "Ei tyhjä",
+      "notEquals": "Ei yhtä kuin",
+      "operator": "Operaattori",
+      "palette": "Lisää lohko",
+      "pickup": "Noutolappu",
+      "properties": "Ominaisuudet",
+      "qrCode": "QR-koodi",
+      "removeBlock": "Poista lohko",
+      "right": "Oikea",
+      "selectBlock": "Valitse muokattava lohko kankaalta.",
+      "setDefault": "Aseta oletukseksi",
+      "size": "Koko",
+      "starterNametag": "Nimikortti 3,5\" x 1,1\"",
+      "starterPickup": "Noutolappu 3,5\" x 1,1\"",
+      "subtitle": "Suunnittele kirjautumisessa tulostettavat nimikortti- ja noutolaput",
+      "symbology": "Symbologia",
+      "text": "Teksti",
+      "title": "Kirjautumislaput",
+      "type": "Tyyppi",
+      "value": "Arvo",
+      "width": "Leveys (tuumaa)"
     },
     "serviceEdit": {
       "campus": "Kampus",
@@ -106,8 +116,31 @@
     }
   },
   "calendars": {
+    "approvals": {
+      "approve": "Hyväksy",
+      "bookingRequests": "Tila- ja resurssipyynnöt",
+      "conflicts": "Ristiriidat",
+      "description": "Kuvaus",
+      "event": "Tapahtuma",
+      "eventRequests": "Tapahtumapyynnöt",
+      "noConflicts": "Ei ristiriitoja",
+      "noPendingBookings": "Ei odottavia tila- tai resurssipyyntöjä.",
+      "noPendingEvents": "Ei odottavia tapahtumapyyntöjä.",
+      "reject": "Hylkää",
+      "roomResource": "Tila / Resurssi",
+      "status": "Tila",
+      "subtitle": "Tarkastele odottavia tila-, resurssi- ja tapahtumapyyntöjä",
+      "title": "Hyväksynnät"
+    },
+    "availability": {
+      "allRoomsResources": "Kaikki tilat ja resurssit",
+      "blocked": "Estetty",
+      "book": "Varaa",
+      "filter": "Tila / Resurssi",
+      "subtitle": "Katso mitä on varattuna tiloissa ja resursseissa",
+      "title": "Saatavuus"
+    },
     "calendar": {
-      "add": "Lisää",
       "copiedToClipboard": "Kopioitu leikepöydälle",
       "copyIcsLink": "Kopioi ICS-linkki",
       "downloadIcsFile": "Lataa ICS-tiedosto",
@@ -137,6 +170,7 @@
       "cancel": "Peruuta",
       "confirmDelete": "Are you sure you wish to delete this event?",
       "delete": "Poista",
+      "manageRegistrations": "Hallinnoi ilmoittautumisia",
       "noGroups": "Ryhmiä ei löytynyt."
     },
     "calendarList": {
@@ -144,7 +178,6 @@
       "aboutParagraph2": "You can create multiple calendars for different purposes like worship services, youth events, and community outreach.",
       "aboutParagraph3": "Share your calendars with members through ICS feeds or embed them on your website.",
       "aboutTitle": "About Calendars",
-      "actions": "Actions",
       "active": "Active",
       "addCalendar": "Add Calendar",
       "calendar": "Calendar",
@@ -152,7 +185,6 @@
       "createCalendar": "Luo kalenteri",
       "createFirstCalendar": "Luo ensimmäinen kalenteri",
       "curatedCalendar": "Curated Calendar",
-      "edit": "Muokkaa",
       "manageEvents": "Hallitse tapahtumia",
       "noCalendars": "Kalentereita ei löytynyt",
       "status": "Tila",
@@ -161,16 +193,16 @@
       "title": "Kalenterit"
     },
     "calendarPage": {
-      "actions": "Actions",
       "addEventsHint": "Add events by selecting groups",
       "calendar": "Calendar",
       "calendarEvents": "Calendar Events",
       "confirmRemoveGroup": "Are you sure you wish to remove this group from the calendar?",
       "groupName": "Ryhmän nimi",
       "groupsInCalendar": "Ryhmät kalenterissa",
+      "importIcs": "Tuo .ics",
+      "newEvent": "Uusi tapahtuma",
       "noGroupsAdded": "Ryhmiä ei ole vielä lisätty",
-      "removeGroup": "Poista ryhmä",
-      "removeGroupAria": "Remove Group Aria",
+      "print": "Tulosta",
       "subtitle": "Hallitse kalenteri-tapahtumia ja ryhmiä"
     },
     "editEvent": {
@@ -182,6 +214,103 @@
       "noEventsFound": "No events found",
       "save": "Tallenna",
       "selectGroup": "Valitse ryhmä"
+    },
+    "eventReminders": {
+      "channels": "Kanavat",
+      "enableReminders": "Ota muistutukset käyttöön",
+      "maxOffsets": "Enintään 3 valittua aikaa",
+      "message": "Viesti (valinnainen)",
+      "messageHint": "Yhdistelmäkenttä: {{eventTitle}}",
+      "modeAuto": "Automaattinen",
+      "modeGroup": "Ryhmän jäsenet",
+      "modeRegistrants": "Vain ilmoittautuneet",
+      "modeRegistrantsHoh": "Vain talouden päät / ilmoittautuneet",
+      "timeOfDay": "Kellonaika",
+      "timeOfDayHint": "Seurakunnan paikallinen aika (esim. 9:00)",
+      "title": "Muistutukset",
+      "when": "Milloin (enintään 3)",
+      "who": "Kuka"
+    },
+    "importIcs": {
+      "chooseFile": "Valitse .ics-tiedosto",
+      "failed": "Tuonti epäonnistui. Tarkista tiedoston sisältö.",
+      "group": "Ryhmä",
+      "import": "Tuo",
+      "imported": "Tuotiin {} tapahtumaa.",
+      "noEventsFound": "Tiedostossa ei löytynyt tapahtumia.",
+      "pasteHint": "Tai liitä .ics-sisältö tähän",
+      "title": "Tuo .ics-kalenteri"
+    },
+    "newEvent": {
+      "customWindow": "Mukautettu varausikkuna",
+      "daily": "Päivittäin",
+      "description": "Kuvaus",
+      "doesNotRepeat": "Ei toistu",
+      "end": "Loppu",
+      "eventTitle": "Otsikko",
+      "group": "Ryhmä",
+      "monthly": "Kuukausittain",
+      "noTemplate": "(ei mallipohja)",
+      "private": "Yksityinen",
+      "public": "Julkinen",
+      "repeats": "Toistuu",
+      "reserveFrom": "Varaa alkaen",
+      "reserveUntil": "Varaa asti",
+      "resources": "Resurssit",
+      "rooms": "Tilat",
+      "seats": "Paikat {}",
+      "setupMinutes": "Valmistelu (min ennen)",
+      "start": "Alku",
+      "teardownMinutes": "Purku (min jälkeen)",
+      "template": "Mallipohja",
+      "title": "Uusi tapahtuma",
+      "visibility": "Näkyvyys",
+      "weekly": "Viikoittain"
+    },
+    "rooms": {
+      "addBlockout": "Lisää esto",
+      "addResource": "Lisää resurssi",
+      "addRoom": "Lisää tila",
+      "addTemplate": "Lisää mallipohja",
+      "allRoomsResources": "Kaikki tilat ja resurssit",
+      "approvalGroup": "Hyväksyntäryhmä",
+      "approvalGroupHint": "Tämän ryhmän jäsenten pyynnöt hyväksytään automaattisesti; muut tarvitsevat hyväksynnän.",
+      "blockoutTarget": "Koskee",
+      "blockouts": "Estot",
+      "capacity": "Kapasiteetti",
+      "confirmDeleteBlockout": "Haluatko varmasti poistaa tämän eston?",
+      "confirmDeleteResource": "Haluatko varmasti poistaa tämän resurssin?",
+      "confirmDeleteRoom": "Haluatko varmasti poistaa tämän tilan?",
+      "confirmDeleteTemplate": "Haluatko varmasti poistaa tämän mallipohjan?",
+      "description": "Kuvaus",
+      "durationMinutes": "Kesto (minuuttia)",
+      "editBlockout": "Muokkaa estoa",
+      "editResource": "Muokkaa resurssia",
+      "editRoom": "Muokkaa tilaa",
+      "editTemplate": "Muokkaa mallipohjaa",
+      "endTime": "Loppu",
+      "eventDescription": "Tapahtuman kuvaus",
+      "eventTitle": "Tapahtuman otsikko",
+      "noApprovalNeeded": "Ei vaadi hyväksyntää",
+      "noBlockouts": "Ei vielä estoja",
+      "noBlockoutsDesc": "Estä päivämäärät, jolloin tilat tai resurssit eivät ole käytettävissä.",
+      "noResources": "Ei vielä resursseja",
+      "noResourcesDesc": "Lisää jaettuja resursseja (projektorit, pöydät, pakettiautot) määrineen.",
+      "noRooms": "Ei vielä tiloja",
+      "noRoomsDesc": "Lisää tiloja, jotta tapahtumat voivat varata niitä ja ristiriidat voidaan havaita.",
+      "noTemplates": "Ei vielä mallipohjia",
+      "noTemplatesDesc": "Mallipohjat täyttävät uusiin tapahtumiin valmiiksi otsikon, keston, tilat ja resurssit.",
+      "quantity": "Määrä",
+      "reason": "Syy",
+      "resourceName": "Resurssin nimi",
+      "resources": "Resurssit",
+      "roomName": "Tilan nimi",
+      "rooms": "Tilat",
+      "startTime": "Alku",
+      "subtitle": "Hallinnoi varattavia tiloja, jaettuja resursseja, esto­päiviä ja tapahtumamallipohjia",
+      "templateName": "Mallipohjan nimi",
+      "templates": "Mallipohjat",
+      "title": "Tilat ja resurssit"
     }
   },
   "common": {
@@ -197,11 +326,13 @@
     "change": "Muuta",
     "changePhoto": "Vaihda valokuva",
     "close": "Sulje",
+    "collapse": "Kutista",
     "comboBox": {
       "addNew": "Lisää uusi..."
     },
+    "confirm": "Vahvista",
+    "copy": "Kopioi",
     "createPerson": {
-      "confirmDuplicate": "{{existingName}} already exists with an email of {{existingEmail}}. Are you sure you wish to add {{firstName}} {{lastName}}?",
       "validate": {
         "firstName": "Kirjoita etunimi.",
         "lastName": "Kirjoita sukunimi.",
@@ -213,33 +344,36 @@
     "done": "Valmis",
     "duplicate": "Monistaa",
     "edit": "Muokkaa",
+    "element": "Elementti",
+    "error": "Virhe",
     "errorBoundary": {
       "message": "Something went wrong. Please try again or contact support if the problem persists.",
       "retry": "Yritä uudelleen",
       "title": "Hups! Tapahtui virhe"
     },
+    "expand": "Laajenna",
     "formSubmission": {
-      "edit": "Muokkaa",
       "noData": "Tietoja ei ole saatavilla",
       "noQuestions": "Kysymyksiä ei löytynyt"
     },
     "help": "Apu",
     "iconPicker": {
-      "noResults": "No icons found matching \"{{searchText}}\"",
       "searchLabel": "Etsi kuvakkeita",
       "searchPlaceholder": "Type to search (e.g., person, home, church)...",
-      "showingDefault": "Showing {{count}} commonly used icons. Use search to find more.",
-      "showingMatching": "Showing {{count}} icons matching \"{{searchText}}\"",
       "title": "Valitse kuvake",
       "tryDifferent": "Try a different search term"
     },
     "left": "Vasemmalle",
+    "loading": "Ladataan",
     "mobile": "Matkapuhelin",
+    "more": "Lisää",
     "name": "Nimi",
     "navigation": "Navigointi",
     "no": "Ei",
+    "noAccess": "Sinulla ei ole oikeutta tähän osioon.",
     "notes": "Muistiinpanot",
     "person": "Person",
+    "print": "Tulosta",
     "remove": "Poista",
     "reportFilter": {
       "title": "Suodata raportti"
@@ -253,21 +387,19 @@
     "saving": "Tallennetaan...",
     "search": "Etsi",
     "searching": "Haetaan...",
+    "select": "Select",
     "sermons": "Saarnaat",
     "title": "Otsikko",
     "top": "Yläosa",
     "tryAgain": "Yritä uudelleen",
     "update": "Päivitä",
     "website": "Verkkosivusto",
-    "yes": "Kyllä",
-    "element": "Elementti"
+    "yes": "Kyllä"
   },
   "components": {
-    "associatedForms": {
-      "addForm": "Lisää lomake"
-    },
     "bezChat": {
       "ariaOpen": "Avaa Bez-chat",
+      "ariaSend": "Lähetä viesti",
       "errorAnswer": "Valitettavasti en löytänyt vastausta.",
       "errorGeneric": "Jokin meni pieleen. Yritä uudelleen.",
       "intro": "Hei, olen Bez! Voin auttaa sinua navigoimaan B1 Adminissa. Kokeile kysyä minulta:",
@@ -279,6 +411,7 @@
     },
     "docChat": {
       "ariaOpen": "Avaa ohje-chat",
+      "ariaSend": "Lähetä viesti",
       "composing": "Laaditaan vastausta...",
       "errorAnswer": "Valitettavasti en löytänyt vastausta.",
       "errorGeneric": "Jokin meni pieleen. Yritä uudelleen.",
@@ -296,13 +429,6 @@
     "droppableWrapper": {
       "ariaLabel": "Pudotusalue"
     },
-    "fileUpload": {
-      "file": "Tiedosto"
-    },
-    "footer": {
-      "phone": "Puhelin",
-      "rights": "Kaikki oikeudet pidätetään."
-    },
     "loginHeroPanel": {
       "featureDonations": "Lahjoitukset ja rahoituksen seuranta",
       "featurePeople": "Ihmisten ja kotitalouksien hallinta",
@@ -315,11 +441,7 @@
       "contactAdmin": "Ota yhteyttä seurakuntasi järjestelmänvalvojaan pyytääksesi pääsyä.",
       "defaultMessage": "Sinulla ei ole tarvittavia oikeuksia päästä tähän ominaisuuteen:"
     },
-    "personAdd": {
-      "select": "Valitse"
-    },
     "search": {
-      "ariaSearch": "Etsi",
       "ariaSearchInput": "Etsi henkilöä",
       "ariaSelectPerson": "Valitse henkilö"
     },
@@ -337,6 +459,7 @@
     },
     "superBeeChat": {
       "ariaOpen": "Avaa SuperBee-chat",
+      "ariaSend": "Lähetä viesti",
       "errorAnswer": "Joskus jopa supersankari kohtaa vastoinkäymisiä. Yritä uudelleen!",
       "errorGeneric": "Jokin meni pieleen. Mutta älä huoli — palaan vahvempana!",
       "intro": "Hei mestari! Olen SuperBee — sinun B1 Admin -voimavarasi. Anna tulla vaikeimmat kysymyksesi!",
@@ -353,6 +476,7 @@
       "form": "Lomake",
       "forms": "Lomakkeet",
       "groups": "Ryhmät",
+      "myWork": "Oma työ",
       "plans": "Suunnitelmat",
       "ppl": "Ihmiset",
       "servAdmin": "Palvelimen ylläpitäjä",
@@ -360,7 +484,8 @@
       "set": "Asetukset",
       "songs": "Songs",
       "tasks": "Tehtävät",
-      "teams": "Joukkueet"
+      "teams": "Joukkueet",
+      "workflows": "Työnkulut"
     }
   },
   "createPerson": {
@@ -371,54 +496,35 @@
   },
   "dashboard": {
     "adminWelcome": {
-      "addCongregationDesc": "Tuo tai lisää ihmisiä seuratakseen läsnäoloa, ryhmiä ja lahjoituksia.",
       "addCongregationTitle": "Lisää seurakuntasi",
-      "addLogoDesc": "Lataa logosi ja päivitä seurakuntasi yhteystiedot.",
       "addLogoTitle": "Lisää seurakuntasi logo",
-      "createGroupDesc": "Perusta pienryhmiä, luokkia tai palvelutiimejä.",
       "createGroupTitle": "Luo ensimmäinen ryhmäsi",
-      "createWebpageDesc": "Rakenna julkinen verkkosivusto, jolla vierailijat voivat tutustua seurakuntaasi.",
       "createWebpageTitle": "Luo ensimmäinen verkkosivusi",
-      "freePlayDesc": "Luo palvelutehtävä ja luokkahuone FreePlay-oppitunneille televisiossasi.",
       "freePlayTitle": "Aseta FreePlay-luokkahuoneesi",
-      "freeShowDesc": "Yhdistä FreeShow varmuuskopioidaksesi laulujasi ja palvelusuunnitelmasi.",
       "freeShowTitle": "Aseta FreeShow-varmuuskopiot",
-      "intro": "Aloita napsauttamalla mitä tahansa korttia alla. Löydät nämä aina valikosta myöhemmin.",
-      "inviteTeamDesc": "Lisää henkilökuntaa ja vapaaehtoisia järjestelmänvalvojiksi auttamaan asioiden hallinnassa.",
       "inviteTeamTitle": "Kutsu tiimin jäseniä",
-      "onlineGivingDesc": "Yhdistä Stripe, jotta seurakuntasi voi lahjoittaa verkossa.",
       "onlineGivingTitle": "Aseta verkkolahjoitukset",
       "peopleAndGroups": "Ihmiset ja ryhmät",
       "servingAndContent": "Palvelu ja sisältö",
-      "setAvatarDesc": "Lataa profiilikuva, jotta tiimisi voi tunnistaa sinut.",
       "setAvatarTitle": "Aseta avatarisi",
       "subtitle": "Otetaanpa seurakuntasi käyttöön. Tässä on muutamia asioita, jotka haluat luultavasti tehdä ensin.",
       "title": "Tervetuloa B1.churchiin!",
-      "uploadSermonDesc": "Jaa saarnasi verkossa, jotta ihmiset voivat katsoa niitä milloin tahansa.",
       "uploadSermonTitle": "Lataa saarna",
       "yourChurch": "Seurakuntasi",
       "yourProfile": "Profiilisi"
     },
     "dashboardPage": {
-      "dash": "Kojelauta",
-      "subtitle": "Tervetuloa seurakuntasi hallintakojelautaan. Etsi ihmisiä, katso ryhmiäsi ja hallitse avoimia tehtäviäsi."
+      "dash": "Kojelauta"
     },
     "memberWelcome": {
-      "downloadAppDesc": "Hanki B1.church-sovellus puhelimellesi pysyäksesi yhteydessä missä tahansa oletkin.",
       "downloadAppTitle": "Lataa mobiilisovellus",
       "fallbackChurchName": "seurakuntasi",
-      "findPeopleDesc": "Etsi seurakunnan hakemistosta löytääksesi ja yhdistääksesi muiden seurakuntalaisten kanssa.",
       "findPeopleTitle": "Löydä tuttuja ihmisiä",
-      "intro": "Aloita täydentämällä profiilisi ja tutustumalla siihen, mitä seurakuntasi tarjoaa.",
-      "joinGroupDesc": "Selaa pienryhmiä, luokkia ja palvelutiimejä löytääksesi yhteisösi.",
       "joinGroupTitle": "Liity ryhmään",
-      "onlineGivingDesc": "Lahjoita verkossa nopeasti ja helposti, ja aseta valinnaisesti toistuvat lahjoitukset.",
       "onlineGivingTitle": "Aseta verkkolahjoitukset",
-      "setPhotoDesc": "Lataa profiilikuva, jotta seurakunnassa olevat ihmiset voivat tunnistaa sinut ja yhdistää kasvon nimeesi.",
       "setPhotoTitle": "Lisää valokuvasi",
       "subtitle": "Tässä on muutamia asioita, joita voit tehdä yhteyden saamiseksi.",
       "title": "Tervetuloa kohteeseen {churchName}!",
-      "upcomingEventsDesc": "Tutustu tuleviin tapahtumiin, palvelusaikoihin ja tapoihin osallistua.",
       "upcomingEventsTitle": "Katso, mitä tapahtuu"
     },
     "myGroups": "Omat ryhmät",
@@ -483,34 +589,8 @@
     }
   },
   "donation": {
-    "donationForm": {
-      "annually": "Vuosittain",
-      "biWeekly": "Kahden viikon välein",
-      "cover": "Peittää tapahtumapalkkiot",
-      "fees": "Palkkiot",
-      "frequencyLabel": "Taajuus",
-      "funds": "Rahastot",
-      "make": "Lahjoita",
-      "makeRecurring": "Tee tästä toistuva lahjoitus",
-      "monthly": "Kuukausittain",
-      "quarterly": "Neljännesvuosittain",
-      "startDate": "Alkamispäivä",
-      "thankYou": "Kiitos lahjoituksestasi!",
-      "totalAmount": "Kokonaissumma",
-      "validate": {
-        "amount": "Please enter a donation amount.",
-        "email": "Email is required.",
-        "firstName": "First name is required.",
-        "lastName": "Last name is required.",
-        "validEmail": "Kirjoita kelvollinen sähköpostiosoite."
-      },
-      "weekly": "Viikottain"
-    },
     "donationPage": {
       "donations": "Lahjoitukset"
-    },
-    "nonAuthDonation": {
-      "donate": "Lahjoita"
     },
     "page": {
       "amount": "Summa",
@@ -555,6 +635,45 @@
       "addDonation": "Add Donation",
       "pressEnter": "Paina Enter tallentaaksesi ja lisätäksesi toisen lahjoituksen",
       "selectPerson": "Select Person or Anonymous"
+    },
+    "campaignEdit": {
+      "allowSelfPledge": "Salli lahjoittajien sitoutua",
+      "confirmMsg": "Haluatko varmasti poistaa tämän kampanjan ja kaikki sen lupaukset pysyvästi?",
+      "description": "Kuvaus",
+      "endDate": "Päättymispäivä (valinnainen)",
+      "errBlank": "Anna kampanjan nimi",
+      "errFund": "Valitse rahasto",
+      "errStartDate": "Anna aloituspäivä",
+      "fund": "Rahasto",
+      "goalAmount": "Tavoitesumma (valinnainen)",
+      "showPublic": "Näytä edistyminen lahjoitussivulla",
+      "startDate": "Aloituspäivä"
+    },
+    "campaignPage": {
+      "addPledge": "Lisää lupaus",
+      "anon": "Anonyymi",
+      "donor": "Lahjoittaja",
+      "editCampaign": "Muokkaa kampanjaa",
+      "noPledges": "Tähän kampanjaan ei ole vielä tehty lupauksia.",
+      "ofGoal": "tavoitteesta",
+      "pledges": "Lupaukset",
+      "status": "Tila",
+      "subtitle": "Lupaukset ja lahjoitusedistyminen tälle kampanjalle"
+    },
+    "campaignsPage": {
+      "addCampaign": "Lisää kampanja",
+      "campaigns": "Kampanjat",
+      "dates": "Päivämäärät",
+      "export": "Vie",
+      "fund": "Rahasto",
+      "given": "Lahjoitettu",
+      "goal": "Tavoite",
+      "noCampaigns": "Kampanjoja ei ole vielä luotu.",
+      "ongoing": "Käynnissä",
+      "pledged": "Luvattu",
+      "progress": "Edistyminen",
+      "subtitle": "Seuraa lupaus­kampanjoita ja edistymistä kohti lahjoitustavoitteita",
+      "totalCampaigns": "Kampanjoita yhteensä"
     },
     "donationBatchPage": {
       "batchDate": "Erän päivämäärä:",
@@ -601,9 +720,9 @@
       "amt": "Summa",
       "anon": "Anonymous",
       "batches": "Batches",
+      "campaigns": "Kampanjat",
       "date": "Päivämäärä",
       "don": "Lahjoitukset",
-      "edit": "Muokkaa",
       "errMsg": "No fund found. Please create a fund before making a donation",
       "export": "Vie",
       "funds": "Rahastot",
@@ -615,7 +734,6 @@
       "total": "Kokonaisarvo"
     },
     "donationsPage": {
-      "batch": "Erä",
       "date": "Päivämäärä",
       "don": "Lahjoitukset",
       "noBatch": "No batches found.",
@@ -625,11 +743,13 @@
     "fundEdit": {
       "ariaFundName": "Rahaston nimi",
       "ariaTaxDeductible": "Verovähennyskelpoinen",
+      "ariaVisible": "Näkyvissä lahjoittajille",
       "confirmMsg": "Are you sure you wish to permanently delete this fund and all donations within it?",
       "errBlank": "Kirjoita rahaston nimi",
       "taxDeductible": "Verovähennyskelpoinen",
       "trackDonations": "Seurantaa lahjoituksia.",
-      "trackNonDonations": "Tracks non-donation transactions like camp registrations, tshirts, event tickets, etc."
+      "trackNonDonations": "Tracks non-donation transactions like camp registrations, tshirts, event tickets, etc.",
+      "visible": "Näkyvissä lahjoittajille"
     },
     "fundPage": {
       "donors": "Lahjoittajat",
@@ -638,8 +758,8 @@
       "totalAmount": "Kokonaissumma"
     },
     "funds": {
-      "addFund": "Lisää rahasto",
       "fund": "Rahastot",
+      "hidden": "Piilotettu",
       "noFund": "No funds found."
     },
     "fundsPage": {
@@ -661,47 +781,66 @@
       "taxStatus": "Verostatus",
       "totalFunds": "Rahastoja yhteensä"
     },
-    "kpi": {
-      "avgGift": "Average Gift",
-      "donationCount": "Lahjoitukset yhteensä",
-      "donorCount": "Unique Donors",
-      "totalGiving": "Total Giving"
-    },
     "period": {
       "monthly": "Kuukausittain",
       "quarterly": "Neljännesvuosittain",
       "weekly": "Viikottain"
     },
+    "pledgeEdit": {
+      "addPledge": "Lisää lupaus",
+      "amount": "Lupaussumma",
+      "confirmMsg": "Haluatko varmasti poistaa tämän lupauksen pysyvästi?",
+      "editPledge": "Muokkaa lupausta",
+      "errAmount": "Anna lupaussumma, joka on suurempi kuin nolla",
+      "errPerson": "Valitse henkilö"
+    },
+    "pledgeStatus": {
+      "beyondPledged": "Ylittää lupauksen",
+      "fulfilled": "Täytetty",
+      "inProgress": "Kesken",
+      "nonPledged": "Ei luvattu",
+      "notStarted": "Ei aloitettu"
+    },
     "printAllStatementsPage": {
       "annualStatementTitle": "Vuosittainen lahjoituskatsaus {year}",
+      "campaign": "Kampanja",
       "contributionDetails": "Lahjoitusten tiedot",
       "disclaimer": "{churchName} ei tarjonnut tavaroita tai palveluita vastineeksi näistä lahjoituksista. Ainoa saatu hyöty oli aineeton uskonnollinen hyöty. {churchName} on voittoa tavoittelematon järjestö.",
       "donorInformation": "Lahjoittajan tiedot",
       "fund": "Rahasto",
       "fundBreakdown": "Rahastojen erittely",
+      "given": "Lahjoitettu",
       "issued": "Annettu:",
       "loadingStatements": "Ladataan katsauksia...",
       "noteLabel": "Huom:",
       "noteText": "Tämä katsaus tiivistää lahjoitukset, jotka on tehty seurakunnalle {churchName} kalenterivuoden {year} aikana. Säilytä tämä asiakirja verotustietojasi varten. Jos sinulla on kysyttävää tästä katsauksesta, ota yhteyttä seurakunnan toimistoon.",
       "organization": "Organisaatio",
       "period": "Ajanjakso: 1. tammikuuta - 31. joulukuuta, {year}",
+      "pledgeProgress": "Lupaus­kampanjat",
+      "pledged": "Luvattu",
       "statementSummary": "Katsauksen yhteenveto",
+      "status": "Tila",
       "totalContributions": "Lahjoitukset yhteensä",
       "totalContributionsLabel": "Lahjoitukset yhteensä:"
     },
     "printDonationPage": {
       "annualStatementTitle": "Vuosittainen lahjoituskatsaus {year}",
+      "campaign": "Kampanja",
       "contributionDetails": "Lahjoitusten tiedot",
       "disclaimer": "{churchName} ei tarjonnut tavaroita tai palveluita vastineeksi näistä lahjoituksista. Ainoa saatu hyöty oli aineeton uskonnollinen hyöty. {churchName} on voittoa tavoittelematon järjestö.",
       "donorInformation": "Lahjoittajan tiedot",
       "fund": "Rahasto",
       "fundBreakdown": "Rahastojen erittely",
+      "given": "Lahjoitettu",
       "issued": "Annettu:",
       "noteLabel": "Huom:",
       "noteText": "Tämä katsaus tiivistää lahjoitukset, jotka on tehty seurakunnalle {churchName} kalenterivuoden {year} aikana. Säilytä tämä asiakirja verotustietojasi varten. Jos sinulla on kysyttävää tästä katsauksesta, ota yhteyttä seurakunnan toimistoon.",
       "organization": "Organisaatio",
       "period": "Ajanjakso: 1. tammikuuta - 31. joulukuuta, {year}",
+      "pledgeProgress": "Lupaus­kampanjat",
+      "pledged": "Luvattu",
       "statementSummary": "Katsauksen yhteenveto",
+      "status": "Tila",
       "totalContributions": "Lahjoitukset yhteensä",
       "totalContributionsLabel": "Lahjoitukset yhteensä:"
     },
@@ -759,13 +898,20 @@
       "accessLevelAria": "Käyttötaso",
       "alone": "Stand Alone",
       "associate": "Associate With",
+      "autoCreatePerson": "Create a person record from submissions",
       "available": "Set Form Availability Timeframe",
       "availableEnd": "Availability End Date",
       "availableStart": "Availability Start Date",
       "confirmMsg": "Are you sure you wish to permanently delete this form?",
       "contentTypeAria": "Sisältötyyppi",
+      "displayConversational": "Conversational (one question at a time)",
+      "displayMode": "Display Mode",
+      "displayStandard": "Standard",
       "editForm": "Muokkaa lomaketta",
       "endReqMsg": "End date is required.",
+      "followUpBody": "Follow-up Email Body",
+      "followUpHelper": "You can use {firstName} and {churchName} tokens.",
+      "followUpSubject": "Follow-up Email Subject",
       "formNameAria": "Lomakkeen nimi",
       "name": "Lomakkeen nimi",
       "nameReqMsg": "Form name is required.",
@@ -780,7 +926,6 @@
       "addPpl": "Lisää henkilö",
       "admin": "Ylläpitäjä",
       "emailNotif": "Sähköposteilmoitus",
-      "emailNotifInfoAria": "Sähköposti-ilmoituksen tiedot",
       "emailNotifMsg": "Whenever the form is submitted, you'll get notified via mail.",
       "formMem": "Lomakkeen jäsenet",
       "perm": "Lupa",
@@ -797,7 +942,6 @@
       "date": "Päivämäärä",
       "decNum": "Decimal",
       "desc": "Kuvaus",
-      "fieldReq": "Field type is required.",
       "fund": "Rahasto",
       "multiChoice": "Multiple Choice",
       "payment": "Payment",
@@ -831,13 +975,7 @@
       "archiveFormAria": "Arkistoi lomake {name}",
       "confirmMsg1": "Are you sure you want to archive this form?",
       "confirmMsg2": "Are you sure you want to restore this form?",
-      "edit": "Muokkaa",
-      "editFormAria": "Muokkaa lomaketta {name}",
-      "form": "lomake",
-      "formArchivedCount": "{count} arkistoitu lomake",
-      "formArchivedCountPlural": "{count} arkistoitua lomaketta",
-      "formCount": "{count} lomake",
-      "formCountPlural": "{count} lomaketta",
+      "duplicate": "Monista",
       "forms": "Lomakkeet",
       "noArch": "No archived forms.",
       "noCustomMsg": "No custom forms have been created yet. They will appear here when added.",
@@ -853,6 +991,11 @@
       "unAuth": "Ei valtuutettu"
     }
   },
+  "gallery": {
+    "aspectRatio": "Kuvasuhde",
+    "confirmDelete": "Vahvista poisto",
+    "freeForm": "Vapaa muoto"
+  },
   "groups": {
     "groupAdd": {
       "add": "Lisää",
@@ -867,6 +1010,9 @@
     },
     "groupBanner": {
       "associatedServices": "Liittyvät palvelut",
+      "confirmDuplicate": "Monistetaanko tämä ryhmä? Jäseniä ei kopioida.",
+      "copySuffix": "(Kopio)",
+      "duplicateTooltip": "Monista tämä ryhmä",
       "emailTooltip": "Lähetä sähköpostia tälle ryhmälle",
       "labels": "Otsikot",
       "meetingInfo": "Meeting Information",
@@ -877,6 +1023,22 @@
       "team": "Joukkue",
       "textTooltip": "Tekstaa tälle ryhmälle",
       "trackAttendance": "Seuraa osallistumista"
+    },
+    "groupCalendar": {
+      "addEvents": "Lisää tapahtumia",
+      "bulkAddTitle": "Lisää toistuvia tapahtumia",
+      "confirmDelete": "Poistetaanko \"{title}\" ja kaikki sen toistuvat tapahtumat?",
+      "datesPreview": "Luodaan {count} kokousta. Poista rasti ohitettavista päivämääristä.",
+      "events": "Tapahtumat",
+      "everyTwoWeeks": "Joka toinen viikko",
+      "firstMeeting": "Ensimmäinen kokous",
+      "lastMeeting": "Viimeinen kokous",
+      "noDates": "Valitulle ajanjaksolle ei osu kokouspäiviä.",
+      "noEvents": "Ei vielä tapahtumia. Lisää tapahtumia aikatauluttaaksesi ryhmän kokoukset.",
+      "oneTime": "Kertaluonteinen",
+      "skipHolidays": "Ohita pyhäpäivät",
+      "skippedDates": "Ohitetut päivämäärät",
+      "until": "asti"
     },
     "groupDetails": {
       "about": "About",
@@ -895,15 +1057,19 @@
     },
     "groupDetailsEdit": {
       "addPhoto": "Add Photo",
+      "archive": "Arkistoi",
+      "archiveAria": "Arkistoi ryhmä",
       "attTrack": "Seuraa osallistumista",
       "attendance": "Osallistuminen",
+      "attendanceReminders": "Läsnäolo­muistutussähköpostit",
       "catName": "Category Name",
       "catNameMsg": "Please enter a category name.",
       "changePhotoAria": "Vaihda ryhmäkuva",
       "clickToAddPhoto": "Click to add photo",
+      "confirmArchive": "Haluatko varmasti arkistoida tämän ryhmän? Se piilotetaan ryhmälistalta, kunnes se palautetaan.",
       "confirmMsg": "Are you sure you wish to permanently delete this group?",
+      "enrollment": "Ilmoittautuminen",
       "groupDesc": "Ryhmän kuvaus",
-      "groupDescriptionAria": "Ryhmän kuvaus",
       "groupDet": "Ryhmän tiedot",
       "groupName": "Ryhmän nimi",
       "groupNameAria": "Ryhmän nimi",
@@ -916,7 +1082,25 @@
       "meetingTimeAria": "Tapaamisaika",
       "parPick": "Vanhemman noutaminen",
       "prinName": "Tulosta nimilappu",
+      "publicRoster": "Näytä jäsenlista verkkosivustolla",
       "slug": "Slug (avain käytetään URL-osoitteissa)"
+    },
+    "groupHealth": {
+      "attendance": "Läsnäolo",
+      "attendanceTrend": "Läsnäolokehitys",
+      "avgAge": "Keski-ikä",
+      "avgAttendance": "Keskim. läsnäolo",
+      "churn90": "Vaihtuvuus (90 pv)",
+      "joined": "Liittynyt",
+      "joined90": "Liittynyt (90 pv)",
+      "left": "Lähtenyt",
+      "left90": "Lähtenyt (90 pv)",
+      "members": "Jäsenet",
+      "membershipChanges": "Jäsenmuutokset (12 kk)",
+      "month": "Kuukausi",
+      "subtitle": "Vertaile kasvua, vaihtuvuutta ja läsnäoloa ryhmittäin",
+      "title": "Ryhmän terveys",
+      "week": "Viikko"
     },
     "groupLabelsEdit": {
       "addNewLabel": "Add New Label",
@@ -926,16 +1110,19 @@
     },
     "groupMembers": {
       "groupMem": "Ryhmän jäsenet",
-      "noMem": "No group members found.",
-      "promoteToLeader": "Ylennä johtajaksi",
-      "promoteToLeaderAria": "Ylennä {name} johtajaksi",
-      "remove": "Poista",
-      "removeFromGroupAria": "Poista {name} ryhmästä",
+      "leader": "Johtaja",
+      "leaderLower": "johtaja",
+      "leadersLower": "johtajat",
+      "makeLeader": "Tee johtajaksi",
+      "member": "jäsen",
+      "members": "jäsenet",
+      "messagePlaceholder": "Kirjoita viesti kaikille ryhmän jäsenille…",
+      "noMemDesc": "Lisää jäseniä oikealla olevasta paneelista aloittaaksesi ryhmän rakentamisen.",
+      "noMemTitle": "Ei vielä jäseniä",
       "removeLeaderAccess": "Poista johtajaoikeudet",
-      "removeLeaderAccessAria": "Poista johtajaoikeudet käyttäjältä {name}",
+      "role": "Rooli",
       "send": "Lähetä",
       "sendMemMsg": "Lähetä viesti jäsenille",
-      "sendMessageAria": "Lähetä viesti jäsenille",
       "showTemplates": "Näytä mallit",
       "templates": {
         "none": "None",
@@ -948,6 +1135,8 @@
       "unknown": "Tuntematon"
     },
     "groupNavigation": {
+      "calendar": "Kalenteri",
+      "health": "Terveys",
       "members": "Jäsenet",
       "sessions": "Istunnot"
     },
@@ -962,8 +1151,6 @@
       "noAttendance": "No attendance records found",
       "noSesMsg": "There are no sessions.",
       "noSessionsFound": "No sessions found",
-      "removeAria": "Poista {name} istunnosta",
-      "removeButton": "Poista",
       "selectSession": "Select Session",
       "session": "Session",
       "sessions": "Istunnot",
@@ -973,30 +1160,28 @@
     "groupsPage": {
       "addGroup": "Add Group",
       "cat": "Kategoria",
-      "categories": "Categories",
+      "export": "Vie",
       "groups": "Ryhmät",
       "labels": "Otsikot",
       "noGroupMsg": "No groups found. Please create a group.",
       "pers": "1 person",
       "ppl": "Ihmiset",
+      "restore": "Palauta",
+      "showArchived": "Näytä arkistoidut",
       "spPpl": " people",
       "subtitle": {
         "create": "Aloita luomalla ensimmäinen ryhmä",
         "manage": "Organize and manage your church groups"
       },
-      "totalGroups": "Ryhmät yhteensä",
-      "totalMembers": "Jäsenet yhteensä"
+      "totalGroups": "Ryhmät yhteensä"
     },
     "membersAdd": {
-      "addMemberAria": "Lisää jäsen ryhmään",
       "availableMem": "Saatavilla olevat ryhmän jäsenet",
       "noMem": "No group members available.",
       "unknown": "Tuntematon"
     },
     "sendEmailDialog": {
       "bodyMergeFieldHint": "Lisää yhdistämiskenttä tekstiin:",
-      "cancel": "Peruuta",
-      "close": "Sulje",
       "composePlaceholder": "Kirjoita sähköpostisi tähän...",
       "eligibleSummary": "{eligibleCount}/{totalMembers} jäsentä saa tämän sähköpostin.",
       "eligibleSummarySingular": "{eligibleCount}/{totalMembers} jäsen saa tämän sähköpostin.",
@@ -1014,6 +1199,7 @@
       "noEmailNoticeSingular": "{count} ei ole sähköpostiosoitetta.",
       "noEmailSkipped": "{count} ohitettu (ei sähköpostiosoitetta).",
       "none": "Ei mitään",
+      "permissionError": "Sinulla ei ole oikeutta lähettää ryhmäsähköposteja.",
       "send": "Lähetä sähköposti",
       "sendDefault": "Tämä lähettää sähköpostin oikeutetuille ryhmän jäsenille.",
       "sendFailedDetail": "{count} epäonnistui lähetyksessä.",
@@ -1025,10 +1211,8 @@
       "subjectPlaceholder": "esim. Hei {firstName}, päivitys seurakunnasta {churchName}"
     },
     "sendTextDialog": {
-      "cancel": "Peruuta",
       "characterCount": "{count} merkkiä ({segments} SMS-segmenttiä)",
       "characterCountSingular": "{count} merkki ({segments} SMS-segmentti)",
-      "close": "Sulje",
       "eligibleSummary": "{eligibleCount}/{totalMembers} jäsentä saa tämän tekstin.",
       "eligibleSummarySingular": "{eligibleCount}/{totalMembers} jäsen saa tämän tekstin.",
       "fallbackError": "Tekstiviestin lähettäminen epäonnistui.",
@@ -1063,10 +1247,6 @@
       "sesDate": "Session Date",
       "sessionDateAria": "Istunnon päivämäärä",
       "srvTime": "Palvelun aika"
-    },
-    "sessionAttendance": {
-      "removeVisitorAria": "Poista {name} istunnosta",
-      "visitor": "vierailija"
     },
     "sessionCard": {
       "active": "Active",
@@ -1107,17 +1287,20 @@
     },
     "secondaryMenuHelper": {
       "appearance": "Ulkoasu",
+      "approvals": "Hyväksynnät",
+      "availability": "Saatavuus",
       "blocks": "Lohkot",
+      "blog": "Blog",
       "bulkImport": "Joukkotuonti",
       "calendars": "Kalenterit",
       "devices": "Laitteet",
       "files": "Tiedostot",
       "liveStreamTimes": "Suoratoistoajat",
       "pages": "Sivut",
-      "playlists": "Soittolistat",
       "profile": "Profiili",
       "quickActions": "Pikatoiminnot",
       "registrations": "Ilmoittautumiset",
+      "roomsResources": "Tilat ja resurssit",
       "sermons": "Saarnat",
       "stripeImport": "Stripe-tuonti",
       "website": "Verkkosivusto"
@@ -1139,10 +1322,33 @@
       "title": "B1 Mobile"
     },
     "checkInPage": {
+      "copyLink": "Kopioi linkki",
       "disabled": "Disabled",
+      "downloadQr": "Lataa PNG",
       "enabled": "Enabled — QR code will appear on kiosk",
+      "kiosk": {
+        "addSlide": "Lisää dia",
+        "backgroundImage": "Taustakuva",
+        "backgroundImageDesc": "Valinnainen taustakuva haku-/tervetuloa­näytölle. Suositeltu: 1920x1080.",
+        "changeImage": "Vaihda kuva",
+        "duration": "Kesto (s)",
+        "enableIdleScreen": "Ota käyttöön lepotila­näyttö",
+        "headerSubtitle": "Kioskin värejä hallitaan kohdassa Asetukset > Sovellusteema. Määritä taustakuvat ja lepotila­näytön toiminta alla.",
+        "idleScreen": "Lepotila­näyttö / Näytönsäästäjä",
+        "sectionTitle": "Kioskin teema",
+        "slides": "Diat",
+        "timeoutSeconds": "Aikakatkaisu (sekuntia)",
+        "upload": "Lataa",
+        "uploadImage": "Lataa kuva"
+      },
+      "linkCopied": "Kopioitu!",
+      "manageLabels": "Suunnittele tarrat",
       "qrGuestRegistration": "QR Guest Registration",
+      "qrShareDescription": "Tulosta tämä QR-koodi flyereille, tiedotteille tai kylteille. Vieraat voivat skannata sen ilmoittautuakseen puhelimellaan. Se näkyy myös sovelluksessa.",
+      "qrShareTitle": "Jaa ilmoittautumis-QR-koodi",
       "qrTooltip": "Display a QR code on the check-in kiosk so guests can self-register on their phone",
+      "registrationUrl": "Ilmoittautumislinkki",
+      "saveToActivate": "Tallenna muutokset aktivoidaksesi tämän linkin.",
       "subtitle": "Configure settings for the B1 CheckIn kiosk app",
       "title": "B1 CheckIn"
     }
@@ -1181,6 +1387,7 @@
       "valuePlaceholder": "Value"
     },
     "aiSearch": {
+      "clearSearch": "Tyhjennä haku",
       "exampleMen": "- Näytä yli 30-vuotiaat miehet, joiden syntymäpäivä on heinäkuussa.",
       "exampleWomen": "- Näytä naimisissa olevat naiset.",
       "examples": "Esimerkit:",
@@ -1188,6 +1395,46 @@
       "search": "Etsi",
       "searching": "Etsitään...",
       "title": "AI Search"
+    },
+    "bulk": {
+      "actions": "Toiminnot",
+      "addToGroup": "Lisää ryhmään",
+      "addToWorkflow": "Lisää työnkulkuun",
+      "addToWorkflowPrompt": "Lisää {count} valittua henkilöä työnkulkuun kortteina.",
+      "apply": "Käytä",
+      "campusTitle": "Määritä kampukselle",
+      "clearSelection": "Tyhjennä valinta",
+      "createNewGroup": "Luo uusi ryhmä",
+      "delete": "Poista",
+      "error": "Virhe",
+      "fieldPrompt": "Päivitä kenttä {count} valitulle henkilölle.",
+      "fieldSuccess": "Päivitettiin {count} henkilöä.",
+      "genderTitle": "Aseta sukupuoli",
+      "group": "Ryhmä",
+      "maritalStatusTitle": "Aseta siviilisääty",
+      "membershipStatusTitle": "Aseta jäsenyysstatus",
+      "newGroupName": "Uuden ryhmän nimi",
+      "optedOutField": "Kieltäytymiskenttä",
+      "optedOutNo": "Ei kieltäytynyt",
+      "optedOutTitle": "Aseta kieltäytyminen",
+      "optedOutYes": "Kieltäytynyt",
+      "removeFromGroup": "Poista ryhmästä",
+      "selected": "Valittu",
+      "workflowSuccess": "Lisättiin {count} henkilöä työnkulkuun."
+    },
+    "demographics": {
+      "age": "Ikä",
+      "campus": "Kampus",
+      "female": "Nainen",
+      "gender": "Sukupuoli",
+      "male": "Mies",
+      "maritalStatus": "Siviilisääty",
+      "membershipStatus": "Jäsenyyslajit",
+      "noData": "Ei tietoja saatavilla",
+      "subtitle": "Yleiskatsaus seurakuntasi jäsenistöön",
+      "title": "Demografiat",
+      "total": "Yhteensä",
+      "unassigned": "Ei määritetty"
     },
     "editCondition": {
       "act": "Activity",
@@ -1237,27 +1484,48 @@
     },
     "household": {
       "age": "Ikä:",
-      "demoGroups": "Ryhmät: Nuorisotyö, Ylistystiimi",
-      "demoLastActivity": "Viimeinen aktiivisuus: 24. marraskuuta 2024",
+      "groups": "Ryhmät:",
       "house": " Household",
+      "lastActivity": "Viimeisin toiminta:",
       "noContactInfo": "Ei yhteystietoja",
       "status": "Tila:"
     },
     "householdEdit": {
       "addMatch": "address to match",
       "addMember": "Lisää kotitalouden jäsen",
-      "addMemberAria": "Lisää kotitalouden jäsen",
       "blankMsg": "Please provide a household name.",
-      "cancelAddMember": "Peruuta jäsenen lisäys",
       "child": "Child",
       "head": "Head",
       "house": " Household",
       "houseName": "Kotitalouden nimi",
       "householdNameAria": "Kotitalouden nimi",
       "other": "Other",
-      "removeMemberAria": "Poista kotitalouden jäsen",
       "spouse": "Puoliso",
       "updQuestion": "Would you like to update"
+    },
+    "lists": {
+      "autoRefresh": "Päivitä öisin",
+      "category": "Kategoria",
+      "categoryPlaceholder": "Valinnainen — ryhmittele listat",
+      "confirmDelete": "Poistetaanko lista \"{name}\"? Toimintoa ei voi peruuttaa.",
+      "createdBy": "{name} luoma",
+      "delete": "Poista lista",
+      "empty": "Ei tallennettuja listoja. Tee tarkennettu haku ja valitse \"Tallenna listana\".",
+      "household": "Sisällytä kotitalous",
+      "householdAll": "Koko kotitalous",
+      "householdChildren": "Osumien lapset",
+      "householdNone": "Vain osumat",
+      "match": "Vastaa",
+      "matchAll": "Kaikki suodattimet",
+      "matchAny": "Jokin suodatin",
+      "name": "Listan nimi",
+      "notifyOnChange": "Lähetä sähköposti, kun jäsenyys muuttuu",
+      "saveAs": "Tallenna listana",
+      "settings": "Listan asetukset",
+      "sharing": "Kuka voi nähdä tämän listan",
+      "sharingOrg": "Kaikki henkilöstö",
+      "sharingPrivate": "Vain minä",
+      "title": "Tallennetut listat"
     },
     "merge": {
       "merge": "merge",
@@ -1287,6 +1555,7 @@
     },
     "peoplePage": {
       "addPerson": "Lisää henkilö",
+      "allMembers": "Kaikki jäsenet",
       "bDay": "Syntymäpäivä",
       "bDayNo": "Syntymäpäivä (ilman vuotta)",
       "deleteOp": "Poista vaihtoehto",
@@ -1301,10 +1570,11 @@
       "photo": "Valokuva",
       "primEmail": "Ensisijainen sähköposti",
       "primPhone": "Ensisijainen puhelinnumero",
-      "recentPpl": "Äskettäin lisätyt henkilöt",
+      "printDirectory": "Tulosta jäsenluettelo",
       "searchPpl": "Etsi ihmisiä",
       "searchResults": "Hakutulokset",
-      "showingRecent": "Näytetään {count} viimeisintä ihmistä"
+      "showAll": "Näytä kaikki jäsenet",
+      "showingMembers": "Näytetään {count} jäsentä"
     },
     "peopleSearch": {
       "active": "active:",
@@ -1336,17 +1606,13 @@
     },
     "personAdd": {
       "createNewPersonAria": "Luo uusi henkilö",
-      "searchForPersonAria": "Etsi henkilöä",
       "searchForPersonToAddAria": "Etsi lisättävää henkilöä"
-    },
-    "personAddResults": {
-      "add": "Lisää",
-      "addPersonAria": "Lisää henkilö {name}"
     },
     "personAttendance": {
       "noAttMsg": "No attendance records. Attendance will appear once attendance has been tracked for a group session."
     },
     "personBanner": {
+      "addToWorkflow": "Lisää työnkulkuun",
       "age": "Ikä",
       "gender": "Sukupuoli",
       "hasLogin": "On kirjautuminen",
@@ -1362,24 +1628,21 @@
       "family": "family",
       "firstReq": "First name is required",
       "for": "for",
-      "home": "Koti",
       "invalForm": "Inval Form",
       "lastReq": "Last name is required",
       "maritalStatus": "Siviilisääty",
       "merge": "Yhdistä",
       "mergePersonAria": "Yhdistä henkilö",
-      "mobile": "Matkapuhelin",
       "nameNote": "Nimilapun muistiinpanot",
+      "noCampus": "Ei kampusta",
       "persDet": "Henkilökohtaiset tiedot",
       "upAddress": "You updated the address to",
-      "valEmail": "Kirjoita kelvollinen sähköpostiosoite.",
-      "work": "Työ"
+      "valEmail": "Kirjoita kelvollinen sähköpostiosoite."
     },
     "personForm": {
-      "addForm": "Add Form",
-      "addFormAria": "Lisää {name} -lähetys",
+      "editAria": "Muokkaa: {name}",
       "form": "Lomake",
-      "noFormMsg": "Tälle henkilölle ei löytynyt lomakteen lähettämistä"
+      "notFilledOut": "Ei vielä täytetty."
     },
     "personNav": {
       "customForms": "Custom Forms",
@@ -1392,14 +1655,17 @@
       "donations": "Lahjoitukset",
       "forms": "Lomakkeet",
       "groups": "Ryhmät",
-      "notes": "Muistiinpanot"
+      "notes": "Muistiinpanot",
+      "profile": "Profiili"
     },
     "personPage": {
       "notesSuffix": " Muistiinpanot",
       "thisPerson": "tämä henkilö"
     },
+    "personProfile": {
+      "railLabel": "Profiili ja lomakkeet"
+    },
     "personView": {
-      "edit": "Muokkaa",
       "hasLoginLabel": "On kirjautuminen: {email}",
       "home": "Koti",
       "memShip": "Membership:",
@@ -1421,6 +1687,7 @@
     "age": "Ikä",
     "anniversary": "Vuosipäivä",
     "birthDate": "Syntymäpäivä",
+    "campus": "Kampus",
     "city": "Kaupunki",
     "country": "Maa",
     "deceased": "Edesmennyt",
@@ -1429,7 +1696,6 @@
     "email": "Sähköposti",
     "female": "Nainen",
     "firstName": "Etunimi",
-    "formerMember": "Entinen jäsen",
     "gender": "Sukupuoli",
     "inactive": "Passiivinen",
     "lastName": "Sukunimi",
@@ -1469,9 +1735,6 @@
     },
     "block": {
       "name": "Hero Section"
-    },
-    "campus": {
-      "name": "Downtown Campus"
     },
     "choices": {
       "text": "Option 1",
@@ -1622,12 +1885,15 @@
     "assignment": {
       "addPosition": "Add Position",
       "autoAssign": "Auto Assign",
+      "fullyStaffed": "Täysin miehitetty",
+      "needed": "tarvitaan",
       "notesPlaceholder": "Lisää muistiinpanoja tälle palvelusuunnitelmalle...",
       "notesPlaceholderReadOnly": "Suunnitelman muistiinpanot (vain luku)",
-      "planNotes": "Suunnitelman muistiinpanot",
+      "penciledIn": "Alustavasti merkitty",
       "planNotesAria": "Suunnitelman muistiinpanot",
+      "positionsFilled": "{filled}/{total} paikkaa täytetty",
       "saveNotes": "Save Notes",
-      "saveSuccess": "Muistiinpanot tallennettu onnistuneesti"
+      "undoAutoAssign": "Kumoa automaattinen jako"
     },
     "assignmentEdit": {
       "assignPos": "Assign Position",
@@ -1647,22 +1913,20 @@
       "loadFailed": "Oppituntitietojen lataus epäonnistui. Yritä uudelleen.",
       "loadingSeries": "Ladataan oppituntisarjaa...",
       "noLessonsInSeries": "Tästä sarjasta ei löytynyt oppitunteja.",
-      "noPreviousLesson": "No previous lesson found to continue from. Schedule at least one lesson first.",
-      "noRemainingLessons": "No remaining lessons in this series. You've completed them all!",
       "pathNotSupported": "Valittu oppituntipolun muoto ei ole tuettu joukkoaikataulutusta varten.",
       "savingFailed": "Joidenkin suunnitelmien luominen epäonnistui. Tarkista ja yritä uudelleen.",
       "schedulingProgress": "Aikataulutetaan...",
       "startDate": "Alkamispäivä",
       "startingLesson": "Starting Lesson",
+      "substituted": "Sijainen",
       "title": "Bulk Schedule Lessons",
       "venue": "Venue",
+      "venueMismatch": "Paikkaerimielisyys",
       "weekly": "Viikottain"
     },
     "contentProviderAuth": {
-      "accountLinked": "Tili linkitetty",
       "authExpired": "Todennus vanhentunut tai epäonnistui",
       "authFailed": "Todennus epäonnistui",
-      "contentProviderAccounts": "Sisällöntarjoajatilit",
       "deviceFlowFailed": "Laitevirran aloitus epäonnistui",
       "deviceFlowInstructions": "Visit the URL below and enter the code to authorize:",
       "deviceFlowUnsupported": "Tarjoaja ei tue laitevirtaa",
@@ -1674,7 +1938,6 @@
       "linked": "Linked",
       "noLinkedDescription": "Link a content provider to access their content in your service plans.",
       "noProvidersAvailable": "No content providers available",
-      "noProvidersAvailableLong": "Ei saatavilla olevia sisällöntarjoajia, jotka vaativat todennusta.",
       "pkceInstructions": "Click the button below to authorize in a popup window:",
       "pkceUnsupported": "Tarjoaja ei tue PKCE-todennusta",
       "pkceWaiting": "Waiting for authorization in popup...",
@@ -1741,6 +2004,7 @@
       "subtitle": "Organize ministry teams and service plans"
     },
     "planEdit": {
+      "autoReplaceOnDecline": "Aikatauluta automaattisesti sijainen, kun vapaaehtoinen kieltäytyy",
       "copyAll": "Positions and Assignments",
       "copyNothing": "Nothing",
       "copyPositions": "Positions Only",
@@ -1750,6 +2014,7 @@
       "planEdit": "Edit Plan",
       "planNameAria": "Suunnitelman nimi",
       "planReq": "Plan name is required.",
+      "prepared": "Alustavasti merkitty (piilota tehtävät vapaaehtoisilta, kunnes julkaistu)",
       "servDate": "Service Date",
       "servReq": "Service date is required.",
       "serviceDateAria": "Palveluspäivä",
@@ -1778,11 +2043,11 @@
       "editHeader": "Edit Header",
       "editSong": "Edit Song",
       "enterSearch": "Enter search term",
+      "includeInServices": "Sisällytä palveluksiin",
       "minutes": "Minutes",
       "planItemDescriptionAria": "Suunnitelman kohteen kuvaus",
       "planItemNameAria": "Suunnitelman kohteen nimi",
       "searchBoxAria": "hakukenttä",
-      "searchSongsAria": "Etsi lauluja",
       "seconds": "Seconds"
     },
     "planList": {
@@ -1813,11 +2078,28 @@
     },
     "planTypeEdit": {
       "add": "Lisää",
+      "confirmDelete": "Vahvista poisto",
       "edit": "Muokkaa",
+      "errorDeleting": "Poistossa tapahtui virhe",
       "errorSaving": "Error saving plan type",
       "nameRequired": "Plan type name is required",
       "planType": "Plan Type",
       "planTypeName": "Plan Type Name"
+    },
+    "planTypeGroups": {
+      "addGroup": "Lisää ryhmä",
+      "description": "Tämän suunnittelutyypin suunnitelmat näkyvät alla lueteltujen ryhmien sivuilla B1App-sovelluksessa.",
+      "heading": "Liitetyt ryhmät",
+      "noGroups": "Ei liitettyjä ryhmiä",
+      "noGroupsDescription": "Liitä ryhmiä tähän suunnittelutyyppiin, jotta jäsenet näkevät suunnitelmat ryhmänsä sivulla B1App-sovelluksessa.",
+      "removeConfirm": "Poistetaanko tämä ryhmäliitos?",
+      "selectGroup": "Valitse ryhmä",
+      "showsLabel": "Näyttää",
+      "timeFilter": {
+        "both": "Menneet ja tulevat suunnitelmat",
+        "future": "Vain tulevat suunnitelmat",
+        "past": "Vain menneet suunnitelmat"
+      }
     },
     "planTypeList": {
       "addPlanType": "Add Plan Type",
@@ -1829,17 +2111,24 @@
     "planTypePage": {
       "notFound": "Plan type not found",
       "overview": "Yleiskatsaus",
-      "pairTvApp": "Pair TV App",
       "planType": "Plan Type",
-      "subtitle": "Configure plan type settings",
-      "tvAppDescription": "Show your lesson content on any TV or display using our free app"
+      "subtitle": "Configure plan type settings"
     },
-    "planTypePairDialog": {
-      "downloadTitle": "Download the Lessons.church TV App",
-      "instructions": "Enter the 4-character code displayed on the TV app screen:",
-      "pairTitle": "Pair Your Device",
-      "success": "Successfully paired! The TV app will now show content from this plan type.",
-      "title": "Pair TV App"
+    "planTypeReminders": {
+      "channels": "Channels",
+      "day1": "1 day before",
+      "dayOf": "Day of service",
+      "days2": "2 days before",
+      "days3": "3 days before",
+      "days7": "7 days before",
+      "enable": "Send reminders",
+      "message": "Message (optional)",
+      "messageHint": "Leave blank to use a default reminder message.",
+      "save": "Save Reminder",
+      "saved": "Reminder saved.",
+      "timeOfDay": "Time of day",
+      "title": "Reminders",
+      "when": "When to remind (before the service)"
     },
     "planValidation": {
       "and": "and",
@@ -1847,14 +2136,21 @@
       "blockCon": "Blockout date conflict of",
       "cons": "Conflicts",
       "during": "during",
+      "householdApart": "ei mielellään palvele samana päivänä kuin",
       "more": "more",
       "needed": "needed.",
       "notify": "Notify",
+      "overMaxPerMonth": "on aikataulutettu",
+      "penciledIn": "Alustavasti merkitty — vapaaehtoset eivät vielä näe näitä tehtäviä.",
       "person": "person",
       "pleaseConfirm": "Please log in and confirm.",
       "ppl": "people",
+      "prefTimeMismatch": "mieluiten palvelee aikaan",
+      "publish": "Julkaise suunnitelma",
+      "publishNotify": "Julkaise ja ilmoita",
       "timeCon": "Time conflict between",
       "timeCon2": "Time conflict at",
+      "timesThisMonth": "kertaa tässä kuussa, yli heidän toivomansa enimmäismäärän",
       "to": "to",
       "val": "Validation",
       "valPlan": "Plan is valid.",
@@ -1894,6 +2190,17 @@
       "serviceOrder": "SERVICE ORDER",
       "time": "Time"
     },
+    "schedulingPreference": {
+      "household": "Kotitalouden aikataulutus",
+      "householdApart": "Älä aikatauluta kotitaloutta samalle päivälle",
+      "householdNone": "Ei mieltymystä",
+      "householdTogether": "Aikatauluta kotitalous yhdessä",
+      "maxPerMonth": "Enimmäiskerrat kuukaudessa",
+      "maxPerMonthHelper": "Jätä tyhjäksi, jos ei rajoitusta",
+      "preferredTimes": "Toivotut palveluajat",
+      "preferredTimesHelper": "esim. 9:00 tai Ensimmäinen jumalanpalvelus. Erota useammat pilkulla.",
+      "title": "Aikataulutustoiveet"
+    },
     "serviceOrder": {
       "addFromLesson": "Add From Lesson",
       "addSection": "Add Section",
@@ -1906,17 +2213,27 @@
       "noItems": "No items in service order",
       "orderOfService": "Order of Service",
       "previewBanner": "This is a preview of the associated lesson. Click \"Customize\" to edit.",
-      "print": "Tulosta",
+      "runTimes": "Suoritusajat",
       "scrollDown": "Vieritä alas",
-      "scrollUp": "Vieritä ylös"
+      "scrollUp": "Vieritä ylös",
+      "viewingAs": "Näkymä käyttäjänä"
     },
     "servingOverviewPage": {
+      "autoSchedule": "Automaattinen aikatauluttaminen",
+      "autoScheduleResult": "Automaattisesti aikataulutettu {filled}/{total} suunnitelmaa",
+      "emailAll": "Lähetä sähköpostia vapaaehtoisille",
+      "emailEmpty": "Ei määrättyjä vapaaehtoisia tällä aikavälillä sähköpostitse lähetettäväksi.",
+      "emailResult": "Lähetetty {sent} vapaaehtoiselle ({failed} epäonnistui)",
       "endDate": "Päättymispäivä",
       "exportCsv": "Vie CSV",
       "filename": "palvelutehtava-yleiskatsaus.csv",
+      "gapsOnly": "Vain täyttämättömät",
+      "highlightAll": "Kaikki",
+      "highlightPerson": "Korosta",
       "noData": "Valitulta aikaväliltä ei löytynyt palvelutietoja.",
       "overviewSuffix": "Yleiskatsaus",
       "position": "Tehtävä",
+      "remove": "Poista",
       "startDate": "Alkamispäivä",
       "subtitle": "Tehtävät päivämäärittäin määrätyillä vapaaehtoisilla",
       "title": "Palvelun yleiskatsaus"
@@ -1942,6 +2259,26 @@
       "noTeam": "No teams found. Please create a team.",
       "teams": "Joukkueet"
     },
+    "templates": {
+      "apply": "Käytä",
+      "applyTitle": "Käytä mallia",
+      "applyTo": "Käytä suunnitelmiin",
+      "button": "Mallit",
+      "confirmDelete": "Poistetaanko tämä malli?",
+      "noPlans": "Ei tulevia suunnitelmia.",
+      "none": "Ei vielä malleja. Avaa suunnitelma ja valitse \"Tallenna malliksi\".",
+      "optPositions": "Paikat",
+      "optServiceOrder": "Jumalanpalveluksen kulku",
+      "plan": "Suunnitelma",
+      "positionsWarning": "Paikkojen käyttäminen korvaa valittujen suunnitelmien nykyiset paikat ja niiden tehtävät.",
+      "rename": "Nimeä malli uudelleen",
+      "saveTitle": "Tallenna malliksi",
+      "startBlank": "Ei mitään",
+      "startFrom": "Aloita mallista",
+      "title": "Suunnitelmamallit",
+      "updateFromPlan": "Päivitä suunnitelmasta",
+      "updateFromPlanHelp": "Korvaa tämän mallin sisällön suunnitelman nykyisellä jumalanpalveluksen kululla ja paikoilla."
+    },
     "timeEdit": {
       "disName": "Näyttönimi",
       "disNameReq": "Display name is required.",
@@ -1952,16 +2289,19 @@
       "startTimeAria": "Aloitusaika",
       "teamNeed": "Needed Teams",
       "teamPrefix": "Tiimi",
-      "teamReq": "Please Select Team(s).",
       "timeAdd": "Add a Time",
       "timeDisplayNameAria": "Ajan näyttönimi",
       "timeEdit": "Edit Time",
       "timeEnd": "End Time",
       "timeStart": "Start Time",
-      "tip": "Tip"
+      "tip": "Tip",
+      "type": "Tyyppi",
+      "typeAria": "Palveluajan tyyppi",
+      "typeOther": "Muu",
+      "typeRehearsal": "Harjoitus",
+      "typeService": "Jumalanpalvelus"
     },
     "timeList": {
-      "addTimeAria": "Lisää aika",
       "noTime": "No times have been added yet",
       "sunServ": "Sunday Service",
       "times": "Times"
@@ -1983,9 +2323,6 @@
       "lastActiveDate": "Last Active Date",
       "registrationDate": "Registration Date",
       "title": "Devices"
-    },
-    "devicesPage": {
-      "addDevice": "Lisää laite"
     },
     "linkedAccounts": {
       "link": "Link",
@@ -2030,7 +2367,8 @@
   },
   "registrations": {
     "registrationDetailsPage": {
-      "actions": "Toiminnot",
+      "addAttendee": "Lisää osallistuja",
+      "addAttendeeError": "Osallistujan rekisteröinti epäonnistui.",
       "cancelConfirm": "Peruutetaanko tämä ilmoittautuminen?",
       "cancelRegistration": "Peruuta ilmoittautuminen",
       "csvDate": "Päivämäärä",
@@ -2038,8 +2376,8 @@
       "csvName": "Nimi",
       "csvStatus": "Tila",
       "date": "Päivämäärä",
-      "delete": "Poista",
       "deleteConfirm": "Poistetaanko tämä ilmoittautuminen pysyvästi?",
+      "eventFull": "Tämä tapahtuma on saavuttanut kapasiteettinsa.",
       "eventNotFound": "Tapahtumaa ei löytynyt",
       "eventRegistrations": "Tapahtuman ilmoittautumiset",
       "exportCsv": "Vie CSV",
@@ -2050,14 +2388,18 @@
       "registrations": "Ilmoittautumiset",
       "status": "Tila",
       "subtitle": "Hallitse tämän tapahtuman ilmoittautumisia",
-      "unknown": "Tuntematon"
+      "unansweredOnly": "Vain vastaamattomat kysymykset",
+      "unknown": "Tuntematon",
+      "viewAnswers": "Näytä vastaukset"
     },
     "registrationSettingsEdit": {
       "capacity": "Kapasiteetti",
       "capacityPlaceholder": "Jätä tyhjäksi rajoittamatonta varten",
       "enableRegistration": "Ota ilmoittautuminen käyttöön",
+      "none": "Ei mitään",
       "registrationCloses": "Ilmoittautuminen sulkeutuu",
       "registrationOpens": "Ilmoittautuminen aukeaa",
+      "registrationQuestions": "Ilmoittautumiskysymykset",
       "registrationSettings": "Ilmoittautumisasetukset",
       "saveSettings": "Tallenna asetukset",
       "tags": "Tunnisteet",
@@ -2087,10 +2429,6 @@
       "totalGiving": "Lahjoitukset yhteensä"
     },
     "noData": "Tietoja ei ole saatavilla",
-    "reportOutput": {
-      "anonymous": "Anonyymi",
-      "print": "tulosta"
-    },
     "runReport": "Run Report",
     "sampleTemplate": "Sample Template",
     "summary": "Yhteenveto",
@@ -2123,7 +2461,6 @@
     "addSermon": "Add Sermon",
     "adjustSearchTerms": "Try adjusting your search terms",
     "bulkImport": {
-      "backToSelection": "Back to Selection",
       "chooseSource": "Choose Import Source",
       "fetch": "Fetch",
       "fetching": "Fetching...",
@@ -2147,8 +2484,6 @@
       "minutes": "Minutes",
       "seconds": "Seconds"
     },
-    "edit": "Muokkaa",
-    "editSermonAria": "Muokkaa {title}",
     "getStarted": "Get started by adding your first sermon",
     "liveStreamTimes": {
       "externalLinks": {
@@ -2192,7 +2527,6 @@
       },
       "navigationLinks": {
         "add": "Lisää",
-        "edit": "Muokkaa",
         "home": "Koti",
         "title": "Navigation Links"
       },
@@ -2233,7 +2567,6 @@
       "settings": "Asetukset",
       "sidebarTabs": {
         "add": "Lisää",
-        "edit": "Muokkaa",
         "title": "Content Tabs"
       },
       "subtitle": "Configure your recurring service times",
@@ -2279,12 +2612,7 @@
     "notScheduled": "Not scheduled",
     "playlist": "Playlist",
     "playlists": {
-      "actions": "Actions",
-      "addPlaylist": "Add Playlist",
-      "adjustSearchTerms": "Try adjusting your search terms",
       "createFirstPlaylist": "Create First Playlist",
-      "editPlaylist": "Edit playlist",
-      "getStarted": "Get started by creating your first playlist",
       "noPlaylistsFound": "No playlists found",
       "noPlaylistsMatch": "No playlists match your search",
       "playlistEdit": {
@@ -2308,9 +2636,7 @@
         "unauthorized": "Unauthorized to create playlists",
         "unauthorizedDelete": "Unauthorized to delete playlists"
       },
-      "search": "Etsi",
       "searchPlaceholder": "Search playlists...",
-      "subtitle": "Manage video playlists and organize your content",
       "title": "Playlists"
     },
     "publishDate": "Publish Date",
@@ -2369,9 +2695,9 @@
       "church": "Church",
       "churchName": "Church Name",
       "churches": "Churches",
+      "impersonateUser": "Esiinny käyttäjänä",
       "location": "Location",
       "noChurch": "No churches found.  Please search for a different name.",
-      "noUserChurches": "This user has no churches associated with their account.",
       "noUsers": "No users found. Please search for a different name or email.",
       "noteFour": "Comparable software is ProPresenter.  It's $399 for a site license.  I made assumptions that the average church installs the software on 3 computers and divided our total installs by 3 to get the number of churches.  I also made the assumption that churches will upgrade to a newer version every 5 years on average.  So $399 / 5 years / 3 computers = $26.60 annual cost per computer.  If we can quantify these assumptions we should update this number.",
       "noteOne": "Comparable software is Breeze.  They charge $72/mo or $864/year.",
@@ -2381,23 +2707,39 @@
       "regist": "Registered",
       "searchResults": "Search Results",
       "servAdmin": "Palvelimen ylläpitäjä",
+      "serverHealth": "Palvelimen tila",
       "subtitle": "Manage server-wide settings and churches",
       "translationLookups": "Translation Lookups",
       "usageTrends": "Usage Trends",
-      "userChurches": "Churches",
-      "userSearch": "Search by Name or Email",
-      "userSearchPlaceholder": "Search by name or email",
-      "users": "Users",
       "valueNotes": "Notes on How Values are Calculated"
     },
     "churchesTab": {
       "churchNameSearchAria": "Seurakunnan nimen haku",
       "searchChurchesAria": "Etsi seurakuntia"
     },
+    "impersonateTab": {
+      "confirmMessage": "Sinut kirjataan ulos omalta istunnoltasi ja sisään käyttäjänä {email}. Palataksesi omalle tilillesi kirjaudu ulos ja takaisin sisään.",
+      "confirmTitle": "Esiinnytäänkö tänä käyttäjänä?",
+      "description": "Hae käyttäjätiliä sähköpostiosoitteella ja esiinny kyseiselle käyttäjänä. Istuntosi korvataan heidän istunnollaan ja käyt läpi normaalin kirjautumisvirran.",
+      "impersonate": "Esiinny",
+      "searchAria": "Hae esiinnyttäviä käyttäjiä",
+      "searchLabel": "Käyttäjän sähköposti",
+      "searchPlaceholder": "Hae kirjautumissähköpostilla"
+    },
     "reportPage": {
       "adminOnly": "Admin Only",
-      "report": "Report",
-      "serverAdmin": "Palvelimen ylläpitäjä"
+      "report": "Report"
+    },
+    "serverHealth": {
+      "detail": "Tiedot",
+      "environment": "Ympäristö",
+      "loadError": "Palvelimen tilan lataaminen epäonnistui.",
+      "no": "Ei",
+      "setting": "Asetus",
+      "status": "Tila",
+      "subtitle": "Ilmaisee, onko kukin API-asetus määritetty. Arvoja ei näytetä.",
+      "title": "Palvelimen tila",
+      "yes": "Kyllä"
     },
     "translation": {
       "abbreviations": "Abbreviations",
@@ -2409,14 +2751,25 @@
     },
     "translationTab": {
       "searchTranslationStatsAria": "Etsi käännöstilastoja"
-    },
-    "usersTab": {
-      "noPersonLinked": "Ei linkitettyä henkilöä",
-      "searchUsersAria": "Etsi käyttäjiä",
-      "userNameOrEmailSearchAria": "Käyttäjänimen tai sähköpostin haku"
     }
   },
   "settings": {
+    "apiKeyEdit": {
+      "close": "Sulje",
+      "copied": "Kopioitu",
+      "copy": "Kopioi",
+      "expires": "Vanhenee",
+      "expiresHelp": "Jätä tyhjäksi, jos avain ei vanhene koskaan.",
+      "generalScopes": "yleinen",
+      "keyIntro": "Kopioi API-avaimesi nyt — sitä ei näytetä uudelleen.",
+      "keyTitle": "API-avain",
+      "name": "Nimi",
+      "namePlaceholder": "esim. Zapier-integraatio",
+      "nameRequired": "Nimi on pakollinen",
+      "newKey": "Uusi API-avain",
+      "scopes": "Käyttöoikeudet",
+      "scopesRequired": "Valitse vähintään yksi käyttöoikeus"
+    },
     "app": {
       "confirmDeleteTab": "Are you sure you wish to delete this tab?",
       "tabNameHelper": "Choose a descriptive name for your tab",
@@ -2443,10 +2796,12 @@
       "myGroups": "Omat ryhmät",
       "noGroupsFound": "Ryhmiä ei löytynyt",
       "page": "Page",
+      "plans": "Palvelusuunnitelmat",
       "saveTab": "Save Tab",
       "saving": "Tallennetaan...",
       "selectGroups": "Valitse ryhmät:",
       "selectImage": "Select Image",
+      "sermons": "Saarnat",
       "staffOnly": "Vain henkilökunta",
       "tabIconAlt": "Välilehden kuvake",
       "tabName": "Tab Name",
@@ -2458,7 +2813,6 @@
       "volunteerOpportunities": "Vapaaehtoismahdollisuudet"
     },
     "appTabs": {
-      "editTab": "Edit Tab",
       "moveDown": "Move Down",
       "moveUp": "Move Up",
       "noTabs": "No tabs configured",
@@ -2505,6 +2859,25 @@
       "subtitle": "Seuraa muutoksia ja toimintaa seurakunnassasi",
       "title": "Auditointiloki"
     },
+    "campusEdit": {
+      "address2": "Osoiterivi 2",
+      "confirmDelete": "Haluatko varmasti poistaa tämän kampuksen?",
+      "name": "Nimi",
+      "noTimezone": "Ei mitään",
+      "timezone": "Aikavyöhyke",
+      "validate": {
+        "name": "Anna kampuksen nimi."
+      },
+      "website": "Verkkosivusto"
+    },
+    "campuses": {
+      "addCampus": "Lisää kampus",
+      "campus": "Kampus",
+      "campuses": "Kampukset",
+      "location": "Sijainti",
+      "none": "Kampuksia ei ole vielä lisätty.",
+      "subtitle": "Hallinnoi seurakuntasi fyysisiä sijainteja"
+    },
     "church": {
       "subdomainHelper": "Your church's unique web address"
     },
@@ -2527,6 +2900,25 @@
       "subdomainAria": "Aliverkkotunnus",
       "textingSubtitle": "Määritä SMS-tekstiviestien tarjoaja",
       "textingTitle": "Tekstiviestit"
+    },
+    "developer": {
+      "actions": "Toiminnot",
+      "apiKeys": "API-avaimet",
+      "app": "Sovellus",
+      "authorized": "Valtuutettu",
+      "connectedApps": "Yhdistetyt sovellukset",
+      "deleteKeyConfirm": "Poistetaanko API-avain \"{name}\"? Kaikki sitä käyttävät integraatiot lakkaavat toimimasta.",
+      "expires": "Vanhenee",
+      "lastUsed": "Viimeksi käytetty",
+      "name": "Nimi",
+      "newKey": "Uusi API-avain",
+      "noConnections": "Yhtään sovellusta ei ole vielä valtuutettu.",
+      "noKeys": "Ei vielä API-avaimia.",
+      "prefix": "Avain",
+      "revoke": "Peruuta",
+      "revokeConfirm": "Peruutetaanko käyttöoikeus kohteelle \"{name}\"?",
+      "scopes": "Käyttöoikeudet",
+      "title": "Kehittäjä"
     },
     "directoryApprovalSettingsEdit": {
       "directoryApprovalGroup": "Directory Approval Group",
@@ -2584,7 +2976,6 @@
       "yourChurch": "Seurakuntasi"
     },
     "emailTemplatesPage": {
-      "actions": "Toiminnot",
       "category": "Kategoria",
       "createTemplate": "Luo malli",
       "deleteConfirm": "Poistetaanko malli \"{name}\"?",
@@ -2595,15 +2986,15 @@
       "newTemplate": "Uusi malli",
       "subject": "Aihe",
       "subtitle": "Luo ja hallitse uudelleenkäytettäviä sähköpostimalleja",
-      "title": "Sähköpostimallit",
-      "tooltipDelete": "Poista",
-      "tooltipEdit": "Muokkaa"
+      "title": "Sähköpostimallit"
     },
     "feeOptionsSettings": {
       "achFlatRate": "Flat Rate [ ACH ]",
       "achHardLimit": "Hard limit [ ACH ]",
       "creditCardFlatRate": "Flat Rate [ Credit Card ]",
       "creditCardTransactionFee": "Transaction Fee [ Credit Card ]",
+      "kfFlatRate": "Kiinteä maksu [ Kingdom Funding ]",
+      "kfTransactionFee": "Transaktiomaksu [ Kingdom Funding ]",
       "paypalFlatRate": "Flat Rate [ PayPal ]",
       "paypalTransactionFee": "Transaction Fee [ PayPal ]"
     },
@@ -2611,42 +3002,47 @@
       "secretPlaceholder": "********"
     },
     "givingSettingsEdit": {
-      "apiCredentials": "API Credentials",
       "clientId": "Client ID",
       "clientSecret": "Client Secret",
+      "copyWebhookUrl": "Kopioi webhook-URL",
       "currency": "Valuutta",
       "currencyHelper": "Varmista, että tämä valuutta on otettu käyttöön myös Stripe-hallintapaneelissasi. Ota valuutta käyttöön täällä:",
-      "developersApiKeys": "Developers → API keys",
       "forceMsg": "Automatically forces users to cover the transaction fees",
-      "forceSslHelpAria": "Pakota SSL-ohje",
       "giving": "Giving",
+      "kfSetup": "Anna tokenisointiavain ja lähdeavain Kingdom Funding -kojelaudaltasi. Aloita osoitteessa",
+      "kfWebhookInstructions": "Anna tämä webhook-URL Kingdom Funding -edustajallesi käyttöönoton aikana, jotta tapahtumatiedot päivittyvät lahjoitusraportteihin:",
       "none": "None",
-      "paypal": "PayPal",
-      "paypalCreateApp": "create an app to get your Client ID and Secret.",
-      "paypalDeveloper": "PayPal Developer",
-      "paypalGoTo": "Go to",
-      "paypalLogin": "log in, then under",
+      "paypalSetup": "Luo PayPal REST -sovellus ja liitä sen asiakastunnus ja salaisuus alle. Aloita osoitteessa",
+      "privateKeyRequired": "Anna tämän palveluntarjoajan salainen/yksityinen avain ennen tallentamista.",
       "prov": "Provider",
       "pubKey": "Public Key",
       "saveError": "Failed to save giving settings",
       "secKey": "Secret Key",
-      "stripe": "Stripe",
-      "stripeCopyKeys": "to copy your Publishable and Secret keys (test & live).",
+      "sourceKey": "Lähdeavain",
       "stripeDashboard": "Stripe Dashboard",
-      "stripeGoTo": "and go to",
-      "stripeVisit": "Visit",
-      "transFee": "Transaction Fee"
+      "stripeSetup": "Kopioi julkinen avaimesi ja salainen avaimesi Stripe Dashboardista (Kehittäjät → API-avaimet) ja liitä ne alle. Avaa",
+      "tokenizationKey": "Tokenisointiavain",
+      "transFee": "Transaction Fee",
+      "webhookKey": "Webhook-avain",
+      "webhookKeyHelper": "Webhook-allekirjoitussalaisuus Kingdom Funding -ohjauspaneelista. Vaaditaan tapahtumatilapäivityksiin.",
+      "webhookUrlCopied": "Webhook-URL kopioitu leikepöydälle"
     },
-    "imageEditor": {
-      "crop": "Crop",
-      "upload": "Upload",
-      "uploadImageAria": "Lataa kuva"
+    "landing": {
+      "campusesCount": "{count} sijaintia",
+      "campusesOne": "1 sijainti",
+      "campusesSubtitle": "Fyysiset sijainnit",
+      "configuration": "Konfiguraatio",
+      "developerSubtitle": "API-avaimet, webhookit, yhdistetyt sovellukset",
+      "domainsCount": "{count} yhdistetty",
+      "domainsNone": "Ei omia verkkotunnuksia",
+      "domainsOne": "1 yhdistetty",
+      "givingProvider": "{provider} · {currency}",
+      "notConfigured": "Ei määritetty",
+      "notSet": "Ei asetettu"
     },
     "manageChurch": {
       "auditLog": "Auditointiloki",
-      "editSettings": "Edit Settings",
       "imEx": "Import/Export",
-      "mobileApps": "Mobile Apps",
       "noData": "No church data available",
       "subtitle": "Configure church settings and preferences",
       "title": "Manage Church"
@@ -2655,9 +3051,6 @@
       "addTab": "Add Tab",
       "subtitle": "Configure mobile app settings",
       "title": "Mobile App Settings"
-    },
-    "preview": {
-      "preview": "Preview"
     },
     "roleCheck": {
       "permissionAria": "Oikeus {label}"
@@ -2672,11 +3065,8 @@
     "roleMembers": {
       "addRoleMemberAria": "Lisää roolin jäsen",
       "confirmMsg": "Are you sure you wish to delete this user from",
-      "edit": "Muokkaa",
-      "editRoleMemberAria": "Muokkaa roolin jäsentä {firstName} {lastName}",
       "lastAdminWarning": "Vähintään yksi verkkotunnusvalvoja vaaditaan. Lisää toinen valvoja ennen tämän poistamista.",
       "mem": "Jäsenet",
-      "removeRoleMemberAria": "Poista roolin jäsen {firstName} {lastName}",
       "roleAppMsg": "This role applies to all the members of the church."
     },
     "rolePage": {
@@ -2698,8 +3088,6 @@
       "contAdmin": "Content Admin",
       "contAdminDesc": "Can edit website content, mobile content and sermons.",
       "custAdd": "Add Custom Role",
-      "edit": "Muokkaa",
-      "editRoleAria": "Muokkaa roolia",
       "everyone": "Everyone",
       "itMsg": "? It ",
       "lesAdmin": "Lessons Admin",
@@ -2707,6 +3095,9 @@
       "role": "Role",
       "roleCreate": "Do you wish to create a new role of ",
       "roles": "Roles"
+    },
+    "rolesPage": {
+      "subtitle": "Hallinnoi rooleja ja käyttöoikeuksia"
     },
     "supportContactSettingsEdit": {
       "forceMsg": "This link will be used by users to contact the church",
@@ -2752,9 +3143,92 @@
       "members": "Jäsenet",
       "phoneNum": "Phone Number",
       "visibilityPreference": "Visibility Preference"
+    },
+    "webhookEdit": {
+      "active": "Aktiivinen",
+      "attempts": "Yritykset",
+      "close": "Sulje",
+      "connectorDiscord": "Discord",
+      "connectorSlack": "Slack",
+      "connectorStandard": "Vakio (raaka JSON)",
+      "connectorType": "Yhdistintyyppi",
+      "copied": "Kopioitu",
+      "copy": "Kopioi",
+      "date": "Päivämäärä",
+      "deliveries": "Viimeisimmät toimitukset",
+      "deliveryDetail": "Toimituksen tiedot",
+      "discordUrlHelp": "Liitä Discord-kanavan saapuvan webhookin URL. Tapahtumat toimitetaan luettavina chat-viesteinä.",
+      "editWebhook": "Muokkaa webhookia",
+      "event": "Tapahtuma",
+      "events": "Tapahtumat",
+      "eventsRequired": "Valitse vähintään yksi tapahtuma",
+      "name": "Nimi",
+      "namePlaceholder": "esim. Zapier — uudet jäsenet",
+      "nameRequired": "Nimi on pakollinen",
+      "newWebhook": "Uusi webhook",
+      "noDeliveries": "Ei vielä toimituksia.",
+      "payload": "Paketti",
+      "redeliver": "Toimita uudelleen",
+      "regenerateConfirm": "Luodaanko allekirjoitussalaisuus uudelleen? Nykyinen salaisuus lakkaa toimimasta välittömästi.",
+      "regenerateSecret": "Luo salaisuus uudelleen",
+      "response": "Vastaus",
+      "responseBody": "Vastauksen sisältö",
+      "secretIntro": "Kopioi allekirjoitussalaisuutesi nyt — sitä ei näytetä uudelleen.",
+      "secretSignNote": "Käytä sitä X-B1-Signature-otsikon vahvistamiseen jokaisessa toimituksessa.",
+      "secretTitle": "Allekirjoitussalaisuus",
+      "sendTest": "Lähetä testatapahtuma",
+      "sendingTest": "Lähetetään…",
+      "slackUrlHelp": "Liitä Slack-kanavan saapuvan webhookin URL. Tapahtumat toimitetaan luettavina chat-viesteinä.",
+      "url": "Paketti-URL",
+      "urlPlaceholder": "https://esimerkki.fi/webhookit/b1",
+      "urlRequired": "URL on pakollinen"
+    },
+    "webhooksPage": {
+      "active": "Aktiivinen",
+      "deleteConfirm": "Poistetaanko webhook \"{name}\"?",
+      "disabled": "Poistettu käytöstä",
+      "emptyDescription": "Luo webhook ilmoittaaksesi ulkoisille työkaluille, kun henkilöt, ryhmät tai kotitaloudet muuttuvat.",
+      "emptyTitle": "Ei vielä webhookeja",
+      "events": "Tapahtumat",
+      "name": "Nimi",
+      "newWebhook": "Uusi webhook",
+      "status": "Tila",
+      "title": "Webhookit",
+      "url": "URL"
     }
   },
   "site": {
+    "a11y": {
+      "buttonTip": "Tarkista saavutettavuus",
+      "buttonTipIssues": "{count} saavutettavuusongelmaa tarkistettavana",
+      "close": "Sulje",
+      "contrastLow": "Tekstin {fg} kontrastisuhde taustaan {bg} on {ratio}:1, mikä alittaa vähimmäisvaatimuksen 4.5:1.",
+      "contrastLowHeading": "Otsikon värin {fg} kontrastisuhde taustaan {bg} on {ratio}:1, mikä alittaa vähimmäisvaatimuksen 4.5:1.",
+      "emptyButtonText": "Tämä painike linkittää osoitteeseen {url}, mutta sillä ei ole tekstiä.",
+      "emptyCardText": "Tämä kortti linkittää osoitteeseen {url}, mutta sillä ei ole otsikkoa tai tekstiä.",
+      "emptyLinkAnchor": "Linkillä ei ole luettavaa tekstiä. Lisää teksti, jotta sen tarkoitus on selvä.",
+      "errorLabel": "Virhe",
+      "headingMultipleH1": "Tällä sivulla on useampi kuin yksi H1-otsikko. Käytä yhtä H1-otsikkoa sivun otsikkona.",
+      "headingNoH1": "Tällä sivulla ei ole H1-otsikkoa. Lisää yksi ylätason otsikko sivun otsikoksi.",
+      "headingSkipped": "Otsikkotaso hyppää tasosta H{from} tasoon H{to}. Nosta otsikkotasoja yksi kerrallaan.",
+      "highlight": "Näytä sivulla",
+      "missingAltGallery": "Galleriakuvasta {n} puuttuu vaihtoehtoinen teksti.",
+      "missingAltImage": "Kuvasta puuttuu vaihtoehtoinen teksti. Lisää kuvaus, jotta ruudunlukuohjelmat voivat välittää sen.",
+      "noIssues": "Saavutettavuusongelmia ei löytynyt",
+      "noIssuesDetail": "Kuvissa on vaihtoehtoinen teksti, värit täyttävät kontrastin vähimmäisvaatimukset ja otsikot ovat oikeassa järjestyksessä.",
+      "pageLevel": "Koko sivu",
+      "panelAria": "Saavutettavuusongelmat",
+      "rule_contrast": "Heikko kontrasti",
+      "rule_emptyLink": "Tyhjä linkkiteksti",
+      "rule_headingOrder": "Otsikoiden järjestys",
+      "rule_missingAlt": "Vaihtoehtoinen teksti puuttuu",
+      "sectionLabel": "Osio {n}",
+      "subtitle": "Korjaa nämä ongelmat ennen sivun julkaisua",
+      "summaryErrors": "{count} virhettä",
+      "summaryWarnings": "{count} varoitusta",
+      "title": "Saavutettavuus",
+      "warningLabel": "Varoitus"
+    },
     "addPage": {
       "aiPlaceholder": "Example: Create a welcoming homepage with our church name, mission statement, service times, and a donation button",
       "newLink": "New Link",
@@ -2788,6 +3262,19 @@
       "statusOpening": "Avataan uutta sivuasi...",
       "statusPlanning": "Suunnitellaan sivun rakennetta...",
       "unauthorizedCreate": "Ei valtuuksia luoda sivuja"
+    },
+    "aiRewrite": {
+      "description": "Rewrite this section's text with AI. Layout and images are preserved.",
+      "failed": "The rewrite failed. Nothing was changed.",
+      "instruction": "Instructions",
+      "placeholder": "e.g. Make it more welcoming and add a call to action",
+      "preset_formal": "More formal",
+      "preset_grammar": "Fix grammar",
+      "preset_shorter": "Shorter",
+      "preset_warmer": "Warmer",
+      "rewrite": "Rewrite",
+      "title": "AI Rewrite",
+      "working": "Rewriting section..."
     },
     "animations": {
       "colorize": "Colorize",
@@ -2847,7 +3334,6 @@
     "blocksPage": {
       "actions": "Actions",
       "addBlock": "Add Block",
-      "block": "block",
       "blocks": "Blocks",
       "createFirstBlock": "Create First Block",
       "elements": "Element(s)",
@@ -2860,22 +3346,83 @@
       "totalBlocks": "Total Blocks",
       "type": "Tyyppi"
     },
+    "blog": {
+      "addPost": "Add Post",
+      "confirmDelete": "Delete this post and its linked page? This cannot be undone.",
+      "date": "Date",
+      "deleteTitle": "Delete Post",
+      "editContent": "Edit content",
+      "noPosts": "No posts yet",
+      "posts": "Posts",
+      "state": "State",
+      "subtitle": "Create and manage blog posts for your website",
+      "title": "Blog"
+    },
+    "blogEdit": {
+      "category": "Category",
+      "draft": "Draft",
+      "editPost": "Edit Post",
+      "errSave": "Failed to save post.",
+      "errSlug": "Please enter a slug.",
+      "errTitle": "Please enter a title.",
+      "excerpt": "Excerpt",
+      "image": "Image",
+      "newPost": "New Post",
+      "publishDate": "Publish Date",
+      "published": "Published",
+      "selectImage": "Select Image",
+      "slug": "Slug",
+      "tags": "Tags",
+      "tagsHelper": "Comma-separated",
+      "title": "Title"
+    },
     "calendarElementEdit": {
       "curatedCalendar": "Kuratoitu kalenteri",
       "groupCalendar": "Ryhmäkalenteri",
       "select": "Valitse",
       "selectCalendar": "Valitse kalenteri"
     },
+    "campaignProgressEdit": {
+      "donateUrl": "Lahjoitus-URL",
+      "endDate": "Päättymispäivä",
+      "fund": "Rahasto",
+      "goalAmount": "Tavoitesumma",
+      "selectFund": "Valitse rahasto",
+      "showAmounts": "Näytä summat",
+      "startDate": "Alkamispäivä",
+      "title": "Otsikko"
+    },
     "colorPicker": {
       "color": "Väri",
       "placeholder": "#FF0000"
     },
     "contentEditor": {
+      "addSectionHere": "Lisää osio",
+      "backToSite": "Takaisin sivustolle",
       "blockPreview": "Lohkon esikatselu",
+      "discard": "Hylkää",
+      "discardElementMessage": "Hylätäänkö tämän elementin tallentamattomat muutokset?",
+      "discardElementTitle": "Hylätäänkö muutokset?",
+      "discardSectionMessage": "Hylätäänkö tämän osion tallentamattomat muutokset?",
       "dropToAddElement": "Pudota tähän lisätäksesi elementin",
       "dropToAddSection": "Pudota tähän lisätäksesi osion",
+      "keepEditing": "Jatka muokkaamista",
       "scrollDown": "Vieritä alas",
-      "scrollUp": "Vieritä ylös"
+      "scrollUp": "Vieritä ylös",
+      "smallScreenMessage": "Avaa tämä sivu tabletilla tai tietokoneella muokataksesi verkkosivustoasi.",
+      "smallScreenTitle": "Tämä editori tarvitsee suuremman näytön"
+    },
+    "countdownEdit": {
+      "completedText": "Päättymisteksti",
+      "date": "Tietty päivämäärä",
+      "dayOfWeek": "Viikonpäivä",
+      "mode": "Tila",
+      "showDays": "Näytä päivät",
+      "showHours": "Näytä tunnit",
+      "targetDate": "Kohdepäivämäärä",
+      "time": "Aika",
+      "title": "Otsikko",
+      "weekly": "Viikoittainen tilaisuus"
     },
     "cssEdit": {
       "advancedFeature": "Edistynyt ominaisuus:",
@@ -2932,18 +3479,39 @@
       "urlLabel": "Url",
       "urlPlaceholder": "/donate"
     },
+    "donationEdit": {
+      "allowRecurring": "Salli toistuvat lahjoitukset",
+      "allowSingleGift": "Salli kertalahjoitukset",
+      "allowedFunds": "Rajoita tiettyihin rahastoihin",
+      "allowedFundsHelper": "Jätä tyhjäksi salliaksesi kaikki rahastot. Lahjoittajat näkevät vain tässä valitsemasi rahastot.",
+      "defaultFund": "Oletusrahasto",
+      "defaultFundHelper": "Esivalitse tämä rahasto sivun latautuessa. Yhdistä rahaston valitsimen piilottamiseen ohjataksesi kaikki lahjoitukset tähän.",
+      "fundOptions": "Rahaston asetukset",
+      "giftOptions": "Lahjoitusasetukset",
+      "noDefaultFund": "Ei oletusta",
+      "showFundSelector": "Näytä rahaston valitsin lahjoittajille"
+    },
     "editorToolbar": {
       "addContent": "Add Content",
       "ago": "sitten",
       "block": "Block",
-      "desktop": "Desktop",
+      "disablePublish": "Poista julkaisu käytöstä",
+      "disablePublishConfirm": "Poistetaanko julkaisu käytöstä tältä sivulta? Muutokset tulevat jälleen heti näkyviin.",
+      "discardChanges": "Hylkää julkaisemattomat muutokset",
+      "discardChangesConfirm": "Hylätäänkö kaikki viimeisimmän julkaisun jälkeen tehdyt muutokset? Editori palautetaan julkaistuun versioon.",
       "exit": "Poistu",
       "justNow": "juuri nyt",
-      "mobile": "Matkapuhelin",
-      "notSavedYet": "Ei vielä muutoksia",
       "page": "Page",
+      "publish": "Julkaise",
+      "publishOffTip": "Muutokset tulevat tällä hetkellä heti näkyviin. Julkaise tallentaaksesi julkisen version, jolloin tulevat muutokset pysyvät yksityisinä seuraavaan julkaisuun asti.",
+      "publishedLabel": "Julkaistu",
       "redoTip": "Tee uudelleen (Ctrl+Shift+Z)",
+      "saveError": "Tallennus epäonnistui",
       "savedAllChanges": "Kaikki muutokset tallennettu",
+      "saving": "Tallennetaan…",
+      "statusLiveOnSave": "Julkaistaan tallennettaessa",
+      "statusPublished": "Julkaistu",
+      "statusUnpublishedChanges": "Julkaisemattomia muutoksia",
       "switchToDesktop": "Switch to Desktop View",
       "switchToMobile": "Switch to Mobile View",
       "undoTip": "Kumoa (Ctrl+Z)",
@@ -2953,25 +3521,32 @@
       "addElements": "Add Elements",
       "advanced": "Advanced",
       "all": "All",
+      "block": "Lohko",
       "blocks": "Blocks",
       "box": "Box",
       "calendar": "Calendar",
+      "campaignProgress": "Kampanjan edistyminen",
       "card": "Kortti",
       "carousel": "Carousel",
       "church": "Church",
+      "column": "Sarake",
       "common": "Yleinen",
-      "content": "Content",
+      "countdown": "Lähtölaskenta",
       "descBox": "Flexible container box",
       "descCalendar": "Event calendar view",
+      "descCampaignProgress": "Varainkeruun edistymispalkki, joka on sidottu rahaston tavoitteeseen.",
       "descCard": "Content card with image",
       "descCarousel": "Sliding content gallery",
+      "descCountdown": "Lähtölaskenta tiettyyn päivämäärään tai viikoittaiseen tilaisuuteen.",
       "descDonateLink": "Donation link button",
       "descDonation": "Donation form",
       "descEmbedPage": "Embed external page",
       "descExpandable": "Expandable Q&A section",
       "descForm": "Custom form builder",
+      "descGallery": "Valokuvaruudukko valinnaisilla kuvateksteillä.",
       "descGroupList": "Group directory",
       "descHtml": "Custom HTML code",
+      "descIconFeature": "Kuvake otsikolla ja lyhyellä kuvauksella.",
       "descImage": "Image with caption",
       "descLocation": "Interactive map",
       "descLogo": "Church logo/branding",
@@ -2980,22 +3555,26 @@
       "descRow": "Horizontal column layout",
       "descSection": "Container for grouping content",
       "descSermons": "Sermon video gallery",
+      "descServiceTimes": "Luettelo viikoittaisista palvelusajoistanne.",
+      "descSocialIcons": "Linkit sosiaalisen median profiileihisi.",
+      "descStaffGrid": "Ruudukko ryhmän jäsenistä kuvineen ja rooleineen.",
+      "descStats": "Nosta esiin tärkeitä lukuja selitteillä.",
       "descStream": "Live stream embed",
       "descTable": "Data table layout",
+      "descTestimonial": "Jäsenten sitaatteja kirjoittajan nimellä ja valinnaisella kuvalla.",
       "descText": "Rich text content",
       "descTextWithPhoto": "Text with side image",
       "descVideo": "Video embed or upload",
       "donateLink": "Donate Link",
       "donation": "Donation",
-      "dragAndDrop": "Drag and drop onto page",
-      "dragHint": "Drag elements onto the page to add them",
       "embedPage": "Embed Page",
       "expandable": "Expandable",
       "form": "Lomake",
+      "gallery": "Galleria",
       "groupList": "Group List",
       "html": "HTML",
+      "iconFeature": "Kuvakeominaisuus",
       "image": "Image",
-      "layout": "Layout",
       "location": "Location",
       "logo": "Logo",
       "media": "Media",
@@ -3003,8 +3582,13 @@
       "row": "Row",
       "searchElements": "Search Elements",
       "section": "Section",
+      "serviceTimes": "Palvelusajat",
+      "socialIcons": "Sosiaalisen median kuvakkeet",
+      "staffGrid": "Henkilökuntaruudukko",
+      "stats": "Tilastot",
       "stream": "Stream",
       "table": "Table",
+      "testimonial": "Suositus",
       "text": "Teksti",
       "textWithPhoto": "Text with Photo",
       "tryDifferentSearch": "Try a different search term",
@@ -3012,7 +3596,10 @@
       "video": "Video"
     },
     "elementEdit": {
-      "enableLightbox": "Ota lightbox käyttöön"
+      "enableLightbox": "Ota lightbox käyttöön",
+      "groupAnimation": "Animaatio",
+      "groupContent": "Sisältö",
+      "groupStyle": "Tyyli"
     },
     "elementSelection": {
       "moveDown": "Siirrä alas",
@@ -3116,10 +3703,6 @@
       "uploadFiles": "Upload Files"
     },
     "filesManager": {
-      "actions": "Toiminnot",
-      "deleteFile": "Poista tiedosto",
-      "fileCountPlural": "tiedostoa",
-      "fileCountSingular": "tiedosto",
       "files": "Files",
       "getStarted": "Get started by uploading your first file",
       "name": "Nimi",
@@ -3129,7 +3712,6 @@
       "storageLimit": "/ 100MB"
     },
     "filesPage": {
-      "loading": "Ladataan...",
       "subtitle": "Manage files and media for your website",
       "title": "Files"
     },
@@ -3157,6 +3739,58 @@
       "noFormsAvailable": "Ei saatavilla olevia lomakkeita!",
       "select": "Valitse"
     },
+    "galleryEdit": {
+      "addPhoto": "Lisää kuva",
+      "altText": "Vaihtoehtoinen teksti",
+      "caption": "Kuvateksti",
+      "columns": "Sarakkeet",
+      "grid": "Ruudukko",
+      "imageUrl": "Kuvan URL-osoite",
+      "large": "Suuri",
+      "layout": "Asettelu",
+      "masonry": "Masonry",
+      "medium": "Keskikokoinen",
+      "noPhotos": "Kuvia ei ole vielä lisätty.",
+      "photos": "Kuvat",
+      "removePhoto": "Poista kuva",
+      "selectImage": "Valitse kuva",
+      "small": "Pieni",
+      "spacing": "Väli",
+      "square": "Neliö",
+      "wide": "Leveä"
+    },
+    "generateSite": {
+      "audience_community": "Community",
+      "audience_families": "Families",
+      "audience_newcomers": "Newcomers",
+      "audience_seniors": "Seniors",
+      "audience_youngAdults": "Young Adults",
+      "audience_youth": "Youth",
+      "audiences": "Audiences",
+      "building": "Building your site...",
+      "buildingSection": "Building {title} — section {n} of {total}...",
+      "button": "Generate Site",
+      "churchName": "Church Name",
+      "createPlan": "Create Plan",
+      "creatingPage": "Creating {title} ({n} of {total})...",
+      "describe": "Describe your church",
+      "describePlaceholder": "Tell us about your church, your mission, and what makes you unique",
+      "done": "Your site is ready.",
+      "errDescription": "Please describe your church (at least 10 characters).",
+      "errPlan": "Could not generate a site plan. Please try again.",
+      "generate": "Generate Pages",
+      "pageFailed": "Could not create the {title} page — skipped.",
+      "planIntro": "Choose which pages to generate:",
+      "sectionSkipped": "{title}: section {n} was skipped.",
+      "serviceTimes": "Service Times",
+      "serviceTimesPlaceholder": "Sundays at 9 & 11 AM",
+      "title": "Generate Site with AI",
+      "tone": "Tone",
+      "tone_casual": "Casual",
+      "tone_formal": "Formal",
+      "tone_inspirational": "Inspirational",
+      "tone_warm": "Warm"
+    },
     "helpDialog": {
       "addBody": "Napsauta Lisää sisältö työkalupalkista, sitten vedä osio tai elementti sivulle.",
       "addTitle": "Lisää sisältöä",
@@ -3165,6 +3799,8 @@
       "fullDocs": "Täysi dokumentaatio",
       "moveBody": "Vedä osioita ja elementtejä järjestääksesi ne uudelleen. Käytä ylä-/alanuolia valintatyökalupalkissa tarkkaan siirtoon.",
       "moveTitle": "Järjestä uudelleen",
+      "shortcutsBody": "Delete poistaa valitun elementin, Ctrl+D monistaa sen, Alt+ylös/alas siirtää sitä ja Esc poistaa valinnan.",
+      "shortcutsTitle": "Pikanäppäimet",
       "title": "Sivun editorin perusteet",
       "undoBody": "Käytä Ctrl+Z kumotaksesi ja Ctrl+Shift+Z tehdäksesi uudelleen. Avaa Historia-paneeli valikosta hypätäksesi mihin tahansa aikaisempaan tilaan.",
       "undoTitle": "Kumoa ja historia"
@@ -3175,6 +3811,15 @@
       "restoreToPoint": "Palauta tähän pisteeseen",
       "title": "Muokkaushistoria"
     },
+    "iconFeatureEdit": {
+      "chooseIcon": "Valitse kuvake",
+      "iconColor": "Kuvakkeen väri",
+      "iconSize": "Kuvakkeen koko",
+      "large": "Suuri",
+      "medium": "Keskikokoinen",
+      "small": "Pieni",
+      "title": "Otsikko"
+    },
     "navLink": {
       "addLink": "Add Link",
       "linkSettings": "Link Settings"
@@ -3182,9 +3827,26 @@
     "navLinkEdit": {
       "errLinkText": "Anna linkin teksti",
       "linkText": "Linkin teksti",
+      "noParent": "(ei mitään)",
+      "parentPage": "Yläsivu",
       "unauthorizedCreate": "Ei valtuuksia luoda sivuja",
       "unauthorizedDelete": "Ei valtuuksia poistaa sivuja",
       "url": "URL"
+    },
+    "navStyleEdit": {
+      "activeColor": "Aktiivisen linkin väri",
+      "backgroundColor": "Taustaväri",
+      "headerSubtitle": "Sovita navigaatio seurakuntasi brändiin",
+      "headerTitle": "Navigaation tyyli",
+      "linkColor": "Linkin väri",
+      "linkHoverColor": "Linkin hover-väri",
+      "override": "Ohita",
+      "saveNav": "Tallenna navigaatio",
+      "solidSection": "Ylätunniste (kiinteä)",
+      "solidSectionDesc": "Käytetään useimmilla sivuilla. Jokainen väri on valinnainen — jätä Ohita pois päältä säilyttääksesi sivuston nykyisen renderöinnin.",
+      "transparentSection": "Ylätunniste hero-kuvan päällä (läpinäkyvä)",
+      "transparentSectionDesc": "Käytetään, kun navigaatio kelluu hero-kuvan päällä. Jätä Ohita pois päältä sovittaaksesi automaattisesti hero-kuvan tekstiväriin.",
+      "unset": "Oletus"
     },
     "pageLink": {
       "check": "Shekki",
@@ -3200,14 +3862,29 @@
       "errCheckUrl": "Tarkista URL-polku",
       "errPath": "Anna polku.",
       "errTitle": "Anna otsikko.",
+      "everyone": "Kaikki",
+      "generateMeta": "Generate with AI",
+      "groups": "Tietyt ryhmät",
       "headerFooter": "Ylätunniste ja alatunniste",
       "layout": "Asettelu",
       "linkText": "Linkin teksti",
+      "loggedInUsers": "Kirjautuneet käyttäjät",
+      "membersStaff": "Jäsenet ja henkilökunta",
+      "metaDescription": "Meta Description",
+      "metaDescriptionHelper": "Aim for around 155 characters for best search results",
+      "metaDescriptionPlaceholder": "A concise summary shown in search engine results",
+      "metaGenerateFailed": "Could not generate a description. Please try again.",
+      "metaNoContent": "Add some page content before generating a description.",
+      "noGroupsFound": "Ryhmiä ei löytynyt",
       "pageTitle": "Sivun otsikko",
+      "selectGroups": "Valitse ryhmät",
+      "staffOnly": "Vain henkilökunta",
+      "team": "Tiimin jäsenet",
       "unauthorizedCreate": "Ei valtuuksia luoda sivuja",
       "unauthorizedDelete": "Ei valtuuksia poistaa sivuja",
       "url": "URL",
-      "urlPath": "URL-polku"
+      "urlPath": "URL-polku",
+      "visibility": "Näkyvyys"
     },
     "pagePreview": {
       "editContent": "Edit Content",
@@ -3223,7 +3900,6 @@
     "pagesPage": {
       "actions": "Actions",
       "addFirstPage": "Add First Page",
-      "addNavigationLink": "Lisää navigointilinkki",
       "addPage": "Add Page",
       "autoGenerated": "Auto-generated",
       "confirmConvert": "Would you like to convert this auto-generated page to a custom page?",
@@ -3239,6 +3915,7 @@
       "previewPage": "Preview page",
       "showLogin": "Show Login",
       "showLoginTooltip": "Show login button in the navigation bar",
+      "startFromTemplate": "Aloita mallipohjasta",
       "subtitle": "Manage your website pages, content, and navigation",
       "toggleLoginVisibility": "Toggle login button visibility",
       "totalPages": "Total Pages",
@@ -3270,16 +3947,19 @@
     },
     "pickColors": {
       "background": "Tausta",
-      "backgroundField": "Tausta",
       "backgroundOpacity": "Taustan läpinäkyvyys",
       "backgroundType": "Taustatyyppi",
       "color": "Väri",
       "content": "Sisältö",
       "currentColors": "Nykyiset värit",
+      "focalPoint": "Kohdepiste",
+      "focalPointHelper": "Napsauta kuvaa asettaaksesi kohdepiste — se osa, joka pysyy näkyvissä kuvaa rajattaessa.",
       "headingColor": "Heading Color",
       "image": "Kuva",
       "linkColor": "Link Color",
-      "opacityHelper": "The opacity of black gradient layer on top of the image. Max value: 1",
+      "opacityHelper": "Peitekerroksen läpinäkyvyys kuvan päällä. Maksimiarvo: 1",
+      "overlayColor": "Peiteväri",
+      "overlayColorHelper": "Kuvan päällä olevan sävytyskerroksen väri (oletus on musta).",
       "sampleLink": "Mallinkkki",
       "sampleText": "Malliteksti",
       "selectPhoto": "Valitse valokuva",
@@ -3287,6 +3967,18 @@
       "textColor": "Text Color",
       "youtubeId": "Youtube-tunnus",
       "youtubeVideo": "Youtube-video"
+    },
+    "redirects": {
+      "analytics": "Analytics",
+      "analyticsDesc": "Connect Google Analytics 4 to track visits to your website.",
+      "description": "Send visitors from old URLs to new ones.",
+      "errSave": "Failed to save redirect.",
+      "fromPath": "From Path",
+      "ga4": "GA4 Measurement ID",
+      "ga4Hint": "Format: G-XXXXXXXXXX",
+      "normalizeHint": "Paths are normalized: lowercased, with a leading slash and no trailing slash.",
+      "title": "Redirects",
+      "toPath": "To Path"
     },
     "row": {
       "addColumn": "Add Column",
@@ -3345,13 +4037,11 @@
     "section": {
       "confirmDelete": "Are you sure you wish to permanently delete this section?",
       "confirmDuplicate": "Are you sure you wish to make a copy of this section and all of it's contents?",
+      "deleteSectionBody": "Tämä poistaa osion ja kaiken sen sisällön pysyvästi. Voit kumota tämän painamalla Ctrl+Z.",
+      "deleteSectionTitle": "Poistetaanko osio?",
       "editSection": "Edit Section",
       "layoutContainer": "Asettelusäilö",
       "section": "Osio"
-    },
-    "sectionBlock": {
-      "deleteSection": "Poista osio",
-      "edit": "Muokkaa"
     },
     "sectionEdit": {
       "block": "Lohko",
@@ -3359,9 +4049,173 @@
       "convertTo": "Convert To",
       "convertToBlock": "Convert To Block",
       "convertToBlockPrompt": "Haluatko varmasti kopioida tämän osion ja koko sen sisällön lohkoksi?",
+      "dividerBottom": "Alaerotin",
+      "dividerColor": "Väri",
+      "dividerFlip": "Peilaa vaakasuunnassa",
+      "dividerHeight": "Korkeus",
+      "dividerNone": "Ei mitään",
+      "dividerShape": "Muoto",
+      "dividerTop": "Yläerotin",
+      "divider_curve": "Kaari",
+      "divider_peaks": "Piikit",
+      "divider_slant": "Vino",
+      "divider_triangle": "Kolmio",
+      "divider_wave": "Aalto",
+      "divider_waves": "Aallot",
+      "dividers": "Muotoerottimet",
       "duplicate": "Monistaa",
       "duplicateSection": "Duplicate Section",
       "id": "ID"
+    },
+    "sectionTemplates": {
+      "aboutSplit": "Tarinamme",
+      "all": "Kaikki",
+      "blank": "Tyhjä osio",
+      "category": {
+        "about": "Tietoa meistä",
+        "cta": "Toimintakehotus",
+        "giving": "Lahjoittaminen",
+        "hero": "Hero",
+        "media": "Media",
+        "people": "Ihmiset ja ryhmät",
+        "services": "Jumalanpalvelukset"
+      },
+      "connectColumns": "Yhteystietosarakkeet",
+      "ctaBanner": "Seuraava askel -banneri",
+      "faqSection": "Usein kysytyt kysymykset",
+      "findUs": "Löydät meidät",
+      "galleryRow": "Kuvarivi",
+      "givingBanner": "Lahjoitusbanneri",
+      "givingOptions": "Tapoja lahjoittaa",
+      "groupListSection": "Ryhmäluettelo",
+      "groupsBrowser": "Ryhmäselain",
+      "heroCentered": "Valokuva-hero",
+      "heroGradient": "Liukuväri-hero",
+      "heroSplit": "Jaettu hero",
+      "ministriesCards": "Työmuotokortit",
+      "sermonsLatest": "Uusimmat saarnat",
+      "serviceTimes": "Jumalanpalvelusajat",
+      "staffGrid": "Työntekijäruudukko",
+      "storyColumns": "Kolme palstaa",
+      "switchHint": "Sisältö, joka ei mahdu uuteen asetteluun, poistetaan. Palauta se kumoamalla.",
+      "switchTitle": "Kokeile toista asettelua",
+      "testimony": "Todistuslainaus",
+      "title": "Lisää osio",
+      "verseBanner": "Raamatunjakeen banneri",
+      "watchOnline": "Katso verkossa",
+      "welcome": "Tervetuloteksti"
+    },
+    "sectionToolbar": {
+      "aiRewrite": "AI rewrite",
+      "delete": "Poista osio",
+      "dragToReorder": "Järjestä raahaamalla",
+      "duplicate": "Monista osio",
+      "moveDown": "Siirrä osiota alaspäin",
+      "moveUp": "Siirrä osiota ylöspäin",
+      "settings": "Osion asetukset",
+      "switchLayout": "Kokeile toista asettelua"
+    },
+    "sermonsEdit": {
+      "allPlaylists": "Kaikki soittolistat",
+      "browse": "Selaa (soittolistat)",
+      "featuredLatest": "Uusimmat esille nostetut",
+      "grid": "Ruudukko",
+      "itemCount": "Saarnojen määrä",
+      "layout": "Asettelu",
+      "list": "Lista",
+      "playlist": "Soittolista",
+      "showDates": "Näytä päivämäärät",
+      "showTitles": "Näytä otsikot"
+    },
+    "serviceTimesEdit": {
+      "showCampus": "Näytä toimipiste",
+      "title": "Otsikko"
+    },
+    "siteTemplates": {
+      "back": "Takaisin",
+      "create": "Luo sivusto",
+      "creating": "Luodaan {title}...",
+      "descriptions": {
+        "classic": "Täydellinen perinteinen sivusto, jossa on kutsuva etusivu, Tietoa meistä -sivu ja vierailun suunnittelusivu.",
+        "community": "Nostaa ryhmät ja työmuodot etusijalle, jotta ihmiset löytävät yhteyden nopeasti.",
+        "heritage": "Klassinen, Raamattua korostava ilme vakiintuneille seurakunnille.",
+        "media": "Rakennettu suoratoistosi ja saarna-arkistosi ympärille seurakunnille, joilla on vahva verkkoläsnäolo.",
+        "modern": "Nykyaikainen ilme rohkeilla liukuväreillä, verkkojumalanpalveluksilla ja yhteyssivulla.",
+        "simple": "Selkeä kahden sivun aloitus, täydellinen uusille ja pienille seurakunnille.",
+        "visitor": "Keskittyy vastaamaan ensikertalaisen kysymyksiin jo ennen saapumista."
+      },
+      "errFailed": "Sivuston luominen epäonnistui. Yritä uudelleen.",
+      "exists": "On jo olemassa",
+      "existsNote": "Sivut, joissa on merkintä \"on jo olemassa\", jätetään ennalleen.",
+      "intro": "Valitse aloitussivusto alta. Luomme sivut ja navigointilinkit puolestasi — kaikkea voi muokata jälkeenpäin.",
+      "names": {
+        "classic": "Klassinen seurakunta",
+        "community": "Yhteisöelämä",
+        "heritage": "Perinne",
+        "media": "Verkko edellä",
+        "modern": "Moderni vastaanotto",
+        "simple": "Yksinkertainen alku",
+        "visitor": "Vierailijat keskiössä"
+      },
+      "nav": {
+        "about": "Tietoa meistä",
+        "connect": "Ota yhteyttä",
+        "give": "Lahjoita",
+        "home": "Etusivu",
+        "live": "Live",
+        "sermons": "Saarnat",
+        "visit": "Vierailu"
+      },
+      "navLinksNote": "Lisää myös navigointilinkit valmiisiin sivuihin:",
+      "pageCount": "{count} sivua",
+      "pages": {
+        "about": "Tietoa meistä",
+        "connect": "Ota yhteyttä",
+        "home": "Etusivu",
+        "visit": "Suunnittele vierailusi"
+      },
+      "title": "Aloita mallipohjasta"
+    },
+    "siteWidgets": {
+      "addAction": "Lisää toiminto",
+      "announcementBar": "Ilmoituspalkki",
+      "announcementDesc": "Näytä koko sivuston banneri jokaisen sivun yläreunassa.",
+      "backgroundColor": "Taustaväri",
+      "bottomLeft": "Vasen alakulma",
+      "bottomRight": "Oikea alakulma",
+      "color": "Väri",
+      "enabled": "Käytössä",
+      "endDate": "Päättymispäivä",
+      "icon": "Kuvake",
+      "label": "Selite",
+      "launcher": "Käynnistin",
+      "launcherDesc": "Kelluva painike, joka laajenee pikalinkeiksi.",
+      "linkText": "Linkin teksti",
+      "linkUrl": "Linkin URL",
+      "position": "Sijainti",
+      "saved": "Tallennettu",
+      "startDate": "Alkamispäivä",
+      "text": "Teksti",
+      "textColor": "Tekstin väri",
+      "title": "Sivuston widgetit",
+      "url": "URL"
+    },
+    "socialIconsEdit": {
+      "alignment": "Tasaus",
+      "color": "Väri",
+      "facebook": "Facebook",
+      "filled": "Täytetty",
+      "iconStyle": "Kuvaketyyli",
+      "instagram": "Instagram",
+      "large": "Suuri",
+      "medium": "Keskikokoinen",
+      "outlined": "Ääriviivoitettu",
+      "size": "Koko",
+      "small": "Pieni",
+      "tiktok": "TikTok",
+      "vimeo": "Vimeo",
+      "x": "X (Twitter)",
+      "youtube": "YouTube"
     },
     "spacingScaleEdit": {
       "buttonOne": "Painike 1",
@@ -3395,6 +4249,24 @@
       "twoXLarge": "2X suuri",
       "twoXLargeDesc": "Maksimivälistys dramaattisia asetteluja varten"
     },
+    "staffGridEdit": {
+      "columns": "Sarakkeet",
+      "group": "Ryhmä",
+      "rosterHint": "Valitulla ryhmällä on oltava käytössä \"Näytä jäsenlista verkkosivustolla\".",
+      "selectGroup": "Valitse ryhmä",
+      "showRoles": "Näytä roolit"
+    },
+    "statsEdit": {
+      "addItem": "Lisää tilasto",
+      "columns": "Sarakkeet",
+      "items": "Tilastot",
+      "label": "Selite",
+      "noItems": "Tilastoja ei ole vielä lisätty.",
+      "prefix": "Etuliite",
+      "removeItem": "Poista tilasto",
+      "suffix": "Jälkiliite",
+      "value": "Arvo"
+    },
     "style": {
       "editStyle": "Edit Style"
     },
@@ -3413,8 +4285,11 @@
     "stylesAnimations": {
       "animations": "Animaatiot",
       "animationsDesc": "Tehoste, kun elementti näytetään.",
+      "hideOnDesktop": "Piilota tietokoneella",
+      "hideOnMobile": "Piilota mobiilissa",
       "styles": "Tyylit",
-      "stylesDesc": "Edistyneet ulkoasuvaihtoehdot."
+      "stylesDesc": "Edistyneet ulkoasuvaihtoehdot.",
+      "visibility": "Näkyvyys:"
     },
     "stylesManager": {
       "color": "Väripaletti",
@@ -3428,6 +4303,8 @@
       "loadingPreview": "Ladataan esikatselua...",
       "logo": "Logo",
       "logoDesc": "Lataa ja hallitse logoasi",
+      "nav": "Navigaatio",
+      "navDesc": "Muokkaa sivuston navigointipalkkia",
       "siteFooterName": "Sivuston alatunniste",
       "spacing": "Välistysasteikko",
       "spacingDesc": "Määritä johdonmukaiset välistysarvot",
@@ -3450,6 +4327,19 @@
     },
     "templates": {
       "viewSermons": "View Sermons"
+    },
+    "testimonialEdit": {
+      "addQuote": "Lisää sitaatti",
+      "author": "Kirjoittaja",
+      "displayMode": "Näyttötapa",
+      "noQuotes": "Sitaatteja ei ole vielä lisätty.",
+      "quoteText": "Sitaatti",
+      "quotes": "Sitaatit",
+      "removeQuote": "Poista sitaatti",
+      "role": "Rooli",
+      "rotate": "Kierto",
+      "selectPhoto": "Valitse kuva",
+      "single": "Näytä kaikki"
     },
     "tokenPicker": {
       "accent": "Korostus",
@@ -3475,7 +4365,6 @@
       "noneRadius": "Ei mikään (0px)",
       "primary": "Ensisijainen",
       "secondary": "Toissijainen",
-      "selectToken": "Valitse tunniste",
       "small": "Pieni (8px)",
       "smallRadius": "Pieni (4px)",
       "smallSize": "Pieni koko",
@@ -3545,10 +4434,8 @@
     "keys": {
       "add": "Lisää",
       "addExternalLink": "Add external link",
-      "addExternalLinkAria": "Lisää ulkoinen linkki",
       "addFiles": "Add Files",
       "availableDownloads": "Saatavilla olevat lataukset",
-      "editSelectedKeyAria": "Muokkaa valittua sävellajia",
       "externalLinks": "Ulkoiset linkit",
       "import": "Import",
       "importFromPraiseCharts": "Import files from PraiseCharts",
@@ -3576,15 +4463,13 @@
       "key": "Sävellaji"
     },
     "oldArrangements": {
-      "addArrangement": "Lisää sovitus",
-      "addArrangementAria": "Lisää sovitus",
       "arrangements": "Sovitukset",
-      "edit": "Muokkaa",
       "editArrangementAria": "Muokkaa sovitusta",
       "noArrangements": "Sovituksia ei löytynyt."
     },
     "praiseChartsProducts": {
       "close": "Sulje",
+      "download": "Lataa",
       "free": "Ilmainen",
       "linkAccountPrefix": "Sinulla ei ole linkitettyä PraiseCharts-tiliä. Siirry",
       "linkAccountSuffix": "linkittääksesi tilin.",
@@ -3612,13 +4497,11 @@
       "service": "Palvelu"
     },
     "songDetails": {
-      "editSongDetailsAria": "Muokkaa laulun tietoja",
       "fallbackTitle": "Laulun tiedot",
       "noDetails": "Tälle laululle ei ole saatavilla lisätietoja."
     },
     "songPage": {
       "addArrangement": "Lisää sovitus",
-      "deleteSongAria": "Poista laulu",
       "loading": "Loading...",
       "noArrangementDescription": "Valitse sovitus sivupalkista aloittaaksesi.",
       "noArrangementSelected": "Sovitusta ei valittu",
@@ -3627,11 +4510,12 @@
     "songSearchDialog": {
       "closeDialogAria": "Sulje valintaikkuna",
       "poweredBy": "Voimanlähde:",
-      "searchSongsAria": "Etsi lauluja",
       "songTitleOrArtistAria": "Laulun otsikko tai artisti"
     },
     "songsPage": {
       "addSongAria": "Lisää laulu",
+      "deleteSelected": "Delete Selected",
+      "deleteSelectedConfirm": "Delete the selected songs? This cannot be undone.",
       "search": "Etsi",
       "searchSongs": "Etsi lauluja",
       "songs": "Songs",
@@ -3639,52 +4523,11 @@
     },
     "title": "Songs"
   },
+  "stockPhotos": {
+    "photoBy": "Kuvaaja",
+    "providedBy": "Toimittaja"
+  },
   "tasks": {
-    "actionEdit": {
-      "actType": "Action Type",
-      "actTypeHelp": "Select the type of action to perform",
-      "actionTypeAria": "Toiminnon tyyppi",
-      "assignTo": "Assign to",
-      "assignToAria": "Määritä",
-      "editAct": "Action Edit",
-      "taskAssign": "Assign a Task",
-      "taskNote": "Task Note",
-      "taskNoteAria": "Tehtävän muistiinpano",
-      "taskTitle": "Task Title",
-      "taskTitleAria": "Tehtävän otsikko"
-    },
-    "automationDetails": {
-      "active": "Active",
-      "acts": "Actions",
-      "addAct": "Add Action",
-      "auto": "Automation Details",
-      "inactive": "Passiivinen",
-      "noAct": "No actions configured",
-      "recurs": "Recurs"
-    },
-    "automationEdit": {
-      "active": "Active",
-      "autoEdit": "Edit Automation",
-      "automationTitleAria": "Automaation otsikko",
-      "inactive": "Passiivinen",
-      "monthly": "Kuukausittain",
-      "never": "Never",
-      "recurHelp": "Set how often this automation should run",
-      "recurrenceAria": "Toistuvuus",
-      "rep": "Repeat",
-      "weekly": "Viikottain",
-      "yearly": "Yearly"
-    },
-    "automationsPage": {
-      "active": "Active",
-      "addAuto": "Add Automation",
-      "auto": "Automated Tasks",
-      "inactive": "Passiivinen",
-      "manageAuto": "Managed Automated Tasks",
-      "noAuto": "No automations configured",
-      "recurs": "Recurs",
-      "subtitle": "Automate tasks based on conditions"
-    },
     "conditionAttendance": {
       "anywhere": "Anywhere",
       "campus": "Kampus",
@@ -3720,22 +4563,6 @@
       "weekDay": "Day of Week",
       "yearsE": "Years Elapsed"
     },
-    "conditionDetails": {
-      "addCon": "Add Condition",
-      "addCondition": "Add Condition",
-      "addConditionAria": "Lisää ehto",
-      "addConj": "Add Conjunction",
-      "addConjunctionAria": "Lisää konjunktio",
-      "all": "All",
-      "and": "AND",
-      "any": "Mikä tahansa",
-      "con": "Conditions:",
-      "editConditionAria": "Muokkaa ehtoa",
-      "editConjunctionAria": "Muokkaa konjunktiota",
-      "noCond": "No conditions added",
-      "or": "OR",
-      "trueCon": "of these conditions are true"
-    },
     "conditionEdit": {
       "conDetails": "Condition Details",
       "conEdit": "Edit Condition",
@@ -3760,18 +4587,72 @@
       "op": "Operator",
       "startW": "starts with"
     },
-    "conjunctionEdit": {
-      "and": "AND - All of the conditions are true",
-      "conjEdit": "Edit Conjunction",
-      "conjType": "Conjunction Type",
-      "conjunctionTypeAria": "Konjunktion tyyppi",
-      "or": "OR - Any of the conditions are true"
-    },
     "contentPicker": {
       "group": "Ryhmä",
       "pers": "Person",
       "sel": "Select",
       "selPers": "Select a Person or Group"
+    },
+    "eventTriggers": {
+      "active": "Aktiivinen",
+      "addCondition": "Lisää ehto",
+      "addTrigger": "Lisää käynnistin",
+      "conditions": "Vain jos",
+      "editTrigger": "Muokkaa käynnistintä",
+      "event": "Kun tämä tapahtuu",
+      "field": "Kenttä",
+      "firstStep": "Ensimmäinen vaihe",
+      "kindEvent": "Kun jotain tapahtuu",
+      "kindSchedule": "Aikataulun mukaan",
+      "matchAll": "Vastaa KAIKKIA ehtoja",
+      "matchAny": "Vastaa JOTAIN ehtoa",
+      "name": "Nimi",
+      "noConditions": "Suoritetaan kaikille vastaavia tapahtumia.",
+      "noTriggers": "Ei tapahtumaläynnistimiä määritetty.",
+      "oncePerSubject": "Vain kerran per henkilö",
+      "operator": "Operaattori",
+      "pauseAll": "Keskeytä automaatio",
+      "paused": "Keskeytetty",
+      "recur_daily": "Päivittäin",
+      "recur_monthly": "Kuukausittain",
+      "recur_weekly": "Viikoittain",
+      "recur_yearly": "Vuosittain",
+      "recurs": "Toistuu",
+      "resumeAll": "Jatka automaatiota",
+      "runNow": "Suorita nyt",
+      "runNowFailed": "Suoritus epäonnistui.",
+      "runNowResult": "Käsitelty {created} henkilöä; {skipped} ohitettu (jo työnkulussa).",
+      "saveRuleFirst": "Tallenna sääntö ennen ehtojen lisäämistä.",
+      "step": "Aloitusvaihe",
+      "subtitle": "Käynnistä työnkulku automaattisesti, kun tietue lisätään, muutetaan tai poistetaan — mukaan lukien lomakelähetykset.",
+      "title": "Käynnistimet",
+      "value": "Arvo"
+    },
+    "executions": {
+      "attempts": "Yritykset",
+      "deletedTrigger": "(poistettu käynnistin)",
+      "noExecutions": "Ei vielä suorituksia. Ne näkyvät tässä, kun käynnistin laukeaa.",
+      "pause": "Keskeytä",
+      "refresh": "Päivitä",
+      "resume": "Jatka",
+      "retry": "Yritä uudelleen",
+      "statusHeader": "Tila",
+      "status_failed": "Epäonnistui",
+      "status_paused": "Keskeytetty",
+      "status_pending": "Odottaa",
+      "status_success": "Onnistui",
+      "subject": "Henkilö",
+      "title": "Suoritushistoria",
+      "trigger": "Käynnistin",
+      "when": "Milloin"
+    },
+    "myCards": {
+      "noCards": "Sinulla ei ole osoitettuja kortteja.",
+      "title": "Omat kortit"
+    },
+    "myWork": {
+      "subtitle": "Työnkulkukorttisi ja tehtäväsi",
+      "title": "Oma työ"
     },
     "newTask": {
       "assignPers": "Please assign this task to a person.",
@@ -3786,6 +4667,22 @@
       "taskNotesAria": "Tehtävän muistiinpanot",
       "taskTitleAria": "Tehtävän otsikko",
       "titleTask": "Please enter a title for this task."
+    },
+    "reminders": {
+      "channels": "Channels",
+      "day1": "1 day before",
+      "dayOf": "On due date",
+      "days3": "3 days before",
+      "days7": "7 days before",
+      "enable": "Send reminders",
+      "message": "Message (optional)",
+      "messageHint": "Leave blank to use a default reminder message.",
+      "noDueDate": "This task has no due date, so reminders won't send until one is set.",
+      "save": "Save Reminder",
+      "saved": "Reminder saved.",
+      "timeOfDay": "Time of day",
+      "title": "Reminders",
+      "when": "When to remind (before the due date)"
     },
     "requestedChanges": {
       "applied": "Changes applied",
@@ -3833,11 +4730,118 @@
       "unassigned": "Määrittämätön"
     },
     "tasksPage": {
-      "auto": "Automations",
       "showClosed": "Show Closed",
-      "showOpen": "Show Open",
-      "subtitle": "Manage tasks and automations",
-      "tasks": "Tehtävät"
+      "showOpen": "Show Open"
+    },
+    "workflowActions": {
+      "add": "Lisää toiminto",
+      "days": "Odotuspäivät",
+      "noAssignee": "Ei osoitettu",
+      "noGroup": "Ei ryhmää valittu",
+      "note": "Huomio",
+      "pickAssignee": "Valitse vastuuhenkilö",
+      "pickGroup": "Valitse ryhmä",
+      "saveFirst": "Tallenna vaihe ennen toimintojen lisäämistä.",
+      "selectField": "Kenttä",
+      "selectTemplate": "Valitse sähköpostimallipohja",
+      "selectWorkflow": "Valitse työnkulku",
+      "subjectOverride": "Aihe (valinnainen)",
+      "taskDescription": "Kuvaus (valinnainen)",
+      "taskTitle": "Tehtävän otsikko",
+      "title": "Automaattiset toiminnot",
+      "type": {
+        "addNote": "Lisää huomio",
+        "addToGroup": "Lisää ryhmään",
+        "addToWorkflow": "Lisää työnkulkuun",
+        "createTask": "Luo tehtävä",
+        "delay": "Odota",
+        "removeFromGroup": "Poista ryhmästä",
+        "sendEmail": "Lähetä sähköposti",
+        "setField": "Aseta kenttä",
+        "webhook": "Webhook"
+      },
+      "value": "Arvo",
+      "webhookUrl": "Webhook-URL (https)"
+    },
+    "workflowBoard": {
+      "addCard": "Lisää kortti",
+      "addStep": "Lisää vaihe",
+      "boardTab": "Taulu",
+      "clearSelection": "Tyhjennä",
+      "moveTo": "Siirrä…",
+      "selectedCount": "{count} valittu",
+      "step": "Vaihe",
+      "subtitle": "Vedä kortteja vaiheiden välillä",
+      "unassigned": "Ei osoitettu"
+    },
+    "workflowCard": {
+      "assign": "Osoita",
+      "assignedTo": "Osoitettu henkilölle",
+      "complete": "Valmis",
+      "history": "Toiminta",
+      "outcome": "Lopputulos",
+      "overdue": "Myöhässä",
+      "pin": "Kiinnitä osoitus",
+      "pinnedNote": "Kiinnitetty — säilyttää tämän omistajan vaiheiden välillä",
+      "sendBack": "Palauta",
+      "skip": "Ohita",
+      "snooze": "Torkuta",
+      "snooze1Day": "1 päivä",
+      "snooze1Week": "1 viikko",
+      "snooze3Days": "3 päivää",
+      "snoozed": "Torkkutilassa"
+    },
+    "workflowCategories": {
+      "addCategory": "Lisää kategoria",
+      "newCategory": "Uuden kategorian nimi",
+      "title": "Kategoria",
+      "uncategorized": "Luokittelematon"
+    },
+    "workflowEdit": {
+      "active": "Aktiivinen",
+      "editWorkflow": "Muokkaa työnkulkua",
+      "inactive": "Ei aktiivinen",
+      "name": "Nimi"
+    },
+    "workflowReports": {
+      "noData": "Ei vielä tietoja",
+      "overdue": "Myöhässä",
+      "perStep": "Kortit vaihetta kohti",
+      "subtitle": "Työnkulun analytiikka",
+      "throughput": "Valmistuneet (30 pv)",
+      "title": "Raportit"
+    },
+    "workflowRouting": {
+      "addOutcome": "Lisää lopputulos",
+      "always": "aina",
+      "automatic": "Automaattinen reititys (sisääntulon yhteydessä)",
+      "automaticHelp": "Kun kortti saapuu tähän vaiheeseen, lähetä se eteenpäin automaattisesti, jos henkilö täyttää ehdot.",
+      "closes": "sulkee",
+      "completeCard": "Merkitse kortti valmiiksi",
+      "conditions": "Ehdot",
+      "ifMatch": "jos vastaa",
+      "noConditions": "Ei vielä ehtoja — tämä reitti vastaa kaikkia.",
+      "outcomeLabel": "Painikkeen teksti",
+      "outcomesHelp": "Painikkeet, jotka näkyvät korttia viimeisteltäessä tässä vaiheessa. Kukin voi siirtää kortin toiseen vaiheeseen, lähettää sen toiseen työnkulkuun tai sulkea sen.",
+      "saveStepFirst": "Tallenna vaihe ennen reitityksen lisäämistä.",
+      "sendToWorkflow": "Lähetä toiseen työnkulkuun",
+      "targetStep": "Siirry vaiheeseen",
+      "title": "Reititys"
+    },
+    "workflowStepEdit": {
+      "defaultAssignee": "Oletusvastuuhenkilö",
+      "dueDays": "Eräpäivä (päivissä)",
+      "dueDaysHelp": "Asettaa eräpäivän, kun kortti saapuu tähän vaiheeseen",
+      "editStep": "Muokkaa vaihetta",
+      "stepName": "Vaiheen nimi"
+    },
+    "workflowsPage": {
+      "addWorkflow": "Lisää työnkulku",
+      "added": "Lisätty työnkulkuun.",
+      "blankWorkflow": "Tyhjä työnkulku",
+      "noWorkflows": "Ei vielä työnkulkuja. Lisää yksi aloittaaksesi.",
+      "subtitle": "Ohjaa henkilöt vaiheiden sarjan läpi",
+      "title": "Työnkulut"
     }
   },
   "ui": {

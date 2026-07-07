@@ -1,7 +1,7 @@
 import React from "react";
 import { ApiHelper, DisplayBox, UserHelper, DateHelper, ArrayHelper, Locale } from "@churchapps/apphelper";
 import { Navigate } from "react-router-dom";
-import { TextField, Button } from "@mui/material";
+import { TextField, Button, Chip, Link, Table, TableBody, TableCell, TableHead, TableRow } from "@mui/material";
 import UserContext from "../../UserContext";
 import { type ChurchInterface } from "@churchapps/helpers";
 
@@ -14,7 +14,7 @@ export const ChurchesTab = () => {
 
   const loadData = () => {
     const term = escape(searchText.trim());
-    ApiHelper.get("/churches/all?term=" + term, "MembershipApi").then((data) => setChurches(data));
+    ApiHelper.get("/churches/all?term=" + term, "MembershipApi").then((data: any) => setChurches(data));
   };
 
   const handleArchive = (church: ChurchInterface) => {
@@ -34,63 +34,31 @@ export const ChurchesTab = () => {
   };
 
   const getChurchRows = () => {
-    if (churches === null) return;
-    const result: JSX.Element[] = [];
-    churches.forEach((c, index) => {
-      const currentChurch = c;
-      const activeLink = c.archivedDate ? (
-        <button
-          type="button"
-          className="text-danger"
-          onClick={() => handleArchive(currentChurch)}
-          style={{ background: "none", border: 0, padding: 0, cursor: "pointer" }}>
-          {Locale.label("serverAdmin.adminPage.arch")}
-        </button>
-      ) : (
-        <button
-          type="button"
-          className="text-success"
-          onClick={() => handleArchive(currentChurch)}
-          style={{ background: "none", border: 0, padding: 0, cursor: "pointer" }}>
-          {Locale.label("serverAdmin.adminPage.act")}
-        </button>
-      );
-
-      result.push(
-        <tr key={index}>
-          <td>{getManageAccessLink(c)}</td>
-          <td>{getLocation(c)}</td>
-          <td>{DateHelper.prettyDate(DateHelper.toDate(c.registrationDate))}</td>
-          <td>{activeLink}</td>
-        </tr>
-      );
-    });
-    result.unshift(
-      <tr>
-        <th>{Locale.label("serverAdmin.adminPage.church")}</th>
-        <th>{Locale.label("serverAdmin.adminPage.location")}</th>
-        <th>{Locale.label("serverAdmin.adminPage.regist")}</th>
-        <th>{Locale.label("serverAdmin.adminPage.act")}</th>
-      </tr>
-    );
-    return result;
+    if (churches === null) return null;
+    return churches.map((c) => (
+      <TableRow key={c.id}>
+        <TableCell>
+          <Link component="button" type="button" underline="hover" onClick={() => handleEditAccess(c.id)} data-testid={`church-link-${c.id}`}>
+            {c.name}
+          </Link>
+        </TableCell>
+        <TableCell>{getLocation(c)}</TableCell>
+        <TableCell>{DateHelper.prettyDate(DateHelper.toDate(c.registrationDate))}</TableCell>
+        <TableCell align="right">
+          <Chip
+            label={c.archivedDate ? Locale.label("serverAdmin.adminPage.arch") : Locale.label("serverAdmin.adminPage.act")}
+            color={c.archivedDate ? "error" : "success"}
+            size="small"
+            onClick={() => handleArchive(c)}
+            data-testid={`toggle-church-status-${c.id}`}
+            sx={{ cursor: "pointer" }}
+          />
+        </TableCell>
+      </TableRow>
+    ));
   };
 
-  const getManageAccessLink = (church: ChurchInterface) => {
-    let result: JSX.Element = null;
-    result = (
-      <button type="button" data-churchid={church.id} onClick={handleEditAccess} style={{ marginRight: 40, background: "none", border: 0, padding: 0, color: "#1976d2", cursor: "pointer" }}>
-        {church.name}
-      </button>
-    );
-    return result;
-  };
-
-  const handleEditAccess = async (e: React.MouseEvent) => {
-    e.preventDefault();
-    const anchor = e.currentTarget as HTMLAnchorElement;
-    const churchId = anchor.getAttribute("data-churchid");
-
+  const handleEditAccess = async (churchId: string) => {
     const result = await ApiHelper.get("/churches/" + churchId + "/impersonate", "MembershipApi");
 
     const idx = ArrayHelper.getIndex(UserHelper.userChurches, "church.id", churchId);
@@ -139,9 +107,17 @@ export const ChurchesTab = () => {
           {churches.length === 0 ? (
             <>{Locale.label("serverAdmin.adminPage.noChurch")}</>
           ) : (
-            <table className="table table-sm" id="adminChurchesTable">
-              {getChurchRows()}
-            </table>
+            <Table size="small" id="adminChurchesTable">
+              <TableHead>
+                <TableRow>
+                  <TableCell>{Locale.label("serverAdmin.adminPage.church")}</TableCell>
+                  <TableCell>{Locale.label("serverAdmin.adminPage.location")}</TableCell>
+                  <TableCell>{Locale.label("serverAdmin.adminPage.regist")}</TableCell>
+                  <TableCell align="right">{Locale.label("serverAdmin.adminPage.act")}</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>{getChurchRows()}</TableBody>
+            </Table>
           )}
         </DisplayBox>
       </>

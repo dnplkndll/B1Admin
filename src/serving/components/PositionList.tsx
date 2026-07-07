@@ -1,4 +1,3 @@
-import React from "react";
 import { Badge, Chip, Table, TableBody, TableCell, TableHead, TableRow, Avatar, useTheme } from "@mui/material";
 import {
   type AssignmentInterface,
@@ -62,7 +61,7 @@ export const PositionList = (props: Props) => {
           <button
             type="button"
             onClick={() => props.onAssignmentSelect(position, assignment || { positionId: position.id })}
-            style={{ background: "none", border: 0, padding: 0, color: "#1976d2", cursor: "pointer", display: "flex", alignItems: "center", gap: "8px" }}>
+            style={{ background: "none", border: 0, padding: 0, color: "var(--link)", cursor: "pointer", display: "flex", alignItems: "center", gap: "8px" }}>
             {wrappedImage}
             {personName}
           </button>
@@ -89,7 +88,7 @@ export const PositionList = (props: Props) => {
         <button
           type="button"
           onClick={() => props.onAssignmentSelect(position, { positionId: position.id })}
-          style={{ background: "none", border: 0, padding: 0, color: "#1976d2", cursor: "pointer" }}>
+          style={{ background: "none", border: 0, padding: 0, color: "var(--link)", cursor: "pointer" }}>
           {label}
         </button>
       );
@@ -109,17 +108,17 @@ export const PositionList = (props: Props) => {
             <button
               type="button"
               onClick={() => props.onSelect(position)}
-              style={{ background: "none", border: 0, padding: 0, color: "#1976d2", cursor: "pointer" }}>
+              style={{ background: "none", border: 0, padding: 0, color: "var(--link)", cursor: "pointer" }}>
               {position.name}
-              {group && <span style={{ color: "#999", marginLeft: "8px" }}>({group.name})</span>}
+              {group && <span style={{ color: "var(--text-muted)", marginLeft: "8px" }}>({group.name})</span>}
             </button>
           ) : (
             <span>
               {position.name}
-              {group && <span style={{ color: "#999", marginLeft: "8px" }}>({group.name})</span>}
+              {group && <span style={{ color: "var(--text-muted)", marginLeft: "8px" }}>({group.name})</span>}
             </span>
           )}
-          {position.allowSelfSignup && <Chip label={assignments.length + "/" + position.count + " " + Locale.label("plans.positionList.signupSuffix")} size="small" color="info" variant="outlined" sx={{ ml: 1, fontSize: "0.6875rem" }} />}
+          <Chip label={assignments.length + "/" + (position.count || 0) + (position.allowSelfSignup ? " " + Locale.label("plans.positionList.signupSuffix") : "")} size="small" color={assignments.length >= (position.count || 0) ? "success" : "default"} variant="outlined" sx={{ ml: 1, fontSize: "0.6875rem" }} />
         </TableCell>
         <TableCell style={{ paddingTop: hasPeople ? 2 : 10, paddingBottom: hasPeople ? 2 : 10, verticalAlign: "top" }}>{getPeopleLinks(position)}</TableCell>
       </TableRow>

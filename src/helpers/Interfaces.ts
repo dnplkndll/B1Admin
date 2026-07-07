@@ -1,15 +1,93 @@
+import type { SessionInterface as BaseSessionInterface, ServiceTimeInterface } from "@churchapps/helpers";
+
+export interface SessionInterface extends BaseSessionInterface {
+  serviceTime?: ServiceTimeInterface;
+  _updateTimestamp?: number;
+}
+
+// Mirrors @churchapps/helpers — switch to the package exports once >1.7.1 is published.
+export interface CampaignInterface {
+  id?: string;
+  churchId?: string;
+  fundId?: string;
+  name?: string;
+  description?: string;
+  goalAmount?: number;
+  startDate?: string;
+  endDate?: string;
+  showPublic?: boolean;
+  allowSelfPledge?: boolean;
+}
+
+export interface PledgeInterface {
+  id?: string;
+  churchId?: string;
+  campaignId?: string;
+  personId?: string;
+  amount?: number;
+}
+
+export type PledgeStatus = "notStarted" | "inProgress" | "fulfilled" | "beyondPledged" | "nonPledged";
+
+export interface PledgeProgressRowInterface {
+  campaignId?: string;
+  campaignName?: string;
+  personId?: string;
+  pledgeId?: string;
+  pledgedAmount?: number;
+  givenAmount?: number;
+  status?: PledgeStatus;
+}
+
+export interface CampaignProgressInterface {
+  campaign?: CampaignInterface;
+  totalPledged?: number;
+  totalGiven?: number;
+  pledgeCount?: number;
+  donorCount?: number;
+  rows?: PledgeProgressRowInterface[];
+}
+
+export interface PersonFieldChoice {
+  value: string;
+  text: string;
+}
+
+// First-class custom-field definitions/values, independent of the Forms module.
+// Temporary local interfaces; move to @churchapps/helpers when published.
+export interface PersonFieldInterface {
+  id?: string;
+  churchId?: string;
+  name?: string;
+  fieldType?: string;
+  choices?: string | null; // JSON string of [{ value, text }]
+  sort?: number;
+}
+
+export interface PersonFieldValueInterface {
+  id?: string;
+  churchId?: string;
+  personId?: string;
+  fieldId?: string;
+  value?: string;
+}
+
 export interface PaymentGatewaysInterface {
   id?: string;
   churchId?: string;
   provider?: string;
   publicKey?: string;
   privateKey?: string;
+  webhookKey?: string;
   payFees?: boolean;
   currency?: string;
+  enabled?: boolean;
+  settings?: Record<string, any>;
 }
 
 export interface SongInterface {
   id?: string;
+  songDetailId?: string;
   name?: string;
   dateAdded: Date;
 }
@@ -48,6 +126,10 @@ export interface ArrangementInterface {
   songDetailId?: string;
   name?: string;
   lyrics?: string;
+  bpm?: number;
+  seconds?: number;
+  meter?: string;
+  sequence?: string;
 }
 
 export interface ArrangementKeyInterface {
@@ -83,6 +165,14 @@ export interface PlanTypeInterface {
   name?: string;
 }
 
+export interface PlanTemplateInterface {
+  id?: string;
+  churchId?: string;
+  ministryId?: string;
+  name?: string;
+  data?: string;
+}
+
 export interface AssociatedGroupInterface {
   id?: string;
   churchId?: string;
@@ -97,6 +187,7 @@ export interface PlanInterface {
   churchId?: string;
   name?: string;
   ministryId?: string;
+  campusId?: string;
   planTypeId?: string;
   serviceDate?: Date;
   notes?: string;
@@ -108,6 +199,18 @@ export interface PlanInterface {
   providerPlanName?: string;
   signupDeadlineHours?: number;
   showVolunteerNames?: boolean;
+  prepared?: boolean;
+  autoReplaceOnDecline?: boolean;
+  lastAutofillRunId?: string;
+}
+
+export interface SchedulingPreferenceInterface {
+  id?: string;
+  churchId?: string;
+  personId?: string;
+  maxPerMonth?: number;
+  preferredTimes?: string;
+  householdScheduling?: string;
 }
 
 export interface ProgramInterface {
@@ -173,21 +276,19 @@ export interface ContentProviderAuthInterface {
   scope?: string;
 }
 
-export interface FileInterface {
+export type { FileInterface } from "@churchapps/helpers";
+
+export interface SiteInterface {
   id?: string;
-  contentType?: string;
-  contentId?: string;
-  fileName?: string;
-  contentPath?: string;
-  fileType?: string;
-  size?: number;
-  dateModified?: Date;
-  fileContents?: string;
+  churchId?: string;
+  name?: string;
+  subDomain?: string;
 }
 
 export interface GlobalStyleInterface {
   id?: string;
   churchId?: string;
+  siteId?: string;
   fonts?: string;
   palette?: any;
   typography?: string;
@@ -215,9 +316,9 @@ export interface ElementInterface {
   stylesJSON?: string;
   styles?: { all?: any; desktop?: any; mobile?: any };
   animationsJSON?: string;
-  animations?: { onShow: string; onShowSpeed: string };
+  animations?: { onShow?: string; onShowSpeed?: string };
   sort?: number;
-  elementType: string;
+  elementType?: string;
   elements?: ElementInterface[];
 }
 
@@ -247,15 +348,35 @@ export interface SectionInterface {
 export interface PageInterface {
   id?: string;
   churchId?: string;
+  siteId?: string;
   url?: string;
   title?: string;
   layout?: string;
+  visibility?: string;
+  groupIds?: string;
+  metaDescription?: string;
+  publishedAt?: string;
   sections?: SectionInterface[];
+}
+
+export interface PostInterface {
+  id?: string;
+  churchId?: string;
+  title?: string;
+  slug?: string;
+  excerpt?: string;
+  content?: string;
+  authorId?: string;
+  photoUrl?: string;
+  publishDate?: Date | string | null;
+  category?: string;
+  tags?: string;
 }
 
 export interface BlockInterface {
   id?: string;
   churchId?: string;
+  siteId?: string;
   blockType?: string;
   name?: string;
   sections?: SectionInterface[];

@@ -1,7 +1,8 @@
-import React from "react";
 import { useNavigate } from "react-router-dom";
-import { ApiHelper, DateHelper, Locale, type PersonInterface, type TaskInterface } from "@churchapps/apphelper";
+import { ApiHelper, Locale, type PersonInterface } from "@churchapps/apphelper";
+import { type TaskInterface } from "@churchapps/helpers";
 import { Table, TableBody, TableCell, TableHead, TableRow, Card, CardContent, Typography, Stack, Box, Button, Paper, Avatar } from "@mui/material";
+import { CountChip } from "../../../components/ui";
 import {
   AssignmentReturn as ChangesIcon,
   CheckCircle as ApplyIcon,
@@ -95,7 +96,7 @@ export const RequestedChanges = (props: Props) => {
           p.photoUpdated = new Date(+getTime);
           break;
         }
-        case "birthDate": p.birthDate = DateHelper.toDate(value); break;
+        case "birthDate": p.birthDate = value; break;
         case "contactInfo.email": p.contactInfo.email = value; break;
         case "contactInfo.address1": p.contactInfo.address1 = value; break;
         case "contactInfo.address2": p.contactInfo.address2 = value; break;
@@ -129,13 +130,13 @@ export const RequestedChanges = (props: Props) => {
       }}>
       <CardContent>
         <Stack spacing={3}>
-          {/* Header */}
           <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
             <Stack direction="row" alignItems="center" spacing={1}>
-              <ChangesIcon sx={{ color: "primary.main" }} />
-              <Typography variant="h6" sx={{ fontWeight: 600, color: "primary.main" }}>
+              <ChangesIcon sx={{ color: "primary.main", fontSize: 20 }} />
+              <Typography variant="h6">
                 {Locale.label("tasks.requestedChanges.requestedChanges")}
               </Typography>
+              {(requestedChanges?.length || 0) > 0 && <CountChip count={requestedChanges.length} />}
             </Stack>
             {props.task.status !== Locale.label("tasks.taskPage.closed") && (
               <Button
@@ -152,7 +153,6 @@ export const RequestedChanges = (props: Props) => {
             )}
           </Box>
 
-          {/* Changes Table */}
           <Paper
             sx={{
               overflow: "hidden",
@@ -161,7 +161,7 @@ export const RequestedChanges = (props: Props) => {
             }}>
             <Table>
               <TableHead>
-                <TableRow sx={{ backgroundColor: "grey.50" }}>
+                <TableRow>
                   <TableCell sx={{ fontWeight: 600, color: "text.primary" }}>{Locale.label("tasks.requestedChanges.field")}</TableCell>
                   <TableCell sx={{ fontWeight: 600, color: "text.primary" }}>{Locale.label("tasks.requestedChanges.value")}</TableCell>
                 </TableRow>
