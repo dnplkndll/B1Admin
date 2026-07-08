@@ -485,6 +485,31 @@ test.describe("People Management", () => {
       await expect(middleName).toHaveValue("Zacchaeus");
     });
 
+    test("should accept loosely-formatted phone input and standardize on save", async ({ page }) => {
+      await openPersonRow(page, SEED_PEOPLE.DONALD);
+      const editBtn = personDetailsEditButton(page);
+      await editBtn.first().click();
+      const homePhone = page.locator("#homePhone");
+      await expect(homePhone).toBeVisible({ timeout: 10000 });
+      // Phone labels load from localization (regression: keys pointed at a missing path).
+      await expect(page.locator('label[for="homePhone"]')).toHaveText("Home");
+      await expect(page.locator('label[for="mobilePhone"]')).toHaveText("Mobile");
+      // Loosely-formatted input the old strict MuiTelInput validation rejected.
+      await homePhone.fill("217 555 2504");
+      await page.locator("button").getByText("Save").click();
+      await expect(editBtn.first()).toBeVisible({ timeout: 10000 });
+      // Reopen and confirm it was standardized on save.
+      await editBtn.first().click();
+      const reopened = page.locator("#homePhone");
+      await expect(reopened).toHaveValue("(217) 555-2504", { timeout: 10000 });
+      // Legacy E.164 values from the old tel widget also converge to US format.
+      await reopened.fill("+1 309 555 8888");
+      await page.locator("button").getByText("Save").click();
+      await expect(editBtn.first()).toBeVisible({ timeout: 10000 });
+      await editBtn.first().click();
+      await expect(page.locator("#homePhone")).toHaveValue("(309) 555-8888", { timeout: 10000 });
+    });
+
     test("should cancel merging person details", async ({ page }) => {
       await openPersonRow(page, SEED_PEOPLE.DONALD);
       const editBtn = personDetailsEditButton(page);

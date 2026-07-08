@@ -1,6 +1,5 @@
 import React, { useState, memo, useCallback } from "react";
 import { useForm, Controller, useFormState } from "react-hook-form";
-import { MuiTelInput, matchIsValidTel } from "mui-tel-input";
 import { B1AdminPersonHelper, UpdateHouseHold } from ".";
 import { type PersonInterface } from "@churchapps/helpers";
 import { PersonHelper, DateHelper, ApiHelper, Loading, ErrorMessages, Locale, PersonAvatar } from "@churchapps/apphelper";
@@ -31,42 +30,28 @@ interface Props {
 
 export function formattedPhoneNumber(value: string) {
   if (!value) return "";
-  value = value.split("x")[0];
-  value = value.replaceAll(" ", "-");
-  return value;
+  return value.split("x")[0];
 }
 
-const phoneSlotProps = { htmlInput: { "aria-describedby": "errorMsg", "aria-labelledby": "tel-label errorMsg" } };
-const phoneMenuProps = { "aria-label": "phone-number" };
-const phoneRules = (v: string) => !v || v.length <= 4 || matchIsValidTel(v.split("x")[0]) || Locale.label("people.personEdit.invalForm");
-const phoneHelperText = (hasError: boolean) => (
-  <div id="errorMsg">{hasError && <Box component="p" sx={{ margin: 0, color: "error.main" }}>{Locale.label("people.personEdit.invalForm")}</Box>}</div>
-);
-
-// Normalize legacy phone formats like "(217) 555-2504" or "217-555-2504" into E.164
-// so MuiTelInput can render them with country flag and spacing.
-const normalizePhone = (raw: string | null | undefined): string => {
+// Accept whatever the user typed; store US numbers as "(555) 555-5555" and leave
+// anything else (non-US international, partials) untouched. Preserves the "xNNN" extension.
+// "+1" + 10 digits counts as US so legacy E.164 values from the old tel widget converge on save.
+export const standardizePhone = (raw: string | null | undefined): string => {
   if (!raw) return "";
   const [base, ext] = raw.split("x");
-  const digits = (base ?? "").replace(/\D/g, "");
-  if (!digits) return ext ? "x" + ext : "";
-  const normalized = (base ?? "").trim().startsWith("+") ? "+" + digits
-    : digits.length === 10 ? "+1" + digits
-      : digits.length === 11 && digits.startsWith("1") ? "+" + digits
-        : "+" + digits;
-  return ext ? normalized + "x" + ext : normalized;
+  const trimmed = (base ?? "").trim();
+  const digits = trimmed.replace(/\D/g, "");
+  const isUs = (!trimmed.startsWith("+") && digits.length === 10) || (digits.length === 11 && digits.startsWith("1"));
+  const us = digits.slice(-10);
+  const formatted = isUs ? `(${us.slice(0, 3)}) ${us.slice(3, 6)}-${us.slice(6)}` : trimmed;
+  return ext ? formatted + "x" + ext : formatted;
 };
 
 const buildFormDefaults = (p: PersonInterface) => ({
   ...p,
   birthDate: DateHelper.formatHtml5Date(p?.birthDate) || null,
   anniversary: DateHelper.formatHtml5Date(p?.anniversary) || null,
-  contactInfo: {
-    ...p?.contactInfo,
-    homePhone: normalizePhone(p?.contactInfo?.homePhone),
-    workPhone: normalizePhone(p?.contactInfo?.workPhone),
-    mobilePhone: normalizePhone(p?.contactInfo?.mobilePhone)
-  }
+  contactInfo: { ...p?.contactInfo }
 });
 
 export const PersonEdit = memo((props: Props) => {
@@ -135,9 +120,10 @@ export const PersonEdit = memo((props: Props) => {
     // "" = the Unassigned option; store as null so it matches campusId IS NULL.
     if (!p.campusId) p.campusId = null;
     if (p.contactInfo) {
-      p.contactInfo.homePhone = (p.contactInfo.homePhone?.length ?? 0) <= 4 ? null : p.contactInfo.homePhone;
-      p.contactInfo.workPhone = (p.contactInfo.workPhone?.length ?? 0) <= 4 ? null : p.contactInfo.workPhone;
-      p.contactInfo.mobilePhone = (p.contactInfo.mobilePhone?.length ?? 0) <= 4 ? null : p.contactInfo.mobilePhone;
+      (["homePhone", "workPhone", "mobilePhone"] as const).forEach((k) => {
+        const v = standardizePhone(p.contactInfo[k]);
+        (p.contactInfo as AnyRecord)[k] = v.length <= 4 ? null : v;
+      });
     }
     return p;
   }, [props.person]);
@@ -337,10 +323,10 @@ export const PersonEdit = memo((props: Props) => {
           <Grid size={{ md: 3 }}>
             <div className="section">{Locale.label("person.phone")}</div>
             {(["homePhone", "workPhone", "mobilePhone"] as const).map((field) => {
-              const labelKey = field === "homePhone" ? "people.personEdit.home" : field === "workPhone" ? "people.personEdit.work" : "people.personEdit.mobile";
+              const labelKey = field === "homePhone" ? "people.personView.home" : field === "workPhone" ? "people.personView.work" : "people.personView.mobile";
               return (
-                <Controller key={field} name={`contactInfo.${field}`} control={control} rules={{ validate: phoneRules }} render={({ field: f, fieldState }) => (
-                  <MuiTelInput fullWidth id={field} label={Locale.label(labelKey)} value={f.value?.split("x")[0] ?? ""} onChange={(v) => { const ext = f.value?.split("x")[1] ?? ""; f.onChange(ext ? v + "x" + ext : v); }} defaultCountry="US" focusOnSelectCountry slotProps={phoneSlotProps} error={!!fieldState.error} MenuProps={phoneMenuProps} helperText={phoneHelperText(!!fieldState.error)} />
+                <Controller key={field} name={`contactInfo.${field}`} control={control} render={({ field: f }) => (
+                  <TextField fullWidth id={field} label={Locale.label(labelKey)} placeholder="(555) 555-5555" data-testid={`${field}-input`} value={f.value?.split("x")[0] ?? ""} onChange={(ev) => { const ext = f.value?.split("x")[1] ?? ""; f.onChange(ext ? ev.target.value + "x" + ext : ev.target.value); }} />
                 )} />
               );
             })}
@@ -349,10 +335,10 @@ export const PersonEdit = memo((props: Props) => {
           <Grid size={{ md: 1 }}>
             <div className="section">{Locale.label("people.personEdit.exten")}</div>
             {(["homePhone", "workPhone", "mobilePhone"] as const).map((field) => {
-              const labelKey = field === "homePhone" ? "people.personEdit.home" : field === "workPhone" ? "people.personEdit.work" : "people.personEdit.mobile";
+              const labelKey = field === "homePhone" ? "people.personView.home" : field === "workPhone" ? "people.personView.work" : "people.personView.mobile";
               return (
                 <Controller key={field} name={`contactInfo.${field}`} control={control} render={({ field: f }) => (
-                  <TextField fullWidth label={Locale.label(labelKey)} value={f.value?.split("x")[1] ?? ""} onChange={(ev) => { const base = f.value?.split("x")[0] ?? ""; f.onChange(base + "x" + ev.target.value); }} InputProps={{ inputProps: { maxLength: 4 } }} placeholder={Locale.label("placeholders.person.phoneExt")} />
+                  <TextField fullWidth label={Locale.label(labelKey)} data-testid={`${field}-ext-input`} value={f.value?.split("x")[1] ?? ""} onChange={(ev) => { const base = f.value?.split("x")[0] ?? ""; f.onChange(base + "x" + ev.target.value); }} InputProps={{ inputProps: { maxLength: 4 } }} placeholder={Locale.label("placeholders.person.phoneExt")} />
                 )} />
               );
             })}
