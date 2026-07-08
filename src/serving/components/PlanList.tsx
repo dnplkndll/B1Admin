@@ -58,7 +58,7 @@ export const PlanList = memo((props: Props) => {
     today.setHours(0, 0, 0, 0);
     return allPlans.filter(p => {
       if (!p.serviceDate) return true;
-      const d = new Date(p.serviceDate);
+      const d = DateHelper.toDate(p.serviceDate);
       d.setHours(0, 0, 0, 0);
       return d >= today;
     });
