@@ -80,7 +80,9 @@ export const ServingPage = () => {
     );
   }
 
-  if (groups.length === 0) {
+  const rawMinistryCount = (ministries.data || []).length;
+
+  if (rawMinistryCount === 0) {
     return (
       <>
         <PageHeader icon={<AssignmentIcon />} title={Locale.label("plans.plansPage.selMin")} subtitle={Locale.label("plans.plansPage.subtitle")} />
@@ -145,6 +147,13 @@ export const ServingPage = () => {
       </PageHeader>
 
       <Box sx={{ p: 3 }}>
+        {!selectedMinistry && (
+          <EmptyState
+            icon={<AssignmentIcon />}
+            title={Locale.label("plans.ministryList.noMinMsg")}
+            description={Locale.label("plans.servingPage.showAllHint")}
+          />
+        )}
         {selectedMinistry && (
           <Grid container spacing={3}>
             <Grid size={{ xs: 12, lg: 6 }}>

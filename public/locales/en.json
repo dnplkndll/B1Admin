@@ -2294,7 +2294,8 @@
       "title": "Serving Overview"
     },
     "servingPage": {
-      "showAll": "Show All"
+      "showAll": "Show All",
+      "showAllHint": "Your ministries are hidden because you're not a member. Turn on \"Show All\" above to see them."
     },
     "songDialog": {
       "close": "Close",
