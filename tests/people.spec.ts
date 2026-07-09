@@ -485,7 +485,7 @@ test.describe("People Management", () => {
       await expect(middleName).toHaveValue("Zacchaeus");
     });
 
-    test("should accept loosely-formatted phone input and standardize on save", async ({ page }) => {
+    test("should accept and standardize phone numbers, including 555 and international", async ({ page }) => {
       await openPersonRow(page, SEED_PEOPLE.DONALD);
       const editBtn = personDetailsEditButton(page);
       await editBtn.first().click();
@@ -494,20 +494,31 @@ test.describe("People Management", () => {
       // Phone labels load from localization (regression: keys pointed at a missing path).
       await expect(page.locator('label[for="homePhone"]')).toHaveText("Home");
       await expect(page.locator('label[for="mobilePhone"]')).toHaveText("Mobile");
-      // Loosely-formatted input the old strict MuiTelInput validation rejected.
-      await homePhone.fill("217 555 2504");
+      // Replace the existing value the way a user would: select-all then type.
+      // Pin the country to US first — a prior run may have left an international number.
+      // 555 numbers fail libphonenumber validation; saving must not be blocked (the original bug).
+      await page.locator('button[aria-label="Change country"], .MuiTelInput-IconButton').first().click();
+      await page.getByRole("option", { name: /United States/ }).click();
+      await homePhone.click();
+      await homePhone.press("ControlOrMeta+a");
+      await homePhone.pressSequentially("5555552504");
+      await expect(homePhone).toHaveValue("555 555 2504");
       await page.locator("button").getByText("Save").click();
       await expect(editBtn.first()).toBeVisible({ timeout: 10000 });
-      // Reopen and confirm it was standardized on save.
+      // Reopen and confirm the formatted number persisted.
       await editBtn.first().click();
       const reopened = page.locator("#homePhone");
-      await expect(reopened).toHaveValue("(217) 555-2504", { timeout: 10000 });
-      // Legacy E.164 values from the old tel widget also converge to US format.
-      await reopened.fill("+1 309 555 8888");
+      await expect(reopened).toHaveValue("555 555 2504", { timeout: 10000 });
+      // International numbers: switch country via the flag menu, then type the national number.
+      await page.locator('button[aria-label="Change country"], .MuiTelInput-IconButton').first().click();
+      await page.getByRole("option", { name: /United Kingdom/ }).click();
+      await reopened.press("ControlOrMeta+a");
+      await reopened.pressSequentially("2079460958");
+      await expect(reopened).toHaveValue("20 7946 0958");
       await page.locator("button").getByText("Save").click();
       await expect(editBtn.first()).toBeVisible({ timeout: 10000 });
       await editBtn.first().click();
-      await expect(page.locator("#homePhone")).toHaveValue("(309) 555-8888", { timeout: 10000 });
+      await expect(page.locator("#homePhone")).toHaveValue("20 7946 0958", { timeout: 10000 });
     });
 
     test("should cancel merging person details", async ({ page }) => {

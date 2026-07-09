@@ -6,7 +6,7 @@
   "packageManager": "yarn@4.15.0",
   "dependencies": {
     "@churchapps/apphelper": "^0.22.0",
-    "@churchapps/content-providers": "^0.6.0",
+    "@churchapps/content-providers": "^0.6.1",
     "@churchapps/helpers": "^1.10.1",
     "@mui/icons-material": "^7.3.11",
     "@mui/material": "^7.3.11",
@@ -19,6 +19,7 @@
     "dayjs": "^1.11.20",
     "i18next-browser-languagedetector": "^8.2.1",
     "jszip": "^3.10.1",
+    "mui-tel-input": "^9.0.1",
     "qrcode.react": "^4.2.0",
     "react": "^19.2.6",
     "react-big-calendar": "^1.19.4",
