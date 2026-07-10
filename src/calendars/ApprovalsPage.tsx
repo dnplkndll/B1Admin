@@ -83,8 +83,8 @@ export const ApprovalsPage = () => {
                             {b.resourceId && (b.quantity || 1) > 1 ? ` × ${b.quantity}` : ""}
                           </TableCell>
                           <TableCell>
-                            {b.conflicts?.length > 0 ? (
-                              <Tooltip title={<>{b.conflicts.map((c, i) => <div key={i}>{c.message}</div>)}</>}>
+                            {(b.conflicts?.length || 0) > 0 ? (
+                              <Tooltip title={<>{(b.conflicts || []).map((c, i) => <div key={i}>{c.message}</div>)}</>}>
                                 <Chip icon={<ConflictIcon />} label={Locale.label("calendars.approvals.conflicts")} size="small" color="warning" data-testid={`booking-conflicts-${b.id}`} />
                               </Tooltip>
                             ) : (
@@ -93,8 +93,8 @@ export const ApprovalsPage = () => {
                           </TableCell>
                           <TableCell align="right" className="rowActions">
                             <Stack direction="row" spacing={1} justifyContent="flex-end">
-                              <AppIconButton tone="card" label={Locale.label("calendars.approvals.approve")} icon={<ApproveIcon />} onClick={() => resolveBooking(b.id, "approve")} data-testid={`approve-booking-${b.id}`} />
-                              <AppIconButton intent="remove" label={Locale.label("calendars.approvals.reject")} icon={<RejectIcon />} onClick={() => resolveBooking(b.id, "reject")} data-testid={`reject-booking-${b.id}`} />
+                              <AppIconButton tone="card" label={Locale.label("calendars.approvals.approve")} icon={<ApproveIcon />} onClick={() => resolveBooking(b.id || "", "approve")} data-testid={`approve-booking-${b.id}`} />
+                              <AppIconButton intent="remove" label={Locale.label("calendars.approvals.reject")} icon={<RejectIcon />} onClick={() => resolveBooking(b.id || "", "reject")} data-testid={`reject-booking-${b.id}`} />
                             </Stack>
                           </TableCell>
                         </TableRow>
@@ -136,8 +136,8 @@ export const ApprovalsPage = () => {
                           <TableCell>{e.description}</TableCell>
                           <TableCell align="right" className="rowActions">
                             <Stack direction="row" spacing={1} justifyContent="flex-end">
-                              <AppIconButton tone="card" label={Locale.label("calendars.approvals.approve")} icon={<ApproveIcon />} onClick={() => resolveEvent(e.id, "approve")} data-testid={`approve-event-${e.id}`} />
-                              <AppIconButton intent="remove" label={Locale.label("calendars.approvals.reject")} icon={<RejectIcon />} onClick={() => resolveEvent(e.id, "reject")} data-testid={`reject-event-${e.id}`} />
+                              <AppIconButton tone="card" label={Locale.label("calendars.approvals.approve")} icon={<ApproveIcon />} onClick={() => resolveEvent(e.id || "", "approve")} data-testid={`approve-event-${e.id}`} />
+                              <AppIconButton intent="remove" label={Locale.label("calendars.approvals.reject")} icon={<RejectIcon />} onClick={() => resolveEvent(e.id || "", "reject")} data-testid={`reject-event-${e.id}`} />
                             </Stack>
                           </TableCell>
                         </TableRow>

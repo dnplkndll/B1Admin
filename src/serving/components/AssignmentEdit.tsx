@@ -15,7 +15,7 @@ interface Props {
 
 export const AssignmentEdit = (props: Props) => {
   const [groupMembers, setGroupMembers] = React.useState<GroupMemberInterface[]>([]);
-  const [preferencePerson, setPreferencePerson] = React.useState<{ id: string; name: string }>(null);
+  const [preferencePerson, setPreferencePerson] = React.useState<{ id: string; name: string } | null>(null);
 
   const handleSave = () => {
     props.updatedFunction(true);
@@ -57,7 +57,7 @@ export const AssignmentEdit = (props: Props) => {
       rows.push(
         <TableRow key={i}>
           <TableCell>
-            <Avatar src={PersonHelper.getPhotoUrl(gm.person)} sx={{ width: 32, height: 32 }} />
+            <Avatar src={PersonHelper.getPhotoUrl(gm.person!)} sx={{ width: 32, height: 32 }} />
           </TableCell>
           <TableCell style={{ width: "80%" }}>
             <button

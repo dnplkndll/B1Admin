@@ -14,7 +14,7 @@ interface Props {
 export const GroupNavigation = memo((props: Props) => {
   const { selectedTab, onTabChange, group, onHeader } = props;
 
-  const isStandard = useMemo(() => group?.tags?.indexOf("standard") > -1, [group?.tags]);
+  const isStandard = useMemo(() => (group?.tags?.indexOf("standard") ?? -1) > -1, [group?.tags]);
 
   const tabs: NavigationTab[] = useMemo(() => {
     const baseTabs = [{ value: "members", label: Locale.label("groups.groupNavigation.members"), icon: <GroupIcon /> }];

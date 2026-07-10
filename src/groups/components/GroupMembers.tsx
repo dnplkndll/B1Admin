@@ -101,28 +101,32 @@ export const GroupMembers: React.FC<Props> = memo((props) => {
     [groupMembers]
   );
 
+  const members = groupMembers.data || [];
+
   const getMemberByPersonId = useCallback(
     (personId: string) => {
       let result = null;
-      for (let i = 0; i < groupMembers.data.length; i++) if (groupMembers.data[i].personId === personId) result = groupMembers.data[i];
+      for (let i = 0; i < members.length; i++) if (members[i].personId === personId) result = members[i];
       return result;
     },
-    [groupMembers.data]
+    [members]
   );
 
   const addedPersonIdRef = useRef<string>(null);
 
   const handleAdd = useCallback(async () => {
-    if (addedPersonIdRef.current === props.addedPerson.id) return;
-    if (getMemberByPersonId(props.addedPerson.id) === null) {
-      addedPersonIdRef.current = props.addedPerson.id;
-      const gm = { groupId: props.group.id, personId: props.addedPerson.id, person: props.addedPerson } as GroupMemberInterface;
+    const person = props.addedPerson;
+    if (!person) return;
+    if (addedPersonIdRef.current === person.id) return;
+    if (getMemberByPersonId(person.id!) === null) {
+      addedPersonIdRef.current = person.id!;
+      const gm = { groupId: props.group.id, personId: person.id, person } as GroupMemberInterface;
       await ApiHelper.post("/groupmembers", [gm], "MembershipApi");
       groupMembers.refetch();
-      if (props.addedPerson.contactInfo?.email) {
+      if (person.contactInfo?.email) {
         setShowInviteDialog(true);
       } else {
-        props.addedCallback();
+        props.addedCallback?.();
       }
     }
   }, [props, getMemberByPersonId, groupMembers]);
@@ -140,10 +144,10 @@ export const GroupMembers: React.FC<Props> = memo((props) => {
   const tableRows = useMemo(() => {
     const rows: JSX.Element[] = [];
 
-    for (let i = 0; i < groupMembers.data.length; i++) {
-      const gm = groupMembers.data[i];
+    for (let i = 0; i < members.length; i++) {
+      const gm = members[i];
       const personName = gm.person?.name?.display || Locale.label("groups.groupMembers.unknown");
-      const isLast = i === groupMembers.data.length - 1;
+      const isLast = i === members.length - 1;
       const cellSx = isLast ? { ...bodyCellSx, borderBottom: 0 } : bodyCellSx;
 
       const roleCell = gm.leader ? (
@@ -207,7 +211,7 @@ export const GroupMembers: React.FC<Props> = memo((props) => {
           key={gm.id}
           sx={hoverRowSx}>
           <TableCell sx={{ ...cellSx, width: 56 }}>
-            <PersonAvatar person={gm.person} size="small" />
+            <PersonAvatar person={gm.person as PersonInterface} size="small" />
           </TableCell>
           <TableCell sx={cellSx}>
             <Link
@@ -248,7 +252,7 @@ export const GroupMembers: React.FC<Props> = memo((props) => {
       );
     }
     return rows;
-  }, [groupMembers.data, canEdit, handleToggleLeader, handleRemove]);
+  }, [members, canEdit, handleToggleLeader, handleRemove]);
 
   const headerCellSx = {
     py: 1,
@@ -257,7 +261,7 @@ export const GroupMembers: React.FC<Props> = memo((props) => {
   } as const;
 
   const tableHeader = useMemo(() => {
-    if (groupMembers.data.length === 0) return null;
+    if (members.length === 0) return null;
     return (
       <TableRow>
         <TableCell sx={{ ...headerCellSx, width: 56 }} />
@@ -266,7 +270,7 @@ export const GroupMembers: React.FC<Props> = memo((props) => {
         <TableCell sx={{ ...headerCellSx, width: 110, textAlign: "right" }} />
       </TableRow>
     );
-  }, [groupMembers.data.length]);
+  }, [members.length]);
 
   const handleTemplateMessage = (templateType: string) => {
     let newMessage = "";
@@ -279,7 +283,7 @@ export const GroupMembers: React.FC<Props> = memo((props) => {
     setMessage(newMessage);
   };
 
-  const exportData = groupMembers.data.map((gm) => {
+  const exportData = members.map((gm) => {
     const { person, ...rest } = gm;
     const { contactInfo, name, ...personRest } = person || {};
 
@@ -312,7 +316,7 @@ export const GroupMembers: React.FC<Props> = memo((props) => {
   );
 
   const handleSend = async () => {
-    const peopleIds = ArrayHelper.getIds(groupMembers.data, "personId");
+    const peopleIds = ArrayHelper.getIds(members, "personId");
     const ids = peopleIds.filter((id) => id !== UserHelper.person.id); //remove the one that is sending the message.
     const data: any = {
       peopleIds: ids,
@@ -370,7 +374,7 @@ export const GroupMembers: React.FC<Props> = memo((props) => {
 
   const getTable = () => {
     if (groupMembers.isLoading) return renderSkeleton();
-    if (groupMembers.data.length === 0) {
+    if (members.length === 0) {
       return (
         <EmptyState
           variant="card"
@@ -383,8 +387,8 @@ export const GroupMembers: React.FC<Props> = memo((props) => {
     return renderTable();
   };
 
-  const memberCount = groupMembers.data.length;
-  const leaderCount = groupMembers.data.filter((m) => m.leader).length;
+  const memberCount = members.length;
+  const leaderCount = members.filter((m) => m.leader).length;
   const showCounts = !groupMembers.isLoading && memberCount > 0;
 
   const closeComposer = () => {
@@ -548,9 +552,9 @@ export const GroupMembers: React.FC<Props> = memo((props) => {
         <SendInviteDialog
           open={showInviteDialog}
           personName={props.addedPerson.name?.display || `${props.addedPerson.name?.first || ""} ${props.addedPerson.name?.last || ""}`.trim()}
-          personEmail={props.addedPerson.contactInfo.email}
-          contextName={props.group.name}
-          onClose={() => { setShowInviteDialog(false); props.addedCallback(); }}
+          personEmail={props.addedPerson.contactInfo.email || ""}
+          contextName={props.group.name || ""}
+          onClose={() => { setShowInviteDialog(false); props.addedCallback?.(); }}
         />
       )}
     </DisplayBox>

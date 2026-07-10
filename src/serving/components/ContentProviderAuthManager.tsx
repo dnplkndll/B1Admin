@@ -171,7 +171,7 @@ export const ContentProviderAuthManager: React.FC<Props> = ({ ministryId, onAuth
             return;
           }
 
-          setAuthError(result.error_description || result.error);
+          setAuthError((result as any).error_description || result.error);
           setAuthStatus("error");
           return;
         }

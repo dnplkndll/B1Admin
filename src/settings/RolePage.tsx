@@ -24,7 +24,7 @@ export const RolePage = () => {
 
   const loadData = () => {
     if (params.roleId === "everyone") {
-      setRole({ id: null, name: "Everyone" });
+      setRole({ id: undefined, name: "Everyone" });
       return;
     }
     ApiHelper.get("/roles/" + params.roleId, "MembershipApi").then((data: any) => setRole(data));

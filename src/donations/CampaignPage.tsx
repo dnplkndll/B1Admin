@@ -5,7 +5,7 @@ import { useParams, Link } from "react-router-dom";
 import { Box, Card, Chip, LinearProgress, Stack, Table, TableBody, TableCell, TableRow, Typography } from "@mui/material";
 import { Flag as CampaignIcon, Add as AddIcon, Edit as EditIcon, Person as PersonIcon } from "@mui/icons-material";
 import { useQuery } from "@tanstack/react-query";
-import { type CampaignProgressInterface, type PledgeInterface, type PledgeProgressRowInterface, type PledgeStatus } from "../helpers";
+import { type CampaignInterface, type CampaignProgressInterface, type PledgeInterface, type PledgeProgressRowInterface, type PledgeStatus } from "../helpers";
 import { CampaignEdit, PledgeEdit } from "./components";
 import { AppIconButton } from "../components/ui/AppIconButton";
 import { CardWithHeader, EmptyState, ExportButton, PageHeaderStats, SortableTableHead, HeaderPrimaryButton, HeaderSecondaryButton, hoverRowSx, type SortDirection } from "../components/ui";
@@ -21,7 +21,7 @@ const statusColors: Record<PledgeStatus, "default" | "info" | "success" | "warni
 export const CampaignPage = () => {
   const params = useParams();
   const [editMode, setEditMode] = React.useState<"none" | "campaign" | "pledge">("none");
-  const [editPledge, setEditPledge] = React.useState<PledgeInterface>(null);
+  const [editPledge, setEditPledge] = React.useState<PledgeInterface | null>(null);
   const [sortBy, setSortBy] = React.useState<string>("");
   const [sortDirection, setSortDirection] = React.useState<SortDirection>("asc");
   const [currency, setCurrency] = React.useState<string>("usd");
@@ -42,7 +42,7 @@ export const CampaignPage = () => {
 
   const peopleNames = React.useMemo(() => {
     const result: { [key: string]: string } = {};
-    (people.data || []).forEach((p) => { result[p.id] = p.name?.display; });
+    (people.data || []).forEach((p) => { result[p.id || ""] = p.name?.display || ""; });
     return result;
   }, [people.data]);
 
@@ -69,7 +69,7 @@ export const CampaignPage = () => {
     const result = [...(progress.data?.rows || [])];
     if (sortBy === "person") {
       const dir = sortDirection === "asc" ? 1 : -1;
-      result.sort((a, b) => (peopleNames[a.personId] || "").toUpperCase().localeCompare((peopleNames[b.personId] || "").toUpperCase()) * dir);
+      result.sort((a, b) => (peopleNames[a.personId || ""] || "").toUpperCase().localeCompare((peopleNames[b.personId || ""] || "").toUpperCase()) * dir);
     } else if (sortBy) {
       const dir = sortDirection === "asc" ? 1 : -1;
       result.sort((a: any, b: any) => ((a[sortBy] || 0) - (b[sortBy] || 0)) * dir);
@@ -83,8 +83,8 @@ export const CampaignPage = () => {
   };
 
   const getEditContent = () => {
-    if (editMode === "campaign") return <CampaignEdit campaign={campaign} funds={funds.data || []} updatedFunction={updated} />;
-    if (editMode === "pledge") return <PledgeEdit campaignId={params.id} pledge={editPledge} personName={editPledge?.personId ? peopleNames[editPledge.personId] : undefined} updatedFunction={updated} />;
+    if (editMode === "campaign") return <CampaignEdit campaign={campaign as CampaignInterface} funds={funds.data || []} updatedFunction={updated} />;
+    if (editMode === "pledge") return <PledgeEdit campaignId={params.id || ""} pledge={editPledge as PledgeInterface} personName={editPledge?.personId ? peopleNames[editPledge.personId] : undefined} updatedFunction={updated} />;
     return null;
   };
 
@@ -119,7 +119,7 @@ export const CampaignPage = () => {
           <TableCell align="right"><Typography variant="body2">{row.pledgedAmount ? CurrencyHelper.formatCurrencyWithLocale(row.pledgedAmount, currency) : "-"}</Typography></TableCell>
           <TableCell align="right"><Typography variant="body2" sx={{ fontWeight: 600, color: "success.main" }}>{CurrencyHelper.formatCurrencyWithLocale(row.givenAmount || 0, currency)}</Typography></TableCell>
           <TableCell>
-            <Chip size="small" label={Locale.label("donations.pledgeStatus." + row.status)} color={statusColors[row.status] || "default"} data-testid={`pledge-status-${i}`} />
+            <Chip size="small" label={Locale.label("donations.pledgeStatus." + row.status)} color={(row.status && statusColors[row.status]) || "default"} data-testid={`pledge-status-${i}`} />
           </TableCell>
           <TableCell align="right" className="rowActions">
             {canEdit && row.pledgeId && <AppIconButton label={Locale.label("common.edit")} icon={<EditIcon />} onClick={() => handleEditPledge(row)} data-testid={`edit-pledge-${i}`} />}
@@ -169,7 +169,7 @@ export const CampaignPage = () => {
           <PageHeaderStats
             spread
             items={[
-              ...(campaign?.goalAmount > 0 ? [{ value: CurrencyHelper.formatCurrencyWithLocale(campaign.goalAmount, currency, 0), label: Locale.label("donations.campaignsPage.goal") }] : []),
+              ...((campaign?.goalAmount || 0) > 0 ? [{ value: CurrencyHelper.formatCurrencyWithLocale(campaign?.goalAmount || 0, currency, 0), label: Locale.label("donations.campaignsPage.goal") }] : []),
               { value: CurrencyHelper.formatCurrencyWithLocale(progress.data.totalPledged || 0, currency, 0), label: Locale.label("donations.campaignsPage.pledged") },
               { value: CurrencyHelper.formatCurrencyWithLocale(progress.data.totalGiven || 0, currency, 0), label: Locale.label("donations.campaignsPage.given") }
             ]}

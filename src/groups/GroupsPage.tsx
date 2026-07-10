@@ -121,11 +121,11 @@ const GroupsPage = () => {
           <TableCell>
             <Box sx={{ display: "flex", alignItems: "center" }}>
               <GroupIcon sx={{ color: "primary.main", fontSize: 20, marginRight: "5px" }} />{" "}
-              <Link to={"/groups/" + g.id.toString()} style={{ color: "var(--link)", fontWeight: 500, textDecoration: "none" }}>{g.name}</Link>
+              <Link to={"/groups/" + (g.id || "")} style={{ color: "var(--link)", fontWeight: 500, textDecoration: "none" }}>{g.name}</Link>
             </Box>
           </TableCell>
           <TableCell>
-            {g.labelArray.map((label, index) => (
+            {(g.labelArray || []).map((label, index) => (
               <Chip key={`${g.id}-${label}-${index}`} label={label} variant="outlined" size="small" style={{ marginRight: 5 }} />
             ))}
           </TableCell>
@@ -141,7 +141,7 @@ const GroupsPage = () => {
           )}
         </TableRow>
       );
-      lastCat = g.categoryName;
+      lastCat = g.categoryName || "";
     }
     return rows;
   };
@@ -202,14 +202,14 @@ const GroupsPage = () => {
         subtitle={groups.length > 0 ? Locale.label("groups.groupsPage.subtitle.manage").replace("{count}", groups.length.toString()) : Locale.label("groups.groupsPage.subtitle.create")}
       >
         {canApproveRequests && pendingCount > 0 && (
-          <HeaderSecondaryButton component={Link} to="/groups/pending" startIcon={<InboxIcon />} data-testid="pending-requests-link">
+          <HeaderSecondaryButton {...({ component: Link, to: "/groups/pending" } as any)} startIcon={<InboxIcon />} data-testid="pending-requests-link">
             {pendingCount === 1
               ? Locale.label("groups.groupsPage.pendingRequestSingular").replace("{count}", pendingCount.toString())
               : Locale.label("groups.groupsPage.pendingRequests").replace("{count}", pendingCount.toString())}
           </HeaderSecondaryButton>
         )}
         {UserHelper.checkAccess(Permissions.membershipApi.groupMembers.view) && (
-          <HeaderSecondaryButton component={Link} to="/groups/health" startIcon={<HealthIcon />} data-testid="group-health-link">
+          <HeaderSecondaryButton {...({ component: Link, to: "/groups/health" } as any)} startIcon={<HealthIcon />} data-testid="group-health-link">
             {Locale.label("groups.groupHealth.title")}
           </HeaderSecondaryButton>
         )}

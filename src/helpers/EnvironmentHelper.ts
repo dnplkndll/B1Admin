@@ -17,7 +17,7 @@ export class EnvironmentHelper {
       case "prod": EnvironmentHelper.initProd(); break;
       default: EnvironmentHelper.initDev(); break;
     }
-    EnvironmentHelper.Common.init(stage);
+    EnvironmentHelper.Common.init(stage || "");
 
     // Inlined from apphelper/website EnvironmentHelper.init — that helper crashes due to circular import.
     ApiHelper.apiConfigs = [

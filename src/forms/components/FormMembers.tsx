@@ -18,7 +18,7 @@ export const FormMembers: React.FC<Props> = memo((props) => {
   const loadData = useCallback(() => {
     ApiHelper.get("/memberpermissions/form/" + props.formId, "MembershipApi").then((results: any) => {
       const filterMembers: string[] = [];
-      results.forEach((member: MemberPermissionInterface) => filterMembers.push(member.memberId));
+      results.forEach((member: MemberPermissionInterface) => filterMembers.push(member.memberId || ""));
       setFilterList(filterMembers);
       setFormMembers(results);
     });
@@ -38,7 +38,7 @@ export const FormMembers: React.FC<Props> = memo((props) => {
         fm.push(result[0]);
         setFormMembers(fm);
       });
-      updateFilterList(p.id, "add");
+      updateFilterList(p.id || "", "add");
     },
     [props.formId, formMembers]
   );
@@ -94,14 +94,14 @@ export const FormMembers: React.FC<Props> = memo((props) => {
               <Button
                 variant={fm.action === "admin" ? "contained" : "outlined"}
                 onClick={() => {
-                  handleActionChange(fm.memberId, { action: "admin" });
+                  handleActionChange(fm.memberId || "", { action: "admin" });
                 }}>
                 {Locale.label("forms.formMembers.admin")}
               </Button>
               <Button
                 variant={fm.action === "view" ? "contained" : "outlined"}
                 onClick={() => {
-                  handleActionChange(fm.memberId, { action: "view" });
+                  handleActionChange(fm.memberId || "", { action: "view" });
                 }}>
                 {Locale.label("forms.formMembers.view")}
               </Button>
@@ -112,7 +112,7 @@ export const FormMembers: React.FC<Props> = memo((props) => {
               <Box
                 component="button"
                 type="button"
-                onClick={() => handleRemoveMember(fm.memberId)}
+                onClick={() => handleRemoveMember(fm.memberId || "")}
                 sx={{ display: "flex", alignItems: "center", color: "error.main", background: "none", border: 0, padding: 0, cursor: "pointer" }}>
                 <Icon sx={{ marginRight: "5px" }}>person_remove</Icon> {Locale.label("common.remove")}
               </Box>
@@ -122,7 +122,7 @@ export const FormMembers: React.FC<Props> = memo((props) => {
             <Switch
               checked={fm.emailNotification === true}
               onChange={(e) => {
-                handleActionChange(fm.memberId, { emailNotification: e.target.checked });
+                handleActionChange(fm.memberId || "", { emailNotification: e.target.checked });
               }}
             />
           </TableCell>

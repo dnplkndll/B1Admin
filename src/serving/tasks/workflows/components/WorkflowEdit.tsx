@@ -17,7 +17,7 @@ interface Props {
 }
 
 export const WorkflowEdit = (props: Props) => {
-  const [workflow, setWorkflow] = React.useState<WorkflowInterface>(null);
+  const [workflow, setWorkflow] = React.useState<WorkflowInterface | null>(null);
   const [categories, setCategories] = React.useState<WorkflowCategoryInterface[]>([]);
   const [addingCategory, setAddingCategory] = React.useState(false);
   const [newCategoryName, setNewCategoryName] = React.useState("");
@@ -44,6 +44,7 @@ export const WorkflowEdit = (props: Props) => {
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement> | SelectChangeEvent) => {
+    if (!workflow) return;
     const w = { ...workflow };
     if (e.target.name === "name") w.name = e.target.value;
     else if (e.target.name === "categoryId") {
@@ -55,7 +56,7 @@ export const WorkflowEdit = (props: Props) => {
 
   const handleAddCategory = async () => {
     const name = newCategoryName.trim();
-    if (!name) return;
+    if (!name || !workflow) return;
     const result = await ApiHelper.post("/workflowCategories", [{ name }], "DoingApi");
     const category: WorkflowCategoryInterface = result[0];
     setCategories([...categories, category]);
@@ -124,7 +125,7 @@ export const WorkflowEdit = (props: Props) => {
             )}
 
             <FormControlLabel
-              control={<Switch checked={workflow?.active ?? true} onChange={(e) => setWorkflow({ ...workflow, active: e.target.checked })} color="primary" />}
+              control={<Switch checked={workflow?.active ?? true} onChange={(e) => { if (workflow) setWorkflow({ ...workflow, active: e.target.checked }); }} color="primary" />}
               label={<Typography variant="body1">{workflow?.active ?? true ? Locale.label("tasks.workflowEdit.active") : Locale.label("tasks.workflowEdit.inactive")}</Typography>}
             />
           </Stack>

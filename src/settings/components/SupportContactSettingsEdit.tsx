@@ -10,7 +10,7 @@ interface Props {
 
 export const SupportContactSettingsEdit: React.FC<Props> = (props) => {
   const [value, setValue] = useState<string>("");
-  const [setting, setSetting] = useState<GenericSettingInterface>(null);
+  const [setting, setSetting] = useState<GenericSettingInterface | null>(null);
 
   const save = () => {
     const s: GenericSettingInterface = setting === null ? { churchId: props.churchId, public: 1, keyName: "supportContact" } : setting;

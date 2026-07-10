@@ -79,7 +79,7 @@ const PeopleSearchResults = memo(function PeopleSearchResults(props: Props) {
 
   const getAnswer = useCallback(
     (p: PersonInterface, key: string) => {
-      const value = getAnswerValue(p.id, key);
+      const value = getAnswerValue(p.id || "", key);
       return value ? <>{value}</> : <></>;
     },
     [getAnswerValue]
@@ -92,7 +92,7 @@ const PeopleSearchResults = memo(function PeopleSearchResults(props: Props) {
         const idx = ArrayHelper.getIndex(peopleArray, "id", personId);
         if (idx > -1) {
           peopleArray.splice(idx, 1);
-          props?.updateSearchResults(peopleArray);
+          props.updateSearchResults?.(peopleArray);
           if (props.updatedFunction) props.updatedFunction();
         }
       });
@@ -152,12 +152,12 @@ const PeopleSearchResults = memo(function PeopleSearchResults(props: Props) {
             </Stack>
           );
           break;
-        case "birthDate": result = <>{p.birthDate === null ? "" : B1AdminPersonHelper.getDateStringFromDate(new Date(p.birthDate))}</>; break;
+        case "birthDate": result = <>{p.birthDate == null ? "" : B1AdminPersonHelper.getDateStringFromDate(new Date(p.birthDate))}</>; break;
         case "birthDay": result = <>{B1AdminPersonHelper.getBirthDay(p)}</>; break;
         case "age":
           result = (
             <Typography variant="body2" color="text.secondary">
-              {p.birthDate === null ? "" : PersonHelper.getAge(new Date(p.birthDate))}
+              {p.birthDate == null ? "" : PersonHelper.getAge(new Date(p.birthDate))}
             </Typography>
           );
           break;
@@ -167,13 +167,13 @@ const PeopleSearchResults = memo(function PeopleSearchResults(props: Props) {
           break;
         case "maritalStatus": result = <>{p.maritalStatus}</>; break;
         case "campus": result = <>{p.campusId ? (campusMap[p.campusId] || "") : ""}</>; break;
-        case "anniversary": result = <>{p.anniversary === null ? "" : B1AdminPersonHelper.getDateStringFromDate(new Date(p.anniversary))}</>; break;
+        case "anniversary": result = <>{p.anniversary == null ? "" : B1AdminPersonHelper.getDateStringFromDate(new Date(p.anniversary))}</>; break;
         case "nametagNotes": result = <>{p.nametagNotes}</>; break;
         case "deleteOption":
           result = (
             <AppIconButton
               intent="remove"
-              label={Locale.label("people.peopleSearchResults.deletePersonAria").replace("{name}", p?.name?.display)}
+              label={Locale.label("people.peopleSearchResults.deletePersonAria").replace("{name}", p?.name?.display || "")}
               icon={<DeleteIcon />}
               onClick={(e) => {
                 e.stopPropagation();

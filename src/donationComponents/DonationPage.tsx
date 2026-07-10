@@ -17,12 +17,12 @@ interface Props {
 }
 
 export const DonationPage: React.FC<Props> = (props) => {
-  const [donations, setDonations] = React.useState<DonationInterface[]>(null);
-  const [paymentMethods, setPaymentMethods] = React.useState<SavedPaymentMethod[]>(null);
+  const [donations, setDonations] = React.useState<DonationInterface[] | null>(null);
+  const [paymentMethods, setPaymentMethods] = React.useState<SavedPaymentMethod[] | null>(null);
   const [paymentGateways, setPaymentGateways] = React.useState<PaymentGateway[]>([]);
-  const [customerId, setCustomerId] = React.useState(null);
-  const [person, setPerson] = React.useState<PersonInterface>(null);
-  const [message, setMessage] = React.useState<string>(null);
+  const [customerId, setCustomerId] = React.useState<string | null>(null);
+  const [person, setPerson] = React.useState<PersonInterface | null>(null);
+  const [message, setMessage] = React.useState<string | null>(null);
   const [appName, setAppName] = React.useState<string>("");
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const [currency, setCurrency] = React.useState<string>("usd");
@@ -102,7 +102,7 @@ export const DonationPage: React.FC<Props> = (props) => {
   };
 
   const handleDataUpdate = (message?: string) => {
-    setMessage(message);
+    setMessage(message || null);
     setPaymentMethods(null);
     loadData();
   };
@@ -113,8 +113,8 @@ export const DonationPage: React.FC<Props> = (props) => {
     const currentY = date.getFullYear();
     const lastY = date.getFullYear() - 1;
 
-    const current_year = donations.length > 0 ? donations.filter((d) => new Date((d.donationDate || "2000-01-01").split("T")[0] + "T00:00:00").getFullYear() === currentY) : [];
-    const last_year = donations.length > 0 ? donations.filter((d) => new Date((d.donationDate || "2000-01-01").split("T")[0] + "T00:00:00").getFullYear() === lastY) : [];
+    const current_year = donations && donations.length > 0 ? donations.filter((d) => new Date((d.donationDate || "2000-01-01").split("T")[0] + "T00:00:00").getFullYear() === currentY) : [];
+    const last_year = donations && donations.length > 0 ? donations.filter((d) => new Date((d.donationDate || "2000-01-01").split("T")[0] + "T00:00:00").getFullYear() === lastY) : [];
     const customHeaders = [
       { label: "amount", key: "amount" },
       { label: "donationDate", key: "donationDate" },
@@ -176,7 +176,7 @@ export const DonationPage: React.FC<Props> = (props) => {
   const getRows = () => {
     const rows: React.ReactElement[] = [];
 
-    if (donations.length === 0) {
+    if (!donations || donations.length === 0) {
       rows.push(
         <TableRow key="0">
           <TableCell>{Locale.label("donation.page.willAppear")}</TableCell>
@@ -198,8 +198,8 @@ export const DonationPage: React.FC<Props> = (props) => {
           <TableCell>
             {d.method} - {d.methodDetails}
           </TableCell>
-          <TableCell>{d.fund.name}</TableCell>
-          <TableCell>{CurrencyHelper.formatCurrencyWithLocale(d.fund.amount, currency)}</TableCell>
+          <TableCell>{d.fund?.name}</TableCell>
+          <TableCell>{CurrencyHelper.formatCurrencyWithLocale(d.fund?.amount || 0, currency)}</TableCell>
         </TableRow>
       );
     }
@@ -209,7 +209,7 @@ export const DonationPage: React.FC<Props> = (props) => {
   const getTableHeader = () => {
     const rows: React.ReactElement[] = [];
 
-    if (donations.length > 0) {
+    if (donations && donations.length > 0) {
       rows.push(
         <TableRow key="header" sx={{ textAlign: "left" }}>
           {appName !== "B1App" && <th>{Locale.label("donation.page.batch")}</th>}
@@ -247,13 +247,13 @@ export const DonationPage: React.FC<Props> = (props) => {
   };
 
   const getPaymentMethodComponents = () => {
-    if (!paymentMethods || !donations) return <Loading />;
+    if (!paymentMethods || !donations || !person) return <Loading />;
     else {
       return (
         <>
           <MultiGatewayDonationForm
             person={person}
-            customerId={customerId}
+            customerId={customerId || ""}
             paymentMethods={paymentMethods || []}
             paymentGateways={paymentGateways}
             donationSuccess={handleDataUpdate}
@@ -263,8 +263,8 @@ export const DonationPage: React.FC<Props> = (props) => {
           <DisplayBox headerIcon="payments" headerText={Locale.label("donation.donationPage.donations")} editContent={getEditContent()}>
             {getTable()}
           </DisplayBox>
-          <RecurringDonations customerId={customerId} paymentMethods={paymentMethods} appName={appName} dataUpdate={handleDataUpdate} />
-          <PaymentMethods person={person} customerId={customerId} paymentMethods={paymentMethods} appName={appName} dataUpdate={handleDataUpdate} />
+          <RecurringDonations customerId={customerId || ""} paymentMethods={paymentMethods} appName={appName} dataUpdate={handleDataUpdate} />
+          <PaymentMethods person={person} customerId={customerId || ""} paymentMethods={paymentMethods} appName={appName} dataUpdate={handleDataUpdate} />
         </>
       );
     }

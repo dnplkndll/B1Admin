@@ -18,7 +18,7 @@ export const GradePromotionSettingsEdit: React.FC<Props> = (props) => {
   const [enabled, setEnabled] = React.useState(false);
   const [month, setMonth] = React.useState("08");
   const [day, setDay] = React.useState("01");
-  const [setting, setSetting] = React.useState<GenericSettingInterface>(null);
+  const [setting, setSetting] = React.useState<GenericSettingInterface | null>(null);
 
   const loadData = async () => {
     const allSettings: GenericSettingInterface[] = await ApiHelper.get("/settings", "MembershipApi");

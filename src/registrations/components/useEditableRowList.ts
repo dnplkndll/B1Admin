@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { ApiHelper } from "@churchapps/apphelper";
+import { type ApiListType } from "@churchapps/helpers";
 
 export const toNum = (v: any) => (v === null || v === undefined || v === "" ? null : Number(v));
 
@@ -7,7 +8,7 @@ interface EditableRowListOptions<T> {
   loadUrl: string;
   saveUrl: string;
   deleteUrlPrefix: string;
-  api: string;
+  api: ApiListType;
   newRow: (current: T[]) => T;
   enabled?: boolean;
   sortBy?: keyof T;

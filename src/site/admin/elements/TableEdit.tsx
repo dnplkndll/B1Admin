@@ -16,7 +16,7 @@ export function TableEdit(props: Props) {
   const rows = contents.length;
   const cols = (contents.length > 0) ? contents[0].length : 0;
   const markdown = props.parsedData.markdown || false;
-  const [editCellIdx, setEditCellIdx] = React.useState<number[]>(null);
+  const [editCellIdx, setEditCellIdx] = React.useState<number[] | null>(null);
 
   const updateRows = (newRows: number) => {
     const c = [...contents];
@@ -56,8 +56,8 @@ export function TableEdit(props: Props) {
   };
 
   const getMarkdownEditor = () => {
-    const row = editCellIdx[0];
-    const col = editCellIdx[1];
+    const row = editCellIdx![0];
+    const col = editCellIdx![1];
     return (<>
       <HtmlEditor value={contents[row][col]} onChange={val => {
         const c = [...contents];

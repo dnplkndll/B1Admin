@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { ApiHelper, ArrayHelper, CommonEnvironmentHelper, DateHelper, DisplayBox, Locale, type PersonInterface, UserHelper } from "@churchapps/apphelper";
-import { type AssignmentInterface, type BlockoutDateInterface, type PlanInterface, type PositionInterface, type TimeInterface } from "@churchapps/helpers";
-import { type SchedulingPreferenceInterface } from "../../helpers";
+import { type AssignmentInterface, type BlockoutDateInterface, type PositionInterface, type TimeInterface } from "@churchapps/helpers";
+import { type PlanInterface, type SchedulingPreferenceInterface } from "../../helpers";
 
 interface Props {
   plan: PlanInterface;
@@ -33,17 +33,17 @@ export const PlanValidation = (props: Props) => {
 
       const times: TimeInterface[] = [];
       positions.forEach((p) => {
-        const posTimes = props.times.filter((t) => t?.teams?.indexOf(p.categoryName) > -1);
+        const posTimes = props.times.filter((t) => (t?.teams || "").indexOf(p.categoryName || "") > -1);
         times.push(...posTimes);
       });
 
       const blockouts: BlockoutDateInterface[] = ArrayHelper.getAll(props.blockoutDates, "personId", person.id);
       blockouts.forEach((b) => {
-        b.endDate = new Date(b.endDate);
+        b.endDate = new Date(b.endDate || 0);
         b.endDate.setHours(23, 59, 59, 999);
         let conflict = false;
         times.forEach((t) => {
-          if (new Date(b.startDate) < new Date(t.endTime) && new Date(b.endDate) > new Date(t.startTime)) conflict = true;
+          if (new Date(b.startDate || 0) < new Date(t.endTime || 0) && new Date(b.endDate || 0) > new Date(t.startTime || 0)) conflict = true;
         });
         if (conflict) conflicts.push({ person, blockout: b });
       });
@@ -52,8 +52,8 @@ export const PlanValidation = (props: Props) => {
     conflicts.forEach((c) => {
       issues.push(
         <>
-          <b>{c.person?.name?.display || Locale.label("person.unknown")}:</b> {Locale.label("plans.planValidation.blockCon")} {DateHelper.prettyDate(new Date(c.blockout.startDate))} {Locale.label("plans.planValidation.to")}{" "}
-          {DateHelper.prettyDate(new Date(c.blockout.endDate))}.
+          <b>{c.person?.name?.display || Locale.label("person.unknown")}:</b> {Locale.label("plans.planValidation.blockCon")} {DateHelper.prettyDate(new Date(c.blockout.startDate || 0))} {Locale.label("plans.planValidation.to")}{" "}
+          {DateHelper.prettyDate(new Date(c.blockout.endDate || 0))}.
         </>
       );
     });
@@ -62,8 +62,8 @@ export const PlanValidation = (props: Props) => {
   const validatePoisitionsFilled = (issues: JSX.Element[]) => {
     props.positions.forEach((p) => {
       const assignments = props.assignments.filter((a) => a.positionId === p.id);
-      if (assignments.length < p.count) {
-        const needed = p.count - assignments.length;
+      if (assignments.length < (p.count || 0)) {
+        const needed = (p.count || 0) - assignments.length;
         issues.push(
           <>
             <b>{p.name}:</b> {needed} {Locale.label("plans.planValidation.more")} {needed === 1 ? Locale.label("plans.planValidation.person") : Locale.label("plans.planValidation.ppl")}{" "}
@@ -80,7 +80,7 @@ export const PlanValidation = (props: Props) => {
     assignments.forEach((a) => {
       const position = props.positions.find((p) => p.id === a.positionId);
       if (position) {
-        const posTimes = props.times.filter((t) => t?.teams?.indexOf(position.categoryName) > -1);
+        const posTimes = props.times.filter((t) => (t?.teams || "").indexOf(position.categoryName || "") > -1);
         duties.push({ position, times: posTimes });
       }
     });
@@ -91,7 +91,7 @@ export const PlanValidation = (props: Props) => {
         const b = duties[j];
         a.times.forEach((at) => {
           b.times.forEach((bt) => {
-            if (at.startTime < bt.endTime && at.endTime > bt.startTime) {
+            if (new Date(at.startTime || 0) < new Date(bt.endTime || 0) && new Date(at.endTime || 0) > new Date(bt.startTime || 0)) {
               issues.push(
                 <>
                   <b>{person?.name?.display || Locale.label("person.unknown")}:</b> {Locale.label("plans.planValidation.timeCon")} {a.position.name} {Locale.label("plans.planValidation.and")} {b.position.name}{" "}
@@ -110,7 +110,7 @@ export const PlanValidation = (props: Props) => {
       const assignments = externalAssignments?.filter((ea) => ea.personId === person.id);
       const duties: { position: PositionInterface }[] = [];
       assignments?.forEach((a) => {
-        const position = externalPositions.find((p) => p.id === a.positionId);
+        const position = externalPositions?.find((p) => p.id === a.positionId);
         if (position) duties.push({ position });
       });
 
@@ -118,7 +118,7 @@ export const PlanValidation = (props: Props) => {
         const a = duties[i];
         const plan = plans.find((p) => p.id === a.position.planId);
         planTimeConflicts.forEach((tc) => {
-          const filtered = tc.overlapingTimes.filter((ot) => a.position.planId === ot.planId && ot.teams?.indexOf(a.position.categoryName) > -1);
+          const filtered = tc.overlapingTimes.filter((ot) => a.position.planId === ot.planId && (ot.teams || "").indexOf(a.position.categoryName || "") > -1);
           if (filtered.length > 0) {
             issues.push(
               <>
@@ -130,7 +130,7 @@ export const PlanValidation = (props: Props) => {
                     alignItems: "center",
                     fontStyle: "italic"
                   }}>
-                  {plan.name} {Locale.label("plans.planValidation.cons")}
+                  {plan?.name} {Locale.label("plans.planValidation.cons")}
                 </b>
               </>
             );
@@ -187,7 +187,7 @@ export const PlanValidation = (props: Props) => {
           </>
         );
       }
-      if (matchesPreferredTime(pref.preferredTimes) === false) {
+      if (matchesPreferredTime(pref.preferredTimes || "") === false) {
         issues.push(
           <>
             <b>{name}:</b> {Locale.label("plans.planValidation.prefTimeMismatch") || "prefers serving at"} {pref.preferredTimes}.
@@ -237,10 +237,10 @@ export const PlanValidation = (props: Props) => {
         let filteredTimes: any[] = [];
         let timeConflicts: any[] = [];
         for (const t of props.times) {
-          const overlapingTimes = data.filter((d: TimeInterface) => d.startTime < t.endTime && d.endTime > t.startTime);
+          const overlapingTimes = data.filter((d: TimeInterface) => new Date(d.startTime || 0) < new Date(t.endTime || 0) && new Date(d.endTime || 0) > new Date(t.startTime || 0));
           const removedcurrentPlan = overlapingTimes.filter((ot: TimeInterface) => ot.planId !== props.plan.id);
           // ponytail: dedupe across loop iterations before accumulating
-          filteredTimes = [...filteredTimes, ...removedcurrentPlan.filter((c) => !filteredTimes.includes(c))];
+          filteredTimes = [...filteredTimes, ...removedcurrentPlan.filter((c: any) => !filteredTimes.includes(c))];
           timeConflicts = [...timeConflicts, { time: t, overlapingTimes: [...removedcurrentPlan] }];
         }
         setPlanTimeConflicts(timeConflicts);
@@ -263,7 +263,7 @@ export const PlanValidation = (props: Props) => {
   };
 
   useEffect(() => {
-    if (externalPositions?.length > 0 && externalAssignments?.length > 0) {
+    if ((externalPositions?.length || 0) > 0 && (externalAssignments?.length || 0) > 0) {
       validate();
     }
   }, [externalPositions, externalAssignments]);
@@ -305,7 +305,7 @@ export const PlanValidation = (props: Props) => {
         contentType: "assignment",
         contentId: props.plan.id,
         message: Locale.label("plans.planValidation.volReq") + props.plan.name + " - " + position.name + "." + Locale.label("plans.planValidation.pleaseConfirm"),
-        link: CommonEnvironmentHelper.B1Root.replace("{key}", UserHelper.currentUserChurch.church.subDomain) + "/mobile/plans/" + props.plan.id
+        link: CommonEnvironmentHelper.B1Root.replace("{key}", UserHelper.currentUserChurch.church.subDomain || "") + "/mobile/plans/" + props.plan.id
       };
       promises.push(ApiHelper.post("/notifications/create", data, "MessagingApi"));
     });

@@ -74,7 +74,7 @@ export const PersonEdit = memo((props: Props) => {
   const [redirect, setRedirect] = useState("");
   const [showUpdateAddressModal, setShowUpdateAddressModal] = useState(false);
   const [modalText, setModalText] = useState("");
-  const [members, setMembers] = useState<PersonInterface[]>(null);
+  const [members, setMembers] = useState<PersonInterface[] | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [customFields, setCustomFields] = useState<PersonFieldInterface[]>([]);
   const [customValues, setCustomValues] = useState<Record<string, string>>({});
@@ -132,11 +132,11 @@ export const PersonEdit = memo((props: Props) => {
     const p: PersonInterface = JSON.parse(JSON.stringify(props.person));
     Object.assign(p, values);
     // "" = the Unassigned option; store as null so it matches campusId IS NULL.
-    if (!p.campusId) p.campusId = null;
+    if (!p.campusId) p.campusId = null as unknown as string;
     if (p.contactInfo) {
-      p.contactInfo.homePhone = (p.contactInfo.homePhone?.length ?? 0) <= 4 ? null : p.contactInfo.homePhone;
-      p.contactInfo.workPhone = (p.contactInfo.workPhone?.length ?? 0) <= 4 ? null : p.contactInfo.workPhone;
-      p.contactInfo.mobilePhone = (p.contactInfo.mobilePhone?.length ?? 0) <= 4 ? null : p.contactInfo.mobilePhone;
+      p.contactInfo.homePhone = ((p.contactInfo.homePhone?.length ?? 0) <= 4 ? null : p.contactInfo.homePhone) as unknown as string;
+      p.contactInfo.workPhone = ((p.contactInfo.workPhone?.length ?? 0) <= 4 ? null : p.contactInfo.workPhone) as unknown as string;
+      p.contactInfo.mobilePhone = ((p.contactInfo.mobilePhone?.length ?? 0) <= 4 ? null : p.contactInfo.mobilePhone) as unknown as string;
     }
     return p;
   }, [props.person]);
@@ -156,7 +156,7 @@ export const PersonEdit = memo((props: Props) => {
     setIsSubmitting(true);
     const p = buildPerson(values);
 
-    if (B1AdminPersonHelper.getExpandedPersonObject(p).id === context.person?.id) context.setPerson(p);
+    if (B1AdminPersonHelper.getExpandedPersonObject(p).id === context?.person?.id) context?.setPerson(p);
 
     if (members && members.length > 1 && PersonHelper.compareAddress(props.person.contactInfo, p.contactInfo)) {
       setModalText(
@@ -171,19 +171,19 @@ export const PersonEdit = memo((props: Props) => {
 
   const handleDelete = useCallback(async () => {
     if (!props.person?.id) return;
-    if (B1AdminPersonHelper.getExpandedPersonObject(props.person).id === context.person?.id) {
+    if (B1AdminPersonHelper.getExpandedPersonObject(props.person).id === context?.person?.id) {
       alert(Locale.label("people.personEdit.cannotDeleteSelf"));
       return;
     }
     if (await confirm(Locale.label("people.personEdit.confirmMsg"))) {
       ApiHelper.delete("/people/" + props.person.id.toString(), "MembershipApi").then(() => setRedirect("/people"));
     }
-  }, [props.person?.id, context.person?.id, confirm]);
+  }, [props.person?.id, context?.person?.id, confirm]);
 
   const handleYes = useCallback(async () => {
     setShowUpdateAddressModal(false);
     const p = buildPerson(getValues());
-    await Promise.all(members.map(async (member) => {
+    await Promise.all((members || []).map(async (member) => {
       member.contactInfo = PersonHelper.changeOnlyAddress(member.contactInfo, p.contactInfo);
       try { await ApiHelper.post("/people", [member], "MembershipApi"); } catch (error) { console.log(`error in updating ${p.name.display}"s address`, error); }
     }));

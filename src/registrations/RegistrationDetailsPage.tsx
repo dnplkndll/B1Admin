@@ -242,27 +242,27 @@ export const RegistrationDetailsPage = () => {
         </TableCell>
         <TableCell>
           <Stack direction="row" spacing={0.5} alignItems="center">
-            {getStatusChip(reg.status)}
-            {reg.status === "waitlisted" && waitlistPos.get(reg.id) && (
-              <Typography variant="caption" color="text.secondary">#{waitlistPos.get(reg.id)}</Typography>
+            {getStatusChip(reg.status || "")}
+            {reg.status === "waitlisted" && waitlistPos.get(reg.id || "") && (
+              <Typography variant="caption" color="text.secondary">#{waitlistPos.get(reg.id || "")}</Typography>
             )}
           </Stack>
         </TableCell>
         <TableCell>{reg.registeredDate ? new Date(reg.registeredDate).toLocaleDateString() : ""}</TableCell>
         <TableCell align="right" className="rowActions">
-          <AppIconButton label={Locale.label("registrations.commerce.registrationDetails")} icon={<ReceiptIcon />} onClick={() => setViewDetailId(reg.id)} />
+          <AppIconButton label={Locale.label("registrations.commerce.registrationDetails")} icon={<ReceiptIcon />} onClick={() => setViewDetailId(reg.id || "")} />
           {event?.formId && reg.formSubmissionId && (
-            <AppIconButton label={Locale.label("registrations.registrationDetailsPage.viewAnswers")} icon={<DescriptionIcon />} onClick={() => setViewSubmissionId(reg.formSubmissionId)} />
+            <AppIconButton label={Locale.label("registrations.registrationDetailsPage.viewAnswers")} icon={<DescriptionIcon />} onClick={() => setViewSubmissionId(reg.formSubmissionId || "")} />
           )}
           {UserHelper.checkAccess(Permissions.contentApi.content.edit) && (
             <>
               {reg.status === "waitlisted" && (
-                <AppIconButton intent="add" label={Locale.label("registrations.commerce.promote")} icon={<PromoteIcon />} onClick={() => handlePromote(reg.id)} />
+                <AppIconButton intent="add" label={Locale.label("registrations.commerce.promote")} icon={<PromoteIcon />} onClick={() => handlePromote(reg.id || "")} />
               )}
               {reg.status !== "cancelled" && (
-                <AppIconButton label={Locale.label("registrations.registrationDetailsPage.cancelRegistration")} icon={<CancelIcon />} onClick={() => handleCancel(reg.id)} />
+                <AppIconButton label={Locale.label("registrations.registrationDetailsPage.cancelRegistration")} icon={<CancelIcon />} onClick={() => handleCancel(reg.id || "")} />
               )}
-              <AppIconButton intent="remove" label={Locale.label("common.delete")} icon={<DeleteIcon />} onClick={() => handleDelete(reg.id)} />
+              <AppIconButton intent="remove" label={Locale.label("common.delete")} icon={<DeleteIcon />} onClick={() => handleDelete(reg.id || "")} />
             </>
           )}
         </TableCell>

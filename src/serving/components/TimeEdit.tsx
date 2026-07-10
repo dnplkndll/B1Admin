@@ -21,8 +21,8 @@ export const TimeEdit = (props: Props) => {
     defaultValues: {
       serviceTimeType: props.time?.serviceTimeType ?? "service",
       displayName: props.time?.displayName ?? "",
-      startTime: DateHelper.formatHtml5DateTime(props.time?.startTime) ?? "",
-      endTime: DateHelper.formatHtml5DateTime(props.time?.endTime) ?? ""
+      startTime: props.time?.startTime ? DateHelper.formatHtml5DateTime(props.time.startTime) : "",
+      endTime: props.time?.endTime ? DateHelper.formatHtml5DateTime(props.time.endTime) : ""
     }
   });
 
@@ -41,8 +41,8 @@ export const TimeEdit = (props: Props) => {
     reset({
       serviceTimeType: props.time?.serviceTimeType ?? "service",
       displayName: props.time?.displayName ?? "",
-      startTime: DateHelper.formatHtml5DateTime(props.time?.startTime) ?? "",
-      endTime: DateHelper.formatHtml5DateTime(props.time?.endTime) ?? ""
+      startTime: props.time?.startTime ? DateHelper.formatHtml5DateTime(props.time.startTime) : "",
+      endTime: props.time?.endTime ? DateHelper.formatHtml5DateTime(props.time.endTime) : ""
     });
     setTeams(props.time?.teams ?? "");
   }, [props.time, reset]);

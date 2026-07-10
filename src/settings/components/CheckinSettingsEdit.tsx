@@ -10,7 +10,7 @@ interface Props {
 
 export const CheckinSettingsEdit: React.FC<Props> = (props) => {
   const [ratioEnforcement, setRatioEnforcement] = React.useState("warn");
-  const [setting, setSetting] = React.useState<GenericSettingInterface>(null);
+  const [setting, setSetting] = React.useState<GenericSettingInterface | null>(null);
 
   const loadData = async () => {
     const allSettings: GenericSettingInterface[] = await ApiHelper.get("/settings", "MembershipApi");

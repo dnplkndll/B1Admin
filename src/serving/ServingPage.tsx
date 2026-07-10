@@ -51,7 +51,7 @@ export const ServingPage = () => {
     ? (ministries.data || []).filter((g) => {
       if (showAllMinistries) return true;
       const members = ArrayHelper.getAll(groupMembers.data || [], "groupId", g.id);
-      const isMember = ArrayHelper.getOne(members, "personId", context.person?.id) !== null;
+      const isMember = ArrayHelper.getOne(members, "personId", context?.person?.id) !== null;
       return isMember || members.length === 0;
     })
     : (ministries.data || []);
@@ -62,7 +62,7 @@ export const ServingPage = () => {
     if (groups.length > 0) {
       const isCurrentSelectionValid = groups.some(g => g.id === selectedMinistryId);
       if (!selectedMinistryId || !isCurrentSelectionValid) {
-        setSelectedMinistryId(groups[0].id);
+        setSelectedMinistryId(groups[0].id || null);
       }
     }
   }, [groups, selectedMinistryId]);
@@ -114,7 +114,7 @@ export const ServingPage = () => {
           <NavigationTabs
             selectedTab={selectedMinistryId || ""}
             onTabChange={setSelectedMinistryId}
-            tabs={groups.map((g) => ({ value: g.id, label: g.name }))}
+            tabs={groups.map((g) => ({ value: g.id || "", label: g.name || "" }))}
             onHeader
           />
         )}
@@ -135,7 +135,7 @@ export const ServingPage = () => {
         {UserHelper.checkAccess(Permissions.membershipApi.groups.edit) && (
           <>
             {selectedMinistry && (
-              <HeaderSecondaryButton component={Link} to={`/groups/${selectedMinistry.id}?tag=ministry`} startIcon={<EditIcon />}>
+              <HeaderSecondaryButton component={Link} startIcon={<EditIcon />} {...({ to: `/groups/${selectedMinistry.id}?tag=ministry` } as any)}>
                 {Locale.label("plans.plansPage.editMinistry")}
               </HeaderSecondaryButton>
             )}
@@ -163,7 +163,7 @@ export const ServingPage = () => {
               <TeamList ministry={selectedMinistry} />
             </Grid>
             <Grid size={{ xs: 12 }}>
-              <ContentProviderAuthManager key={selectedMinistry.id} ministryId={selectedMinistry.id} />
+              <ContentProviderAuthManager key={selectedMinistry.id} ministryId={selectedMinistry.id || ""} />
             </Grid>
           </Grid>
         )}

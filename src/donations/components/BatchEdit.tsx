@@ -32,7 +32,7 @@ export const BatchEdit = memo((props: Props) => {
   const getDeleteFunction = useCallback(() => (!UniqueIdHelper.isMissing(props.batchId) ? handleDelete : undefined), [props.batchId, handleDelete]);
 
   const onValid = useCallback((values: AnyRecord) => {
-    const batchToSave: DonationBatchInterface = { name: values.name, batchDate: values.date ? DateHelper.formatHtml5Date(values.date) : null };
+    const batchToSave: DonationBatchInterface = { name: values.name, batchDate: values.date ? DateHelper.formatHtml5Date(values.date) : undefined };
     if (!UniqueIdHelper.isMissing(props.batchId)) batchToSave.id = props.batchId;
     return ApiHelper.post("/donationbatches", [batchToSave], "GivingApi").then(() => props.updatedFunction());
   }, [props.batchId, props.updatedFunction]);

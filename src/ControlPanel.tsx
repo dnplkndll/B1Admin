@@ -26,7 +26,7 @@ export const ControlPanel = () => {
     const result: ErrorAppDataInterface = {
       churchId: UserHelper.currentUserChurch?.church?.id || "",
       userId: UserHelper.user?.id || "",
-      originUrl: location?.toString(),
+      originUrl: location?.toString() || "",
       application: "B1Admin"
     };
     return result;

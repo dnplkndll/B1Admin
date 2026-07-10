@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { Accordion, AccordionDetails, AccordionSummary, Button, Icon } from "@mui/material";
 import { DateHelper, ApiHelper, DisplayBox, Locale } from "@churchapps/apphelper";
 import { getPaymentProvider } from "@churchapps/apphelper/donations";
+import { type PersonInterface } from "@churchapps/helpers";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 
 export const DonationEvents = memo(() => {
@@ -18,7 +19,7 @@ export const DonationEvents = memo(() => {
     return errorLogs.data.map((log: any) => log.personId).join(",");
   }, [errorLogs.data]);
 
-  const people = useQuery({
+  const people = useQuery<PersonInterface[]>({
     queryKey: ["/people/ids?ids=" + personIds, "MembershipApi"],
     placeholderData: [],
     enabled: !!personIds

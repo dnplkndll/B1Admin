@@ -167,7 +167,7 @@ export const ServiceOrder = memo((props: Props) => {
 
   const handleDisassociateContent = useCallback(async () => {
     try {
-      const updatedPlan: PlanInterface = {
+      const updatedPlan = {
         ...props.plan,
         contentType: null,
         contentId: null,
@@ -214,10 +214,11 @@ export const ServiceOrder = memo((props: Props) => {
 
     // Process children for each saved item
     for (let i = 0; i < items.length; i++) {
-      if (items[i].children && items[i].children.length > 0) {
+      const children = items[i].children;
+      if (children && children.length > 0) {
         const newParentId = savedItems[i]?.id;
         if (newParentId) {
-          await saveHierarchicalItems(items[i].children, newParentId);
+          await saveHierarchicalItems(children, newParentId);
         }
       }
     }
@@ -538,7 +539,7 @@ export const ServiceOrder = memo((props: Props) => {
                     loadTimesAndExclusions();
                   }}
                   startTime={sectionStartTime}
-                  associatedContentPath={hasAssociatedContent ? getContentPath() : undefined}
+                  associatedContentPath={hasAssociatedContent ? (getContentPath() ?? undefined) : undefined}
                   associatedProviderId={props.plan?.providerId}
                   ministryId={props.plan?.ministryId}
                   serviceTime={selectedServiceTime}
@@ -552,13 +553,13 @@ export const ServiceOrder = memo((props: Props) => {
           ) : (
             <PlanItem
               planItem={pi}
-              setEditPlanItem={null}
+              setEditPlanItem={() => {}}
               showItemDrop={false}
               onDragChange={() => { }}
               onChange={() => { }}
               readOnly={true}
               startTime={sectionStartTime}
-              associatedContentPath={hasAssociatedContent ? getContentPath() : undefined}
+              associatedContentPath={hasAssociatedContent ? (getContentPath() ?? undefined) : undefined}
               associatedProviderId={props.plan?.providerId}
               ministryId={props.plan?.ministryId}
               serviceTime={selectedServiceTime}

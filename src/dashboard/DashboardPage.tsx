@@ -38,7 +38,7 @@ export const DashboardPage = () => {
           {canViewPeople && <PeopleSearch />}
           <Grid container spacing={3}>
             <Grid size={GRID_SIZES.sidebar}>
-              <Groups personId={UserHelper.person?.id} title={Locale.label("dashboard.myGroups")} />
+              <Groups personId={UserHelper.person?.id || ""} title={Locale.label("dashboard.myGroups")} />
             </Grid>
             <Grid size={GRID_SIZES.mainContent}>
               <TaskList compact={true} status={Locale.label("tasks.taskPage.open")} />

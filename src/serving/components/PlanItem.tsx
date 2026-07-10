@@ -18,7 +18,7 @@ interface Props {
   planItem: PlanItemInterface;
   showItemDrop?: boolean;
   onDragChange?: (isDragging: boolean) => void;
-  setEditPlanItem: (pi: PlanItemInterface) => void;
+  setEditPlanItem: ((pi: PlanItemInterface) => void) | null;
   onChange?: () => void;
   readOnly?: boolean;
   startTime?: number;
@@ -55,7 +55,7 @@ export const PlanItem = React.memo((props: Props) => {
 
   const addSong = () => {
     handleClose();
-    props.setEditPlanItem({
+    props.setEditPlanItem?.({
       itemType: "arrangementKey",
       planId: props.planItem.planId,
       sort: getNextChildSort(props.planItem.children),
@@ -65,7 +65,7 @@ export const PlanItem = React.memo((props: Props) => {
 
   const addItem = () => {
     handleClose();
-    props.setEditPlanItem({
+    props.setEditPlanItem?.({
       itemType: "item",
       planId: props.planItem.planId,
       sort: getNextChildSort(props.planItem.children),
@@ -162,7 +162,7 @@ export const PlanItem = React.memo((props: Props) => {
       serviceStartTime={props.serviceTime?.startTime}
       readOnly={props.readOnly}
       onAddClick={(e) => setAnchorEl(e.currentTarget)}
-      onEditClick={() => props.setEditPlanItem(props.planItem)}
+      onEditClick={() => props.setEditPlanItem?.(props.planItem)}
       wrapRow={props.readOnly ? undefined : (row) => (
         <RowDropZone
           accept="planItem"
@@ -186,7 +186,7 @@ export const PlanItem = React.memo((props: Props) => {
       excluded={props.excluded}
       readOnly={props.readOnly}
       onLabelClick={onLabelClick}
-      onEditClick={() => props.setEditPlanItem(props.planItem)}
+      onEditClick={() => props.setEditPlanItem?.(props.planItem)}
       mediaLookup={props.mediaLookup}
     />
   );
@@ -195,26 +195,26 @@ export const PlanItem = React.memo((props: Props) => {
     switch (props.planItem.itemType) {
       case "header": return getHeaderRow();
       case "song":
-      case "arrangementKey": return getGenericRow(props.planItem.relatedId ? () => setDialogKeyId(props.planItem.relatedId) : undefined);
+      case "arrangementKey": return getGenericRow(props.planItem.relatedId ? () => setDialogKeyId(props.planItem.relatedId || null) : undefined);
       // Action types
       case "providerPresentation":
       case "lessonAction":
-      case "action": return getGenericRow(props.planItem.relatedId ? () => setActionId(props.planItem.relatedId) : undefined);
+      case "action": return getGenericRow(props.planItem.relatedId ? () => setActionId(props.planItem.relatedId || null) : undefined);
       // File/add-on types (legacy items still in database need AddOnDialog for correct embed URLs)
       case "providerFile":
       case "lessonAddOn":
       case "addon":
-      case "file": return getGenericRow(props.planItem.relatedId ? () => setActionId(props.planItem.relatedId) : undefined);
+      case "file": return getGenericRow(props.planItem.relatedId ? () => setActionId(props.planItem.relatedId || null) : undefined);
       case "providerSection":
       case "lessonSection":
       case "section":
         return getGenericRow(
           (props.planItem.relatedId || (props.planItem.providerId && props.planItem.providerPath && props.planItem.providerContentPath))
-            ? () => setLessonSectionId(props.planItem.relatedId || props.planItem.providerContentPath || props.planItem.id)
+            ? () => setLessonSectionId(props.planItem.relatedId || props.planItem.providerContentPath || props.planItem.id || null)
             : undefined
         );
       case "item":
-      default: return getGenericRow(props.planItem.relatedId ? () => setLessonSectionId(props.planItem.relatedId) : undefined);
+      default: return getGenericRow(props.planItem.relatedId ? () => setLessonSectionId(props.planItem.relatedId || null) : undefined);
     }
   };
 

@@ -122,7 +122,7 @@ export const CalendarPage = () => {
               <Box sx={{ p: 2 }}>
                 <CuratedCalendar
                   curatedCalendarId={curatedCalendarId}
-                  churchId={UserHelper.currentUserChurch?.church?.id}
+                  churchId={UserHelper.currentUserChurch?.church?.id || ""}
                   mode="edit"
                   updatedCallback={loadData}
                   refresh={refresh}
@@ -181,7 +181,7 @@ export const CalendarPage = () => {
                           </TableCell>
                           {UserHelper.checkAccess(Permissions.contentApi.content.edit) && (
                             <TableCell align="right" className="rowActions">
-                              <AppIconButton intent="remove" label={Locale.label("common.remove")} icon={<DeleteIcon />} onClick={() => handleGroupDelete(g.id)} data-testid={`remove-group-${g.id}-button`} />
+                              <AppIconButton intent="remove" label={Locale.label("common.remove")} icon={<DeleteIcon />} onClick={() => handleGroupDelete(g.id || "")} data-testid={`remove-group-${g.id}-button`} />
                             </TableCell>
                           )}
                         </TableRow>
@@ -196,7 +196,7 @@ export const CalendarPage = () => {
       </Box>
       {showNewEvent && (
         <NewEventModal
-          churchId={UserHelper.currentUserChurch?.church?.id}
+          churchId={UserHelper.currentUserChurch?.church?.id || ""}
           curatedCalendarId={curatedCalendarId}
           onDone={(saved) => {
             setShowNewEvent(false);

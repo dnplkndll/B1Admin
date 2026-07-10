@@ -10,7 +10,7 @@ interface Props {
 }
 
 export const TextingSettingsEdit: React.FC<Props> = (props) => {
-  const [textingProvider, setTextingProvider] = React.useState<TextingProviderInterface>(null);
+  const [textingProvider, setTextingProvider] = React.useState<TextingProviderInterface | null>(null);
   const [provider, setProvider] = React.useState("");
   const [apiKey, setApiKey] = React.useState("");
   const [apiSecret, setApiSecret] = React.useState("");
@@ -50,7 +50,7 @@ export const TextingSettingsEdit: React.FC<Props> = (props) => {
   const save = async () => {
     try {
       if (provider === "") {
-        if (!UniqueIdHelper.isMissing(textingProvider?.id)) await ApiHelper.delete("/texting/providers/" + textingProvider.id, "MessagingApi");
+        if (!UniqueIdHelper.isMissing(textingProvider?.id)) await ApiHelper.delete("/texting/providers/" + textingProvider?.id, "MessagingApi");
       } else {
         const tp: TextingProviderInterface = textingProvider === null ? { churchId: props.churchId } : { ...textingProvider };
         tp.provider = provider;

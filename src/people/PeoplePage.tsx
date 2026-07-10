@@ -162,8 +162,9 @@ export const PeoplePage = memo(() => {
   };
 
   React.useEffect(() => {
-    if (localStorage.getItem("selectedColumns")) {
-      setSelectedColumns(JSON.parse(localStorage.getItem("selectedColumns")));
+    const stored = localStorage.getItem("selectedColumns");
+    if (stored) {
+      setSelectedColumns(JSON.parse(stored));
     } else {
       localStorage.setItem("selectedColumns", JSON.stringify(["photo", "displayName"]));
     }
@@ -212,7 +213,7 @@ export const PeoplePage = memo(() => {
       });
     } else {
       // New ref on re-select to re-seed advanced panel.
-      setSaveableCriteria(conditions);
+      setSaveableCriteria(conditions ?? null);
       setSelectedListFilters({ ...conditions });
     }
   }, []);
@@ -454,7 +455,7 @@ export const PeoplePage = memo(() => {
               </Box>
               <Box>
                 <PeopleSearchResults
-                  people={searchResults}
+                  people={searchResults || []}
                   columns={columns}
                   selectedColumns={selectedColumns}
                   updateSearchResults={(people) => setSearchResults(people)}

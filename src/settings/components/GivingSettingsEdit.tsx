@@ -23,7 +23,7 @@ const isProd = process.env.REACT_APP_STAGE === "prod";
 
 export const GivingSettingsEdit: React.FC<Props> = (props) => {
   "use no memo"; // compiler caches register() results, breaking RHF field re-registration after reset()
-  const [gateway, setGateway] = React.useState<PaymentGatewaysInterface>(null);
+  const [gateway, setGateway] = React.useState<PaymentGatewaysInterface | null>(null);
   const [errors, setErrors] = React.useState<string[]>([]);
   const [copySnackbar, setCopySnackbar] = React.useState(false);
 
@@ -54,7 +54,7 @@ export const GivingSettingsEdit: React.FC<Props> = (props) => {
     try {
       const values = getValues();
       if (values.provider === "") {
-        if (!UniqueIdHelper.isMissing(gateway?.id)) await ApiHelper.delete("/gateways/" + gateway.id, "GivingApi");
+        if (!UniqueIdHelper.isMissing(gateway?.id)) await ApiHelper.delete("/gateways/" + gateway?.id, "GivingApi");
       } else {
         const providerChanged = !!gateway && gateway.provider !== values.provider;
         if ((gateway === null || providerChanged) && values.privateKey === "") {

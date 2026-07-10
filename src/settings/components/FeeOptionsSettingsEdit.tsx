@@ -16,14 +16,14 @@ type AnyRecord = Record<string, any>;
 
 export const FeeOptionsSettingsEdit: React.FC<Props> = (props) => {
   "use no memo"; // compiler caches register() results, breaking RHF field re-registration after reset()
-  const [flatRateCC, setFlatRateCC] = React.useState<GenericSettingInterface>(null);
-  const [transFeeCC, setTransFeeCC] = React.useState<GenericSettingInterface>(null);
-  const [flatRateACH, setFlatRateACH] = React.useState<GenericSettingInterface>(null);
-  const [hardLimitACH, setHardLimitACH] = React.useState<GenericSettingInterface>(null);
-  const [flatRatePayPal, setFlatRatePayPal] = React.useState<GenericSettingInterface>(null);
-  const [transFeePayPal, setTransFeePayPal] = React.useState<GenericSettingInterface>(null);
-  const [flatRateKF, setFlatRateKF] = React.useState<GenericSettingInterface>(null);
-  const [transFeeKF, setTransFeeKF] = React.useState<GenericSettingInterface>(null);
+  const [flatRateCC, setFlatRateCC] = React.useState<GenericSettingInterface | null>(null);
+  const [transFeeCC, setTransFeeCC] = React.useState<GenericSettingInterface | null>(null);
+  const [flatRateACH, setFlatRateACH] = React.useState<GenericSettingInterface | null>(null);
+  const [hardLimitACH, setHardLimitACH] = React.useState<GenericSettingInterface | null>(null);
+  const [flatRatePayPal, setFlatRatePayPal] = React.useState<GenericSettingInterface | null>(null);
+  const [transFeePayPal, setTransFeePayPal] = React.useState<GenericSettingInterface | null>(null);
+  const [flatRateKF, setFlatRateKF] = React.useState<GenericSettingInterface | null>(null);
+  const [transFeeKF, setTransFeeKF] = React.useState<GenericSettingInterface | null>(null);
   const [symbol, setSymbol] = React.useState("$");
   const [loadedCurrency, setLoadedCurrency] = React.useState("usd");
   const [hasLoadedData, setHasLoadedData] = React.useState(false);
@@ -38,34 +38,34 @@ export const FeeOptionsSettingsEdit: React.FC<Props> = (props) => {
     const next = { flatRateCC: "0.30", transFeeCC: "2.9", flatRateACH: "0.8", hardLimitACH: "5", flatRatePayPal: "0.30", transFeePayPal: "2.9", flatRateKF: "0.30", transFeeKF: "2.9" };
 
     const creditCardFlatRate = allSettings.filter((s) => s.keyName === "flatRateCC");
-    if (creditCardFlatRate.length > 0) { setFlatRateCC(creditCardFlatRate[0]); next.flatRateCC = creditCardFlatRate[0].value; } else {
+    if (creditCardFlatRate.length > 0) { setFlatRateCC(creditCardFlatRate[0]); next.flatRateCC = creditCardFlatRate[0].value ?? next.flatRateCC; } else {
       const fees = defaultFees?.[currentCurrency];
       if (fees) next.flatRateCC = fees.fixed.toString();
     }
 
     const creditCardTransactionFee = allSettings.filter((s) => s.keyName === "transFeeCC");
-    if (creditCardTransactionFee.length > 0) { setTransFeeCC(creditCardTransactionFee[0]); next.transFeeCC = creditCardTransactionFee[0].value; } else {
+    if (creditCardTransactionFee.length > 0) { setTransFeeCC(creditCardTransactionFee[0]); next.transFeeCC = creditCardTransactionFee[0].value ?? next.transFeeCC; } else {
       const fees = defaultFees?.[currentCurrency];
       if (fees) next.transFeeCC = fees.percent.toString();
     }
 
     const achFlatRate = allSettings.filter((s) => s.keyName === "flatRateACH");
-    if (achFlatRate.length > 0) { setFlatRateACH(achFlatRate[0]); next.flatRateACH = achFlatRate[0].value; }
+    if (achFlatRate.length > 0) { setFlatRateACH(achFlatRate[0]); next.flatRateACH = achFlatRate[0].value ?? next.flatRateACH; }
 
     const achHardLimit = allSettings.filter((s) => s.keyName === "hardLimitACH");
-    if (achHardLimit.length > 0) { setHardLimitACH(achHardLimit[0]); next.hardLimitACH = achHardLimit[0].value; }
+    if (achHardLimit.length > 0) { setHardLimitACH(achHardLimit[0]); next.hardLimitACH = achHardLimit[0].value ?? next.hardLimitACH; }
 
     const paypalFlatRate = allSettings.filter((s) => s.keyName === "flatRatePayPal");
-    if (paypalFlatRate.length > 0) { setFlatRatePayPal(paypalFlatRate[0]); next.flatRatePayPal = paypalFlatRate[0].value; }
+    if (paypalFlatRate.length > 0) { setFlatRatePayPal(paypalFlatRate[0]); next.flatRatePayPal = paypalFlatRate[0].value ?? next.flatRatePayPal; }
 
     const paypalTransactionFee = allSettings.filter((s) => s.keyName === "transFeePayPal");
-    if (paypalTransactionFee.length > 0) { setTransFeePayPal(paypalTransactionFee[0]); next.transFeePayPal = paypalTransactionFee[0].value; }
+    if (paypalTransactionFee.length > 0) { setTransFeePayPal(paypalTransactionFee[0]); next.transFeePayPal = paypalTransactionFee[0].value ?? next.transFeePayPal; }
 
     const kfFlatRate = allSettings.filter((s) => s.keyName === "flatRateKF");
-    if (kfFlatRate.length > 0) { setFlatRateKF(kfFlatRate[0]); next.flatRateKF = kfFlatRate[0].value; }
+    if (kfFlatRate.length > 0) { setFlatRateKF(kfFlatRate[0]); next.flatRateKF = kfFlatRate[0].value ?? next.flatRateKF; }
 
     const kfTransactionFee = allSettings.filter((s) => s.keyName === "transFeeKF");
-    if (kfTransactionFee.length > 0) { setTransFeeKF(kfTransactionFee[0]); next.transFeeKF = kfTransactionFee[0].value; }
+    if (kfTransactionFee.length > 0) { setTransFeeKF(kfTransactionFee[0]); next.transFeeKF = kfTransactionFee[0].value ?? next.transFeeKF; }
 
     reset(next);
     setLoadedCurrency(currentCurrency);

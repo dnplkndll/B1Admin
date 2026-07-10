@@ -16,7 +16,7 @@ export const PendingJoinRequests: React.FC<Props> = ({ requests, showGroupName, 
   const [working, setWorking] = useState<string | null>(null);
 
   const handleApprove = useCallback(async (req: GroupJoinRequestInterface) => {
-    setWorking(req.id);
+    setWorking(req.id || null);
     try {
       await ApiHelper.post(`/groupjoinrequests/${req.id}/approve`, {}, "MembershipApi");
       onChanged();
@@ -27,7 +27,7 @@ export const PendingJoinRequests: React.FC<Props> = ({ requests, showGroupName, 
 
   const handleDeclineSubmit = useCallback(async () => {
     if (!declineTarget) return;
-    setWorking(declineTarget.id);
+    setWorking(declineTarget.id || null);
     try {
       await ApiHelper.post(`/groupjoinrequests/${declineTarget.id}/decline`, { declineReason: declineReason || undefined }, "MembershipApi");
       setDeclineTarget(null);
@@ -49,7 +49,7 @@ export const PendingJoinRequests: React.FC<Props> = ({ requests, showGroupName, 
         {requests.map((req) => (
           <Paper key={req.id} variant="outlined" sx={{ p: 1.5 }} data-testid={`pending-request-${req.id}`}>
             <Stack direction="row" spacing={2} alignItems="center">
-              <PersonAvatar person={req.person} size="small" />
+              <PersonAvatar person={req.person!} size="small" />
               <Box sx={{ flex: 1, minWidth: 0 }}>
                 <Typography variant="body2" sx={{ fontWeight: 600 }}>
                   {req.person?.name?.display || "Unknown"}

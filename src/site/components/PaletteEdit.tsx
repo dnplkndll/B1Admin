@@ -7,8 +7,8 @@ import type { GlobalStyleInterface } from "../../helpers/Interfaces";
 import { CardWithHeader, LoadingButton } from "../../components/ui";
 
 interface Props {
-  globalStyle?: GlobalStyleInterface;
-  updatedFunction?: (paletteJson: string) => void;
+  globalStyle?: GlobalStyleInterface | null;
+  updatedFunction?: (paletteJson: string | null) => void;
 }
 
 export interface ColorInterface {
@@ -98,7 +98,7 @@ export function PaletteEdit(props: Props) {
   const handleSave = () => {
     setIsSubmitting(true);
     setTimeout(() => {
-      props.updatedFunction(JSON.stringify(getValues()));
+      props.updatedFunction?.(JSON.stringify(getValues()));
       setIsSubmitting(false);
     }, 500);
   };
@@ -160,7 +160,7 @@ export function PaletteEdit(props: Props) {
             </Box>
           </Stack>
           <Stack direction="row" spacing={1}>
-            <Button variant="outlined" onClick={() => props.updatedFunction(null)} sx={{ color: "#FFF", borderColor: "rgba(255,255,255,0.5)", "&:hover": { borderColor: "#FFF", backgroundColor: "rgba(255,255,255,0.1)" } }}>{Locale.label("common.cancel")}</Button>
+            <Button variant="outlined" onClick={() => props.updatedFunction?.(null)} sx={{ color: "#FFF", borderColor: "rgba(255,255,255,0.5)", "&:hover": { borderColor: "#FFF", backgroundColor: "rgba(255,255,255,0.1)" } }}>{Locale.label("common.cancel")}</Button>
             <LoadingButton loading={isSubmitting} loadingText={Locale.label("common.saving")} variant="contained" onClick={handleSave} sx={{ backgroundColor: "#FFF", color: "primary.light", "&:hover": { backgroundColor: "rgba(255,255,255,0.9)" } }} data-testid="save-palette-button">{Locale.label("site.paletteEdit.savePalette")}</LoadingButton>
           </Stack>
         </Stack>

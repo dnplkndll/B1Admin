@@ -64,7 +64,7 @@ export const SessionAttendance: React.FC<Props> = memo((props) => {
   const handleRemove = useCallback(
     (vs: VisitSessionInterface) => {
       if (!session?.id) return;
-      ApiHelper.delete("/visitsessions?sessionId=" + session.id + "&personId=" + vs.visit.personId, "AttendanceApi").then(() => {
+      ApiHelper.delete("/visitsessions?sessionId=" + session.id + "&personId=" + vs.visit?.personId, "AttendanceApi").then(() => {
         loadAttendance();
       });
     },
@@ -80,7 +80,7 @@ export const SessionAttendance: React.FC<Props> = memo((props) => {
       return `${last}|${first}`;
     };
     const rows = visitSessions
-      .map((vs) => ({ vs, person: ArrayHelper.getOne(people, "id", vs.visit.personId) as PersonInterface | undefined }))
+      .map((vs) => ({ vs, person: ArrayHelper.getOne(people, "id", vs.visit?.personId) as PersonInterface | undefined }))
       .filter((r) => !!r.person)
       .sort((a, b) => sortKey(a.person).localeCompare(sortKey(b.person)));
 
@@ -96,14 +96,14 @@ export const SessionAttendance: React.FC<Props> = memo((props) => {
       ) : (
         <></>
       );
-      const checkinType = checkinTypes[vs.visitId];
+      const checkinType = checkinTypes[vs.visitId || ""];
       return (
         <TableRow key={vs.id}>
           <TableCell>
-            <Avatar src={PersonHelper.getPhotoUrl(person)} sx={{ width: 48, height: 48 }} />
+            <Avatar src={PersonHelper.getPhotoUrl(person!)} sx={{ width: 48, height: 48 }} />
           </TableCell>
           <TableCell>
-            <a className="personName" href={"/people/person.aspx?id=" + vs.visit.personId}>
+            <a className="personName" href={"/people/person.aspx?id=" + vs.visit?.personId}>
               {person?.name?.display}
             </a>
           </TableCell>
@@ -114,7 +114,7 @@ export const SessionAttendance: React.FC<Props> = memo((props) => {
     });
   }, [visitSessions, people, canEdit, handleRemove, checkinTypes]);
 
-  const volunteerCount = useMemo(() => visitSessions.filter((vs) => checkinTypes[vs.visitId] === "volunteer").length, [visitSessions, checkinTypes]);
+  const volunteerCount = useMemo(() => visitSessions.filter((vs) => checkinTypes[vs.visitId || ""] === "volunteer").length, [visitSessions, checkinTypes]);
 
   React.useEffect(() => {
     loadAttendance();
@@ -130,7 +130,7 @@ export const SessionAttendance: React.FC<Props> = memo((props) => {
       ApiHelper.post("/visitsessions/log", v, "AttendanceApi").then(() => {
         loadAttendance();
       });
-      addedCallback?.(v.personId);
+      addedCallback?.(v.personId!);
     }
   }, [addedPerson?.id, session?.id, loadAttendance, addedCallback]);
 

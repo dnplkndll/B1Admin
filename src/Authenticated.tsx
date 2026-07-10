@@ -68,7 +68,7 @@ const LoadingFallback: React.FC = () => <PageSkeleton />;
 export const Authenticated: React.FC = () => {
   const navigate = useNavigate();
 
-  const context = React.useContext(UserContext);
+  const context = React.useContext(UserContext)!;
 
   UserHelper.currentUserChurch = context.userChurch;
   UserHelper.userChurches = context.userChurches;

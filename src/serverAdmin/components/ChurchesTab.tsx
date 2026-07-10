@@ -38,7 +38,7 @@ export const ChurchesTab = () => {
     return churches.map((c) => (
       <TableRow key={c.id}>
         <TableCell>
-          <Link component="button" type="button" underline="hover" onClick={() => handleEditAccess(c.id)} data-testid={`church-link-${c.id}`}>
+          <Link component="button" type="button" underline="hover" onClick={() => handleEditAccess(c.id || "")} data-testid={`church-link-${c.id}`}>
             {c.name}
           </Link>
         </TableCell>
@@ -65,7 +65,7 @@ export const ChurchesTab = () => {
     if (idx > -1) UserHelper.userChurches.splice(idx, 1);
 
     UserHelper.userChurches.push(...result.userChurches);
-    UserHelper.selectChurch(context, result.userChurches[0].church.id, null);
+    UserHelper.selectChurch(context, result.userChurches[0].church.id, undefined);
     setRedirectUrl(`/settings`);
   };
 

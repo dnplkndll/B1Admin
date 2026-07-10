@@ -37,7 +37,7 @@ export const ManageChurch = () => {
   const hash = location.hash?.replace("#", "");
 
   const jwt = ApiHelper.getConfig("MembershipApi").jwt;
-  const churchId = UserHelper.currentUserChurch.church.id;
+  const churchId = UserHelper.currentUserChurch.church.id || "";
 
   const hasAccess = UserHelper.checkAccess(Permissions.membershipApi.settings.edit);
   const hasGiving = UserHelper.checkAccess(Permissions.givingApi.settings.edit);
@@ -230,7 +230,9 @@ export const ManageChurch = () => {
               {Locale.label("settings.manageChurch.batches")}
             </HeaderSecondaryButton>
           )}
-          <HeaderSecondaryButton startIcon={<PlayArrowIcon />} href={`https://transfer.b1.church/login?jwt=${jwt}&churchId=${churchId}`} target="_blank" rel="noreferrer noopener">
+          <HeaderSecondaryButton
+            {...({ href: `https://transfer.b1.church/login?jwt=${jwt}&churchId=${churchId}`, target: "_blank", rel: "noreferrer noopener" } as any)}
+            startIcon={<PlayArrowIcon />}>
             {Locale.label("settings.manageChurch.imEx")}
           </HeaderSecondaryButton>
         </Stack>

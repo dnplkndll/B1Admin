@@ -70,7 +70,7 @@ export const FormSubmissions: React.FC<Props> = memo((props) => {
         const key: string = Object.keys(resultValue)[0];
         if (question.fieldType === "Checkbox") {
           const splitAnswer = answer?.value?.split(",");
-          if (splitAnswer?.indexOf(key) > -1) resultValue[key] = resultValue[key] + 1;
+          if ((splitAnswer?.indexOf(key) ?? -1) > -1) resultValue[key] = resultValue[key] + 1;
         } else {
           if (key === answer?.value) resultValue[key] = resultValue[key] + 1;
         }
@@ -86,7 +86,7 @@ export const FormSubmissions: React.FC<Props> = memo((props) => {
       formSubmission.mappedQA = [];
       formSubmission.csvData = [];
       if (formSubmission.questions) {
-        formSubmission.questions = formSubmission.questions.sort((a: QuestionInterface, b: QuestionInterface) => (a.title > b.title ? 1 : -1));
+        formSubmission.questions = formSubmission.questions.sort((a: QuestionInterface, b: QuestionInterface) => ((a.title || "") > (b.title || "") ? 1 : -1));
       }
       return formSubmission;
     },
@@ -117,8 +117,8 @@ export const FormSubmissions: React.FC<Props> = memo((props) => {
           const answer = formSubmission.answers.find((answer: AnswerInterface) => answer.questionId === question.id) || null;
           const answerValue = answer?.value || "";
           if (question.fieldType === "Yes/No" && answer?.value) answer.value = (yesNoMap as Record<string, string>)[answer.value];
-          csvData[question.title] = answerValue;
-          formSubmission.csvData.push({ [question.title]: answerValue });
+          csvData[question.title || ""] = answerValue;
+          formSubmission.csvData.push({ [question.title || ""]: answerValue });
           if (question.fieldType === "Multiple Choice" || question.fieldType === "Yes/No" || question.fieldType === "Checkbox") {
             if (!summaryData.length) summaryData.push(setSummaryResultDefault(question, answer));
             else setSummaryResultData(summaryData, question, answer);
@@ -162,7 +162,7 @@ export const FormSubmissions: React.FC<Props> = memo((props) => {
         </TableCell>
       );
       result.push(<TableCell key="submissionDate">{Locale.label("forms.formSubmissions.subDate")}</TableCell>);
-      [...formSubmissions.data[0].questions].sort((a: QuestionInterface, b: QuestionInterface) => (a.title > b.title ? 1 : -1)).forEach((question: QuestionInterface) =>
+      [...formSubmissions.data[0].questions].sort((a: QuestionInterface, b: QuestionInterface) => ((a.title || "") > (b.title || "") ? 1 : -1)).forEach((question: QuestionInterface) =>
         result.push(<TableCell key={question.id}>{question.title}</TableCell>));
     }
     return result;

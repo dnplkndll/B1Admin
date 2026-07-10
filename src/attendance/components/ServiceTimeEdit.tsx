@@ -8,7 +8,7 @@ import { FormCard } from "../../components/ui";
 import { useErrorSummary } from "../../hooks";
 
 interface Props {
-  serviceTime: ServiceTimeInterface;
+  serviceTime: ServiceTimeInterface | null;
   updatedFunction: () => void;
 }
 
@@ -33,7 +33,7 @@ export const ServiceTimeEdit: React.FC<Props> = (props) => {
   };
 
   const handleDelete = () => {
-    if (window.confirm(Locale.label("attendance.serviceTimeEdit.confirmDelete"))) ApiHelper.delete("/servicetimes/" + props.serviceTime.id, "AttendanceApi").then(props.updatedFunction);
+    if (window.confirm(Locale.label("attendance.serviceTimeEdit.confirmDelete"))) ApiHelper.delete("/servicetimes/" + props.serviceTime?.id, "AttendanceApi").then(props.updatedFunction);
   };
 
   const loadData = React.useCallback(() => {
@@ -54,7 +54,7 @@ export const ServiceTimeEdit: React.FC<Props> = (props) => {
         onCancel={props.updatedFunction}
         onSave={handleSubmit(onValid)}
         onDelete={props.serviceTime?.id ? handleDelete : undefined}
-        title={props.serviceTime.name}
+        title={props.serviceTime.name || ""}
         isSubmitting={isSubmitting}
         icon="schedule"
         help="docs/b1-admin/attendance/">

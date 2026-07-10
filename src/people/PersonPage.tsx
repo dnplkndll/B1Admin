@@ -28,7 +28,7 @@ export const PersonPage = () => {
 
   const showForms = formPermission && personForms.length > 0;
 
-  const personData = useQuery<PersonInterface>({
+  const personData = useQuery<PersonInterface | null>({
     queryKey: ["/people/" + params.id, "MembershipApi"],
     enabled: !!(params.id && params.id !== "add"),
     placeholderData: null
@@ -59,7 +59,7 @@ export const PersonPage = () => {
     };
   }, [params.id]);
 
-  const person = useMemo(() => {
+  const person = useMemo<PersonInterface | null>(() => {
     if (params.id === "add" || !params.id) {
       return {
         name: {
@@ -82,7 +82,7 @@ export const PersonPage = () => {
         },
         membershipStatus: "Visitor",
         gender: "",
-        birthDate: null,
+        birthDate: undefined,
         maritalStatus: "",
         nametagNotes: ""
       };
@@ -100,6 +100,7 @@ export const PersonPage = () => {
   }, [params.id, personData.data]);
 
   const handleCreateConversation = async () => {
+    if (!person) return "";
     const conv: ConversationInterface = {
       allowAnonymousPosts: false,
       contentType: "person",
@@ -112,7 +113,7 @@ export const PersonPage = () => {
     p.conversationId = result[0].id;
     await ApiHelper.post("/people", [p], "MembershipApi");
     refetch();
-    return result[0].id;
+    return result[0].id || "";
   };
 
   const defaultTab: string = "details";
@@ -126,7 +127,10 @@ export const PersonPage = () => {
   const getCurrentTab = () => {
     let currentTab: JSX.Element;
     // Guard against null person during query refetches.
-    if (selectedTab !== "details" && !person?.id) {
+    if (!person) {
+      return <div key="loading" />;
+    }
+    if (selectedTab !== "details" && !person.id) {
       return <div key="loading" />;
     }
     switch (selectedTab) {
@@ -143,15 +147,17 @@ export const PersonPage = () => {
           />
         );
         break;
-      case "notes": currentTab = <PersonNotes key={`notes-${person?.conversationId || "new"}`} context={context} conversationId={person?.conversationId} createConversation={handleCreateConversation} />; break;
-      case "attendance": currentTab = <PersonAttendance key="attendance" personId={person.id} personName={person.name?.display} updatedFunction={refetch} />; break;
-      case "donations": currentTab = <PersonDonations key="donations" personId={person.id} />; break;
+      case "notes": currentTab = <PersonNotes key={`notes-${person?.conversationId || "new"}`} context={context} conversationId={person.conversationId || ""} createConversation={handleCreateConversation} />; break;
+      case "attendance": currentTab = <PersonAttendance key="attendance" personId={person.id!} personName={person.name?.display} updatedFunction={refetch} />; break;
+      case "donations": currentTab = <PersonDonations key="donations" personId={person.id!} />; break;
       case "forms": currentTab = <PersonForms key="forms" person={person} forms={personForms} updatedFunction={refetch} />; break;
-      case "groups": currentTab = <Groups key="groups" personId={person?.id} updatedFunction={refetch} />; break;
+      case "groups": currentTab = <Groups key="groups" personId={person.id!} updatedFunction={refetch} />; break;
       default: currentTab = <div key="default">{Locale.label("people.tabs.noImplement")}</div>; break;
     }
     return currentTab;
   };
+
+  if (!person) return null;
 
   return (
     <>

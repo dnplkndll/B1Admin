@@ -15,9 +15,9 @@ interface Props {
 }
 
 export const Merge: React.FunctionComponent<Props> = (props) => {
-  const [searchResults, setSearchResults] = React.useState<PersonInterface[]>(null);
+  const [searchResults, setSearchResults] = React.useState<PersonInterface[] | null>(null);
   const [showMergeModal, setShowMergeModal] = React.useState<boolean>(false);
-  const [personToMerge, setPersonToMerge] = React.useState<PersonInterface>(null);
+  const [personToMerge, setPersonToMerge] = React.useState<PersonInterface | null>(null);
   const [mergeInProgress, setMergeInProgress] = React.useState<boolean>(false);
   const navigate = useNavigate();
   const isMounted = useMountedState();
@@ -28,7 +28,7 @@ export const Merge: React.FunctionComponent<Props> = (props) => {
   };
 
   const handleMerge = (personId: string) => {
-    const person: PersonInterface[] = [...searchResults].filter((p) => p.id === personId);
+    const person: PersonInterface[] = [...(searchResults || [])].filter((p) => p.id === personId);
     setPersonToMerge(person[0]);
     setShowMergeModal(true);
   };
@@ -115,21 +115,21 @@ export const Merge: React.FunctionComponent<Props> = (props) => {
     try {
       setMergeInProgress(true);
       const { id, householdId } = personToRemove;
-      const householdMembers = await fetchHouseholdMembers(householdId);
-      const groupMembers = await fetchGroupMembers(id);
+      const householdMembers = await fetchHouseholdMembers(householdId || "");
+      const groupMembers = await fetchGroupMembers(id || "");
       //const notes = await fetchNotes(id);
-      const visits = await fetchVisits(id);
-      const donations = await fetchDonations(id);
-      const formSubmission = await fetchFormSubmissions(id);
-      const [winnerFieldValues, loserFieldValues] = await Promise.all([fetchPersonFieldValues(person.id), fetchPersonFieldValues(id)]);
+      const visits = await fetchVisits(id || "");
+      const donations = await fetchDonations(id || "");
+      const formSubmission = await fetchFormSubmissions(id || "");
+      const [winnerFieldValues, loserFieldValues] = await Promise.all([fetchPersonFieldValues(person.id || ""), fetchPersonFieldValues(id || "")]);
 
       const promises = [];
-      householdMembers.forEach((member) => {
+      householdMembers?.forEach((member) => {
         member.householdId = person.householdId;
         promises.push(ApiHelper.post("/people", [member], "MembershipApi"));
       });
-      groupMembers.forEach((groupMember) => {
-        groupMember.personId = person.id;
+      groupMembers?.forEach((groupMember) => {
+        groupMember.personId = person.id || "";
         promises.push(ApiHelper.post("/groupmembers", [groupMember], "MembershipApi"));
       });
       /*
@@ -138,15 +138,15 @@ export const Merge: React.FunctionComponent<Props> = (props) => {
         promises.push(ApiHelper.post("/notes", [note], "MembershipApi"));
       })*/
 
-      visits.forEach((visit) => {
+      visits?.forEach((visit) => {
         visit.personId = person.id;
         promises.push(ApiHelper.post(`/visits`, [visit], "AttendanceApi"));
       });
-      donations.forEach((donation) => {
+      donations?.forEach((donation) => {
         donation.personId = person.id;
         promises.push(ApiHelper.post("/donations", [donation], "GivingApi"));
       });
-      formSubmission.forEach((form) => {
+      formSubmission?.forEach((form) => {
         form.contentId = person.id;
         promises.push(ApiHelper.post("/formsubmissions", { formSubmissions: [form] }, "MembershipApi"));
       });
@@ -182,7 +182,7 @@ export const Merge: React.FunctionComponent<Props> = (props) => {
     <>
       <MergeModal show={showMergeModal} onHide={() => setShowMergeModal(false)} person1={person1} person2={personToMerge} merge={merge} mergeInProgress={mergeInProgress} />
       <FormCard id="mergeBox" icon="person_add" title={Locale.label("people.merge.mergeRec")} onSave={handleSave} onCancel={props.hideMergeBox}>
-        <Search handleSearch={search} searchResults={searchResults} buttonText={Locale.label("people.merge.merge")} handleClickAction={handleMerge} />
+        <Search handleSearch={search} searchResults={searchResults || []} buttonText={Locale.label("people.merge.merge")} handleClickAction={handleMerge} />
       </FormCard>
     </>
   );

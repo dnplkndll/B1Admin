@@ -19,6 +19,7 @@ export const GroupPage = () => {
     queryKey: [`/groups/${params.id}`, "MembershipApi"],
     placeholderData: {} as GroupInterface
   });
+  const groupData = group.data as GroupInterface;
 
   React.useEffect(() => {
     if (selectedTab === "") {
@@ -28,10 +29,10 @@ export const GroupPage = () => {
 
   const getCurrentTab = () => {
     switch (selectedTab) {
-      case "sessions": return <GroupSessionsTab key="sessions" group={group.data} />;
-      case "calendar": return <GroupCalendarTab key="calendar" group={group.data} />;
-      case "health": return <GroupHealthTab key="health" group={group.data} />;
-      default: return <GroupMembersTab key="members" group={group.data} />;
+      case "sessions": return <GroupSessionsTab key="sessions" group={groupData} />;
+      case "calendar": return <GroupCalendarTab key="calendar" group={groupData} />;
+      case "health": return <GroupHealthTab key="health" group={groupData} />;
+      default: return <GroupMembersTab key="members" group={groupData} />;
     }
   };
 
@@ -47,14 +48,14 @@ export const GroupPage = () => {
   return (
     <>
       <GroupBanner
-        group={group.data}
+        group={groupData}
         onEdit={handleEdit}
         editMode={editMode}
-        tabs={<GroupNavigation selectedTab={selectedTab} onTabChange={setSelectedTab} group={group.data} onHeader />}
+        tabs={<GroupNavigation selectedTab={selectedTab} onTabChange={setSelectedTab} group={groupData} onHeader />}
       />
       <Grid container spacing={2}>
         <Grid size={{ xs: 12 }}>
-          <div id="mainContent">{editMode ? <GroupDetailsEdit id="groupDetailsBox" group={group.data} updatedFunction={handleUpdated} /> : getCurrentTab()}</div>
+          <div id="mainContent">{editMode ? <GroupDetailsEdit id="groupDetailsBox" group={groupData} updatedFunction={handleUpdated} /> : getCurrentTab()}</div>
         </Grid>
       </Grid>
     </>

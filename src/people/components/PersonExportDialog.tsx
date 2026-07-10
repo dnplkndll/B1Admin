@@ -103,7 +103,7 @@ export const PersonExportDialog: React.FC<Props> = memo((props) => {
   const formOptions = useMemo(() => {
     const seen = new Set<string>();
     return detailedSubmissions
-      .map((submission) => ({ id: submission.formId, name: formNameMap.get(submission.formId) || submission.form?.name || "Form" }))
+      .map((submission) => ({ id: submission.formId || "", name: formNameMap.get(submission.formId || "") || submission.form?.name || "Form" }))
       .filter((option) => {
         if (!option.id || seen.has(option.id)) return false;
         seen.add(option.id);
@@ -119,8 +119,8 @@ export const PersonExportDialog: React.FC<Props> = memo((props) => {
         if (question.fieldType === "Heading" || question.fieldType === "Payment") return;
         const answer = answersByQuestionId.get(question.id);
         rows.push({
-          formId: submission.formId,
-          formName: formNameMap.get(submission.formId) || submission.form?.name || "Form",
+          formId: submission.formId || "",
+          formName: formNameMap.get(submission.formId || "") || submission.form?.name || "Form",
           questionId: question.id,
           questionTitle: question.title || "",
           answerValue: formatAnswerValue(question.fieldType, answer?.value || "")

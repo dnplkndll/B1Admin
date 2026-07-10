@@ -13,7 +13,7 @@ interface Props {
 }
 
 export const RoleCheck: React.FC<Props> = (props) => {
-  const [rolePermission, setRolePermission] = React.useState<RolePermissionInterface>(null);
+  const [rolePermission, setRolePermission] = React.useState<RolePermissionInterface | null>(null);
 
   const init = () => {
     for (let i = 0; i < props.rolePermissions.length; i++) {
@@ -35,7 +35,7 @@ export const RoleCheck: React.FC<Props> = (props) => {
         setRolePermission(rp);
       });
     } else {
-      ApiHelper.delete("/rolepermissions/" + rolePermission.id, "MembershipApi");
+      ApiHelper.delete("/rolepermissions/" + rolePermission!.id, "MembershipApi");
       setRolePermission(null);
     }
   };

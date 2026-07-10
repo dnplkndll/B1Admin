@@ -52,8 +52,8 @@ export const PositionEdit = (props: Props) => {
     ? categoryOptions[0]
     : { value: watchedCategory, label: watchedCategory };
 
-  const handleCategoryChange = (newValue: { label: string; value: string }) => {
-    setValue("categoryName", newValue.value, { shouldValidate: true });
+  const handleCategoryChange = (newValue: OptionType | null) => {
+    setValue("categoryName", newValue?.value ?? "", { shouldValidate: true });
     setCategoryInput("");
   };
 

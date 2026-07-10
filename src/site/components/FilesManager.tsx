@@ -17,7 +17,7 @@ export function FilesManager() {
   const { confirm, ConfirmDialogElement } = useConfirmDelete();
 
   let usedSpace = 0;
-  files?.forEach((f) => (usedSpace += f.size));
+  files?.forEach((f) => (usedSpace += f.size || 0));
 
   const handleFileSaved = () => {
     setPendingFileSave(false);
@@ -78,7 +78,7 @@ export function FilesManager() {
         </TableCell>
         <TableCell align="right">
           <Typography variant="body2" color="text.secondary">
-            {formatSize(file.size)}
+            {formatSize(file.size || 0)}
           </Typography>
         </TableCell>
         <TableCell align="right" className="rowActions">

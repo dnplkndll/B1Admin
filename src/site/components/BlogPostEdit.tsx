@@ -54,7 +54,7 @@ export function BlogPostEdit(props: Props) {
     if (e.length > 0) return;
     setIsSubmitting(true);
     try {
-      const slug = kebab(post.slug);
+      const slug = kebab(post.slug || "");
       const toSave: PostInterface = {
         ...post,
         slug,

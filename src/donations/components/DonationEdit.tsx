@@ -38,7 +38,7 @@ export const DonationEdit = memo((props: Props) => {
   const onValid = (values: AnyRecord) => {
     const donationToSave: DonationInterface = {
       ...donation,
-      donationDate: values.date ? DateHelper.formatHtml5Date(values.date) : null,
+      donationDate: values.date ? DateHelper.formatHtml5Date(values.date) : undefined,
       method: values.method,
       methodDetails: values.methodDetails,
       notes: values.notes
@@ -68,7 +68,7 @@ export const DonationEdit = memo((props: Props) => {
       setFundDonations([fd]);
     } else {
       ApiHelper.get("/donations/" + props.donationId, "GivingApi").then(async (data: DonationInterface) => {
-        if (!UniqueIdHelper.isMissing(data.personId)) data.person = await ApiHelper.get("/people/" + data.personId.toString(), "MembershipApi");
+        if (!UniqueIdHelper.isMissing(data.personId)) data.person = await ApiHelper.get("/people/" + data.personId!.toString(), "MembershipApi");
         if (data.donationDate) data.donationDate = DateHelper.formatHtml5Date(data.donationDate);
         setDonation(data);
         reset({ date: (data.donationDate as string) || "", method: data.method || "Check", methodDetails: data.methodDetails || "", notes: data.notes || "" });
@@ -84,9 +84,9 @@ export const DonationEdit = memo((props: Props) => {
     return <TextField fullWidth label={label} InputLabelProps={{ shrink: !!methodDetails }} placeholder={placeholder} {...register("methodDetails")} />;
   }, [method, methodDetails, register]);
 
-  const handlePersonAdd = useCallback((p: PersonInterface) => {
+  const handlePersonAdd = useCallback((p: PersonInterface | null) => {
     const d = { ...donation } as DonationInterface;
-    if (p === null) { d.person = null; d.personId = ""; } else { d.person = p; d.personId = p.id; }
+    if (p === null) { d.person = undefined; d.personId = ""; } else { d.person = p; d.personId = p.id; }
     setDonation(d);
     setShowSelectPerson(false);
   }, [donation]);
@@ -94,7 +94,7 @@ export const DonationEdit = memo((props: Props) => {
   const handleFundDonationsChange = useCallback((fd: FundDonationInterface[]) => {
     setFundDonations(fd);
     let totalAmount = 0;
-    for (let i = 0; i < fd.length; i++) totalAmount += fd[i].amount;
+    for (let i = 0; i < fd.length; i++) totalAmount += fd[i].amount || 0;
     if (totalAmount !== donation.amount) setDonation({ ...donation, amount: totalAmount });
   }, [donation]);
 

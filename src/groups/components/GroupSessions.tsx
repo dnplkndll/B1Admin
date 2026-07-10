@@ -31,7 +31,7 @@ export const GroupSessions: React.FC<Props> = memo((props) => {
   const [visitSessions, setVisitSessions] = React.useState<VisitSessionInterface[]>([]);
   const [people, setPeople] = React.useState<PersonInterface[]>([]);
   const [sessions, setSessions] = React.useState<SessionInterface[]>([]);
-  const [session, setSession] = React.useState<SessionInterface>(null);
+  const [session, setSession] = React.useState<SessionInterface | null>(null);
   const [downloadData, setDownloadData] = React.useState<any[]>([]);
   const [sessionAttendanceCounts, setSessionAttendanceCounts] = React.useState<Record<string, number>>({});
 
@@ -76,10 +76,10 @@ export const GroupSessions: React.FC<Props> = memo((props) => {
       const batchPromises = batch.map(async (session) => {
         try {
           const visitSessions = await ApiHelper.get(`/visitsessions?sessionId=${session.id}`, "AttendanceApi");
-          counts[session.id] = visitSessions.length;
+          counts[session.id!] = visitSessions.length;
         } catch (error) {
           console.error(`Failed to load attendance for session ${session.id}:`, error);
-          counts[session.id] = 0;
+          counts[session.id!] = 0;
         }
       });
 
@@ -113,7 +113,8 @@ export const GroupSessions: React.FC<Props> = memo((props) => {
 
   const handleRemove = useCallback(
     (vs: VisitSessionInterface) => {
-      ApiHelper.delete("/visitsessions?sessionId=" + session.id + "&personId=" + vs.visit.personId, "AttendanceApi").then(() => {
+      if (!session) return;
+      ApiHelper.delete("/visitsessions?sessionId=" + session.id + "&personId=" + vs.visit?.personId, "AttendanceApi").then(() => {
         loadAttendance();
       });
     },
@@ -204,7 +205,7 @@ export const GroupSessions: React.FC<Props> = memo((props) => {
     for (let i = 0; i < visitSessions.length; i++) {
       const vs = visitSessions[i];
       //let editLink = (canEdit) ? (<a href="about:blank" onClick={handleRemove} className="text-danger" data-personid={vs.visit.personId}><Icon>person_remove</Icon> Remove</a>) : null;
-      const person = ArrayHelper.getOne(people, "id", vs.visit.personId);
+      const person = ArrayHelper.getOne(people, "id", vs.visit?.personId);
       const editLink = canEdit ? (
         <AppIconButton intent="remove" label={Locale.label("common.remove")} icon={<PersonRemoveIcon />} onClick={() => handleRemove(vs)} data-testid={`remove-session-visitor-button-${vs.id}`} />
       ) : (
@@ -217,7 +218,7 @@ export const GroupSessions: React.FC<Props> = memo((props) => {
               <Avatar src={PersonHelper.getPhotoUrl(person)} sx={{ width: 48, height: 48 }} />
             </TableCell>
             <TableCell>
-              <a className="personName" href={"/people/person.aspx?id=" + vs.visit.personId}>
+              <a className="personName" href={"/people/person.aspx?id=" + vs.visit?.personId}>
                 {person?.name?.display}
               </a>
             </TableCell>
@@ -303,7 +304,7 @@ export const GroupSessions: React.FC<Props> = memo((props) => {
             <Grid size={{ xs: 12, sm: 6, md: 4, lg: 3 }} key={sessionItem.id}>
               <SessionCard
                 session={sessionItem}
-                attendanceCount={sessionAttendanceCounts[sessionItem.id] || 0}
+                attendanceCount={sessionAttendanceCounts[sessionItem.id!] || 0}
                 isSelected={session?.id === sessionItem.id}
                 onView={handleViewSession}
                 onEdit={handleEditSession}
@@ -335,7 +336,7 @@ export const GroupSessions: React.FC<Props> = memo((props) => {
       ApiHelper.post("/visitsessions/log", v, "AttendanceApi").then(() => {
         loadAttendance();
       });
-      addedCallback(v.personId);
+      addedCallback?.(addedPerson.id);
     }
   }, [addedPerson?.id, session?.id, loadAttendance, addedCallback]);
 
