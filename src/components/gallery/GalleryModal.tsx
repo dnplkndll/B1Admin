@@ -1,7 +1,6 @@
 "use client";
 
-import { ApiHelper, ImageEditor, Locale, TabPanel } from "@churchapps/apphelper";
-import { FileHelper } from "@churchapps/apphelper/dist/helpers/FileHelper.js";
+import { ApiHelper, FileHelper, ImageEditor, Locale, TabPanel } from "@churchapps/apphelper";
 import { CommonEnvironmentHelper } from "@churchapps/helpers";
 import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, FormControl, Grid, InputLabel, MenuItem, Select, Tab, Tabs } from "@mui/material";
 import { DeleteOutline as DeleteOutlineIcon } from "@mui/icons-material";
