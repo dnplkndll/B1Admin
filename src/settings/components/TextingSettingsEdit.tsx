@@ -2,6 +2,7 @@ import React from "react";
 import { FormControl, InputLabel, MenuItem, Select, TextField, Grid, Typography, type SelectChangeEvent } from "@mui/material";
 import { ApiHelper, ErrorMessages, UniqueIdHelper, Locale } from "@churchapps/apphelper";
 import { type TextingProviderInterface } from "@churchapps/helpers";
+import { MINISTRYSTUFF_ENABLED } from "../../helpers/MinistryStuffFlag";
 
 interface Props {
   churchId: string;
@@ -15,6 +16,13 @@ export const TextingSettingsEdit: React.FC<Props> = (props) => {
   const [apiKey, setApiKey] = React.useState("");
   const [apiSecret, setApiSecret] = React.useState("");
   const [errors, setErrors] = React.useState<string[]>([]);
+  const [credits, setCredits] = React.useState<{ supported?: boolean; hasCredits?: boolean; remaining?: number } | null>(null);
+
+  React.useEffect(() => {
+    if (provider === "MinistryStuff" && textingProvider?.provider === "MinistryStuff") {
+      ApiHelper.get("/texting/credits", "MessagingApi").then(setCredits).catch(() => setCredits(null));
+    } else setCredits(null);
+  }, [provider, textingProvider]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement> | SelectChangeEvent) => {
     e.preventDefault();
@@ -26,7 +34,7 @@ export const TextingSettingsEdit: React.FC<Props> = (props) => {
   };
 
   const getKeys = () => {
-    if (provider === "") return null;
+    if (provider === "" || provider === "MinistryStuff") return null;
     if (provider === "TextInChurch" || provider === "Clearstream") {
       return (
         <Grid size={{ xs: 12, md: 6 }}>
@@ -107,6 +115,7 @@ export const TextingSettingsEdit: React.FC<Props> = (props) => {
             <InputLabel>{Locale.label("settings.textingSettingsEdit.provider")}</InputLabel>
             <Select name="provider" label={Locale.label("settings.textingSettingsEdit.provider")} value={provider || ""} onChange={handleChange}>
               <MenuItem value="">{Locale.label("settings.textingSettingsEdit.none")}</MenuItem>
+              {MINISTRYSTUFF_ENABLED && <MenuItem value="MinistryStuff">{Locale.label("settings.textingSettingsEdit.ministryStuff")}</MenuItem>}
               <MenuItem value="Clearstream">{Locale.label("settings.textingSettingsEdit.clearstream")}</MenuItem>
             </Select>
           </FormControl>
@@ -115,6 +124,16 @@ export const TextingSettingsEdit: React.FC<Props> = (props) => {
           <Grid size={{ xs: 12 }}>
             <Typography variant="body2" color="textSecondary" component="div">
               {Locale.label("settings.textingSettingsEdit.clearstreamHelper")} <a href="https://app.clearstream.io/settings/api/keys" target="_blank" rel="noopener noreferrer">{Locale.label("settings.textingSettingsEdit.clearstreamHelperLink")}</a> {Locale.label("settings.textingSettingsEdit.clearstreamHelperSuffix")}
+            </Typography>
+          </Grid>
+        )}
+        {provider === "MinistryStuff" && (
+          <Grid size={{ xs: 12 }}>
+            <Typography variant="body2" color="textSecondary" component="div">
+              {credits?.supported && credits?.hasCredits
+                ? Locale.label("settings.textingSettingsEdit.ministryStuffActive").replace("{}", String(credits.remaining ?? 0))
+                : Locale.label("settings.textingSettingsEdit.ministryStuffHelper")}{" "}
+              <a href="https://ministrystuff.org" target="_blank" rel="noopener noreferrer">{Locale.label("settings.textingSettingsEdit.ministryStuffHelperLink")}</a>
             </Typography>
           </Grid>
         )}

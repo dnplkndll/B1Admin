@@ -1272,7 +1272,9 @@
       "sentSummary": "Sent to {successCount} of {recipientCount} recipients.",
       "sentSummarySingular": "Sent to {successCount} of {recipientCount} recipient.",
       "textGroupTitle": "Text Group: {groupName}",
-      "textPersonTitle": "Text: {personName}"
+      "textPersonTitle": "Text: {personName}",
+      "insufficientCredits": "Your church is out of texting credits for this billing cycle. No messages were sent. Upgrade or wait for your credits to renew at",
+      "insufficientCreditsLink": "ministrystuff.org"
     },
     "serviceTimes": {
       "services": "Service(s):"
@@ -3264,7 +3266,11 @@
       "saveError": "Error saving texting settings.",
       "textInChurchHelper": "Visit",
       "textInChurchHelperLink": "Text In Church Support",
-      "textInChurchHelperSuffix": "to request developer API access. Once approved, create an API Key in your Account Settings > Developer API section."
+      "textInChurchHelperSuffix": "to request developer API access. Once approved, create an API Key in your Account Settings > Developer API section.",
+      "ministryStuff": "MinistryStuff",
+      "ministryStuffActive": "Your MinistryStuff texting subscription is active with {} credits remaining this cycle.",
+      "ministryStuffHelper": "No API key needed. Texting credits come from your MinistryStuff subscription, linked to this church automatically. Manage your plan at",
+      "ministryStuffHelperLink": "ministrystuff.org"
     },
     "userAdd": {
       "addTo": "Add To ",
@@ -3378,6 +3384,16 @@
       "undoWarning": "Records modified since this batch was created will be skipped. This cannot be reversed.",
       "undoing": "Undoing…",
       "viewResults": "View Results"
+    },
+    "storageSettingsEdit": {
+      "title": "File Storage",
+      "provider": "Provider",
+      "churchAppsFree": "ChurchApps (Free)",
+      "ministryStuff": "MinistryStuff",
+      "usage": "Using {used} GB of {quota} GB.",
+      "ministryStuffHelper": "Files will be stored on your MinistryStuff storage plan, linked to this church automatically. Manage your plan at",
+      "ministryStuffHelperLink": "ministrystuff.org",
+      "saveError": "Error saving storage settings."
     }
   },
   "site": {
