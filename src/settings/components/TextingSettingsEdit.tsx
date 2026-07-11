@@ -8,6 +8,7 @@ interface Props {
   churchId: string;
   saveTrigger: Date | null;
   onError?: (errors: string[]) => void;
+  onSaveComplete?: (ok: boolean) => void;
 }
 
 export const TextingSettingsEdit: React.FC<Props> = (props) => {
@@ -67,6 +68,8 @@ export const TextingSettingsEdit: React.FC<Props> = (props) => {
         tp.enabled = true;
         await ApiHelper.post("/texting/providers", [tp], "MessagingApi");
       }
+      setErrors([]);
+      props.onSaveComplete?.(true);
     } catch (error: any) {
       let message = Locale.label("settings.textingSettingsEdit.saveError");
       if (error?.message) {
@@ -79,6 +82,7 @@ export const TextingSettingsEdit: React.FC<Props> = (props) => {
       }
       setErrors([message]);
       if (props.onError) props.onError([message]);
+      props.onSaveComplete?.(false);
     }
   };
 

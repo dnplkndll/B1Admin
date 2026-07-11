@@ -23,9 +23,7 @@ export const BatchEdit = memo((props: Props) => {
 
   const handleDelete = useCallback(async () => {
     if (await confirm(Locale.label("donations.batchEdit.confirmMsg"))) {
-      ApiHelper.get("/donationbatches/" + props.batchId, "GivingApi").then((data: DonationBatchInterface) => {
-        ApiHelper.delete("/donationbatches/" + data.id, "GivingApi").then(() => props.updatedFunction());
-      });
+      ApiHelper.delete("/donationbatches/" + props.batchId, "GivingApi").then(() => props.updatedFunction());
     }
   }, [props.batchId, props.updatedFunction, confirm]);
 

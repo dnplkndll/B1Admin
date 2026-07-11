@@ -4,6 +4,7 @@ import { Checkbox, Grid, MenuItem, TextField, Typography } from "@mui/material";
 import { type TimeInterface } from "@churchapps/helpers";
 import { ApiHelper, DateHelper, ErrorMessages, Locale } from "@churchapps/apphelper";
 import { FormCard } from "../../components/ui";
+import { useConfirmDelete } from "../../hooks";
 
 interface Props {
   time: TimeInterface;
@@ -16,6 +17,7 @@ type AnyRecord = Record<string, any>;
 export const TimeEdit = (props: Props) => {
   "use no memo"; // compiler caches register() results, breaking RHF field re-registration after reset()
   const [teams, setTeams] = React.useState<string>(props.time?.teams ?? "");
+  const { confirm, ConfirmDialogElement } = useConfirmDelete();
 
   const { control, register, handleSubmit, reset } = useForm<AnyRecord>({
     defaultValues: {
@@ -59,7 +61,8 @@ export const TimeEdit = (props: Props) => {
     ApiHelper.post("/times", [t], "DoingApi").then(props.onUpdate);
   };
 
-  const handleDelete = () => {
+  const handleDelete = async () => {
+    if (!(await confirm(Locale.label("plans.timeEdit.confirmDelete")))) return;
     ApiHelper.delete("/times/" + props.time.id, "DoingApi").then(props.onUpdate);
   };
 
@@ -98,6 +101,7 @@ export const TimeEdit = (props: Props) => {
 
   return (
     <>
+      {ConfirmDialogElement}
       <ErrorMessages errors={summaryErrors} />
       <FormCard
         title={props.time?.id ? Locale.label("plans.timeEdit.timeEdit") : Locale.label("plans.timeEdit.timeAdd")}

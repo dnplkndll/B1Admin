@@ -5,7 +5,7 @@ import { useForm, Controller } from "react-hook-form";
 import { type ServiceTimeInterface, type ServiceInterface } from "@churchapps/helpers";
 import { useMountedState, ApiHelper, Locale, ErrorMessages } from "@churchapps/apphelper";
 import { FormCard } from "../../components/ui";
-import { useErrorSummary } from "../../hooks";
+import { useConfirmDelete, useErrorSummary } from "../../hooks";
 
 interface Props {
   serviceTime: ServiceTimeInterface | null;
@@ -23,6 +23,7 @@ export const ServiceTimeEdit: React.FC<Props> = (props) => {
   const { control, register, handleSubmit, reset, formState } = useForm<AnyRecord>({ defaultValues: { name: "", serviceId: "" } });
   const e = formState.errors as any;
   const summaryErrors = useErrorSummary(formState.errors, ["name", "serviceId"]);
+  const { confirm, ConfirmDialogElement } = useConfirmDelete();
 
   const onValid = (values: AnyRecord) => {
     setIsSubmitting(true);
@@ -32,8 +33,8 @@ export const ServiceTimeEdit: React.FC<Props> = (props) => {
       .finally(() => { setIsSubmitting(false); });
   };
 
-  const handleDelete = () => {
-    if (window.confirm(Locale.label("attendance.serviceTimeEdit.confirmDelete"))) ApiHelper.delete("/servicetimes/" + props.serviceTime?.id, "AttendanceApi").then(props.updatedFunction);
+  const handleDelete = async () => {
+    if (await confirm(Locale.label("attendance.serviceTimeEdit.confirmDelete"))) ApiHelper.delete("/servicetimes/" + props.serviceTime?.id, "AttendanceApi").then(props.updatedFunction);
   };
 
   const loadData = React.useCallback(() => {
@@ -49,6 +50,7 @@ export const ServiceTimeEdit: React.FC<Props> = (props) => {
   if (props.serviceTime === null || props.serviceTime.id === undefined) return null;
   return (
     <Box data-cy="service-time-box">
+      {ConfirmDialogElement}
       <FormCard
         id="serviceTimeBox"
         onCancel={props.updatedFunction}

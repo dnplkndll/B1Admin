@@ -3,6 +3,7 @@ import React from "react";
 import { ApiHelper, Locale } from "@churchapps/apphelper";
 import { ViewKanban as WorkflowsIcon, Save as SaveIcon, Cancel as CancelIcon, Delete as DeleteIcon, Check as CheckIcon } from "@mui/icons-material";
 import { AppIconButton } from "../../../../components/ui/AppIconButton";
+import { useConfirmDelete } from "../../../../hooks";
 import { type WorkflowInterface, type WorkflowCategoryInterface } from "@churchapps/helpers";
 
 const ADD_CATEGORY = "__add__";
@@ -21,6 +22,7 @@ export const WorkflowEdit = (props: Props) => {
   const [categories, setCategories] = React.useState<WorkflowCategoryInterface[]>([]);
   const [addingCategory, setAddingCategory] = React.useState(false);
   const [newCategoryName, setNewCategoryName] = React.useState("");
+  const { confirm, ConfirmDialogElement } = useConfirmDelete();
   // Hoisted: the compiler emits a non-optional guard read (workflow.id) for the
   // handleDelete closure dep, which crashes while workflow is still null.
   const workflowId = workflow ? workflow.id : null;
@@ -39,6 +41,7 @@ export const WorkflowEdit = (props: Props) => {
   };
 
   const handleDelete = async () => {
+    if (!(await confirm(Locale.label("tasks.workflowEdit.confirmDelete") || "Are you sure you want to delete this workflow?"))) return;
     await ApiHelper.delete("/workflows/" + workflowId, "DoingApi");
     props.onDelete?.();
   };
@@ -73,6 +76,7 @@ export const WorkflowEdit = (props: Props) => {
 
   return (
     <Card sx={{ borderRadius: 2, border: "1px solid", borderColor: "grey.200", "&:hover": { boxShadow: 2 } }}>
+      {ConfirmDialogElement}
       <CardContent>
         <Stack spacing={3}>
           <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>

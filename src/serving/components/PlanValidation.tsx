@@ -1,7 +1,9 @@
 import React, { useEffect } from "react";
+import { Button } from "@mui/material";
 import { ApiHelper, ArrayHelper, CommonEnvironmentHelper, DateHelper, DisplayBox, Locale, type PersonInterface, UserHelper } from "@churchapps/apphelper";
 import { type AssignmentInterface, type BlockoutDateInterface, type PositionInterface, type TimeInterface } from "@churchapps/helpers";
 import { type PlanInterface, type SchedulingPreferenceInterface } from "../../helpers";
+import { useConfirmDelete } from "../../hooks";
 
 interface Props {
   plan: PlanInterface;
@@ -23,6 +25,7 @@ export const PlanValidation = (props: Props) => {
   const [externalAssignments, setExternalAssignments] = React.useState<AssignmentInterface[]>();
   const [preferences, setPreferences] = React.useState<SchedulingPreferenceInterface[]>([]);
   const [monthCounts, setMonthCounts] = React.useState<{ personId: string; count: number }[]>([]);
+  const { confirm, ConfirmDialogElement } = useConfirmDelete();
 
   const validateBlockout = (issues: JSX.Element[]) => {
     const conflicts: { person: PersonInterface; blockout: BlockoutDateInterface }[] = [];
@@ -322,6 +325,19 @@ export const PlanValidation = (props: Props) => {
     });
   };
 
+  const handlePublishClick = async () => {
+    const pending = getPendingNotifications();
+    const message = pending.length > 0
+      ? Locale.label("plans.planValidation.publishNotifyConfirm").replace("{count}", pending.length.toString())
+      : Locale.label("plans.planValidation.publishConfirm");
+    const confirmed = await confirm(message, {
+      title: Locale.label("plans.planValidation.publishConfirmTitle"),
+      confirmLabel: Locale.label("plans.planValidation.publishConfirmLabel"),
+      destructive: false
+    });
+    if (confirmed) publish();
+  };
+
   const getNotificationLink = () => {
     if (!canEdit) return null;
 
@@ -329,14 +345,14 @@ export const PlanValidation = (props: Props) => {
 
     if (props.plan?.prepared) {
       return (
-        <p>
-          {Locale.label("plans.planValidation.penciledIn") || "Penciled in — volunteers can't see these assignments yet."}{" "}
-          <button type="button" onClick={publish} data-testid="publish-plan-button" style={{ background: "none", border: 0, padding: 0, color: "var(--link)", cursor: "pointer" }}>
+        <>
+          <p>{Locale.label("plans.planValidation.penciledIn") || "Penciled in — volunteers can't see these assignments yet."}</p>
+          <Button variant="contained" fullWidth onClick={handlePublishClick} data-testid="publish-plan-button">
             {pending.length > 0
               ? (Locale.label("plans.planValidation.publishNotify") || "Publish & Notify") + " " + pending.length + " " + Locale.label("plans.planValidation.vol")
               : Locale.label("plans.planValidation.publish") || "Publish Plan"}
-          </button>
-        </p>
+          </Button>
+        </>
       );
     }
 
@@ -354,6 +370,7 @@ export const PlanValidation = (props: Props) => {
 
   return (
     <>
+      {ConfirmDialogElement}
       <DisplayBox headerText={Locale.label("plans.planValidation.val")} headerIcon="assignment">
         {getErrorList()}
         {getNotificationLink()}

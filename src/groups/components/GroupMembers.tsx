@@ -9,6 +9,7 @@ import { PendingJoinRequests } from "./PendingJoinRequests";
 import {
   ApiHelper,
   DisplayBox,
+  ErrorMessages,
   UserHelper,
   Permissions,
   ArrayHelper,
@@ -18,6 +19,7 @@ import {
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
 import {
+  Alert,
   Box,
   Button,
   Chip,
@@ -28,6 +30,7 @@ import {
   Paper,
   Select,
   Skeleton,
+  Snackbar,
   Stack,
   Table,
   TableBody,
@@ -51,6 +54,7 @@ import { SendInviteDialog } from "../../components";
 import { EmptyState } from "../../components/ui/EmptyState";
 import { AppIconButton } from "../../components/ui/AppIconButton";
 import { ExportButton, hoverRowSx } from "../../components/ui";
+import { useConfirmDelete } from "../../hooks";
 
 interface Props {
   group: GroupInterface;
@@ -65,6 +69,10 @@ export const GroupMembers: React.FC<Props> = memo((props) => {
   const [message, setMessage] = useState<string>("");
   const [count, setCount] = useState<number>(0);
   const [showInviteDialog, setShowInviteDialog] = useState<boolean>(false);
+  const [sending, setSending] = useState<boolean>(false);
+  const [sendErrors, setSendErrors] = useState<string[]>([]);
+  const [sendSuccess, setSendSuccess] = useState<boolean>(false);
+  const { confirm, ConfirmDialogElement } = useConfirmDelete();
 
   const canView = useMemo(() => UserHelper.checkAccess(Permissions.membershipApi.groupMembers.view), []);
 
@@ -81,12 +89,14 @@ export const GroupMembers: React.FC<Props> = memo((props) => {
   });
 
   const handleRemove = useCallback(
-    (member: GroupMemberInterface) => {
+    async (member: GroupMemberInterface) => {
+      const name = member.person?.name?.display || Locale.label("groups.groupMembers.unknown");
+      if (!(await confirm(Locale.label("groups.groupMembers.removeConfirm").replace("{name}", name)))) return;
       ApiHelper.delete("/groupmembers/" + member.id, "MembershipApi").then(() => {
         groupMembers.refetch();
       });
     },
-    [groupMembers]
+    [groupMembers, confirm]
   );
 
   const handleToggleLeader = useCallback(
@@ -399,9 +409,18 @@ export const GroupMembers: React.FC<Props> = memo((props) => {
     setSelectedTemplate("");
   };
 
-  const onSend = () => {
-    handleSend();
-    closeComposer();
+  const onSend = async () => {
+    setSending(true);
+    setSendErrors([]);
+    try {
+      await handleSend();
+      closeComposer();
+      setSendSuccess(true);
+    } catch {
+      setSendErrors([Locale.label("common.saveError")]);
+    } finally {
+      setSending(false);
+    }
   };
 
   const composer = show && (
@@ -506,7 +525,7 @@ export const GroupMembers: React.FC<Props> = memo((props) => {
             variant="contained"
             disableElevation
             endIcon={<SendIcon fontSize="small" />}
-            disabled={!message.trim()}
+            disabled={!message.trim() || sending}
             onClick={onSend}
             sx={{ textTransform: "none", fontWeight: 600, px: 2 }}>
             {Locale.label("groups.groupMembers.send")}
@@ -557,6 +576,11 @@ export const GroupMembers: React.FC<Props> = memo((props) => {
           onClose={() => { setShowInviteDialog(false); props.addedCallback?.(); }}
         />
       )}
+      {ConfirmDialogElement}
+      <ErrorMessages errors={sendErrors} />
+      <Snackbar open={sendSuccess} autoHideDuration={4000} onClose={() => setSendSuccess(false)} anchorOrigin={{ vertical: "bottom", horizontal: "center" }}>
+        <Alert severity="success" variant="filled" onClose={() => setSendSuccess(false)}>{Locale.label("groups.groupMembers.messageSent")}</Alert>
+      </Snackbar>
     </DisplayBox>
   );
 });

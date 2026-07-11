@@ -1,7 +1,7 @@
 import React from "react";
 import { Search, MergeModal } from ".";
 import { type GroupMemberInterface, type VisitInterface, type FormSubmissionInterface } from "@churchapps/helpers";
-import { ApiHelper, Locale } from "@churchapps/apphelper";
+import { ApiHelper, ErrorMessages, Locale } from "@churchapps/apphelper";
 import { FormCard } from "../../components/ui";
 import { type PersonInterface, type DonationInterface } from "@churchapps/helpers";
 import { type PersonFieldValueInterface } from "../../helpers/Interfaces";
@@ -19,6 +19,7 @@ export const Merge: React.FunctionComponent<Props> = (props) => {
   const [showMergeModal, setShowMergeModal] = React.useState<boolean>(false);
   const [personToMerge, setPersonToMerge] = React.useState<PersonInterface | null>(null);
   const [mergeInProgress, setMergeInProgress] = React.useState<boolean>(false);
+  const [errors, setErrors] = React.useState<string[]>([]);
   const navigate = useNavigate();
   const isMounted = useMountedState();
   const context = React.useContext(UserContext);
@@ -109,9 +110,11 @@ export const Merge: React.FunctionComponent<Props> = (props) => {
 
   const merge = async (person: PersonInterface, personToRemove: PersonInterface) => {
     if (personToRemove.id === context?.person?.id) {
-      alert(Locale.label("people.personEdit.cannotDeleteSelf"));
+      setErrors([Locale.label("people.personEdit.cannotDeleteSelf")]);
+      setShowMergeModal(false);
       return;
     }
+    setErrors([]);
     try {
       setMergeInProgress(true);
       const { id, householdId } = personToRemove;
@@ -162,15 +165,14 @@ export const Merge: React.FunctionComponent<Props> = (props) => {
       if (fieldValueChanges.length > 0) promises.push(ApiHelper.post("/personfieldvalues", fieldValueChanges, "MembershipApi"));
       promises.push(ApiHelper.post(`/people`, [person], "MembershipApi"));
       promises.push(ApiHelper.delete(`/people/${id}`, "MembershipApi"));
-      Promise.all(promises).then(() => {
-        if (isMounted()) {
-          setShowMergeModal(false);
-        }
-        navigate("/people");
-        if (isMounted()) {
-          setMergeInProgress(false);
-        }
-      });
+      await Promise.all(promises);
+      if (isMounted()) {
+        setShowMergeModal(false);
+      }
+      navigate("/people");
+      if (isMounted()) {
+        setMergeInProgress(false);
+      }
     } catch (error) {
       setMergeInProgress(false);
       console.log("Error in merging records...!!", error);
@@ -182,6 +184,7 @@ export const Merge: React.FunctionComponent<Props> = (props) => {
     <>
       <MergeModal show={showMergeModal} onHide={() => setShowMergeModal(false)} person1={person1} person2={personToMerge} merge={merge} mergeInProgress={mergeInProgress} />
       <FormCard id="mergeBox" icon="person_add" title={Locale.label("people.merge.mergeRec")} onSave={handleSave} onCancel={props.hideMergeBox}>
+        <ErrorMessages errors={errors} />
         <Search handleSearch={search} searchResults={searchResults || []} buttonText={Locale.label("people.merge.merge")} handleClickAction={handleMerge} />
       </FormCard>
     </>

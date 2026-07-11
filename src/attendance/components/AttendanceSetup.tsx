@@ -136,6 +136,9 @@ export const AttendanceSetup = memo(() => {
               <Typography variant="body2" color="text.secondary">
                 {Locale.label("attendance.attendanceSetup.setupMessage")}
               </Typography>
+              <Button variant="contained" color="primary" component={Link} to="/settings/campuses" startIcon={<AddIcon />}>
+                {Locale.label("attendance.attendanceSetup.manageCampuses")}
+              </Button>
             </Stack>
           </TableCell>
         </TableRow>
@@ -371,6 +374,9 @@ export const AttendanceSetup = memo(() => {
               {Locale.label("attendance.attendancePage.groups")}
             </Typography>
           </Stack>
+          <Button variant="outlined" size="small" component={Link} to="/settings/campuses" startIcon={<Icon>church</Icon>}>
+            {Locale.label("attendance.attendanceSetup.manageCampuses")}
+          </Button>
         </Stack>
       </Box>
 

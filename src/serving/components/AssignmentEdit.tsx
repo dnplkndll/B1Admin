@@ -4,6 +4,7 @@ import { Tune as TuneIcon } from "@mui/icons-material";
 import { type AssignmentInterface, type GroupMemberInterface, type PositionInterface } from "@churchapps/helpers";
 import { ApiHelper, Locale, PersonHelper } from "@churchapps/apphelper";
 import { FormCard } from "../../components/ui";
+import { useConfirmDelete } from "../../hooks";
 import { SchedulingPreferenceEdit } from "./SchedulingPreferenceEdit";
 
 interface Props {
@@ -16,12 +17,14 @@ interface Props {
 export const AssignmentEdit = (props: Props) => {
   const [groupMembers, setGroupMembers] = React.useState<GroupMemberInterface[]>([]);
   const [preferencePerson, setPreferencePerson] = React.useState<{ id: string; name: string } | null>(null);
+  const { confirm, ConfirmDialogElement } = useConfirmDelete();
 
   const handleSave = () => {
     props.updatedFunction(true);
   };
 
-  const handleDelete = () => {
+  const handleDelete = async () => {
+    if (!(await confirm(Locale.label("plans.assignmentEdit.confirmDelete")))) return;
     ApiHelper.delete("/assignments/" + props.assignment.id, "DoingApi").then(() => props.updatedFunction(true));
   };
 
@@ -89,6 +92,7 @@ export const AssignmentEdit = (props: Props) => {
 
   return (
     <>
+      {ConfirmDialogElement}
       <FormCard
         title={props.assignment?.id ? Locale.label("plans.assignmentEdit.editAssign") : Locale.label("plans.assignmentEdit.assignPos")}
         icon="assignment"

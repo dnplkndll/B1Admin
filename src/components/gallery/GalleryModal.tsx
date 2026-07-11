@@ -1,6 +1,6 @@
 "use client";
 
-import { ApiHelper, FileHelper, ImageEditor, Locale, TabPanel } from "@churchapps/apphelper";
+import { ApiHelper, ErrorMessages, FileHelper, ImageEditor, Locale, TabPanel } from "@churchapps/apphelper";
 import { CommonEnvironmentHelper } from "@churchapps/helpers";
 import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, FormControl, Grid, InputLabel, MenuItem, Select, Tab, Tabs } from "@mui/material";
 import { DeleteOutline as DeleteOutlineIcon } from "@mui/icons-material";
@@ -24,6 +24,7 @@ export const GalleryModal: React.FC<Props> = (props: Props) => {
   const [tabIndex, setTabIndex] = React.useState(0);
   const [aspectRatio, setAspectRatio] = React.useState(Math.round(props.aspectRatio * 100) / 100);
   const [editorPhotoUrl, setEditorPhotoUrl] = React.useState("");
+  const [uploadError, setUploadError] = useState<string[]>([]);
   const { confirm, ConfirmDialogElement } = useConfirmDelete();
 
   const contentRoot = props.contentRoot || CommonEnvironmentHelper.ContentRoot;
@@ -40,6 +41,7 @@ export const GalleryModal: React.FC<Props> = (props: Props) => {
       return;
     }
 
+    setUploadError([]);
     try {
       const fileName = Math.floor(Date.now() / 1000).toString() + ".jpg";
       const blob = FileHelper.dataURLtoBlob(dataUrl);
@@ -60,8 +62,7 @@ export const GalleryModal: React.FC<Props> = (props: Props) => {
       loadData();
     } catch (error) {
       console.error("Error in handleImageUpdated:", error);
-      // In case of API failure, still provide feedback to user
-      alert("Image processing completed, but upload failed. API may not be available in this environment.");
+      setUploadError([Locale.label("gallery.uploadError")]);
     }
   };
 
@@ -127,7 +128,7 @@ export const GalleryModal: React.FC<Props> = (props: Props) => {
     <Dialog open={true} onClose={handleClose}>
       <DialogTitle>Select a Photo</DialogTitle>
       <DialogContent style={{ overflowX: "hidden" }}>
-
+        <ErrorMessages errors={uploadError} />
         {(props.aspectRatio === 0) && (
           <FormControl fullWidth>
             <InputLabel>{Locale.label("gallery.aspectRatio")}</InputLabel>

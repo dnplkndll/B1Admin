@@ -1,11 +1,12 @@
 import { useState, useEffect, useCallback } from "react";
 import { ApiHelper, UserHelper, Loading, PageHeader, Locale } from "@churchapps/apphelper";
 import { Permissions, type EventInterface } from "@churchapps/helpers";
-import { Box, Card, Chip, Grid, Stack, Table, TableBody, TableCell, TableHead, TableRow, Tooltip, Typography } from "@mui/material";
+import { Box, Card, Chip, Grid, Snackbar, Stack, Table, TableBody, TableCell, TableHead, TableRow, Tooltip, Typography } from "@mui/material";
 import { Check as ApproveIcon, Close as RejectIcon, EventAvailable as ApprovalsIcon, WarningAmber as ConflictIcon } from "@mui/icons-material";
 import { PermissionDenied } from "../components";
 import { AppIconButton } from "../components/ui/AppIconButton";
 import { CountChip } from "../components/ui";
+import { useConfirmDelete } from "../hooks";
 import { type EventBookingInterface } from "./interfaces";
 
 const calendarsAdmin = { api: "ContentApi", contentType: "Calendars", action: "Admin" };
@@ -14,6 +15,8 @@ export const ApprovalsPage = () => {
   const [bookings, setBookings] = useState<EventBookingInterface[]>([]);
   const [events, setEvents] = useState<EventInterface[]>([]);
   const [loading, setLoading] = useState(true);
+  const [snack, setSnack] = useState("");
+  const { confirm, ConfirmDialogElement } = useConfirmDelete();
 
   const canResolve = UserHelper.checkAccess(Permissions.contentApi.content.edit) || UserHelper.checkAccess(calendarsAdmin as any);
 
@@ -32,18 +35,31 @@ export const ApprovalsPage = () => {
     loadData();
   }, [loadData]);
 
-  const resolveBooking = (id: string, action: "approve" | "reject") => {
-    ApiHelper.post("/eventBookings/" + id + "/" + action, {}, "ContentApi").then(loadData);
+  const confirmReject = async (action: "approve" | "reject") =>
+    action !== "reject" || (await confirm(Locale.label("calendars.approvals.confirmReject"), {
+      title: Locale.label("calendars.approvals.rejectTitle"),
+      confirmLabel: Locale.label("calendars.approvals.reject"),
+      destructive: true
+    }));
+
+  const notifyResolved = (action: "approve" | "reject") =>
+    setSnack(Locale.label(action === "approve" ? "calendars.approvals.approvedToast" : "calendars.approvals.rejectedToast"));
+
+  const resolveBooking = async (id: string, action: "approve" | "reject") => {
+    if (!(await confirmReject(action))) return;
+    ApiHelper.post("/eventBookings/" + id + "/" + action, {}, "ContentApi").then(() => { notifyResolved(action); loadData(); });
   };
 
-  const resolveEvent = (id: string, action: "approve" | "reject") => {
-    ApiHelper.post("/events/" + id + "/" + action, {}, "ContentApi").then(loadData);
+  const resolveEvent = async (id: string, action: "approve" | "reject") => {
+    if (!(await confirmReject(action))) return;
+    ApiHelper.post("/events/" + id + "/" + action, {}, "ContentApi").then(() => { notifyResolved(action); loadData(); });
   };
 
   if (!canResolve) return <PermissionDenied permissions={[Permissions.contentApi.content.edit]} />;
 
   return (
     <>
+      {ConfirmDialogElement}
       <PageHeader icon={<ApprovalsIcon />} title={Locale.label("calendars.approvals.title")} subtitle={Locale.label("calendars.approvals.subtitle")} />
       <Box sx={{ p: 3 }}>
         {loading ? <Loading /> : (
@@ -150,6 +166,14 @@ export const ApprovalsPage = () => {
           </Grid>
         )}
       </Box>
+      <Snackbar
+        open={!!snack}
+        onClose={() => setSnack("")}
+        autoHideDuration={2000}
+        message={snack}
+        anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
+        data-testid="approvals-snackbar"
+      />
     </>
   );
 };

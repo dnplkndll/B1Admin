@@ -130,7 +130,7 @@ export const FundPage = () => {
             <Stack direction="row" spacing={1} alignItems="center">
               <ReceiptIcon sx={{ color: "text.secondary", fontSize: 18 }} />
               <Typography component={Link} data-cy={`batchId-${fd.donation?.batchId}-${i}`} to={"/donations/" + fd.donation?.batchId} variant="body2" sx={{ textDecoration: "none", color: "var(--link)", fontWeight: 500 }}>
-                {fd.donation?.batchId}
+                {Locale.label("donations.fundsPage.viewBatch")}
               </Typography>
             </Stack>
           </TableCell>

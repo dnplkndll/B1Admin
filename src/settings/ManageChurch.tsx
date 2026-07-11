@@ -153,7 +153,7 @@ export const ManageChurch = () => {
             headerIcon="tune"
             data-testid="settings-general"
             view={<SummaryRow label={Locale.label("settings.supportContactSettingsEdit.supportContact")} value={supportContact || Locale.label("settings.landing.notSet")} />}
-            renderEdit={(saveTrigger) => <SupportContactSettingsEdit churchId={churchId} saveTrigger={saveTrigger} />}
+            renderEdit={(saveTrigger, onSaveComplete) => <SupportContactSettingsEdit churchId={churchId} saveTrigger={saveTrigger} onSaveComplete={onSaveComplete} />}
             onSaved={handleSaved}
           />
         );
@@ -164,7 +164,7 @@ export const ManageChurch = () => {
             headerIcon="volunteer_activism"
             data-testid="settings-giving"
             view={givingView}
-            renderEdit={(saveTrigger, onError) => <GivingSettingsEdit churchId={churchId} churchInfo={church.data} saveTrigger={saveTrigger} onError={onError} />}
+            renderEdit={(saveTrigger, onSaveComplete) => <GivingSettingsEdit churchId={churchId} churchInfo={church.data} saveTrigger={saveTrigger} onSaveComplete={onSaveComplete} />}
             onSaved={handleSaved}
           />
         );
@@ -175,7 +175,7 @@ export const ManageChurch = () => {
             headerIcon="sms"
             data-testid="settings-texting"
             view={<SummaryRow label={Locale.label("settings.textingSettingsEdit.provider")} value={textingProvider || Locale.label("settings.landing.notConfigured")} />}
-            renderEdit={(saveTrigger, onError) => <TextingSettingsEdit churchId={churchId} saveTrigger={saveTrigger} onError={onError} />}
+            renderEdit={(saveTrigger, onSaveComplete) => <TextingSettingsEdit churchId={churchId} saveTrigger={saveTrigger} onSaveComplete={onSaveComplete} />}
             onSaved={handleSaved}
           />
         );
@@ -186,7 +186,7 @@ export const ManageChurch = () => {
             headerIcon="cloud"
             data-testid="settings-storage"
             view={<SummaryRow label={Locale.label("settings.storageSettingsEdit.provider")} value={storageSubtitle} />}
-            renderEdit={(saveTrigger, onError) => <StorageSettingsEdit churchId={churchId} saveTrigger={saveTrigger} onError={onError} />}
+            renderEdit={(saveTrigger, onSaveComplete) => <StorageSettingsEdit churchId={churchId} saveTrigger={saveTrigger} onSaveComplete={onSaveComplete} />}
             onSaved={handleSaved}
           />
         );
@@ -197,7 +197,7 @@ export const ManageChurch = () => {
             headerIcon="language"
             data-testid="settings-domains"
             view={domainsView}
-            renderEdit={(saveTrigger) => <DomainSettingsEdit churchId={churchId} saveTrigger={saveTrigger} />}
+            renderEdit={(saveTrigger, onSaveComplete) => <DomainSettingsEdit churchId={churchId} saveTrigger={saveTrigger} onSaveComplete={onSaveComplete} />}
             onSaved={handleSaved}
           />
         );
@@ -208,7 +208,7 @@ export const ManageChurch = () => {
             headerIcon="school"
             data-testid="settings-grade-promotion"
             view={<SummaryRow label={Locale.label("settings.gradePromotionSettingsEdit.title")} value={gradePromotionSubtitle} />}
-            renderEdit={(saveTrigger) => <GradePromotionSettingsEdit churchId={churchId} saveTrigger={saveTrigger} />}
+            renderEdit={(saveTrigger, onSaveComplete) => <GradePromotionSettingsEdit churchId={churchId} saveTrigger={saveTrigger} onSaveComplete={onSaveComplete} />}
             onSaved={handleSaved}
           />
         );
@@ -219,7 +219,7 @@ export const ManageChurch = () => {
             headerIcon="how_to_reg"
             data-testid="settings-check-ins"
             view={<SummaryRow label={Locale.label("settings.checkinSettingsEdit.ratioEnforcement")} value={checkinsSubtitle} />}
-            renderEdit={(saveTrigger) => <CheckinSettingsEdit churchId={churchId} saveTrigger={saveTrigger} />}
+            renderEdit={(saveTrigger, onSaveComplete) => <CheckinSettingsEdit churchId={churchId} saveTrigger={saveTrigger} onSaveComplete={onSaveComplete} />}
             onSaved={handleSaved}
           />
         );

@@ -15,6 +15,7 @@ interface Props {
   saveTrigger: Date | null;
   churchInfo?: ChurchInterface;
   onError?: (errors: string[]) => void;
+  onSaveComplete?: (ok: boolean) => void;
 }
 
 type AnyRecord = Record<string, any>;
@@ -61,6 +62,7 @@ export const GivingSettingsEdit: React.FC<Props> = (props) => {
           const message = Locale.label("settings.givingSettingsEdit.privateKeyRequired");
           setErrors([message]);
           if (props.onError) props.onError([message]);
+          props.onSaveComplete?.(false);
           return;
         }
         const gw: PaymentGatewaysInterface = gateway === null ? { churchId: props.churchId } : { ...gateway };
@@ -72,6 +74,8 @@ export const GivingSettingsEdit: React.FC<Props> = (props) => {
         if (values.webhookKey !== "") gw.webhookKey = values.webhookKey;
         await ApiHelper.post("/gateways", [gw], "GivingApi");
       }
+      setErrors([]);
+      props.onSaveComplete?.(true);
     } catch (error: any) {
       let message = Locale.label("settings.givingSettingsEdit.saveError");
       if (error?.message) {
@@ -84,6 +88,7 @@ export const GivingSettingsEdit: React.FC<Props> = (props) => {
       }
       setErrors([message]);
       if (props.onError) props.onError([message]);
+      props.onSaveComplete?.(false);
     }
   };
 

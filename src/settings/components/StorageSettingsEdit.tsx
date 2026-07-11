@@ -13,6 +13,7 @@ interface Props {
   churchId: string;
   saveTrigger: Date | null;
   onError?: (errors: string[]) => void;
+  onSaveComplete?: (ok: boolean) => void;
 }
 
 export const StorageSettingsEdit: React.FC<Props> = (props) => {
@@ -36,10 +37,13 @@ export const StorageSettingsEdit: React.FC<Props> = (props) => {
         sp.enabled = true;
         await ApiHelper.post("/storage/providers", [sp], "ContentApi");
       }
+      setErrors([]);
+      props.onSaveComplete?.(true);
     } catch (error: any) {
       const message = error?.message || Locale.label("settings.storageSettingsEdit.saveError");
       setErrors([message]);
       if (props.onError) props.onError([message]);
+      props.onSaveComplete?.(false);
     }
   };
 

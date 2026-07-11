@@ -37,7 +37,8 @@ export function DisplayCalendarEventModal(props: Props) {
   };
 
   const handleDelete = async () => {
-    if (await confirm(Locale.label("calendars.calendarEvent.confirmDelete"))) {
+    const message = props.event.recurrenceRule ? Locale.label("calendars.calendarEvent.confirmDeleteSeries") : Locale.label("calendars.calendarEvent.confirmDelete");
+    if (await confirm(message)) {
       const deleteUrl = props.event.eventId
         ? "/curatedEvents/calendar/" + props.curatedCalendarId + "/event/" + props.event.eventId
         : "/curatedEvents/" + props.event.id;

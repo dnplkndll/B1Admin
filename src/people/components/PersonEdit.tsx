@@ -78,6 +78,7 @@ export const PersonEdit = memo((props: Props) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [customFields, setCustomFields] = useState<PersonFieldInterface[]>([]);
   const [customValues, setCustomValues] = useState<Record<string, string>>({});
+  const [saveErrors, setSaveErrors] = useState<string[]>([]);
 
   const { control, register, handleSubmit, reset, getValues } = useForm<AnyRecord>({ defaultValues: buildFormDefaults(props.person) });
   const { confirm, ConfirmDialogElement } = useConfirmDelete();
@@ -145,15 +146,18 @@ export const PersonEdit = memo((props: Props) => {
     try {
       await ApiHelper.post("/people/", [p], "MembershipApi");
       await saveCustomFields();
+      setSaveErrors([]);
       props.updatedFunction();
     } catch (error) {
       console.error("Error updating person:", error);
+      setSaveErrors([Locale.label("common.saveError")]);
     }
     setIsSubmitting(false);
   }, [props.updatedFunction, saveCustomFields]);
 
   const onValid = useCallback(async (values: AnyRecord) => {
     setIsSubmitting(true);
+    setSaveErrors([]);
     const p = buildPerson(values);
 
     if (B1AdminPersonHelper.getExpandedPersonObject(p).id === context?.person?.id) context?.setPerson(p);
@@ -172,7 +176,7 @@ export const PersonEdit = memo((props: Props) => {
   const handleDelete = useCallback(async () => {
     if (!props.person?.id) return;
     if (B1AdminPersonHelper.getExpandedPersonObject(props.person).id === context?.person?.id) {
-      alert(Locale.label("people.personEdit.cannotDeleteSelf"));
+      setSaveErrors([Locale.label("people.personEdit.cannotDeleteSelf")]);
       return;
     }
     if (await confirm(Locale.label("people.personEdit.confirmMsg"))) {
@@ -209,6 +213,7 @@ export const PersonEdit = memo((props: Props) => {
           </Button>
         }>
         <ErrorMessages errors={summaryErrors} />
+        <ErrorMessages errors={saveErrors} />
         <Grid container spacing={3}>
           <Grid size={{ sm: 3 }} className="my-auto">
             <Box sx={{ textAlign: "center" }}>

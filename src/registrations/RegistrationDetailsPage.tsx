@@ -32,7 +32,7 @@ import {
 import { ApiHelper, Loading, Locale, PageHeader, UserHelper, Permissions, PersonHelper, CurrencyHelper } from "@churchapps/apphelper";
 import { type PersonInterface } from "@churchapps/helpers";
 import { PersonAdd, FormSubmission } from "../components";
-import { useRequirePermission } from "../hooks";
+import { useRequirePermission, useConfirmDelete } from "../hooks";
 import { RegistrationSettingsEdit } from "./components/RegistrationSettingsEdit";
 import { RegistrationDetailDialog } from "./components/RegistrationDetailDialog";
 import { AppIconButton } from "../components/ui/AppIconButton";
@@ -87,15 +87,16 @@ export const RegistrationDetailsPage = () => {
   useEffect(() => { CurrencyHelper.loadCurrency().then(setCurrency); }, []);
 
   const denied = useRequirePermission(Permissions.contentApi.content.edit);
+  const { confirm, ConfirmDialogElement } = useConfirmDelete();
 
   const handleCancel = async (regId: string) => {
-    if (!confirm(Locale.label("registrations.registrationDetailsPage.cancelConfirm"))) return;
+    if (!(await confirm(Locale.label("registrations.registrationDetailsPage.cancelConfirm"), { destructive: false, confirmLabel: Locale.label("common.confirm", "Confirm") }))) return;
     await ApiHelper.post("/registrations/" + regId + "/cancel", {}, "ContentApi");
     loadData();
   };
 
   const handleDelete = async (regId: string) => {
-    if (!confirm(Locale.label("registrations.registrationDetailsPage.deleteConfirm"))) return;
+    if (!(await confirm(Locale.label("registrations.registrationDetailsPage.deleteConfirm")))) return;
     await ApiHelper.delete("/registrations/" + regId, "ContentApi");
     loadData();
   };
@@ -278,6 +279,7 @@ export const RegistrationDetailsPage = () => {
 
   return (
     <>
+      {ConfirmDialogElement}
       <PageHeader icon={<RegIcon />} title={event.title || Locale.label("registrations.registrationDetailsPage.eventRegistrations")} subtitle={Locale.label("registrations.registrationDetailsPage.subtitle")} />
       <Box sx={{ p: 3 }}>
         <Grid container spacing={3}>
