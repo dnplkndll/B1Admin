@@ -361,6 +361,7 @@
     "confirm": "Confirm",
     "copy": "Copy",
     "createPerson": {
+      "confirmDuplicate": "An existing person '{{existingName}}' ({{existingEmail}}) was found with this email. Are you sure you want to add '{{firstName}} {{lastName}}'?",
       "validate": {
         "firstName": "Please enter a first name.",
         "lastName": "Please enter a last name.",
