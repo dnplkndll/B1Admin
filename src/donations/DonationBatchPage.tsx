@@ -6,7 +6,7 @@ import { useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { Box, Stack } from "@mui/material";
 import { Receipt as ReceiptIcon, Edit as EditIcon } from "@mui/icons-material";
-import { HeaderSecondaryButton, PageHeaderStats } from "../components/ui";
+import { Breadcrumbs, type BreadcrumbItem, HeaderSecondaryButton, PageHeaderStats } from "../components/ui";
 
 export const DonationBatchPage = () => {
   const params = useParams();
@@ -74,12 +74,18 @@ export const DonationBatchPage = () => {
 
   if (!UserHelper.checkAccess(Permissions.givingApi.donations.view)) return <></>;
 
+  const breadcrumbItems: BreadcrumbItem[] = [
+    { label: Locale.label("components.wrapper.don"), path: "/donations" },
+    { label: batch.data?.name || Locale.label("donations.donationBatchPage.title") }
+  ];
+
   return (
     <>
       <PageHeader
         icon={<ReceiptIcon />}
         title={batch.data?.name || Locale.label("donations.donationBatchPage.title")}
         subtitle={batch.data?.batchDate ? `${Locale.label("donations.donationBatchPage.batchDate")} ${DateHelper.prettyDate(new Date(batch.data.batchDate.split("T")[0] + "T00:00:00"))}` : Locale.label("donations.donationBatchPage.subtitle")}
+        breadcrumbs={<Breadcrumbs items={breadcrumbItems} showHome={true} />}
       >
         <Stack
           direction={{ xs: "column", md: "row" }}

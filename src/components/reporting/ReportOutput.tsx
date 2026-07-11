@@ -236,6 +236,9 @@ export const ReportOutput = (props: Props) => {
                 margin: 0 !important;
                 padding: 0 !important;
               }
+              #display-box-actions {
+                display: none !important;
+              }
               #reportsBox {
                 padding-left: 24px !important;
                 padding-right: 24px !important;

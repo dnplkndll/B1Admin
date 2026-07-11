@@ -155,8 +155,20 @@ export const PeoplePage = memo(() => {
   const handleToggleColumn = (key: string) => {
     const sc = [...selectedColumns];
     const index = sc.indexOf(key);
-    if (index === -1) sc.push(key);
-    else sc.splice(index, 1);
+    if (index === -1) {
+      sc.push(key);
+    } else {
+      if (sc.length === 1) {
+        if (key !== "displayName") {
+          sc.splice(index, 1);
+          sc.push("displayName");
+        } else {
+          return;
+        }
+      } else {
+        sc.splice(index, 1);
+      }
+    }
     localStorage.setItem("selectedColumns", JSON.stringify(sc));
     setSelectedColumns(sc);
   };

@@ -96,7 +96,7 @@ export function CuratedEventCalendar(props: Props) {
 
   return (
     <div data-testid={props["data-testid"]}>
-      <Stack direction="row" justifyContent="space-between" alignItems="center" marginBottom="17px" marginTop="12px">
+      <Stack className="no-print" direction="row" justifyContent="space-between" alignItems="center" marginBottom="17px" marginTop="12px">
         <div>
           <Button
             startIcon={<LinkIcon />}

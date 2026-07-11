@@ -180,8 +180,14 @@ export const PersonExportDialog: React.FC<Props> = memo((props) => {
   ];
 
   const buildCsvValue = (value: unknown) => {
-    const normalized = String(value ?? "");
-    return `"${normalized.replace(/"/g, "\"\"")}"`;
+    let normalized = String(value ?? "");
+    // Neutralize CSV formula injection: a leading =,+,-,@ or control char can execute as a
+    // formula when the export is opened in Excel/Sheets. Prefix with a quote to defuse it.
+    if (/^[=+\-@\t\r]/.test(normalized)) normalized = "'" + normalized;
+    if (normalized.includes(",") || normalized.includes("\"") || normalized.includes("\n") || normalized.includes("\r")) {
+      return `"${normalized.replace(/"/g, "\"\"")}"`;
+    }
+    return normalized;
   };
 
   const exportButtonLabel = selectedFormIds.length === 0
@@ -193,18 +199,41 @@ export const PersonExportDialog: React.FC<Props> = memo((props) => {
 
     setExporting(true);
     try {
-      const rows = [
-        ...getBaseRows(),
-        ...filteredRows.map((row) => ({
-          section: "Form",
-          form: row.formName,
-          question: row.questionTitle,
-          answer: row.answerValue
-        }))
-      ];
+      const csvSections: string[][] = [];
 
-      const headers = ["section", "form", "question", "answer"];
-      const csv = [headers.map(buildCsvValue).join(","), ...rows.map((row) => headers.map((header) => buildCsvValue((row as Record<string, string>)[header])).join(","))].join("\n");
+      // 1. Person Section
+      const personHeader = ["Section", "Field", "Value"];
+      const personRows = getBaseRows().map((row) => [
+        "Person",
+        row.question,
+        row.answer
+      ]);
+      csvSections.push([
+        personHeader.map(buildCsvValue).join(","),
+        ...personRows.map((row) => row.map(buildCsvValue).join(","))
+      ]);
+
+      // 2. Form Sections
+      const selectedFormsWithData = formOptions.filter((f) => selectedFormIds.includes(f.id));
+      selectedFormsWithData.forEach((form) => {
+        const formRows = filteredRows.filter((row) => row.formId === form.id);
+        if (formRows.length > 0) {
+          const formHeader = ["Form", "Field", "Value"];
+          const formSectionRows = formRows.map((row) => [
+            row.formName,
+            row.questionTitle,
+            row.answerValue
+          ]);
+          csvSections.push([
+            formHeader.map(buildCsvValue).join(","),
+            ...formSectionRows.map((row) => row.map(buildCsvValue).join(","))
+          ]);
+        }
+      });
+
+      // Join sections with one blank row containing empty columns (,,)
+      const csv = csvSections.map((section) => section.join("\n")).join("\n,,\n");
+
       const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement("a");

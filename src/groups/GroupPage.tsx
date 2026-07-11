@@ -6,7 +6,10 @@ import { GroupMembersTab } from "./components/GroupMembersTab";
 import { GroupSessionsTab } from "./components/GroupSessionsTab";
 import { GroupCalendarTab } from "./components/GroupCalendarTab";
 import { GroupHealthTab } from "./components/GroupHealthTab";
-import { Grid } from "@mui/material";
+import { Button, Grid } from "@mui/material";
+import { CalendarMonth as AttendanceIcon } from "@mui/icons-material";
+import { ApiHelper, UserHelper, Permissions, Locale } from "@churchapps/apphelper";
+import { EmptyState } from "../components/ui/EmptyState";
 import { useQuery } from "@tanstack/react-query";
 
 export const GroupPage = () => {
@@ -27,9 +30,31 @@ export const GroupPage = () => {
     }
   }, [selectedTab]);
 
+  const enableAttendance = () => {
+    ApiHelper.post("/groups", [{ ...groupData, trackAttendance: true }], "MembershipApi").then(() => group.refetch());
+  };
+
+  const getSessionsTab = () => {
+    if (groupData.id && !groupData.trackAttendance) {
+      return (
+        <EmptyState
+          icon={<AttendanceIcon />}
+          title={Locale.label("groups.sessionsDisabled.title")}
+          description={Locale.label("groups.sessionsDisabled.description")}
+          action={UserHelper.checkAccess(Permissions.membershipApi.groups.edit) && (
+            <Button variant="contained" onClick={enableAttendance} data-testid="enable-attendance-button">
+              {Locale.label("groups.sessionsDisabled.enable")}
+            </Button>
+          )}
+        />
+      );
+    }
+    return <GroupSessionsTab key="sessions" group={groupData} />;
+  };
+
   const getCurrentTab = () => {
     switch (selectedTab) {
-      case "sessions": return <GroupSessionsTab key="sessions" group={groupData} />;
+      case "sessions": return getSessionsTab();
       case "calendar": return <GroupCalendarTab key="calendar" group={groupData} />;
       case "health": return <GroupHealthTab key="health" group={groupData} />;
       default: return <GroupMembersTab key="members" group={groupData} />;

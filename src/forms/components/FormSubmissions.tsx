@@ -237,7 +237,7 @@ export const FormSubmissions: React.FC<Props> = memo((props) => {
   const editLinks = useMemo(() => {
     const formName = formSubmissions.data?.length ? formSubmissions.data[0].form?.name + ".csv" : "form_submissions.csv";
     return (
-      <Stack direction="row" spacing={1} alignItems="center">
+      <Stack direction="row" spacing={1} alignItems="center" className="no-print">
         <ExportButton data={summaryCsv} filename={formName} text={Locale.label("donations.donations.export")} />
         <button
           type="button"
@@ -286,6 +286,11 @@ export const FormSubmissions: React.FC<Props> = memo((props) => {
     <Grid container spacing={3}>
       <Grid size={{ xs: 12, md: 8 }} className="form-submission-summary">
         <div ref={contentRef} className="form-submission-summary">
+          <style>{`
+            @media print {
+              .no-print, #display-box-actions { display: none !important; }
+            }
+          `}</style>
           <DisplayBox headerText={Locale.label("forms.formSubmissions.subSum")} headerIcon="group" editContent={editLinks}>
             <Grid container spacing={3}>
               {summaryContent}

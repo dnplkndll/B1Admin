@@ -11,7 +11,7 @@ import {
   Receipt as ReceiptIcon,
   AccountBalance as AccountBalanceIcon
 } from "@mui/icons-material";
-import { CardWithHeader, ExportButton, PageHeaderStats, hoverRowSx } from "../components/ui";
+import { Breadcrumbs, type BreadcrumbItem, CardWithHeader, ExportButton, PageHeaderStats, hoverRowSx } from "../components/ui";
 
 export const FundPage = () => {
   const params = useParams();
@@ -184,12 +184,18 @@ export const FundPage = () => {
 
   if (!UserHelper.checkAccess(Permissions.givingApi.donations.view)) return <></>;
 
+  const breadcrumbItems: BreadcrumbItem[] = [
+    { label: Locale.label("components.wrapper.don"), path: "/donations" },
+    { label: fund.name || "" }
+  ];
+
   return (
     <>
       <PageHeader
         icon={<AccountBalanceIcon />}
         title={`${fund.name} ${Locale.label("donations.fundsPage.don")}`}
         subtitle={Locale.label("donations.fundPage.subtitle")}
+        breadcrumbs={<Breadcrumbs items={breadcrumbItems} showHome={true} />}
       >
         {stats.totalDonations > 0 && (
           <PageHeaderStats

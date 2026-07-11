@@ -6,6 +6,7 @@ import { useParams } from "react-router-dom";
 import { PersonBanner } from "./components/PersonBanner";
 import { PersonNavigation } from "./components/PersonNavigation";
 import { PersonDetails } from "./components/PersonDetails";
+import { Breadcrumbs, type BreadcrumbItem } from "../components/ui";
 import UserContext from "../UserContext";
 import { useQuery } from "@tanstack/react-query";
 
@@ -159,12 +160,18 @@ export const PersonPage = () => {
 
   if (!person) return null;
 
+  const breadcrumbItems: BreadcrumbItem[] = [
+    { label: Locale.label("components.wrapper.ppl"), path: "/people" },
+    { label: person.name?.display || Locale.label("createPerson.addNewPerson") }
+  ];
+
   return (
     <>
       <PersonBanner
         person={person}
         togglePhotoEditor={setInPhotoEditMode}
         tabs={<PersonNavigation selectedTab={selectedTab} onTabChange={setSelectedTab} showForms={showForms} onHeader />}
+        breadcrumbs={<Breadcrumbs items={breadcrumbItems} showHome={true} />}
       />
       <div style={{ padding: "24px" }}>
         {getCurrentTab()}
