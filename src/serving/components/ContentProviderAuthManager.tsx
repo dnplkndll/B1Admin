@@ -198,14 +198,13 @@ export const ContentProviderAuthManager: React.FC<Props> = ({ ministryId, onAuth
     setAuthError(null);
 
     try {
-      if (!provider.generateCodeVerifier || !provider.buildAuthUrl || !provider.exchangeCodeForTokens) {
+      if (!provider.generateCodeVerifier || !provider.buildAuthUrl) {
         setAuthError(Locale.label("plans.contentProviderAuth.pkceUnsupported"));
         setAuthStatus("error");
         return;
       }
       const generateCodeVerifier = provider.generateCodeVerifier.bind(provider);
       const buildAuthUrl = provider.buildAuthUrl.bind(provider);
-      const exchangeCodeForTokens = provider.exchangeCodeForTokens.bind(provider);
 
       const relayData = await ApiHelper.post("/oauth/relay/sessions", { provider: providerId }, "MembershipApi");
       if (!relayData?.sessionCode || !relayData?.redirectUri) {
@@ -271,16 +270,11 @@ export const ContentProviderAuthManager: React.FC<Props> = ({ ministryId, onAuth
           if (result?.status === "completed" && result?.authCode) {
             popup.close();
 
-            const tokens = await exchangeCodeForTokens(
-              result.authCode,
-              verifier,
-              redirectUri
-            );
+            // Exchange runs server-side: the token endpoint needs the client_secret and sends no CORS headers.
+            const exchanged = await ContentProviderAuthHelper.exchangeCode(ministryId, providerId, result.authCode, verifier, redirectUri);
             if (isCancelled()) return;
 
-            if (tokens) {
-              await ContentProviderAuthHelper.storeAuth(ministryId, providerId, tokens);
-              if (isCancelled()) return;
+            if (exchanged) {
               setAuthStatus("success");
               await loadLinkedProviders();
               if (onAuthChange) onAuthChange();
