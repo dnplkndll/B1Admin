@@ -4,6 +4,7 @@ import { Controller, useForm } from "react-hook-form";
 import { PersonAdd } from "../../components";
 import { ApiHelper, DateHelper, UniqueIdHelper, PersonHelper, Locale } from "@churchapps/apphelper";
 import { FormCard } from "../../components/ui";
+import { useConfirmDelete } from "../../hooks";
 import { FundDonations } from "@churchapps/apphelper/donations";
 import { type DonationInterface, type FundDonationInterface, type FundInterface, type PersonInterface } from "@churchapps/helpers";
 
@@ -27,11 +28,15 @@ export const DonationEdit = memo((props: Props) => {
   const method = watch("method");
   const methodDetails = watch("methodDetails");
 
+  const { confirm, ConfirmDialogElement } = useConfirmDelete();
+
   const handleCancel = useCallback(() => props.updatedFunction(), [props.updatedFunction]);
 
-  const handleDelete = useCallback(() => {
-    ApiHelper.delete("/donations/" + donation.id, "GivingApi").then(() => props.updatedFunction());
-  }, [donation.id, props.updatedFunction]);
+  const handleDelete = useCallback(async () => {
+    if (await confirm(Locale.label("donations.donationEdit.confirmMsg"))) {
+      ApiHelper.delete("/donations/" + donation.id, "GivingApi").then(() => props.updatedFunction());
+    }
+  }, [donation.id, props.updatedFunction, confirm]);
 
   const getDeleteFunction = useCallback(() => (UniqueIdHelper.isMissing(props.donationId) ? undefined : handleDelete), [props.donationId, handleDelete]);
 
@@ -126,35 +131,38 @@ export const DonationEdit = memo((props: Props) => {
   React.useEffect(loadData, [loadData]);
 
   return (
-    <FormCard id="donationBox" icon="volunteer_activism" title={Locale.label("common.edit")} onCancel={handleCancel} onDelete={getDeleteFunction()} onSave={handleSubmit(onValid)} help="docs/b1-admin/donations/">
-      <Box>
-        <label>{Locale.label("common.person")}</label>
-        {personSection}
-      </Box>
-      <Grid container spacing={2}>
-        <Grid size={{ xs: 12, sm: 6 }}>
-          <TextField fullWidth label={Locale.label("donations.donationEdit.date")} type="date" data-testid="donation-date-input" aria-label={Locale.label("donations.donationEdit.ariaDate")} {...register("date")} />
+    <>
+      {ConfirmDialogElement}
+      <FormCard id="donationBox" icon="volunteer_activism" title={Locale.label("common.edit")} onCancel={handleCancel} onDelete={getDeleteFunction()} onSave={handleSubmit(onValid)} help="docs/b1-admin/donations/">
+        <Box>
+          <label>{Locale.label("common.person")}</label>
+          {personSection}
+        </Box>
+        <Grid container spacing={2}>
+          <Grid size={{ xs: 12, sm: 6 }}>
+            <TextField fullWidth label={Locale.label("donations.donationEdit.date")} type="date" data-testid="donation-date-input" aria-label={Locale.label("donations.donationEdit.ariaDate")} {...register("date")} />
+          </Grid>
+          <Grid size={{ xs: 12, sm: 6 }}>
+            <Controller
+              control={control}
+              name="method"
+              render={({ field }) => (
+                <FormControl fullWidth>
+                  <InputLabel id="method">{Locale.label("donations.donationEdit.method")}</InputLabel>
+                  <Select {...field} labelId="method" label={Locale.label("donations.donationEdit.method")} data-testid="payment-method-select" aria-label={Locale.label("donations.donationEdit.ariaMethod")}>
+                    <MenuItem value="Check">{Locale.label("donations.donationEdit.check")}</MenuItem>
+                    <MenuItem value="Cash">{Locale.label("donations.donationEdit.cash")}</MenuItem>
+                    <MenuItem value="Card">{Locale.label("donations.donationEdit.card")}</MenuItem>
+                  </Select>
+                </FormControl>
+              )}
+            />
+          </Grid>
         </Grid>
-        <Grid size={{ xs: 12, sm: 6 }}>
-          <Controller
-            control={control}
-            name="method"
-            render={({ field }) => (
-              <FormControl fullWidth>
-                <InputLabel id="method">{Locale.label("donations.donationEdit.method")}</InputLabel>
-                <Select {...field} labelId="method" label={Locale.label("donations.donationEdit.method")} data-testid="payment-method-select" aria-label={Locale.label("donations.donationEdit.ariaMethod")}>
-                  <MenuItem value="Check">{Locale.label("donations.donationEdit.check")}</MenuItem>
-                  <MenuItem value="Cash">{Locale.label("donations.donationEdit.cash")}</MenuItem>
-                  <MenuItem value="Card">{Locale.label("donations.donationEdit.card")}</MenuItem>
-                </Select>
-              </FormControl>
-            )}
-          />
-        </Grid>
-      </Grid>
-      {methodDetailsField}
-      <FundDonations fundDonations={fundDonations} funds={props.funds} updatedFunction={handleFundDonationsChange} currency={props?.currency} />
-      <TextField fullWidth label={Locale.label("common.notes")} data-cy="note" multiline placeholder={Locale.label("placeholders.donation.notes")} data-testid="donation-notes-input" aria-label={Locale.label("donations.donationEdit.ariaNotes")} {...register("notes")} />
-    </FormCard>
+        {methodDetailsField}
+        <FundDonations fundDonations={fundDonations} funds={props.funds} updatedFunction={handleFundDonationsChange} currency={props?.currency} />
+        <TextField fullWidth label={Locale.label("common.notes")} data-cy="note" multiline placeholder={Locale.label("placeholders.donation.notes")} data-testid="donation-notes-input" aria-label={Locale.label("donations.donationEdit.ariaNotes")} {...register("notes")} />
+      </FormCard>
+    </>
   );
 });

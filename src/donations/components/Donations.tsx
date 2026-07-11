@@ -65,7 +65,7 @@ export const Donations: React.FC<Props> = ({ currency = "usd", ...props }) => {
     return (
       <TableHead>
         <TableRow>
-          <TableCell>{Locale.label("donations.donations.tableIdent")}</TableCell>
+          <TableCell>{Locale.label("donations.donations.method")}</TableCell>
           <TableCell>{Locale.label("common.name")}</TableCell>
           <TableCell>{Locale.label("donations.donations.date")}</TableCell>
           <TableCell align="right">{Locale.label("donations.donations.amt")}</TableCell>
@@ -108,7 +108,7 @@ export const Donations: React.FC<Props> = ({ currency = "usd", ...props }) => {
           <TableCell>
             <Stack direction="row" spacing={1} alignItems="center">
               <IconText icon={<Icon>receipt</Icon>} iconSize={20} iconColor="primary.main" variant="body2">
-                <span style={{ fontWeight: 500, color: "text.primary" }}>{d.id}</span>
+                <span style={{ fontWeight: 500, color: "text.primary" }}>{[d.method, d.methodDetails].filter(Boolean).join(" - ") || "—"}</span>
               </IconText>
               {isPending && <Chip icon={<PendingIcon />} label={Locale.label("donations.donations.pending")} size="small" color="warning" variant="outlined" />}
             </Stack>

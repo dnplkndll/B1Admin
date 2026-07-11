@@ -139,6 +139,8 @@ export function ContentEditor(props: Props) {
   const panelDirtyRef = useRef(false);
   const [pendingPanelAction, setPendingPanelAction] = useState<PanelAction | null>(null);
   const [pendingDeleteSection, setPendingDeleteSection] = useState<SectionInterface | null>(null);
+  const [pendingDiscardChanges, setPendingDiscardChanges] = useState(false);
+  const [pendingUnpublish, setPendingUnpublish] = useState(false);
 
   // Render hidden items dimmed instead of display:none so they stay selectable.
   const getEditorVisibilityCss = (sections: SectionInterface[], device: string) => {
@@ -389,7 +391,12 @@ export function ContentEditor(props: Props) {
 
   const handleDiscardChanges = () => {
     if (!props.pageId) return;
-    if (!window.confirm(Locale.label("site.editorToolbar.discardChangesConfirm"))) return;
+    setPendingDiscardChanges(true);
+  };
+
+  const confirmDiscardChanges = () => {
+    setPendingDiscardChanges(false);
+    if (!props.pageId) return;
     if (container) saveSnapshot(container, "Before discarding unpublished changes");
     trackSave(ApiHelper.post(`/pages/${props.pageId}/discard`, {}, "ContentApi")).then(() => {
       loadDataInternal("After discarding unpublished changes");
@@ -399,7 +406,12 @@ export function ContentEditor(props: Props) {
 
   const handleUnpublish = () => {
     if (!props.pageId) return;
-    if (!window.confirm(Locale.label("site.editorToolbar.disablePublishConfirm"))) return;
+    setPendingUnpublish(true);
+  };
+
+  const confirmUnpublish = () => {
+    setPendingUnpublish(false);
+    if (!props.pageId) return;
     trackSave(ApiHelper.delete(`/pages/${props.pageId}/published`, "ContentApi")).then(() => {
       setContainer((prev) => (prev ? { ...prev, publishedAt: null } : prev));
       setHasUnpublishedChanges(false);
@@ -1008,6 +1020,28 @@ export function ContentEditor(props: Props) {
           data-testid="delete-section-dialog"
           onConfirm={confirmSectionDelete}
           onCancel={() => setPendingDeleteSection(null)}
+        />
+
+        <ConfirmDialog
+          open={pendingDiscardChanges}
+          title={Locale.label("site.editorToolbar.discardChanges")}
+          message={Locale.label("site.editorToolbar.discardChangesConfirm")}
+          confirmLabel={Locale.label("site.editorToolbar.discardChanges")}
+          destructive
+          data-testid="discard-changes-dialog"
+          onConfirm={confirmDiscardChanges}
+          onCancel={() => setPendingDiscardChanges(false)}
+        />
+
+        <ConfirmDialog
+          open={pendingUnpublish}
+          title={Locale.label("site.editorToolbar.disablePublish")}
+          message={Locale.label("site.editorToolbar.disablePublishConfirm")}
+          confirmLabel={Locale.label("site.editorToolbar.disablePublish")}
+          destructive
+          data-testid="disable-publish-dialog"
+          onConfirm={confirmUnpublish}
+          onCancel={() => setPendingUnpublish(false)}
         />
 
         <ConfirmDialog

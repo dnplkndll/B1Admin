@@ -1,4 +1,5 @@
 import React, { useCallback, memo, useMemo, type JSX } from "react";
+import { Link } from "react-router-dom";
 import {
   ApiHelper,
   ArrayHelper,
@@ -218,9 +219,9 @@ export const GroupSessions: React.FC<Props> = memo((props) => {
               <Avatar src={PersonHelper.getPhotoUrl(person)} sx={{ width: 48, height: 48 }} />
             </TableCell>
             <TableCell>
-              <a className="personName" href={"/people/person.aspx?id=" + vs.visit?.personId}>
+              <Link className="personName" to={"/people/" + vs.visit?.personId}>
                 {person?.name?.display}
-              </a>
+              </Link>
             </TableCell>
             <TableCell align="right" className="rowActions">{editLink}</TableCell>
           </TableRow>

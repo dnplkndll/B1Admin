@@ -1,5 +1,6 @@
 import React, { useCallback, memo, useMemo } from "react";
 import { type GroupInterface, type PersonInterface, type SessionInterface, type VisitInterface, type VisitSessionInterface } from "@churchapps/helpers";
+import { Link } from "react-router-dom";
 import { ApiHelper, ArrayHelper, Locale, PersonHelper, Permissions, UserHelper } from "@churchapps/apphelper";
 import { Avatar, Box, Chip, Paper, Stack, Table, TableBody, TableCell, TableHead, TableRow, Typography } from "@mui/material";
 import { PersonRemove as PersonRemoveIcon } from "@mui/icons-material";
@@ -103,9 +104,9 @@ export const SessionAttendance: React.FC<Props> = memo((props) => {
             <Avatar src={PersonHelper.getPhotoUrl(person!)} sx={{ width: 48, height: 48 }} />
           </TableCell>
           <TableCell>
-            <a className="personName" href={"/people/person.aspx?id=" + vs.visit?.personId}>
+            <Link className="personName" to={"/people/" + vs.visit?.personId}>
               {person?.name?.display}
-            </a>
+            </Link>
           </TableCell>
           <TableCell>{checkinTypeChip(checkinType)}</TableCell>
           <TableCell align="right" className="rowActions">{editLink}</TableCell>

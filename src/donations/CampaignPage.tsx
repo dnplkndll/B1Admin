@@ -102,7 +102,7 @@ export const CampaignPage = () => {
     sortedRows.forEach((row, i) => {
       const personCell = row.personId ? (
         <Typography component={Link} to={"/people/" + row.personId} variant="body2" sx={{ textDecoration: "none", color: "var(--link)", fontWeight: 500 }}>
-          {peopleNames[row.personId] || row.personId}
+          {peopleNames[row.personId] || Locale.label("donations.campaignPage.unknownPerson")}
         </Typography>
       ) : (
         <Typography variant="body2" color="text.secondary">{Locale.label("donations.campaignPage.anon")}</Typography>

@@ -8,6 +8,7 @@ import { Table, TableBody, TableRow, TableCell, Typography, Stack, Box, Card, Ch
 import { AppIconButton } from "../../components/ui/AppIconButton";
 import { SortableTableHead, StatusChip, type SortableColumn } from "../../components/ui";
 import { useCampuses } from "../../hooks/useCampuses";
+import { useConfirmDelete } from "../../hooks";
 import { Delete as DeleteIcon, Email as EmailIcon, Phone as PhoneIcon } from "@mui/icons-material";
 
 interface Props {
@@ -31,6 +32,7 @@ const PeopleSearchResults = memo(function PeopleSearchResults(props: Props) {
   const [currentSortedCol, setCurrentSortedCol] = useState<string>("");
   const [optionalColumns, setOptionalColumns] = React.useState<any[]>([]);
   const [formSubmissions, setFormSubmissions] = React.useState<any[]>([]);
+  const { confirm, ConfirmDialogElement } = useConfirmDelete();
   const campuses = useCampuses();
   const campusMap = useMemo(() => {
     const map: Record<string, string> = {};
@@ -86,7 +88,8 @@ const PeopleSearchResults = memo(function PeopleSearchResults(props: Props) {
   );
 
   const handleDelete = useCallback(
-    (personId: string) => {
+    async (personId: string) => {
+      if (!(await confirm(Locale.label("people.personEdit.confirmMsg")))) return;
       const peopleArray = [...people];
       ApiHelper.delete("/people/" + personId, "MembershipApi").then(() => {
         const idx = ArrayHelper.getIndex(peopleArray, "id", personId);
@@ -97,7 +100,7 @@ const PeopleSearchResults = memo(function PeopleSearchResults(props: Props) {
         }
       });
     },
-    [people, props]
+    [people, props, confirm]
   );
 
   const getColumn = useCallback(
@@ -416,6 +419,7 @@ const PeopleSearchResults = memo(function PeopleSearchResults(props: Props) {
   if (!people) return <Loading />;
   return (
     <Box>
+      {ConfirmDialogElement}
       {getResults()}
       <Card sx={{ mt: 3 }} id="createPersonForm">
         <Box sx={{ p: 3 }}>

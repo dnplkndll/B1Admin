@@ -196,7 +196,7 @@ export const WorkflowBoardPage = () => {
             {editStep && canManage && (
               <Box sx={{ width: { xs: "100%", md: 360 }, flexShrink: 0 }}>
                 <WorkflowStepEdit step={editStep} steps={steps} workflows={(workflows.data || []).filter((w) => w.id !== workflowId)}
-                  onCancel={() => setEditStep(null)} onSave={() => { setEditStep(null); refetch(); }} onDelete={() => { setEditStep(null); refetch(); }} />
+                  onCancel={() => setEditStep(null)} onSave={(keepOpen) => { if (!keepOpen) setEditStep(null); refetch(); }} onDelete={() => { setEditStep(null); refetch(); }} />
               </Box>
             )}
           </Stack>
