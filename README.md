@@ -14,6 +14,26 @@
     <img width="100%" alt="B1Admin demo — people, groups, attendance, and donations" src="https://raw.githubusercontent.com/ChurchApps/B1Admin/main/public/images/b1admin-demo.gif">
 </p>
 
+## 🚀 Self-Hosting (Beta)
+
+Run your own private instance — B1Admin, the B1 member portal, the API, and a MySQL database.
+
+### Docker
+
+```bash
+git clone https://github.com/ChurchApps/B1Admin.git
+cd B1Admin
+docker compose up -d
+```
+
+Then open http://localhost:3101 and register — the first account becomes the server admin. See the [Docker self-hosting guide](https://support.churchapps.org/docs/developer/deployment/docker) for custom domains, email, backups, and updating.
+
+### Railway
+
+Prefer managed hosting? Deploy the same stack with one click ([guide](https://support.churchapps.org/docs/developer/deployment/railway-template)):
+
+[![Deploy on Railway](https://railway.com/button.svg)](https://railway.com/deploy/b1-template)
+
 ## Get Involved
 
 ### 🤝 Help Support Us
@@ -60,9 +80,3 @@ To accept online donations you must first register for developer credentials wit
 After obtaining your tokens, open **Settings → Giving Settings** in B1Admin, select the provider, paste in your Public and Private keys, and toggle "Pay Fees" as desired. Finally, configure your fee parameters in **Fee Options**.
 
 [![B1Admin Dev Setup](https://img.youtube.com/vi/5zsEJEp6yMw/0.jpg)](https://www.youtube.com/watch?v=5zsEJEp6yMw)
-
-### 🚀 Self-Hosting (Beta)
-
-If you'd like to deploy your own copy on Railway, you can use our template below. This is currently in beta — feedback welcome.
-
-[![Deploy on Railway](https://railway.com/button.svg)](https://railway.com/deploy/b1-template)
