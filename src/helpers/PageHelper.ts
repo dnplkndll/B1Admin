@@ -15,12 +15,12 @@ export class PageHelper {
   }
 
   static loadPageTree = async (siteId: string = "") => {
-    const customPages = await ApiHelper.get("/pages" + (siteId ? "?siteId=" + siteId : ""), "ContentApi");
+    const customPages = await ApiHelper.get("/pages" + (siteId ? "?siteId=" + siteId : ""), "ContentApi").catch(() => []);
     const templatePages: PageLink[] = await PageHelper.getTemplatePages();
     let result: PageLink[] = [...templatePages];
 
     const groupPage = result.find((p) => p.url === "/groups")!;
-    customPages.forEach((p: any) => {
+    (Array.isArray(customPages) ? customPages : []).forEach((p: any) => {
       const url = p.url || "";
       const page: PageLink = { pageId: p.id, title: p.title, url: url, custom: true };
       if (url.indexOf("/groups") === -1) {
@@ -58,7 +58,8 @@ export class PageHelper {
     ];
 
     const groupPage: PageLink = { title: Locale.label("helpers.pageHelper.groups"), url: "/groups", custom: false, children: [] };
-    const groups: GroupInterface[] = await ApiHelper.get("/groups", "MembershipApi");
+    const groupsResult = await ApiHelper.get("/groups", "MembershipApi").catch(() => []);
+    const groups: GroupInterface[] = Array.isArray(groupsResult) ? groupsResult : [];
 
     const labels: string[] = [];
     groups.forEach((g: any) => {
