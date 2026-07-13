@@ -1,6 +1,9 @@
 import React from "react";
 import { useForm, Controller, useFormState } from "react-hook-form";
 import { Checkbox, Grid, MenuItem, TextField, Typography } from "@mui/material";
+import { LocalizationProvider, DateTimePicker } from "@mui/x-date-pickers";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import dayjs from "dayjs";
 import { type TimeInterface } from "@churchapps/helpers";
 import { ApiHelper, DateHelper, ErrorMessages, Locale } from "@churchapps/apphelper";
 import { FormCard } from "../../components/ui";
@@ -123,10 +126,29 @@ export const TimeEdit = (props: Props) => {
             <TextField fullWidth label={Locale.label("plans.timeEdit.disName")} id="displayName" type="text" placeholder={Locale.label("placeholders.time.displayName")} data-testid="time-display-name-input" aria-label={Locale.label("plans.timeEdit.timeDisplayNameAria")} error={!!e.displayName} helperText={e.displayName?.message} {...register("displayName", { required: Locale.label("plans.timeEdit.disNameReq") })} />
           </Grid>
           <Grid size={{ xs: 12, sm: 6 }}>
-            <TextField fullWidth label={Locale.label("plans.timeEdit.timeStart")} id="startTime" type="datetime-local" data-testid="time-start-input" aria-label={Locale.label("plans.timeEdit.startTimeAria")} error={!!e.startTime} helperText={e.startTime?.message} {...register("startTime", { required: Locale.label("plans.timeEdit.startReq") })} />
+            <Controller name="startTime" control={control} rules={{ required: Locale.label("plans.timeEdit.startReq") }} render={({ field }) => (
+              <LocalizationProvider dateAdapter={AdapterDayjs}>
+                {/* MUI picker instead of native input: Chromium can render the native datetime popup off-screen on multi-monitor setups */}
+                <DateTimePicker
+                  label={Locale.label("plans.timeEdit.timeStart")}
+                  value={field.value ? dayjs(field.value) : null}
+                  onChange={(v) => field.onChange(v && v.isValid() ? v.format("YYYY-MM-DDTHH:mm") : "")}
+                  slotProps={{ textField: { fullWidth: true, id: "startTime", error: !!e.startTime, helperText: e.startTime?.message, inputProps: { "data-testid": "time-start-input", "aria-label": Locale.label("plans.timeEdit.startTimeAria") } } }}
+                />
+              </LocalizationProvider>
+            )} />
           </Grid>
           <Grid size={{ xs: 12, sm: 6 }}>
-            <TextField fullWidth label={Locale.label("plans.timeEdit.timeEnd")} id="endTime" type="datetime-local" data-testid="time-end-input" aria-label={Locale.label("plans.timeEdit.endTimeAria")} error={!!e.endTime} helperText={e.endTime?.message} {...register("endTime", { required: Locale.label("plans.timeEdit.endReq") })} />
+            <Controller name="endTime" control={control} rules={{ required: Locale.label("plans.timeEdit.endReq") }} render={({ field }) => (
+              <LocalizationProvider dateAdapter={AdapterDayjs}>
+                <DateTimePicker
+                  label={Locale.label("plans.timeEdit.timeEnd")}
+                  value={field.value ? dayjs(field.value) : null}
+                  onChange={(v) => field.onChange(v && v.isValid() ? v.format("YYYY-MM-DDTHH:mm") : "")}
+                  slotProps={{ textField: { fullWidth: true, id: "endTime", error: !!e.endTime, helperText: e.endTime?.message, inputProps: { "data-testid": "time-end-input", "aria-label": Locale.label("plans.timeEdit.endTimeAria") } } }}
+                />
+              </LocalizationProvider>
+            )} />
           </Grid>
         </Grid>
         <div style={{ marginTop: 10 }}>

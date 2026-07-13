@@ -14,10 +14,14 @@ export const GroupLabelsEdit: React.FC<Props> = (props) => {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const val = e.currentTarget.name;
-    const idx = groupLabels.indexOf(val);
-    if (idx === -1) groupLabels.push(val);
-    else groupLabels.splice(idx, 1);
-    props.onUpdate(groupLabels);
+    const updatedLabels = [...groupLabels];
+    const idx = updatedLabels.indexOf(val);
+    if (idx === -1) {
+      updatedLabels.push(val);
+    } else {
+      updatedLabels.splice(idx, 1);
+    }
+    props.onUpdate(updatedLabels);
   };
 
   const handleAdd = (e: React.MouseEvent) => {
@@ -28,10 +32,10 @@ export const GroupLabelsEdit: React.FC<Props> = (props) => {
       if (val.length > 0) {
         const idx = allLabels.indexOf(val);
         if (idx === -1) {
-          allLabels.push(val);
-          setAllLabels(allLabels.sort());
-          groupLabels.push(val);
-          props.onUpdate(groupLabels);
+          const updatedAllLabels = [...allLabels, val].sort();
+          setAllLabels(updatedAllLabels);
+          const updatedGroupLabels = [...groupLabels, val];
+          props.onUpdate(updatedGroupLabels);
         }
       }
     }
@@ -42,7 +46,9 @@ export const GroupLabelsEdit: React.FC<Props> = (props) => {
       const result: string[] = [];
       groups.forEach((group: GroupInterface) => {
         (group.labelArray || []).forEach((label) => {
-          if (!result.includes(label)) result.push(label);
+          if (label && label.trim() !== "" && !result.includes(label)) {
+            result.push(label);
+          }
         });
       });
       setAllLabels(result.sort());

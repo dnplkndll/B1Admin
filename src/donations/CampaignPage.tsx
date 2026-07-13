@@ -169,18 +169,18 @@ export const CampaignPage = () => {
 
   return (
     <>
-      <PageHeader
-        icon={<CampaignIcon />}
-        title={campaign?.name || ""}
-        subtitle={Locale.label("donations.campaignPage.subtitle")}
-        breadcrumbs={<Breadcrumbs items={breadcrumbItems} showHome={true} />}
-        statistics={progress.data
-          ? [
-            ...((campaign?.goalAmount || 0) > 0 ? [{ icon: <Icon>flag</Icon>, value: CurrencyHelper.formatCurrencyWithLocale(campaign?.goalAmount || 0, currency, 0), label: Locale.label("donations.campaignsPage.goal") }] : []),
-            { icon: <Icon>handshake</Icon>, value: CurrencyHelper.formatCurrencyWithLocale(progress.data.totalPledged || 0, currency, 0), label: Locale.label("donations.campaignsPage.pledged") },
-            { icon: <Icon>paid</Icon>, value: CurrencyHelper.formatCurrencyWithLocale(progress.data.totalGiven || 0, currency, 0), label: Locale.label("donations.campaignsPage.given") }
-          ]
-          : undefined}>
+      <PageHeader icon={<CampaignIcon />} title={campaign?.name || ""} subtitle={Locale.label("donations.campaignPage.subtitle")}>
+      <Stack direction={{ xs: "column", sm: "row" }} spacing={2} alignItems={{ xs: "flex-start", sm: "center" }} justifyContent={{ sm: "space-between" }} width="100%">
+        {progress.data && (
+          <PageHeaderStats
+            spread
+            items={[
+              ...(campaign?.goalAmount > 0 ? [{ value: CurrencyHelper.formatCurrencyWithLocale(campaign.goalAmount, currency, 0), label: Locale.label("donations.campaignsPage.goal") }] : []),
+              { value: CurrencyHelper.formatCurrencyWithLocale(progress.data.totalPledged || 0, currency, 0), label: Locale.label("donations.campaignsPage.pledged") },
+              { value: CurrencyHelper.formatCurrencyWithLocale(progress.data.totalGiven || 0, currency, 0), label: Locale.label("donations.campaignsPage.given") }
+            ]}
+          />
+        )}
         {canEdit && (
           <Stack direction="row" spacing={1}>
             <HeaderSecondaryButton
@@ -197,6 +197,7 @@ export const CampaignPage = () => {
             </HeaderPrimaryButton>
           </Stack>
         )}
+      </Stack>
       </PageHeader>
 
       <Box sx={{ p: 3 }}>

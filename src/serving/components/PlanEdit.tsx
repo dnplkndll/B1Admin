@@ -1,6 +1,9 @@
 import React from "react";
 import { useForm, Controller, useFormState } from "react-hook-form";
 import { Checkbox, FormControl, FormControlLabel, Grid, InputLabel, MenuItem, Select, TextField } from "@mui/material";
+import { LocalizationProvider, DatePicker } from "@mui/x-date-pickers";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import dayjs from "dayjs";
 import { DateHelper, ErrorMessages, Locale } from "@churchapps/apphelper";
 import { FormCard } from "../../components/ui";
 import { type PlanInterface } from "../../helpers";
@@ -135,7 +138,17 @@ export const PlanEdit = (props: Props) => {
             <TextField fullWidth label={Locale.label("common.name")} id="name" type="text" placeholder={Locale.label("placeholders.plan.name")} data-testid="plan-name-input" aria-label={Locale.label("plans.planEdit.planNameAria")} error={!!e.name} helperText={e.name?.message} {...register("name", { required: Locale.label("plans.planEdit.planReq") })} />
           </Grid>
           <Grid size={{ xs: 12, sm: 6 }}>
-            <TextField fullWidth label={Locale.label("plans.planEdit.servDate")} id="serviceDate" type="date" data-testid="service-date-input" aria-label={Locale.label("plans.planEdit.serviceDateAria")} error={!!e.serviceDate} helperText={e.serviceDate?.message} {...register("serviceDate", { required: Locale.label("plans.planEdit.servReq") })} />
+            <Controller name="serviceDate" control={control} rules={{ required: Locale.label("plans.planEdit.servReq") }} render={({ field }) => (
+              <LocalizationProvider dateAdapter={AdapterDayjs}>
+                {/* MUI picker instead of native input: Chromium can render the native date popup off-screen on multi-monitor setups */}
+                <DatePicker
+                  label={Locale.label("plans.planEdit.servDate")}
+                  value={field.value ? dayjs(field.value) : null}
+                  onChange={(v) => field.onChange(v && v.isValid() ? v.format("YYYY-MM-DD") : "")}
+                  slotProps={{ textField: { fullWidth: true, id: "serviceDate", error: !!e.serviceDate, helperText: e.serviceDate?.message, inputProps: { "data-testid": "service-date-input", "aria-label": Locale.label("plans.planEdit.serviceDateAria") } } }}
+                />
+              </LocalizationProvider>
+            )} />
           </Grid>
         </Grid>
         <CampusSelect control={control} testId="plan-campus-select" />

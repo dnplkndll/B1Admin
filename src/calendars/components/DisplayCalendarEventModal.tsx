@@ -4,6 +4,7 @@ import { HowToReg as RegIcon } from "@mui/icons-material";
 import { DateHelper, ApiHelper, Locale } from "@churchapps/apphelper";
 import { type CuratedEventWithEventInterface } from "@churchapps/helpers";
 import { useConfirmDelete } from "../../hooks";
+import { EventReminderEdit } from "./EventReminderEdit";
 
 interface Props {
   event: CuratedEventWithEventInterface;
@@ -15,7 +16,7 @@ interface Props {
 export function DisplayCalendarEventModal(props: Props) {
   const navigate = useNavigate();
   const { confirm, ConfirmDialogElement } = useConfirmDelete();
-  const realEventId = (props.event as CuratedEventWithEventInterface & { realEventId?: string }).realEventId;
+  const realEventId = (props.event as CuratedEventWithEventInterface & { realEventId?: string }).realEventId || props.event.eventId;
 
   const getDisplayTime = () => {
     let result: string;
@@ -73,6 +74,11 @@ export function DisplayCalendarEventModal(props: Props) {
             <i>{getDisplayTime()}</i>
             {renderDescription()}
           </Box>
+          {props.mode === "edit" && realEventId && (
+            <Box sx={{ mt: 2 }}>
+              <EventReminderEdit eventId={realEventId} hasRegistration={!!(props.event as CuratedEventWithEventInterface & { registrationEnabled?: boolean }).registrationEnabled} />
+            </Box>
+          )}
         </DialogContent>
         <DialogActions>
           <Button variant="text" onClick={props.onDone} data-testid="calendar-event-cancel-button">

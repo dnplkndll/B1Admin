@@ -68,20 +68,24 @@ const LoadingFallback: React.FC = () => <PageSkeleton />;
 export const Authenticated: React.FC = () => {
   const navigate = useNavigate();
 
-  const context = React.useContext(UserContext)!;
+  const context = React.useContext(UserContext);
 
-  UserHelper.currentUserChurch = context.userChurch;
-  UserHelper.userChurches = context.userChurches;
-  UserHelper.user = context.user;
-  UserHelper.person = context.person;
+  if (context) {
+    UserHelper.currentUserChurch = context.userChurch;
+    UserHelper.userChurches = context.userChurches;
+    UserHelper.user = context.user;
+    UserHelper.person = context.person;
+  }
 
   // One WebSocket per tab drives real-time refresh and unread bell count.
   React.useEffect(() => {
-    if (!context.person?.id || !context.userChurch?.church?.id) return;
+    if (!context?.person?.id || !context?.userChurch?.church?.id) return;
     NotificationService.getInstance().initialize(context).catch((err) => {
       console.error("NotificationService init failed:", err);
     });
-  }, [context.person?.id, context.userChurch?.church?.id]);
+  }, [context?.person?.id, context?.userChurch?.church?.id]);
+
+  if (!context) return null;
 
   const LayoutWithWrapper: React.FC = () => (
     <Box sx={{ display: "flex" }}>

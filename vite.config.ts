@@ -1,6 +1,7 @@
 import { defineConfig, loadEnv, type UserConfig } from "vite";
 import react, { reactCompilerPreset } from "@vitejs/plugin-react";
 import babel from "@rolldown/plugin-babel";
+import { sentryVitePlugin } from "@sentry/vite-plugin";
 import path from "path";
 
 
@@ -11,7 +12,14 @@ export default defineConfig(({ mode }) => {
   return {
     plugins: [
       react(),
-      babel({ presets: [reactCompilerPreset()] })
+      babel({ presets: [reactCompilerPreset()] }),
+      // Uploads sourcemaps so Sentry stack traces aren't minified; no-op without the token.
+      !!env.SENTRY_AUTH_TOKEN && sentryVitePlugin({
+        org: "churchapps",
+        project: "b1-admin",
+        authToken: env.SENTRY_AUTH_TOKEN,
+        sourcemaps: { filesToDeleteAfterUpload: "dist/**/*.map" }
+      })
     ],
 
     optimizeDeps: {
@@ -21,7 +29,9 @@ export default defineConfig(({ mode }) => {
 
     build: {
       chunkSizeWarningLimit: 1000,
-      minify: "esbuild"
+      minify: "esbuild",
+      // "hidden": maps generated for Sentry upload but not referenced from the bundles (and deleted after upload).
+      sourcemap: env.SENTRY_AUTH_TOKEN ? ("hidden" as const) : false
     },
     resolve: {
       dedupe: ["react", "react-dom"],

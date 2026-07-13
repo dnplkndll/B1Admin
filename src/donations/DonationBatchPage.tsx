@@ -88,10 +88,11 @@ export const DonationBatchPage = () => {
         breadcrumbs={<Breadcrumbs items={breadcrumbItems} showHome={true} />}
       >
         <Stack
-          direction={{ xs: "column", md: "row" }}
-          spacing={2}
-          alignItems={{ xs: "flex-start", md: "center" }}
-          sx={{ width: "100%" }}
+          direction={{ xs: "column", sm: "row" }} 
+          spacing={{ xs: 2 }}
+          alignItems={{ xs: "flex-start", sm: "center" }}
+          justifyContent={{ sm: "space-between" }}
+          width="100%"
         >
           {stats.totalDonations > 0 && (
             <PageHeaderStats

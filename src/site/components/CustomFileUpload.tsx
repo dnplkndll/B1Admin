@@ -20,18 +20,21 @@ export function CustomFileUpload(props: Props) {
   const [file] = useState<any>({});
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
   const [uploadProgress, setUploadProgress] = useState<number>(-1);
+  const [uploadError, setUploadError] = useState<string>("");
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     e.preventDefault();
     if (e.target.files && e.target.files.length > 0) {
       setUploadedFile(e.target.files[0]);
+      setUploadError("");
     }
   };
 
   const handleClear = () => {
     setUploadedFile(null);
     setUploadProgress(-1);
+    setUploadError("");
     if (fileInputRef.current) {
       fileInputRef.current.value = "";
     }
@@ -59,14 +62,22 @@ export function CustomFileUpload(props: Props) {
     f.contentType = props.contentType;
     f.contentId = props.contentId;
 
-    const preUploaded = await preUpload();
-    if (!preUploaded) {
-      const base64 = await convertBase64();
-      f.fileContents = base64;
+    try {
+      const preUploaded = await preUpload();
+      if (!preUploaded) {
+        const base64 = await convertBase64();
+        f.fileContents = base64;
+      }
+      const data = await ApiHelper.post("/files", [f], "ContentApi");
+      handleClear();
+      props.saveCallback(data[0]);
+    } catch (error) {
+      setUploadProgress(-1);
+      const isQuota = String((error as Error)?.message || error).includes("storage_quota_exceeded");
+      setUploadError(isQuota
+        ? Locale.label("fileUpload.quotaExceeded", "Storage quota exceeded. Delete unused files or upgrade your storage plan.")
+        : Locale.label("fileUpload.uploadFailed", "Upload failed. Please try again."));
     }
-    const data = await ApiHelper.post("/files", [f], "ContentApi");
-    handleClear();
-    props.saveCallback(data[0]);
   };
 
   const checkSave = () => {
@@ -166,6 +177,11 @@ export function CustomFileUpload(props: Props) {
                 {uploadProgress}%
               </Typography>
             </Box>
+          )}
+          {uploadError && (
+            <Typography variant="body2" color="error" data-testid="file-upload-error">
+              {uploadError}
+            </Typography>
           )}
 
 

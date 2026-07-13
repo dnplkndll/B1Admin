@@ -106,7 +106,7 @@ export const GroupBanner = memo((props: Props) => {
       .map((c) => (
         <Chip
           key={`attendance-${c.key}`}
-          icon={c.value ? <CheckIcon sx={{ color: "success.light" }} /> : <CancelIcon sx={{ color: "error.light" }} />}
+          icon={c.value ? <CheckIcon color="success" /> : <CancelIcon color="error" />}
           label={c.label}
           size="small"
           sx={{ ...headerChipSx, fontWeight: 500 }}
