@@ -622,6 +622,8 @@
       "invalidCode": "Invalid or expired code. Please check and try again.",
       "loading": "Loading...",
       "noChurchSelected": "No church selected. Please log in again and select a church.",
+      "planType": "Show Plans For",
+      "planTypeNone": "None (browse only)",
       "requestedPermissions": "Requested Permissions:",
       "title": "Authorize Device",
       "verifyFailed": "Failed to verify code. Please try again."
