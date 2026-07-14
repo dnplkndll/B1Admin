@@ -28,7 +28,7 @@ export const DevicesPage = () => {
   const devices = useQuery<DeviceInterface[]>({
     queryKey: ["/devices/my", "MessagingApi"],
     placeholderData: [],
-    select: (data) => (data || []).filter((d: DeviceInterface) => d.appName === "ChurchAppsPlayer")
+    select: (data) => (data || []).filter((d: DeviceInterface) => d.appName === "ChurchAppsPlayer" || d.appName === "FreePlay")
   });
 
   const editContent = (

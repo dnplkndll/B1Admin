@@ -4,6 +4,8 @@
 # on the ChurchApps support site). Api/B1App build from GitHub by default; point
 # API_CONTEXT / B1APP_CONTEXT at local checkouts for development.
 
+name: b1church
+
 services:
   mysql:
     image: mysql:8.4

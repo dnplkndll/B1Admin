@@ -8,10 +8,16 @@ import {
   CircularProgress,
   Grid,
   Icon,
-  Typography
+  Typography,
+  FormControl,
+  InputLabel,
+  MenuItem,
+  Select
 } from "@mui/material";
 import { ApiHelper, UserHelper, Locale } from "@churchapps/apphelper";
+import { type GroupInterface } from "@churchapps/helpers";
 import { AuthShell } from "../components/AuthShell";
+import { type PlanTypeInterface } from "../helpers";
 
 interface DeviceInfo {
   userCode: string;
@@ -38,9 +44,26 @@ export const DeviceAuthPage: React.FC = () => {
   const [error, setError] = React.useState<string | null>(null);
   const [success, setSuccess] = React.useState(false);
   const [step, setStep] = React.useState<"code" | "confirm">("code");
+  const [planTypes, setPlanTypes] = React.useState<PlanTypeInterface[]>([]);
+  const [ministries, setMinistries] = React.useState<GroupInterface[]>([]);
+  const [planTypeId, setPlanTypeId] = React.useState("");
 
   // Use the already-selected church from login
   const churchName = UserHelper.currentUserChurch?.church?.name;
+
+  // Only FreePlay screens get bound to a plan type — FreeShow uses the same flow and plans scope
+  const requestsPlans = deviceInfo?.clientId === "nsowldn58dk";
+
+  React.useEffect(() => {
+    if (!requestsPlans || !ApiHelper.isAuthenticated) return;
+    ApiHelper.get("/planTypes", "DoingApi").then((data: PlanTypeInterface[]) => setPlanTypes(data || []));
+    ApiHelper.get("/groups/tag/ministry", "MembershipApi").then((data: GroupInterface[]) => setMinistries(data || []));
+  }, [requestsPlans]);
+
+  const getPlanTypeLabel = (pt: PlanTypeInterface) => {
+    const ministry = ministries.find(m => m.id === pt.ministryId);
+    return ministry ? `${ministry.name} — ${pt.name}` : pt.name;
+  };
 
   const verifyCode = async (code: string) => {
     setLoading(true);
@@ -107,7 +130,8 @@ export const DeviceAuthPage: React.FC = () => {
     try {
       const result: ApproveResponse = await ApiHelper.post("/oauth/device/approve", {
         user_code: normalizedCode,
-        church_id: churchId
+        church_id: churchId,
+        plan_type_id: planTypeId || undefined
       }, "MembershipApi");
 
       if (result.success) {
@@ -228,6 +252,20 @@ export const DeviceAuthPage: React.FC = () => {
                 <li key={scope}>{scope}</li>
               ))}
             </ul>
+            {requestsPlans && planTypes.length > 0 && (
+              <FormControl fullWidth sx={{ mb: 2 }}>
+                <InputLabel>{Locale.label("device.deviceAuthPage.planType") || "Show Plans For"}</InputLabel>
+                <Select
+                  label={Locale.label("device.deviceAuthPage.planType") || "Show Plans For"}
+                  value={planTypeId}
+                  onChange={(event) => setPlanTypeId(event.target.value)}
+                  data-testid="device-plan-type-select"
+                >
+                  <MenuItem value="">{Locale.label("device.deviceAuthPage.planTypeNone") || "None (browse only)"}</MenuItem>
+                  {planTypes.map(pt => <MenuItem key={pt.id} value={pt.id}>{getPlanTypeLabel(pt)}</MenuItem>)}
+                </Select>
+              </FormControl>
+            )}
             {error && (
               <Alert severity="error" sx={{ mb: 2 }}>
                 {error}
