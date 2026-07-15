@@ -1,14 +1,17 @@
 import { useEffect, useState } from "react";
-import { Alert, Box, Button, Dialog, FormControlLabel, Grid, Icon, Stack, Switch, TextField, Typography } from "@mui/material";
-import { ApiHelper, UserHelper, Locale } from "@churchapps/apphelper";
-import { MarkdownEditor } from "@churchapps/apphelper/markdown";
-import { Permissions } from "@churchapps/helpers";
+import { Alert, Autocomplete, Box, Button, Dialog, FormControlLabel, Grid, Icon, Stack, Switch, TextField, Typography } from "@mui/material";
+import { ApiHelper, UserHelper, Locale, PersonHelper } from "@churchapps/apphelper";
+import { MarkdownEditor, MarkdownPreviewLight } from "@churchapps/apphelper/markdown";
+import { Permissions, type PersonInterface } from "@churchapps/helpers";
 import { FormCard } from "../../components/ui";
 import { GalleryModal } from "../../components/gallery";
+import { PersonAdd } from "../../people/components/PersonAdd";
 import type { PostInterface } from "../../helpers/Interfaces";
 
 type Props = {
   post: PostInterface;
+  categories?: string[];
+  existingSlugs?: string[];
   updatedCallback: () => void;
   onDone: () => void;
 };
@@ -20,14 +23,27 @@ export function BlogPostEdit(props: Props) {
   const [slugTouched, setSlugTouched] = useState<boolean>(!!props.post.id);
   const [published, setPublished] = useState<boolean>(!!props.post.publishDate);
   const [showGallery, setShowGallery] = useState<boolean>(false);
+  const [showPreview, setShowPreview] = useState<boolean>(false);
+  const [showAuthorSearch, setShowAuthorSearch] = useState<boolean>(false);
   const [errors, setErrors] = useState<string[]>([]);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
   useEffect(() => {
-    setPost({ ...props.post });
+    const p = { ...props.post };
+    if (!p.id && !p.authorId && UserHelper.person?.id) {
+      p.authorId = UserHelper.person.id;
+      p.authorName = UserHelper.person.name?.display;
+    }
+    setPost(p);
     setSlugTouched(!!props.post.id);
     setPublished(!!props.post.publishDate);
+    setShowAuthorSearch(false);
   }, [props.post]);
+
+  const handleAuthorSelect = (person: PersonInterface) => {
+    setPost((p) => ({ ...p, authorId: person.id, authorName: person.name?.display }));
+    setShowAuthorSearch(false);
+  };
 
   const handleTitleChange = (value: string) => {
     setPost((p) => ({ ...p, title: value, slug: slugTouched ? p.slug : kebab(value) }));
@@ -44,6 +60,7 @@ export function BlogPostEdit(props: Props) {
     const e: string[] = [];
     if (!post.title || !post.title.trim()) e.push(Locale.label("site.blogEdit.errTitle"));
     if (!post.slug || !post.slug.trim()) e.push(Locale.label("site.blogEdit.errSlug"));
+    if (props.existingSlugs?.includes(kebab(post.slug || ""))) e.push(Locale.label("site.blogEdit.errSlugTaken"));
     if (!UserHelper.checkAccess(Permissions.contentApi.content.edit)) e.push(Locale.label("site.addPageModal.unauthorizedCreate"));
     return e;
   };
@@ -84,14 +101,33 @@ export function BlogPostEdit(props: Props) {
             <TextField size="small" fullWidth multiline minRows={2} label={Locale.label("site.blogEdit.excerpt")} value={post.excerpt || ""} onChange={(ev) => setPost((p) => ({ ...p, excerpt: ev.target.value }))} />
           </Grid>
           <Grid size={{ xs: 12 }}>
-            <Typography variant="body2" sx={{ mb: 0.5 }}>{Locale.label("site.blogEdit.content")}</Typography>
-            <MarkdownEditor value={post.content || ""} onChange={(val) => setPost((p) => ({ ...p, content: val }))} style={{ maxHeight: 300, overflowY: "scroll" }} />
+            <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 0.5 }}>
+              <Typography variant="body2">{Locale.label("site.blogEdit.content")}</Typography>
+              <Button size="small" onClick={() => setShowPreview((v) => !v)} data-testid="blog-preview-toggle">
+                {showPreview ? Locale.label("common.edit") : Locale.label("site.blogEdit.preview")}
+              </Button>
+            </Stack>
+            {showPreview
+              ? <Box sx={{ maxHeight: 300, overflowY: "auto", border: "1px solid", borderColor: "grey.300", borderRadius: 1, p: 2 }}><MarkdownPreviewLight value={post.content || ""} /></Box>
+              : <MarkdownEditor value={post.content || ""} onChange={(val) => setPost((p) => ({ ...p, content: val }))} style={{ maxHeight: 300, overflowY: "scroll" }} />}
           </Grid>
           <Grid size={{ xs: 6 }}>
-            <TextField size="small" fullWidth label={Locale.label("site.blogEdit.category")} value={post.category || ""} onChange={(ev) => setPost((p) => ({ ...p, category: ev.target.value }))} />
+            <Autocomplete freeSolo options={props.categories || []} value={post.category || ""} onInputChange={(_, val) => setPost((p) => ({ ...p, category: val }))} renderInput={(params) => <TextField {...params} size="small" label={Locale.label("site.blogEdit.category")} />} />
           </Grid>
           <Grid size={{ xs: 6 }}>
             <TextField size="small" fullWidth label={Locale.label("site.blogEdit.tags")} value={post.tags || ""} onChange={(ev) => setPost((p) => ({ ...p, tags: ev.target.value }))} helperText={Locale.label("site.blogEdit.tagsHelper")} />
+          </Grid>
+          <Grid size={{ xs: 12 }}>
+            <Typography variant="body2" sx={{ mb: 0.5 }}>{Locale.label("site.blogEdit.author")}</Typography>
+            {post.authorId && !showAuthorSearch ? (
+              <Stack direction="row" spacing={2} alignItems="center">
+                <Typography variant="body2">{post.authorName || post.authorId}</Typography>
+                <Button size="small" onClick={() => setShowAuthorSearch(true)}>{Locale.label("common.change")}</Button>
+                <Button size="small" color="error" onClick={() => setPost((p) => ({ ...p, authorId: null, authorName: undefined }))}>{Locale.label("common.remove")}</Button>
+              </Stack>
+            ) : (
+              <PersonAdd getPhotoUrl={PersonHelper.getPhotoUrl} addFunction={handleAuthorSelect} actionLabel={Locale.label("common.select")} />
+            )}
           </Grid>
           <Grid size={{ xs: 12 }}>
             <Typography variant="body2" sx={{ mb: 0.5 }}>{Locale.label("site.blogEdit.image")}</Typography>
@@ -111,7 +147,7 @@ export function BlogPostEdit(props: Props) {
           </Grid>
         </Grid>
       </FormCard>
-      {showGallery && <GalleryModal aspectRatio={0} onClose={() => setShowGallery(false)} onSelect={(img) => { setPost((p) => ({ ...p, photoUrl: img })); setShowGallery(false); }} />}
+      {showGallery && <GalleryModal aspectRatio={16 / 9} onClose={() => setShowGallery(false)} onSelect={(img) => { setPost((p) => ({ ...p, photoUrl: img })); setShowGallery(false); }} />}
     </Dialog>
   );
 }

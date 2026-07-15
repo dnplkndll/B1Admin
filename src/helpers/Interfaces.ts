@@ -366,7 +366,8 @@ export interface PostInterface {
   slug?: string;
   excerpt?: string;
   content?: string;
-  authorId?: string;
+  authorId?: string | null;
+  authorName?: string;
   photoUrl?: string;
   publishDate?: Date | string | null;
   category?: string;
