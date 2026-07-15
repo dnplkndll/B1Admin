@@ -28,10 +28,17 @@ export const BlogPage = () => {
 
   useEffect(loadData, []);
 
+  const clearSiteCache = () => {
+    const subDomain = UserHelper.currentUserChurch?.church?.subDomain;
+    if (!subDomain) return;
+    const b1Url = EnvironmentHelper.B1Url.replace("{subdomain}", subDomain);
+    fetch(b1Url + "/api/revalidate/" + subDomain, { method: "POST" }).catch(() => { /* best-effort */ });
+  };
+
   const handleDelete = () => {
     const p = deletePost;
     if (!p?.id) return;
-    ApiHelper.delete("/posts/" + p.id, "ContentApi").then(() => { setDeletePost(null); loadData(); });
+    ApiHelper.delete("/posts/" + p.id, "ContentApi").then(() => { setDeletePost(null); clearSiteCache(); loadData(); });
   };
 
   const denied = useRequirePermission(Permissions.contentApi.content.edit);
@@ -39,7 +46,7 @@ export const BlogPage = () => {
 
   return (
     <>
-      {editPost && <BlogPostEdit post={editPost} categories={[...new Set(posts.map((p) => p.category).filter(Boolean))].sort() as string[]} existingSlugs={posts.filter((p) => p.id !== editPost.id).map((p) => p.slug || "")} updatedCallback={() => { setEditPost(null); loadData(); }} onDone={() => setEditPost(null)} />}
+      {editPost && <BlogPostEdit post={editPost} categories={[...new Set(posts.map((p) => p.category).filter(Boolean))].sort() as string[]} existingSlugs={posts.filter((p) => p.id !== editPost.id).map((p) => p.slug || "")} updatedCallback={() => { setEditPost(null); clearSiteCache(); loadData(); }} onDone={() => setEditPost(null)} />}
       <ConfirmDialog
         open={!!deletePost}
         title={Locale.label("site.blog.deleteTitle")}

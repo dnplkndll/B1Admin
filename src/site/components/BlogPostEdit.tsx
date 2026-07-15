@@ -87,8 +87,8 @@ export function BlogPostEdit(props: Props) {
   };
 
   return (
-    <Dialog open={true} onClose={props.onDone} className="dialogForm" maxWidth="md" fullWidth>
-      <FormCard id="blogPostEdit" title={props.post.id ? Locale.label("site.blogEdit.editPost") : Locale.label("site.blogEdit.newPost")} icon="rss_feed" onSave={handleSave} onCancel={props.onDone} isSubmitting={isSubmitting} elevation={0} data-testid="blog-post-edit">
+    <Dialog open={true} onClose={props.onDone} className="dialogForm" maxWidth="md" fullWidth PaperProps={{ sx: { "& > .MuiCard-root": { overflowY: "auto" } } }}>
+      <FormCard id="blogPostEdit" title={props.post.id ? Locale.label("site.blogEdit.editPost") : Locale.label("site.blogEdit.newPost")} icon="rss_feed" onSave={handleSave} onCancel={props.onDone} isSubmitting={isSubmitting} elevation={0} stickyFooter data-testid="blog-post-edit">
         {errors.length > 0 && <Alert severity="error" sx={{ mb: 2 }}>{errors.map((m) => <div key={m}>{m}</div>)}</Alert>}
         <Grid container spacing={2} style={{ minWidth: 500 }}>
           <Grid size={{ xs: 12 }}>
