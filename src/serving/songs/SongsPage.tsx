@@ -1,7 +1,7 @@
 import React, { memo, useMemo, useCallback } from "react";
 import { ApiHelper, Loading, Locale, PageHeader, UserHelper, Permissions } from "@churchapps/apphelper";
 import { Link, Navigate } from "react-router-dom";
-import { Button, Box, Card, CardContent, Typography, Stack, Avatar, Chip, IconButton, TextField, InputAdornment, Tooltip, Checkbox } from "@mui/material";
+import { Button, Box, Card, CardContent, Typography, Stack, Avatar, Chip, IconButton, TextField, InputAdornment, Tooltip, Checkbox, TablePagination } from "@mui/material";
 import { MusicNote as MusicIcon, LibraryMusic as LibraryIcon, Add as AddIcon, Search as SearchIcon, PlayCircle as PlayIcon, Timer as TimerIcon, Person as ArtistIcon, Delete as DeleteIcon } from "@mui/icons-material";
 import { SongSearchDialog } from "./SongSearchDialog";
 import { EmptyState } from "../../components/ui/EmptyState";
@@ -20,10 +20,23 @@ export const SongsPage = memo(() => {
   const [selected, setSelected] = React.useState<Set<string>>(new Set());
   const { confirm, ConfirmDialogElement } = useConfirmDelete();
 
-  const songs = useQuery<SongDetailInterface[]>({
-    queryKey: ["/songDetails", "ContentApi"],
-    placeholderData: []
+  const [page, setPage] = React.useState(0);
+  const [rowsPerPage, setRowsPerPage] = React.useState(10);
+
+  const songs = useQuery<{ songDetails: SongDetailInterface[], count: number }>({
+    queryKey: [`/songDetails?limit=${rowsPerPage}&offset=${page * rowsPerPage}&search=${searchFilter}`, "ContentApi"],
+    placeholderData: { songDetails: [], count: 0 }
   });
+
+  const handlePageChange = useCallback((_: unknown, newPage: number) => {
+    setPage(newPage);
+  }, []);
+
+  const handleRowsPerPageChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const newLimit = parseInt(e.target.value, 10);
+    setRowsPerPage(newLimit);
+    setPage(0);
+  }, []);
 
   const handleAdd = useCallback(
     async (songDetail: SongDetailInterface) => {
@@ -91,25 +104,26 @@ export const SongsPage = memo(() => {
   }, []);
 
   const filteredSongs = useMemo(() => {
-    if (!songs.data) return null;
+    const songList = songs.data?.songDetails;
+    if (!songList) return null;
     // Dedupe by songId: /songDetails join produces one row per arrangement.
     const seen = new Set<string>();
-    const unique = songs.data.filter((song) => {
+    const unique = songList.filter((song) => {
       const id = (song as any).songId || song.id;
       if (seen.has(id)) return false;
       seen.add(id);
       return true;
     });
-    if (!searchFilter.trim()) return unique;
-
-    const filter = searchFilter.toLowerCase();
-    return unique.filter((song) => song.title?.toLowerCase().includes(filter) || song.artist?.toLowerCase().includes(filter));
-  }, [songs.data, searchFilter]);
+    return unique;
+  }, [songs.data?.songDetails]);
 
   const songsContent = useMemo(() => {
     if (songs.isLoading) return <Loading size="sm" />;
 
-    if ((songs.data?.length ?? 0) === 0) {
+    if ((songs.data?.songDetails?.length ?? 0) === 0) {
+      if (searchFilter.trim()) {
+        return <EmptyState icon={<SearchIcon />} title={Locale.label("songs.library.noResults") || "No songs match your search criteria."} />;
+      }
       return (
         <EmptyState
           icon={<LibraryIcon />}
@@ -189,10 +203,21 @@ export const SongsPage = memo(() => {
             </Card>
           ))}
         </Stack>
+        <TablePagination
+          component="div"
+          count={songs.data?.count ?? 0}
+          page={page}
+          onPageChange={handlePageChange}
+          rowsPerPage={rowsPerPage}
+          onRowsPerPageChange={handleRowsPerPageChange}
+          rowsPerPageOptions={[10, 25, 50]}
+          sx={{ mt: 2 }}
+        />
       </Box>
     );
   }, [
-    songs.isLoading, songs.data, filteredSongs, formatSeconds, handleImageError, failedImages, canEdit, selected, toggleSelected
+    songs.isLoading, songs.data, filteredSongs, formatSeconds, handleImageError, failedImages, canEdit, selected, toggleSelected,
+    page, rowsPerPage, handlePageChange, handleRowsPerPageChange
   ]);
 
   if (redirect) return <Navigate to={redirect} />;
@@ -221,7 +246,7 @@ export const SongsPage = memo(() => {
       </PageHeader>
 
       <Box sx={{ p: 3 }}>
-        {(showSearchField || searchFilter) && songs.data && songs.data.length > 0 && (
+        {(showSearchField || searchFilter) && songs.data && ((songs.data.songDetails?.length ?? 0) > 0 || searchFilter) && (
           <Card sx={{ mb: 3, borderRadius: 2, border: "1px solid", borderColor: "divider" }}>
             <CardContent sx={{ pb: 2, "&:last-child": { pb: 2 } }}>
               <Stack direction="row" alignItems="center" spacing={1} sx={{ mb: 2 }}>
@@ -235,7 +260,10 @@ export const SongsPage = memo(() => {
                 variant="outlined"
                 placeholder={Locale.label("songs.search.placeholder") || "Search songs by title or artist..."}
                 value={searchFilter}
-                onChange={(e) => setSearchFilter(e.target.value)}
+                onChange={(e) => {
+                  setSearchFilter(e.target.value);
+                  setPage(0);
+                }}
                 InputProps={{
                   startAdornment: (
                     <InputAdornment position="start">
