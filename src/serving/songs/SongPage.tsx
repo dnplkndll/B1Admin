@@ -34,9 +34,12 @@ export const SongPage = memo(() => {
     enabled: !!params.id
   });
 
+  // If song record is missing/orphaned, fall back to arrangement's songDetailId for the title
+  const songDetailId = song.data?.songDetailId || arrangements.data?.[0]?.songDetailId;
+
   const songDetail = useQuery<SongDetailInterface>({
-    queryKey: ["/songDetails/" + song.data?.songDetailId, "ContentApi"],
-    enabled: !!song.data?.songDetailId
+    queryKey: ["/songDetails/" + songDetailId, "ContentApi"],
+    enabled: !!songDetailId
   });
 
   // Set selected arrangement when arrangements load; fall back to the first one when

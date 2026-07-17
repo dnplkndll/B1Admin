@@ -118,9 +118,8 @@ export const SelectGroup: React.FC<Props> = (props: Props) => {
         <TableContainer
           component={Paper}
           sx={{
-            maxHeight: 300,
-            border: "1px solid",
-            borderColor: "grey.200"
+            boxShadow: 'none',
+            maxHeight: 500,
           }}>
           <Table size="small" stickyHeader>
             <TableBody>{rows}</TableBody>

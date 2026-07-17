@@ -64,7 +64,7 @@ export function HelpDialog(props: HelpDialogProps) {
         <AppIconButton label={Locale.label("common.close")} icon={<CloseIcon />} onClick={onClose} />
       </DialogTitle>
       <DialogContent sx={{ pt: 2 }}>
-        <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
+        <Box sx={{ display: "flex", flexDirection: "column", gap: 2, marginTop: 3 }}>
           {tips.map((tip, i) => (
             <Box key={i} sx={{ display: "flex", gap: 1.5 }}>
               <Box

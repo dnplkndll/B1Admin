@@ -195,7 +195,7 @@ export const TabEdit: React.FC<Props> = (props) => {
                     />
                   </Box>
                   <Box>
-                    <Typography variant="caption" sx={{ color: "text.secondary", mb: 1, display: "block" }}>
+                    <Typography variant="caption" sx={{ color: "text.secondary", display: "block" }}>
                       {Locale.label("sermons.liveStreamTimes.tabEdit.icon")}
                     </Typography>
                     <Box

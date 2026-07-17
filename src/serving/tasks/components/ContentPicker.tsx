@@ -64,7 +64,7 @@ export const ContentPicker: React.FC<Props> = (props) => {
       <DialogContent sx={{ pt: 0 }}>
         <Paper sx={{ borderRadius: 2, overflow: "hidden", p: 2 }}>
           <SmartTabs tabs={tabs} value={activeKey} onChange={(k) => setActiveKey(k)} ariaLabel="content-picker-tabs" />
-          <Box sx={{ minHeight: 400 }} />
+          {/* <Box sx={{ minHeight: 400 }} /> */}
         </Paper>
       </DialogContent>
       <DialogActions sx={{ p: 2, pt: 0 }}>

@@ -68,7 +68,7 @@ export const Services: React.FC = () => {
               <Typography variant="body2" sx={{ fontWeight: 500 }}>
                 {service.label}
               </Typography>
-              {service.recurring && (
+              {!!service.recurring && (
                 <Chip
                   label={Locale.label("sermons.liveStreamTimes.servicesTab.weekly")}
                   size="small"

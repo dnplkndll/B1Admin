@@ -118,7 +118,7 @@ export const WorkflowEdit = (props: Props) => {
             ) : (
               <FormControl fullWidth variant="outlined">
                 <InputLabel>{Locale.label("tasks.workflowCategories.title")}</InputLabel>
-                <Select label={Locale.label("tasks.workflowCategories.title")} value={workflow?.categoryId || ""} name="categoryId" onChange={handleChange} data-testid="workflow-category-select">
+                <Select displayEmpty label={Locale.label("tasks.workflowCategories.title")} value={workflow?.categoryId || ""} name="categoryId" onChange={handleChange} data-testid="workflow-category-select">
                   <MenuItem value="">{Locale.label("tasks.workflowCategories.uncategorized")}</MenuItem>
                   {categories.map((c) => (
                     <MenuItem key={c.id} value={c.id}>{c.name}</MenuItem>

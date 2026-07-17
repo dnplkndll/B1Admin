@@ -268,13 +268,13 @@ export const AuditLogPage: React.FC = () => {
           <Stack direction={{ xs: "column", md: "row" }} spacing={2} alignItems="center">
             <FormControl size="small" sx={{ minWidth: 160 }}>
               <InputLabel>{Locale.label("settings.auditLogPage.module")}</InputLabel>
-              <Select value={module} label={Locale.label("settings.auditLogPage.module")} onChange={(e) => setModule(e.target.value)}>
+              <Select displayEmpty value={module} label={Locale.label("settings.auditLogPage.module")} onChange={(e) => setModule(e.target.value)}>
                 {getModules().map((m) => <MenuItem key={m.value} value={m.value}>{m.label}</MenuItem>)}
               </Select>
             </FormControl>
             <FormControl size="small" sx={{ minWidth: 160 }}>
               <InputLabel>{Locale.label("settings.auditLogPage.category")}</InputLabel>
-              <Select value={category} label={Locale.label("settings.auditLogPage.category")} onChange={(e) => setCategory(e.target.value)}>
+              <Select displayEmpty value={category} label={Locale.label("settings.auditLogPage.category")} onChange={(e) => setCategory(e.target.value)}>
                 {getCategories().map((c) => <MenuItem key={c.value} value={c.value}>{c.label}</MenuItem>)}
               </Select>
             </FormControl>

@@ -106,23 +106,35 @@ export const WorkflowTriggersManager: React.FC<Props> = (props) => {
       {runMessage && <Alert severity="info" sx={{ mb: 1 }} data-testid="run-now-result" onClose={() => setRunMessage(null)}>{runMessage}</Alert>}
       <List dense>
         {triggers.map((t) => (
-          <ListItem key={t.id} disablePadding secondaryAction={rowActions(t)}>
+          <ListItem
+            key={t.id}
+            disablePadding
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              borderRadius: 2,
+              mb: 1.25,
+              border: "1px solid",
+              borderColor: (theme) => theme.palette.mode === "dark" ? "rgba(255, 255, 255, 0.08)" : "#e2e8f0",
+              backgroundColor: "background.paper",
+              boxShadow: "0 2px 4px rgba(0,0,0,0.02)",
+              transition: "all 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
+              "&:hover": {
+                boxShadow: "0 6px 12px rgba(0,0,0,0.05)",
+                transform: "translateY(-1px)",
+              }
+            }}
+          >
             <ListItemButton
               data-testid={"event-trigger-row-" + t.id}
               onClick={() => props.canManage && setEditing(t)}
               sx={{
                 borderRadius: 2,
-                mb: 1.25,
-                border: "1px solid",
-                borderColor: (theme) => theme.palette.mode === "dark" ? "rgba(255, 255, 255, 0.08)" : "#e2e8f0",
-                backgroundColor: "background.paper",
-                boxShadow: "0 2px 4px rgba(0,0,0,0.02)",
-                transition: "all 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
+                flexGrow: 1,
+                pr: 2,
+                backgroundColor: "transparent",
                 "&:hover": {
-                  boxShadow: "0 6px 12px rgba(0,0,0,0.05)",
-                  transform: "translateY(-1px)",
-                  borderColor: "primary.light",
-                  backgroundColor: "background.paper"
+                  backgroundColor: "transparent"
                 }
               }}
             >
@@ -131,23 +143,32 @@ export const WorkflowTriggersManager: React.FC<Props> = (props) => {
                 primary={<Typography variant="body1" sx={{ fontWeight: 600, color: "text.primary" }}>{t.name}</Typography>}
                 secondary={<Typography variant="body2" sx={{ color: "text.secondary", mt: 0.25 }}>{descriptor(t)}</Typography>}
               />
-              {!t.active && <Chip size="small" label={Locale.label("tasks.eventTriggers.paused")} sx={{ fontWeight: 500 }} />}
+              {!t.active && <Chip size="small" label={Locale.label("tasks.eventTriggers.paused")} sx={{ fontWeight: 500, ml: 1, flexShrink: 0 }} />}
             </ListItemButton>
+            {props.canManage && (
+              <Box sx={{ pr: 2, pl: 1, flexShrink: 0 }}>
+                {rowActions(t)}
+              </Box>
+            )}
           </ListItem>
         ))}
         {triggers.length === 0 && <Typography variant="body2" color="text.secondary">{Locale.label("tasks.eventTriggers.noTriggers")}</Typography>}
       </List>
-      {props.canManage && (
-        <Button variant="contained" startIcon={<AddIcon />} data-testid="add-event-trigger-button" onClick={() => setEditing({ active: true, oncePerSubject: true, triggerKind: "event" })} sx={{ mt: 1 }}>
-          {Locale.label("tasks.eventTriggers.addTrigger")}
-        </Button>
-      )}
+      {
+        props.canManage && (
+          <Button variant="contained" startIcon={<AddIcon />} data-testid="add-event-trigger-button" onClick={() => setEditing({ active: true, oncePerSubject: true, triggerKind: "event" })} sx={{ mt: 1 }}>
+            {Locale.label("tasks.eventTriggers.addTrigger")}
+          </Button>
+        )
+      }
 
       <TriggerExecutionsPanel workflowId={props.workflowId} triggers={triggers} canManage={props.canManage} refreshKey={executionsKey} />
 
-      {editing && (
-        <TriggerEditDialog trigger={editing} workflowId={props.workflowId} events={events} onClose={() => setEditing(null)} onSave={handleSaved} />
-      )}
-    </Box>
+      {
+        editing && (
+          <TriggerEditDialog trigger={editing} workflowId={props.workflowId} events={events} onClose={() => setEditing(null)} onSave={handleSaved} />
+        )
+      }
+    </Box >
   );
 };
