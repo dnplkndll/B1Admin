@@ -134,8 +134,8 @@ export const WorkflowBoardPage = () => {
       )}
 
       {tab === "board" && selectedIds.size > 0 && (
-        <Paper data-testid="bulk-action-bar" sx={{ mx: 3, mt: 2, p: 1.5, borderRadius: 2, border: "1px solid", borderColor: "primary.main", backgroundColor: "action.hover" }}>
-          <Stack direction="row" spacing={1} alignItems="center" flexWrap="wrap">
+        <Paper data-testid="bulk-action-bar" sx={{ mx: 3, mt: 2, px: 2.5, py: 1.5, borderRadius: 2, border: "1px solid", borderColor: "primary.light", backgroundColor: "background.paper", boxShadow: "0px 4px 20px rgba(0, 0, 0, 0.05)" }}>
+          <Stack direction="row" spacing={1.5} alignItems="center" flexWrap="wrap">
             <Typography variant="body2" sx={{ fontWeight: 600 }} data-testid="bulk-selected-count">{Locale.label("tasks.workflowBoard.selectedCount").replace("{count}", String(selectedIds.size))}</Typography>
             <Button size="small" variant="contained" color="success" startIcon={<CompleteIcon />} data-testid="bulk-complete-button" onClick={bulkComplete}>{Locale.label("tasks.workflowCard.complete")}</Button>
             <Button size="small" variant="outlined" startIcon={<SnoozeIcon />} data-testid="bulk-snooze-button" onClick={(e) => setSnoozeAnchor(e.currentTarget)}>{Locale.label("tasks.workflowCard.snooze")}</Button>

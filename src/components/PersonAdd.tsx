@@ -35,12 +35,14 @@ export const PersonAdd: React.FC<Props> = ({ addFunction, getPhotoUrl, searchCli
     });
   };
 
+  const filterListString = filterList.join(",");
+
   React.useEffect(() => {
     if (!searchText.trim()) {
       loadRecent();
       setHasSearched(false);
     }
-  }, [searchText, filterList]);
+  }, [searchText, filterListString]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     e.preventDefault();
