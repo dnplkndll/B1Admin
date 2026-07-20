@@ -1421,7 +1421,12 @@
       "optedOutYes": "ऑप्ट आउट हां",
       "removeFromGroup": "समूह से हटाएं",
       "selected": "चयनित",
-      "workflowSuccess": "{count} लोगों को वर्कफ़्लो में जोड़ा गया।"
+      "workflowSuccess": "{count} लोगों को वर्कफ़्लो में जोड़ा गया।",
+      "setMembershipStatus": "सदस्यता स्थिति सेट करें",
+      "setMaritalStatus": "वैवाहिक स्थिति सेट करें",
+      "setGender": "लिंग सेट करें",
+      "setOptedOut": "ऑप्ट आउट सेट करें",
+      "setCampus": "कैंपस सेट करें"
     },
     "demographics": {
       "age": "आयु",

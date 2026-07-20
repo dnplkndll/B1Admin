@@ -223,26 +223,28 @@ export const PersonView = memo(({ person, editFunction, updatedFunction, showFor
     if (!person) return <Loading />;
 
     return (
-      <Grid container spacing={3}>
-        <Grid size={{ xs: 3 }}>
+      <Grid container spacing={3} alignItems="center">
+        <Grid size={{ xs: 12, sm: 3 }} sx={{ display: "flex", justifyContent: "center" }}>
           <div style={{ display: "inline-flex", border: "3px solid #fff", borderRadius: "50%", boxShadow: "0 2px 4px rgba(0,0,0,0.2)" }}>
             <PersonAvatar person={person} size="xxlarge" />
           </div>
         </Grid>
-        <Grid size={{ xs: 9 }}>
-          <h2>{person?.name.display}</h2>
+        <Grid size={{ xs: 12, sm: 9 }}>
           <Grid container spacing={3}>
-            <Grid size={{ xs: 12, md: 6 }}>
-              {leftAttributes}
-              {customFieldAttributes}
-              {userEmail && (
-                <div key="hasLogin">
-                  <Chip label={Locale.label("people.personView.hasLoginLabel").replace("{email}", userEmail)} size="small" color="primary" icon={<Icon>person</Icon>} />
-                </div>
-              )}
+            <Grid size={{ xs: 12, md: 5 }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                <h2 style={{ marginTop: 0, marginBottom: '8px' }}>{person?.name.display}</h2>
+                {leftAttributes}
+                {customFieldAttributes}
+                {userEmail && (
+                  <div key="hasLogin">
+                    <Chip label={Locale.label("people.personView.hasLoginLabel").replace("{email}", userEmail)} size="small" color="primary" icon={<Icon>person</Icon>} />
+                  </div>
+                )}
+              </div>
             </Grid>
-            <Grid size={{ xs: 12, md: 6 }}>
-              <Table className="contactTable">
+            <Grid size={{ xs: 12, md: 7 }}>
+              <Table className="contactTable" size="small">
                 <TableBody>{contactMethods}</TableBody>
               </Table>
             </Grid>

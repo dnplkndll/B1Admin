@@ -1519,7 +1519,12 @@
       "optedOutYes": "Opted Out Yes",
       "removeFromGroup": "Remove From Group",
       "selected": "Selected",
-      "workflowSuccess": "Added {count} people to the workflow."
+      "workflowSuccess": "Added {count} people to the workflow.",
+      "setMembershipStatus": "Set Membership Status",
+      "setMaritalStatus": "Set Marital Status",
+      "setGender": "Set Gender",
+      "setOptedOut": "Set Opted Out",
+      "setCampus": "Set Campus"
     },
     "demographics": {
       "age": "Age",

@@ -1421,7 +1421,12 @@
       "optedOutYes": "Opted Out Oo",
       "removeFromGroup": "Alisin sa Grupo",
       "selected": "Napili",
-      "workflowSuccess": "Naidagdag ang {count} tao sa workflow."
+      "workflowSuccess": "Naidagdag ang {count} tao sa workflow.",
+      "setMembershipStatus": "Itakda ang Katayuan sa Membership",
+      "setMaritalStatus": "Itakda ang Katayuan sa Pag-aasawa",
+      "setGender": "Itakda ang Kasarian",
+      "setOptedOut": "Itakda ang Pag-opt Out",
+      "setCampus": "Itakda ang Campus"
     },
     "demographics": {
       "age": "Edad",

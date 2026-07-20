@@ -1421,7 +1421,12 @@
       "optedOutYes": "منسحب",
       "removeFromGroup": "إزالة من مجموعة",
       "selected": "محدد",
-      "workflowSuccess": "تمت إضافة {count} شخص إلى سير العمل."
+      "workflowSuccess": "تمت إضافة {count} شخص إلى سير العمل.",
+      "setMembershipStatus": "تعيين حالة العضوية",
+      "setMaritalStatus": "تعيين الحالة الاجتماعية",
+      "setGender": "تعيين الجنس",
+      "setOptedOut": "تعيين استبعاد",
+      "setCampus": "تعيين الحرم الجامعي"
     },
     "demographics": {
       "age": "العمر",

@@ -1421,7 +1421,12 @@
       "optedOutYes": "Odhlásenie: Áno",
       "removeFromGroup": "Odstrániť zo skupiny",
       "selected": "Vybraných",
-      "workflowSuccess": "Pridaných {count} osôb do pracovného postupu."
+      "workflowSuccess": "Pridaných {count} osôb do pracovného postupu.",
+      "setMembershipStatus": "Nastaviť stav členstva",
+      "setMaritalStatus": "Nastaviť rodinný stav",
+      "setGender": "Nastaviť pohlavie",
+      "setOptedOut": "Nastaviť odhlásenie",
+      "setCampus": "Nastaviť kampus"
     },
     "demographics": {
       "age": "Vek",

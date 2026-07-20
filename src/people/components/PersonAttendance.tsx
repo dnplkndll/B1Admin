@@ -141,7 +141,7 @@ export const PersonAttendance: React.FC<Props> = memo((props) => {
     .map(f => (
       <FormControl key={f.label} size="small" sx={{ minWidth: 150 }}>
         <InputLabel>{f.label}</InputLabel>
-        <Select value={f.value} label={f.label} onChange={e => f.set(e.target.value)}>
+        <Select value={f.value} label={f.label} displayEmpty onChange={e => f.set(e.target.value)}>
           <MenuItem value="">{f.all}</MenuItem>
           {f.options.map(o => <MenuItem key={o.value} value={o.value}>{o.label}</MenuItem>)}
         </Select>

@@ -1421,7 +1421,12 @@
       "optedOutYes": "Désinscription oui",
       "removeFromGroup": "Retirer du groupe",
       "selected": "Sélectionné",
-      "workflowSuccess": "Ajouté {count} personnes au flux de travail."
+      "workflowSuccess": "Ajouté {count} personnes au flux de travail.",
+      "setMembershipStatus": "Définir le statut d'adhésion",
+      "setMaritalStatus": "Définir l'état civil",
+      "setGender": "Définir le sexe",
+      "setOptedOut": "Définir la désinscription",
+      "setCampus": "Définir le campus"
     },
     "demographics": {
       "age": "Âge",
