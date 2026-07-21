@@ -1518,10 +1518,6 @@
       "removeFromGroup": "Susa Elicenjini",
       "selected": "Kukhetsiwe",
       "workflowSuccess": "Kufakwe bantfu labangu-{count} kuyinchubo yemsebenti.",
-      "setMembershipStatus": "Setha simo sebulunga",
-      "setMaritalStatus": "Setha simo semshado",
-      "setGender": "Setha bulili",
-      "setOptedOut": "Setha kute",
       "setCampus": "Setha ikhampasi"
     },
     "demographics": {

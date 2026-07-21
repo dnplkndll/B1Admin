@@ -1422,10 +1422,6 @@
       "removeFromGroup": "Fjern fra gruppe",
       "selected": "Valgt",
       "workflowSuccess": "La til {count} personer i arbeidsflyten.",
-      "setMembershipStatus": "Angi medlemskapsstatus",
-      "setMaritalStatus": "Angi sivilstand",
-      "setGender": "Angi kjønn",
-      "setOptedOut": "Angi avmelding",
       "setCampus": "Angi campus"
     },
     "demographics": {

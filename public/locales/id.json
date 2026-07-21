@@ -1422,10 +1422,6 @@
       "removeFromGroup": "Hapus dari Grup",
       "selected": "Dipilih",
       "workflowSuccess": "Menambahkan {count} orang ke alur kerja.",
-      "setMembershipStatus": "Atur Status Keanggotaan",
-      "setMaritalStatus": "Atur Status Pernikahan",
-      "setGender": "Atur Jenis Kelamin",
-      "setOptedOut": "Atur Pengecualian",
       "setCampus": "Atur Kampus"
     },
     "demographics": {

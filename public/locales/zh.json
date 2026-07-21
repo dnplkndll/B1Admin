@@ -1422,10 +1422,6 @@
       "removeFromGroup": "从团体中移除",
       "selected": "已选中",
       "workflowSuccess": "已将 {count} 人添加到工作流。",
-      "setMembershipStatus": "设置会员状态",
-      "setMaritalStatus": "设置婚姻状况",
-      "setGender": "设置性别",
-      "setOptedOut": "设置退出",
       "setCampus": "设置校园"
     },
     "demographics": {

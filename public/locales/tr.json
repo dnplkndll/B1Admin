@@ -1422,10 +1422,6 @@
       "removeFromGroup": "Gruptan Çıkar",
       "selected": "Seçili",
       "workflowSuccess": "İş akışına {count} kişi eklendi.",
-      "setMembershipStatus": "Üyelik Durumunu Ayarla",
-      "setMaritalStatus": "Medeni Durumu Ayarla",
-      "setGender": "Cinsiyeti Ayarla",
-      "setOptedOut": "Abonelik İptalini Ayarla",
       "setCampus": "Kampüsü Ayarla"
     },
     "demographics": {

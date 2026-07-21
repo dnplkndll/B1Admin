@@ -1422,10 +1422,6 @@
       "removeFromGroup": "Xóa khỏi nhóm",
       "selected": "Đã chọn",
       "workflowSuccess": "Đã thêm {count} người vào quy trình.",
-      "setMembershipStatus": "Đặt trạng thái thành viên",
-      "setMaritalStatus": "Đặt tình trạng hôn nhân",
-      "setGender": "Đặt giới tính",
-      "setOptedOut": "Đặt từ chối",
       "setCampus": "Đặt cơ sở"
     },
     "demographics": {

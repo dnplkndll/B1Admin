@@ -1422,10 +1422,6 @@
       "removeFromGroup": "Ta bort från grupp",
       "selected": "Valda",
       "workflowSuccess": "Lade till {count} personer i arbetsflödet.",
-      "setMembershipStatus": "Ange medlemskapsstatus",
-      "setMaritalStatus": "Ange civilstånd",
-      "setGender": "Ange kön",
-      "setOptedOut": "Ange avregistrering",
       "setCampus": "Ange campus"
     },
     "demographics": {

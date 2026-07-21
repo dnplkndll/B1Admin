@@ -1422,10 +1422,6 @@
       "removeFromGroup": "Eliminar del grupo",
       "selected": "Seleccionados",
       "workflowSuccess": "Se agregaron {count} personas al flujo de trabajo.",
-      "setMembershipStatus": "Establecer estado de membresía",
-      "setMaritalStatus": "Establecer estado civil",
-      "setGender": "Establecer género",
-      "setOptedOut": "Establecer exclusión",
       "setCampus": "Establecer campus"
     },
     "demographics": {

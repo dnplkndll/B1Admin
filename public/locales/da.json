@@ -1422,10 +1422,6 @@
       "removeFromGroup": "Fjern fra gruppe",
       "selected": "Valgt",
       "workflowSuccess": "Tilføjede {count} personer til arbejdsgangen.",
-      "setMembershipStatus": "Angiv medlemskabsstatus",
-      "setMaritalStatus": "Angiv civilstand",
-      "setGender": "Angiv køn",
-      "setOptedOut": "Angiv afmeldt",
       "setCampus": "Angiv campus"
     },
     "demographics": {

@@ -1422,10 +1422,6 @@
       "removeFromGroup": "Odebrat ze skupiny",
       "selected": "Vybráno",
       "workflowSuccess": "Přidáno {count} osob do pracovního postupu.",
-      "setMembershipStatus": "Nastavit stav členství",
-      "setMaritalStatus": "Nastavit rodinný stav",
-      "setGender": "Nastavit pohlaví",
-      "setOptedOut": "Nastavit odhlášení",
       "setCampus": "Nastavit kampus"
     },
     "demographics": {

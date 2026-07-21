@@ -1422,10 +1422,6 @@
       "removeFromGroup": "Usuń z grupy",
       "selected": "Wybrano",
       "workflowSuccess": "Dodano {count} osób do przepływu pracy.",
-      "setMembershipStatus": "Ustaw status członkostwa",
-      "setMaritalStatus": "Ustaw stan cywilny",
-      "setGender": "Ustaw płeć",
-      "setOptedOut": "Ustaw rezygnację",
       "setCampus": "Ustaw kampus"
     },
     "demographics": {

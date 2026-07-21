@@ -1422,10 +1422,6 @@
       "removeFromGroup": "Verwijderen uit groep",
       "selected": "Geselecteerd",
       "workflowSuccess": "{count} personen toegevoegd aan de workflow.",
-      "setMembershipStatus": "Lidmaatschapsstatus instellen",
-      "setMaritalStatus": "Burgerlijke staat instellen",
-      "setGender": "Geslacht instellen",
-      "setOptedOut": "Afmelding instellen",
       "setCampus": "Campus instellen"
     },
     "demographics": {
