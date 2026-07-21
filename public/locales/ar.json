@@ -1421,7 +1421,8 @@
       "optedOutYes": "منسحب",
       "removeFromGroup": "إزالة من مجموعة",
       "selected": "محدد",
-      "workflowSuccess": "تمت إضافة {count} شخص إلى سير العمل."
+      "workflowSuccess": "تمت إضافة {count} شخص إلى سير العمل.",
+      "setCampus": "تعيين الحرم الجامعي"
     },
     "demographics": {
       "age": "العمر",

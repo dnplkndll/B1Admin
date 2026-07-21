@@ -1421,7 +1421,8 @@
       "optedOutYes": "Leiratkozott",
       "removeFromGroup": "Eltávolítás csoportból",
       "selected": "Kiválasztva",
-      "workflowSuccess": "{count} személy hozzáadva a munkafolyamathoz."
+      "workflowSuccess": "{count} személy hozzáadva a munkafolyamathoz.",
+      "setCampus": "Kampusz beállítása"
     },
     "demographics": {
       "age": "Életkor",

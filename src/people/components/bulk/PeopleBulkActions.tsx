@@ -92,10 +92,10 @@ export const PeopleBulkActions: React.FC<Props> = (props) => {
     campusId: <CampusIcon fontSize="small" />
   };
   const menuLabels: Record<string, string> = {
-    membershipStatus: "people.bulk.setMembershipStatus",
-    maritalStatus: "people.bulk.setMaritalStatus",
-    gender: "people.bulk.setGender",
-    optedOut: "people.bulk.setOptedOut",
+    membershipStatus: "people.bulk.membershipStatusTitle",
+    maritalStatus: "people.bulk.maritalStatusTitle",
+    gender: "people.bulk.genderTitle",
+    optedOut: "people.bulk.optedOutTitle",
     campusId: "people.bulk.setCampus"
   };
 

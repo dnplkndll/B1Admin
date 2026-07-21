@@ -1421,7 +1421,8 @@
       "optedOutYes": "Avmelding ja",
       "removeFromGroup": "Fjern fra gruppe",
       "selected": "Valgt",
-      "workflowSuccess": "La til {count} personer i arbeidsflyten."
+      "workflowSuccess": "La til {count} personer i arbeidsflyten.",
+      "setCampus": "Angi campus"
     },
     "demographics": {
       "age": "Alder",

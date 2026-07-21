@@ -1421,7 +1421,8 @@
       "optedOutYes": "Excluido",
       "removeFromGroup": "Eliminar del grupo",
       "selected": "Seleccionados",
-      "workflowSuccess": "Se agregaron {count} personas al flujo de trabajo."
+      "workflowSuccess": "Se agregaron {count} personas al flujo de trabajo.",
+      "setCampus": "Establecer campus"
     },
     "demographics": {
       "age": "Edad",

@@ -1421,7 +1421,8 @@
       "optedOutYes": "Отказ: да",
       "removeFromGroup": "Удалить из группы",
       "selected": "Выбрано",
-      "workflowSuccess": "Добавлено {count} человек в рабочий процесс."
+      "workflowSuccess": "Добавлено {count} человек в рабочий процесс.",
+      "setCampus": "Установить кампус"
     },
     "demographics": {
       "age": "Возраст",

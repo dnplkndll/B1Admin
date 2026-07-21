@@ -1421,7 +1421,8 @@
       "optedOutYes": "已退出",
       "removeFromGroup": "从团体中移除",
       "selected": "已选中",
-      "workflowSuccess": "已将 {count} 人添加到工作流。"
+      "workflowSuccess": "已将 {count} 人添加到工作流。",
+      "setCampus": "设置校园"
     },
     "demographics": {
       "age": "年龄",

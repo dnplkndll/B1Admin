@@ -1517,7 +1517,8 @@
       "optedOutYes": "Utikhiphile",
       "removeFromGroup": "Susa Elicenjini",
       "selected": "Kukhetsiwe",
-      "workflowSuccess": "Kufakwe bantfu labangu-{count} kuyinchubo yemsebenti."
+      "workflowSuccess": "Kufakwe bantfu labangu-{count} kuyinchubo yemsebenti.",
+      "setCampus": "Setha ikhampasi"
     },
     "demographics": {
       "age": "Iminyaka",

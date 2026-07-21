@@ -1421,7 +1421,8 @@
       "optedOutYes": "Odjava: da",
       "removeFromGroup": "Odstrani iz skupine",
       "selected": "Izbrano",
-      "workflowSuccess": "Dodanih {count} oseb v potek dela."
+      "workflowSuccess": "Dodanih {count} oseb v potek dela.",
+      "setCampus": "Nastavi kampus"
     },
     "demographics": {
       "age": "Starost",

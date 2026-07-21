@@ -1421,7 +1421,8 @@
       "optedOutYes": "Rezygnacja — Tak",
       "removeFromGroup": "Usuń z grupy",
       "selected": "Wybrano",
-      "workflowSuccess": "Dodano {count} osób do przepływu pracy."
+      "workflowSuccess": "Dodano {count} osób do przepływu pracy.",
+      "setCampus": "Ustaw kampus"
     },
     "demographics": {
       "age": "Wiek",

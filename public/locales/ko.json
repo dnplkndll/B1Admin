@@ -1421,7 +1421,8 @@
       "optedOutYes": "수신 거부 예",
       "removeFromGroup": "그룹에서 제거",
       "selected": "선택됨",
-      "workflowSuccess": "워크플로에 {count}명을 추가했습니다."
+      "workflowSuccess": "워크플로에 {count}명을 추가했습니다.",
+      "setCampus": "캠퍼스 설정"
     },
     "demographics": {
       "age": "연령",

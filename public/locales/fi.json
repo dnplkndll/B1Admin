@@ -1421,7 +1421,8 @@
       "optedOutYes": "Kieltäytynyt",
       "removeFromGroup": "Poista ryhmästä",
       "selected": "Valittu",
-      "workflowSuccess": "Lisättiin {count} henkilöä työnkulkuun."
+      "workflowSuccess": "Lisättiin {count} henkilöä työnkulkuun.",
+      "setCampus": "Aseta kampus"
     },
     "demographics": {
       "age": "Ikä",

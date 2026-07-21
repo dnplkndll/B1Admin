@@ -1421,7 +1421,8 @@
       "optedOutYes": "Abgemeldet",
       "removeFromGroup": "Aus Gruppe entfernen",
       "selected": "Ausgewählt",
-      "workflowSuccess": "{count} Personen zum Workflow hinzugefügt."
+      "workflowSuccess": "{count} Personen zum Workflow hinzugefügt.",
+      "setCampus": "Campus festlegen"
     },
     "demographics": {
       "age": "Alter",

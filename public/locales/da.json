@@ -1421,7 +1421,8 @@
       "optedOutYes": "Fravalgt ja",
       "removeFromGroup": "Fjern fra gruppe",
       "selected": "Valgt",
-      "workflowSuccess": "Tilføjede {count} personer til arbejdsgangen."
+      "workflowSuccess": "Tilføjede {count} personer til arbejdsgangen.",
+      "setCampus": "Angiv campus"
     },
     "demographics": {
       "age": "Alder",

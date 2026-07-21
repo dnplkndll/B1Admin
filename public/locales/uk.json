@@ -1421,7 +1421,8 @@
       "optedOutYes": "Відмова: так",
       "removeFromGroup": "Видалити з групи",
       "selected": "Вибрано",
-      "workflowSuccess": "Додано {count} осіб до процесу."
+      "workflowSuccess": "Додано {count} осіб до процесу.",
+      "setCampus": "Встановити кампус"
     },
     "demographics": {
       "age": "Вік",

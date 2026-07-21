@@ -1421,7 +1421,8 @@
       "optedOutYes": "Atsisakymas taip",
       "removeFromGroup": "Pašalinti iš grupės",
       "selected": "Pasirinkta",
-      "workflowSuccess": "Pridėta {count} žmonių į darbo eigą."
+      "workflowSuccess": "Pridėta {count} žmonių į darbo eigą.",
+      "setCampus": "Nustatyti miestelį"
     },
     "demographics": {
       "age": "Amžius",

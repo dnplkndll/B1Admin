@@ -1421,7 +1421,8 @@
       "optedOutYes": "Одбијање: Да",
       "removeFromGroup": "Уклони из групе",
       "selected": "Изабрано",
-      "workflowSuccess": "Додато {count} особа у ток рада."
+      "workflowSuccess": "Додато {count} особа у ток рада.",
+      "setCampus": "Podesi kampus"
     },
     "demographics": {
       "age": "Старост",

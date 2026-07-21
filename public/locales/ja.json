@@ -1421,7 +1421,8 @@
       "optedOutYes": "オプトアウトする",
       "removeFromGroup": "グループから削除",
       "selected": "選択中",
-      "workflowSuccess": "{count}人をワークフローに追加しました。"
+      "workflowSuccess": "{count}人をワークフローに追加しました。",
+      "setCampus": "キャンパスを設定"
     },
     "demographics": {
       "age": "年齢",

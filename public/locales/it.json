@@ -1421,7 +1421,8 @@
       "optedOutYes": "Rinuncia: Sì",
       "removeFromGroup": "Rimuovi dal gruppo",
       "selected": "Selezionati",
-      "workflowSuccess": "Aggiunte {count} persone al flusso di lavoro."
+      "workflowSuccess": "Aggiunte {count} persone al flusso di lavoro.",
+      "setCampus": "Imposta campus"
     },
     "demographics": {
       "age": "Età",

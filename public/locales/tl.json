@@ -1421,7 +1421,8 @@
       "optedOutYes": "Opted Out Oo",
       "removeFromGroup": "Alisin sa Grupo",
       "selected": "Napili",
-      "workflowSuccess": "Naidagdag ang {count} tao sa workflow."
+      "workflowSuccess": "Naidagdag ang {count} tao sa workflow.",
+      "setCampus": "Itakda ang Campus"
     },
     "demographics": {
       "age": "Edad",

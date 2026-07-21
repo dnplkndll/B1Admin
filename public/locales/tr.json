@@ -1421,7 +1421,8 @@
       "optedOutYes": "Vazgeçme Evet",
       "removeFromGroup": "Gruptan Çıkar",
       "selected": "Seçili",
-      "workflowSuccess": "İş akışına {count} kişi eklendi."
+      "workflowSuccess": "İş akışına {count} kişi eklendi.",
+      "setCampus": "Kampüsü Ayarla"
     },
     "demographics": {
       "age": "Yaş",

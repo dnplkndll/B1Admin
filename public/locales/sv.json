@@ -1421,7 +1421,8 @@
       "optedOutYes": "Avanmäld",
       "removeFromGroup": "Ta bort från grupp",
       "selected": "Valda",
-      "workflowSuccess": "Lade till {count} personer i arbetsflödet."
+      "workflowSuccess": "Lade till {count} personer i arbetsflödet.",
+      "setCampus": "Ange campus"
     },
     "demographics": {
       "age": "Ålder",

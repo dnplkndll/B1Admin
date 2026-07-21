@@ -1421,7 +1421,8 @@
       "optedOutYes": "Tidak Berlangganan Ya",
       "removeFromGroup": "Hapus dari Grup",
       "selected": "Dipilih",
-      "workflowSuccess": "Menambahkan {count} orang ke alur kerja."
+      "workflowSuccess": "Menambahkan {count} orang ke alur kerja.",
+      "setCampus": "Atur Kampus"
     },
     "demographics": {
       "age": "Usia",

@@ -1421,7 +1421,8 @@
       "optedOutYes": "Afgemeld ja",
       "removeFromGroup": "Verwijderen uit groep",
       "selected": "Geselecteerd",
-      "workflowSuccess": "{count} personen toegevoegd aan de workflow."
+      "workflowSuccess": "{count} personen toegevoegd aan de workflow.",
+      "setCampus": "Campus instellen"
     },
     "demographics": {
       "age": "Leeftijd",
