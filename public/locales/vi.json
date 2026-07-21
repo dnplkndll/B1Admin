@@ -529,6 +529,11 @@
       "upcomingEventsTitle": "Xem những gì đang diễn ra"
     },
     "myGroups": "My Các nhóm",
+    "needsAttention": {
+      "approvals": "{count} phê duyệt lịch đang chờ",
+      "joinRequests": "{count} yêu cầu tham gia nhóm đang chờ",
+      "title": "Cần chú ý"
+    },
     "peopleSearch": {
       "ariaSearch": "Tìm kiếm người",
       "ariaSearchBox": "searchBox",
@@ -1304,6 +1309,7 @@
       "roomsResources": "Phòng & Tài nguyên",
       "sermons": "Bài giảng",
       "stripeImport": "Nhập Stripe",
+      "site": "Trang",
       "website": "Trang web"
     }
   },

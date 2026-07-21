@@ -1397,7 +1397,8 @@
       "roomsResources": "Rooms & Resources",
       "sermons": "Sermons",
       "stripeImport": "Stripe Import",
-      "website": "Website"
+      "website": "Website",
+      "site": "Site"
     }
   },
   "mobile": {

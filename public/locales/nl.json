@@ -529,6 +529,11 @@
       "upcomingEventsTitle": "Bekijk wat er gebeurt"
     },
     "myGroups": "Mijn groepen",
+    "needsAttention": {
+      "approvals": "{count} in afwachting van kalendergoedkeuringen",
+      "joinRequests": "{count} in afwachting van groepsaanmeldingen",
+      "title": "Heeft aandacht nodig"
+    },
     "peopleSearch": {
       "ariaSearch": "Zoek mensen",
       "ariaSearchBox": "zoekvak",
@@ -1304,6 +1309,7 @@
       "roomsResources": "Ruimten en middelen",
       "sermons": "Preken",
       "stripeImport": "Stripe-import",
+      "site": "Site",
       "website": "Website"
     }
   },

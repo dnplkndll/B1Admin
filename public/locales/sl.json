@@ -529,6 +529,11 @@
       "upcomingEventsTitle": "Poglejte, kaj se dogaja"
     },
     "myGroups": "Moje skupin",
+    "needsAttention": {
+      "approvals": "{count} čakajočih odobritev koledarja",
+      "joinRequests": "{count} čakajočih prošenj za pridružitev skupini",
+      "title": "Zahteva pozornost"
+    },
     "peopleSearch": {
       "ariaSearch": "Iskanje ljudi",
       "ariaSearchBox": "iskalno polje",
@@ -1304,6 +1309,7 @@
       "roomsResources": "Sobe in viri",
       "sermons": "Pridige",
       "stripeImport": "Uvoz Stripe",
+      "site": "Spletno mesto",
       "website": "Spletna stran"
     }
   },

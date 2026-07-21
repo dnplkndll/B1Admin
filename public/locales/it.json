@@ -529,6 +529,11 @@
       "upcomingEventsTitle": "Vedi Cosa Sta Succedendo"
     },
     "myGroups": "I Miei Gruppi",
+    "needsAttention": {
+      "approvals": "{count} approvazioni del calendario in attesa",
+      "joinRequests": "{count} richieste di adesione al gruppo in attesa",
+      "title": "Richiede attenzione"
+    },
     "peopleSearch": {
       "ariaSearch": "Cerca persone",
       "ariaSearchBox": "casellaDiRicerca",
@@ -1304,6 +1309,7 @@
       "roomsResources": "Sale e risorse",
       "sermons": "Sermoni",
       "stripeImport": "Importazione Stripe",
+      "site": "Sito",
       "website": "Sito web"
     }
   },

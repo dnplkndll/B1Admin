@@ -529,6 +529,11 @@
       "upcomingEventsTitle": "Sehen Sie, was los ist"
     },
     "myGroups": "Meine Gruppen",
+    "needsAttention": {
+      "approvals": "{count} ausstehende Kalenderfreigaben",
+      "joinRequests": "{count} ausstehende Gruppenbeitrittsanfragen",
+      "title": "Erfordert Aufmerksamkeit"
+    },
     "peopleSearch": {
       "ariaSearch": "Personen suchen",
       "ariaSearchBox": "searchBox",
@@ -1304,6 +1309,7 @@
       "roomsResources": "Räume & Ressourcen",
       "sermons": "Predigten",
       "stripeImport": "Stripe-Import",
+      "site": "Seite",
       "website": "Webseite"
     }
   },

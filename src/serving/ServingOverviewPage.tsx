@@ -255,7 +255,7 @@ export const ServingOverviewPage = () => {
             <TextField label={Locale.label("plans.servingOverviewPage.endDate")} type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} size="small" InputLabelProps={{ shrink: true }} />
             <FormControl size="small" sx={{ minWidth: 160 }}>
               <InputLabel>{Locale.label("plans.servingOverviewPage.highlightPerson")}</InputLabel>
-              <Select label={Locale.label("plans.servingOverviewPage.highlightPerson")} value={highlightPersonId} onChange={(e) => setHighlightPersonId(e.target.value)} data-testid="highlight-person-select">
+              <Select displayEmpty label={Locale.label("plans.servingOverviewPage.highlightPerson")} value={highlightPersonId} onChange={(e) => setHighlightPersonId(e.target.value)} data-testid="highlight-person-select">
                 <MenuItem value="">{Locale.label("plans.servingOverviewPage.highlightAll")}</MenuItem>
                 {personIds.map(id => <MenuItem key={id} value={id}>{getDisplayName(id)}</MenuItem>)}
               </Select>
