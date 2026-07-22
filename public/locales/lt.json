@@ -529,6 +529,11 @@
       "upcomingEventsTitle": "Pažiūrėkite, kas vyksta"
     },
     "myGroups": "My Groups",
+    "needsAttention": {
+      "approvals": "{count} laukiantys kalendoriaus patvirtinimai",
+      "joinRequests": "{count} laukiantys prašymai prisijungti prie grupės",
+      "title": "Reikalauja dėmesio"
+    },
     "peopleSearch": {
       "ariaSearch": "Ieškoti žmonių",
       "ariaSearchBox": "paieškosLaukas",
@@ -1304,6 +1309,7 @@
       "roomsResources": "Patalpos ir ištekliai",
       "sermons": "Pamokslai",
       "stripeImport": "Stripe importavimas",
+      "site": "Svetainė",
       "website": "Svetainė"
     }
   },

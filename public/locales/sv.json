@@ -529,6 +529,11 @@
       "upcomingEventsTitle": "Se vad som händer"
     },
     "myGroups": "Mina grupper",
+    "needsAttention": {
+      "approvals": "{count} väntande kalendergodkännanden",
+      "joinRequests": "{count} väntande förfrågningar om att gå med i grupp",
+      "title": "Kräver uppmärksamhet"
+    },
     "peopleSearch": {
       "ariaSearch": "Sök personer",
       "ariaSearchBox": "sökruta",
@@ -1304,6 +1309,7 @@
       "roomsResources": "Lokaler och resurser",
       "sermons": "Predikningar",
       "stripeImport": "Stripe-import",
+      "site": "Webbplats",
       "website": "Webbplats"
     }
   },

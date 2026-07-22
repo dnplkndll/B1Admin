@@ -529,6 +529,11 @@
       "upcomingEventsTitle": "Neler Oluyor Görün"
     },
     "myGroups": "My Groups",
+    "needsAttention": {
+      "approvals": "{count} bekleyen takvim onayı",
+      "joinRequests": "{count} bekleyen grup katılım isteği",
+      "title": "Dikkat gerektiriyor"
+    },
     "peopleSearch": {
       "ariaSearch": "Kişi ara",
       "ariaSearchBox": "arama kutusu",
@@ -1304,6 +1309,7 @@
       "roomsResources": "Odalar ve Kaynaklar",
       "sermons": "Vaazlar",
       "stripeImport": "Stripe İçe Aktarma",
+      "site": "Site",
       "website": "Web Sitesi"
     }
   },

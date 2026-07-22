@@ -529,6 +529,11 @@
       "upcomingEventsTitle": "Se hvad der sker"
     },
     "myGroups": "Mine grupper",
+    "needsAttention": {
+      "approvals": "{count} afventende kalendergodkendelser",
+      "joinRequests": "{count} afventende anmodninger om at deltage i gruppe",
+      "title": "Kræver opmærksomhed"
+    },
     "peopleSearch": {
       "ariaSearch": "Søg personer",
       "ariaSearchBox": "searchBox",
@@ -1304,6 +1309,7 @@
       "roomsResources": "Lokaler og ressourcer",
       "sermons": "Prædikener",
       "stripeImport": "Stripe-import",
+      "site": "Websted",
       "website": "Hjemmeside"
     }
   },

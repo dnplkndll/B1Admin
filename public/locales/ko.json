@@ -529,6 +529,11 @@
       "upcomingEventsTitle": "무슨 일이 있는지 보기"
     },
     "myGroups": "내 그룹",
+    "needsAttention": {
+      "approvals": "{count}건의 대기 중인 캘린더 승인",
+      "joinRequests": "{count}건의 대기 중인 그룹 가입 요청",
+      "title": "주의 필요"
+    },
     "peopleSearch": {
       "ariaSearch": "사람 검색",
       "ariaSearchBox": "검색창",
@@ -1304,6 +1309,7 @@
       "roomsResources": "공간 및 자원",
       "sermons": "설교",
       "stripeImport": "Stripe 가져오기",
+      "site": "사이트",
       "website": "웹사이트"
     }
   },

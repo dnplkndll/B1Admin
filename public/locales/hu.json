@@ -529,6 +529,11 @@
       "upcomingEventsTitle": "Nézze meg, mi történik"
     },
     "myGroups": "My Groups",
+    "needsAttention": {
+      "approvals": "{count} függőben lévő naptárjóváhagyás",
+      "joinRequests": "{count} függőben lévő csoportcsatlakozási kérelem",
+      "title": "Figyelmet igényel"
+    },
     "peopleSearch": {
       "ariaSearch": "Emberek keresése",
       "ariaSearchBox": "keresőmező",
@@ -1304,6 +1309,7 @@
       "roomsResources": "Termek és erőforrások",
       "sermons": "Igehirdetések",
       "stripeImport": "Stripe importálás",
+      "site": "Oldal",
       "website": "Weboldal"
     }
   },

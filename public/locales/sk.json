@@ -529,6 +529,11 @@
       "upcomingEventsTitle": "Pozrite si, čo sa deje"
     },
     "myGroups": "My Groups",
+    "needsAttention": {
+      "approvals": "{count} čakajúcich schválení kalendára",
+      "joinRequests": "{count} čakajúcich žiadostí o pripojenie k skupine",
+      "title": "Vyžaduje pozornosť"
+    },
     "peopleSearch": {
       "ariaSearch": "Hľadať ľudí",
       "ariaSearchBox": "searchBox",
@@ -1304,6 +1309,7 @@
       "roomsResources": "Miestnosti a zdroje",
       "sermons": "Kázne",
       "stripeImport": "Import Stripe",
+      "site": "Stránka",
       "website": "Webová stránka"
     }
   },

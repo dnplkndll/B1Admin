@@ -529,6 +529,11 @@
       "upcomingEventsTitle": "何が起きているかを見る"
     },
     "myGroups": "My Groups",
+    "needsAttention": {
+      "approvals": "保留中のカレンダー承認: {count}件",
+      "joinRequests": "保留中のグループ参加リクエスト: {count}件",
+      "title": "注意が必要"
+    },
     "peopleSearch": {
       "ariaSearch": "人を検索",
       "ariaSearchBox": "検索ボックス",
@@ -1304,6 +1309,7 @@
       "roomsResources": "部屋・リソース",
       "sermons": "説教",
       "stripeImport": "Stripeインポート",
+      "site": "サイト",
       "website": "ウェブサイト"
     }
   },

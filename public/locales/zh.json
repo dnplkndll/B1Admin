@@ -529,6 +529,11 @@
       "upcomingEventsTitle": "了解最新动态"
     },
     "myGroups": "我的群组",
+    "needsAttention": {
+      "approvals": "{count}个待处理的日历审批",
+      "joinRequests": "{count}个待处理的群组加入请求",
+      "title": "需要注意"
+    },
     "peopleSearch": {
       "ariaSearch": "搜索人员",
       "ariaSearchBox": "searchBox",
@@ -1304,6 +1309,7 @@
       "roomsResources": "房间与资源",
       "sermons": "讲道",
       "stripeImport": "Stripe 导入",
+      "site": "站点",
       "website": "网站"
     }
   },
