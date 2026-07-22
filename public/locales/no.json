@@ -529,6 +529,11 @@
       "upcomingEventsTitle": "Se hva som skjer"
     },
     "myGroups": "Mine grupper",
+    "needsAttention": {
+      "approvals": "{count} ventende kalendergodkjenninger",
+      "joinRequests": "{count} ventende forespørsler om å bli med i gruppe",
+      "title": "Trenger oppmerksomhet"
+    },
     "peopleSearch": {
       "ariaSearch": "Søk personer",
       "ariaSearchBox": "searchBox",
@@ -1304,6 +1309,7 @@
       "roomsResources": "Rom og ressurser",
       "sermons": "Prekener",
       "stripeImport": "Stripe-import",
+      "site": "Nettsted",
       "website": "Nettsted"
     }
   },

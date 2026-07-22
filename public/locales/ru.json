@@ -529,6 +529,11 @@
       "upcomingEventsTitle": "Узнать, что происходит"
     },
     "myGroups": "Мои группы",
+    "needsAttention": {
+      "approvals": "{count} ожидающих одобрений календаря",
+      "joinRequests": "{count} ожидающих запросов на присоединение к группе",
+      "title": "Требует внимания"
+    },
     "peopleSearch": {
       "ariaSearch": "Поиск людей",
       "ariaSearchBox": "searchBox",
@@ -1304,6 +1309,7 @@
       "roomsResources": "Помещения и ресурсы",
       "sermons": "Проповеди",
       "stripeImport": "Импорт Stripe",
+      "site": "Сайт",
       "website": "Веб-сайт"
     }
   },

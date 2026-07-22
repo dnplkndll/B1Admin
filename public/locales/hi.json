@@ -529,6 +529,11 @@
       "upcomingEventsTitle": "देखें क्या हो रहा है"
     },
     "myGroups": "मेरे समूह",
+    "needsAttention": {
+      "approvals": "{count} लंबित कैलेंडर स्वीकृतियां",
+      "joinRequests": "{count} लंबित समूह में शामिल होने के अनुरोध",
+      "title": "ध्यान देने की आवश्यकता है"
+    },
     "peopleSearch": {
       "ariaSearch": "लोगों को खोजें",
       "ariaSearchBox": "खोज बॉक्स",
@@ -1304,6 +1309,7 @@
       "roomsResources": "कमरे और संसाधन",
       "sermons": "उपदेश",
       "stripeImport": "Stripe आयात",
+      "site": "साइट",
       "website": "वेबसाइट"
     }
   },

@@ -529,6 +529,11 @@
       "upcomingEventsTitle": "Видите шта се дешава"
     },
     "myGroups": "Моје групе",
+    "needsAttention": {
+      "approvals": "{count} на чекању одобрења календара",
+      "joinRequests": "{count} на чекању захтева за придруживање групи",
+      "title": "Захтева пажњу"
+    },
     "peopleSearch": {
       "ariaSearch": "Претражи људе",
       "ariaSearchBox": "поље за претрагу",
@@ -1304,6 +1309,7 @@
       "roomsResources": "Просторије и ресурси",
       "sermons": "Проповеди",
       "stripeImport": "Stripe увоз",
+      "site": "Сајт",
       "website": "Веб локација"
     }
   },

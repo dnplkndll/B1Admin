@@ -529,6 +529,11 @@
       "upcomingEventsTitle": "Tingnan Kung Anong Nangyayari"
     },
     "myGroups": "Aking mga Grupo",
+    "needsAttention": {
+      "approvals": "{count} nakabinbing pag-apruba ng kalendaryo",
+      "joinRequests": "{count} nakabinbing kahilingan sa pagsali sa grupo",
+      "title": "Kailangan ng pansin"
+    },
     "peopleSearch": {
       "ariaSearch": "Maghanap ng mga tao",
       "ariaSearchBox": "kahon ng paghahanap",
@@ -1304,6 +1309,7 @@
       "roomsResources": "Mga Silid at Mapagkukunan",
       "sermons": "Mga Sermon",
       "stripeImport": "Stripe Import",
+      "site": "Site",
       "website": "Website"
     }
   },

@@ -529,6 +529,11 @@
       "upcomingEventsTitle": "Katso, mitä tapahtuu"
     },
     "myGroups": "Omat ryhmät",
+    "needsAttention": {
+      "approvals": "{count} odottavaa kalenterihyväksyntää",
+      "joinRequests": "{count} odottavaa ryhmään liittymispyyntöä",
+      "title": "Vaatii huomiota"
+    },
     "peopleSearch": {
       "ariaSearch": "Etsi ihmisiä",
       "ariaSearchBox": "hakukenttä",
@@ -1304,6 +1309,7 @@
       "roomsResources": "Tilat ja resurssit",
       "sermons": "Saarnat",
       "stripeImport": "Stripe-tuonti",
+      "site": "Sivusto",
       "website": "Verkkosivusto"
     }
   },

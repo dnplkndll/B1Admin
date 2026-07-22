@@ -529,6 +529,11 @@
       "upcomingEventsTitle": "Lihat Apa yang Sedang Terjadi"
     },
     "myGroups": "My Groups",
+    "needsAttention": {
+      "approvals": "{count} persetujuan kalender tertunda",
+      "joinRequests": "{count} permintaan bergabung grup tertunda",
+      "title": "Perlu perhatian"
+    },
     "peopleSearch": {
       "ariaSearch": "Cari orang",
       "ariaSearchBox": "kotak pencarian",
@@ -1304,6 +1309,7 @@
       "roomsResources": "Ruangan & Sumber Daya",
       "sermons": "Khotbah",
       "stripeImport": "Impor Stripe",
+      "site": "Situs",
       "website": "Situs Web"
     }
   },

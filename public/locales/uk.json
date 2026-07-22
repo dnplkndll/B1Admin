@@ -529,6 +529,11 @@
       "upcomingEventsTitle": "Подивіться, що відбувається"
     },
     "myGroups": "Мої групи",
+    "needsAttention": {
+      "approvals": "{count} очікують затвердження календаря",
+      "joinRequests": "{count} очікують запитів на приєднання до групи",
+      "title": "Потребує уваги"
+    },
     "peopleSearch": {
       "ariaSearch": "Пошук людей",
       "ariaSearchBox": "searchBox",
@@ -1304,6 +1309,7 @@
       "roomsResources": "Кімнати та ресурси",
       "sermons": "Проповіді",
       "stripeImport": "Імпорт Stripe",
+      "site": "Сайт",
       "website": "Веб-сайт"
     }
   },

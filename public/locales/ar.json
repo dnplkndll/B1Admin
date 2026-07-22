@@ -529,6 +529,11 @@
       "upcomingEventsTitle": "تعرّف على ما يحدث"
     },
     "myGroups": "My Groups",
+    "needsAttention": {
+      "approvals": "{count} موافقات تقويم معلقة",
+      "joinRequests": "{count} طلبات انضمام للمجموعة معلقة",
+      "title": "بحاجة إلى اهتمام"
+    },
     "peopleSearch": {
       "ariaSearch": "البحث عن أشخاص",
       "ariaSearchBox": "searchBox",
@@ -1304,6 +1309,7 @@
       "roomsResources": "القاعات والموارد",
       "sermons": "العظات",
       "stripeImport": "استيراد Stripe",
+      "site": "الموقع",
       "website": "الموقع الإلكتروني"
     }
   },
