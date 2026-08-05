@@ -197,6 +197,7 @@
       "confirmDelete": "Are you sure you wish to delete this event?",
       "confirmDeleteSeries": "This is a recurring event. Deleting it will remove the entire series and all of its occurrences. Are you sure?",
       "delete": "Delete",
+      "editEvent": "Edit Event",
       "manageRegistrations": "Manage Registrations",
       "noGroups": "No groups found."
     },
@@ -2314,6 +2315,14 @@
       "serviceOrder": "SERVICE ORDER",
       "time": "Time"
     },
+    "printPreview": {
+      "colorCoded": "Color Coded",
+      "format": "Format:",
+      "materials": "Materials:",
+      "script": "Script",
+      "serviceOrder": "Service Order",
+      "title": "Print Preview"
+    },
     "schedulingPreference": {
       "household": "Household scheduling",
       "householdApart": "Don't schedule household the same day",
@@ -3299,6 +3308,14 @@
       "subtitle": "Configure church settings and preferences",
       "title": "Manage Church"
     },
+    "messagingMinimumAge": {
+      "age13": "13 and older",
+      "age16": "16 and older",
+      "age18": "18 and older",
+      "helpText": "Blocks new private-message conversations when either person is under this age, based on their birthdate. People below the age stay visible in the directory. Existing conversations are not affected.",
+      "label": "Minimum Age for Private Messages",
+      "off": "Off (no restriction)"
+    },
     "mobileAppSettings": {
       "addTab": "Add Tab",
       "subtitle": "Configure mobile app settings",
@@ -3599,6 +3616,7 @@
       "slow": "Slow"
     },
     "appearanceEdit": {
+      "appSettings": "App Settings",
       "branding": "Logo & Branding",
       "brandingDescription": "Upload and manage your organization's logos and branding assets",
       "edit": "Edit",
@@ -3614,6 +3632,8 @@
       "noImage": "No image",
       "ogImage": "Social Media Image",
       "ogImageDesc": "Used for social sharing and SEO. Ideal size: 1200×630px",
+      "pwaShortName": "PWA Short Name (Max 12 chars)",
+      "pwaShortNameHelper": "Used for the mobile app icon name on the device home screen.",
       "seoAssets": "SEO & Browser Assets",
       "upload": "Upload"
     },
