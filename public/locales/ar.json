@@ -2630,19 +2630,7 @@
       "report": "Report"
     },
     "reportsPage": {
-      "attTrend": "اتجاه الحضور",
-      "attTrendDesc": "View attendance trends over time",
-      "bDays": "Birthdays",
-      "bDaysDesc": "View upcoming birthdays",
-      "dailyGroupAtt": "Daily Group Attendance",
-      "dailyGroupAttDesc": "View daily group attendance",
-      "donSum": "Donation Summary",
-      "donSumDesc": "View donation summary",
-      "groupAtt": "حضور المجموعة",
-      "groupAttDesc": "View group attendance",
-      "helpText": "Select a report to view detailed information",
-      "reports": "Reports",
-      "subtitle": "View and download church reports"
+      "reports": "Reports"
     }
   },
   "sermons": {
@@ -4833,7 +4821,9 @@
       "importPrompt": "Would you like to import the text lyrics from PraiseCharts?",
       "keysTabsAria": "علامات تبويب المفاتيح",
       "noKeysAvailable": "لا توجد مفاتيح متاحة. أضف مفتاحًا للبدء.",
-      "title": "Keys"
+      "title": "Keys",
+      "audioTracks": "المقاطع الصوتية",
+      "uploadAudio": "رفع صوت"
     },
     "library": {
       "empty": {
@@ -4912,7 +4902,13 @@
       "songs": "Songs",
       "subtitle": "Manage your music library"
     },
-    "title": "Songs"
+    "title": "Songs",
+    "audio": {
+      "deleteConfirm": "هل أنت متأكد من حذف ملف الصوت هذا؟",
+      "tooLarge": "الملف كبير جدًا. الحد الأقصى للحجم هو 25 ميجابايت.",
+      "unsupportedFormat": "تنسيق صوت غير مدعوم. يرجى رفع ملف MP3 أو M4A أو AAC.",
+      "upload": "رفع صوت"
+    }
   },
   "stockPhotos": {
     "photoBy": "صورة بواسطة",

@@ -2630,19 +2630,7 @@
       "report": "Report"
     },
     "reportsPage": {
-      "attTrend": "Osallistumisen trendi",
-      "attTrendDesc": "View attendance trends over time",
-      "bDays": "Birthdays",
-      "bDaysDesc": "View upcoming birthdays",
-      "dailyGroupAtt": "Daily Group Attendance",
-      "dailyGroupAttDesc": "View daily group attendance",
-      "donSum": "Donation Summary",
-      "donSumDesc": "View donation summary",
-      "groupAtt": "Ryhmän osallistuminen",
-      "groupAttDesc": "View group attendance",
-      "helpText": "Select a report to view detailed information",
-      "reports": "Reports",
-      "subtitle": "View and download church reports"
+      "reports": "Reports"
     }
   },
   "sermons": {
@@ -4833,7 +4821,9 @@
       "importPrompt": "Would you like to import the text lyrics from PraiseCharts?",
       "keysTabsAria": "Sävellajivälilehdet",
       "noKeysAvailable": "Sävellajeja ei ole saatavilla. Lisää sävellaji aloittaaksesi.",
-      "title": "Keys"
+      "title": "Keys",
+      "audioTracks": "Ääniraidat",
+      "uploadAudio": "Lataa ääni"
     },
     "library": {
       "empty": {
@@ -4912,7 +4902,13 @@
       "songs": "Songs",
       "subtitle": "Manage your music library"
     },
-    "title": "Songs"
+    "title": "Songs",
+    "audio": {
+      "deleteConfirm": "Haluatko varmasti poistaa tämän äänitiedoston?",
+      "tooLarge": "Tiedosto on liian suuri. Enimmäiskoko on 25 Mt.",
+      "unsupportedFormat": "Äänimuotoa ei tueta. Lataa MP3-, M4A- tai AAC-tiedosto.",
+      "upload": "Lataa ääni"
+    }
   },
   "stockPhotos": {
     "photoBy": "Kuvaaja",

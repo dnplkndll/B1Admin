@@ -2630,19 +2630,7 @@
       "report": "Bericht"
     },
     "reportsPage": {
-      "attTrend": "Anwesenheitstrend",
-      "attTrendDesc": "Sehen Sie sich die Anwesenheitstrends im Laufe der Zeit an",
-      "bDays": "Geburtstage",
-      "bDaysDesc": "Kommende Geburtstage anzeigen",
-      "dailyGroupAtt": "Tägliche Gruppenanwesenheit",
-      "dailyGroupAttDesc": "Sehen Sie sich die tägliche Anwesenheit der Gruppe an",
-      "donSum": "Spendenzusammenfassung",
-      "donSumDesc": "Spendenzusammenfassung anzeigen",
-      "groupAtt": "Gruppenanwesenheit",
-      "groupAttDesc": "Gruppenteilnahme anzeigen",
-      "helpText": "Wählen Sie einen Bericht aus, um detaillierte Informationen anzuzeigen",
-      "reports": "Berichte",
-      "subtitle": "Kirchenberichte ansehen und herunterladen"
+      "reports": "Berichte"
     }
   },
   "sermons": {
@@ -4833,7 +4821,9 @@
       "importPrompt": "Möchten Sie die Textlieder von PraiseCharts importieren?",
       "keysTabsAria": "Tonart-Tabs",
       "noKeysAvailable": "Keine Tonarten verfügbar. Fügen Sie eine Tonart hinzu, um zu beginnen.",
-      "title": "Tonarten"
+      "title": "Tonarten",
+      "audioTracks": "Audiospuren",
+      "uploadAudio": "Audio hochladen"
     },
     "library": {
       "empty": {
@@ -4912,7 +4902,13 @@
       "songs": "Lieder",
       "subtitle": "Verwalten Sie Ihre Musikbibliothek"
     },
-    "title": "Lieder"
+    "title": "Lieder",
+    "audio": {
+      "deleteConfirm": "Möchten Sie diese Audiodatei wirklich löschen?",
+      "tooLarge": "Die Datei ist zu groß. Die maximale Größe beträgt 25 MB.",
+      "unsupportedFormat": "Nicht unterstütztes Audioformat. Bitte laden Sie eine MP3-, M4A- oder AAC-Datei hoch.",
+      "upload": "Audio hochladen"
+    }
   },
   "stockPhotos": {
     "photoBy": "Foto von",

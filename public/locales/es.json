@@ -2630,19 +2630,7 @@
       "report": "Informe"
     },
     "reportsPage": {
-      "attTrend": "Tendencia de Asistencia",
-      "attTrendDesc": "Ver tendencias de asistencia a lo largo del tiempo",
-      "bDays": "Cumpleaños",
-      "bDaysDesc": "Ver próximos cumpleaños",
-      "dailyGroupAtt": "Asistencia Diaria del Grupo",
-      "dailyGroupAttDesc": "Ver asistencia diaria del grupo",
-      "donSum": "Resumen de Donaciones",
-      "donSumDesc": "Ver resumen de donación",
-      "groupAtt": "Asistencia del Grupo",
-      "groupAttDesc": "Ver asistencia al grupo",
-      "helpText": "Seleccione un informe para ver información detallada",
-      "reports": "Informes",
-      "subtitle": "Ver y descargar informes de la iglesia"
+      "reports": "Informes"
     }
   },
   "sermons": {
@@ -4833,7 +4821,9 @@
       "importPrompt": "¿Desea importar las letras de texto desde PraiseCharts?",
       "keysTabsAria": "Pestañas de tonalidades",
       "noKeysAvailable": "No hay tonalidades disponibles. Agregue una tonalidad para comenzar.",
-      "title": "Tonalidades"
+      "title": "Tonalidades",
+      "audioTracks": "Pistas de audio",
+      "uploadAudio": "Subir audio"
     },
     "library": {
       "empty": {
@@ -4912,7 +4902,13 @@
       "songs": "Canciones",
       "subtitle": "Administra tu biblioteca de música"
     },
-    "title": "Canciones"
+    "title": "Canciones",
+    "audio": {
+      "deleteConfirm": "¿Seguro que quieres eliminar este archivo de audio?",
+      "tooLarge": "El archivo es demasiado grande. El tamaño máximo es 25 MB.",
+      "unsupportedFormat": "Formato de audio no compatible. Sube un archivo MP3, M4A o AAC.",
+      "upload": "Subir audio"
+    }
   },
   "stockPhotos": {
     "photoBy": "Foto de",

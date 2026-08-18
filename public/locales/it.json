@@ -2630,19 +2630,7 @@
       "report": "Rapporto"
     },
     "reportsPage": {
-      "attTrend": "Andamento della Partecipazione",
-      "attTrendDesc": "Visualizza l'andamento delle presenze nel tempo",
-      "bDays": "Compleanni",
-      "bDaysDesc": "Visualizza i prossimi compleanni",
-      "dailyGroupAtt": "Partecipazione Giornaliera al Gruppo",
-      "dailyGroupAttDesc": "Visualizza la partecipazione giornaliera al gruppo",
-      "donSum": "Riepilogo delle Donazioni",
-      "donSumDesc": "Visualizza il riepilogo delle donazioni",
-      "groupAtt": "Partecipazione di Gruppo",
-      "groupAttDesc": "Visualizza la partecipazione del gruppo",
-      "helpText": "Seleziona un rapporto per visualizzare informazioni dettagliate",
-      "reports": "Rapporti",
-      "subtitle": "Visualizza e scarica i resoconti della chiesa"
+      "reports": "Rapporti"
     }
   },
   "sermons": {
@@ -4833,7 +4821,9 @@
       "importPrompt": "Vuoi importare i testi delle canzoni da PraiseCharts?",
       "keysTabsAria": "Schede chiavi",
       "noKeysAvailable": "Nessuna chiave disponibile. Aggiungi una chiave per iniziare.",
-      "title": "Tonalità"
+      "title": "Tonalità",
+      "audioTracks": "Tracce audio",
+      "uploadAudio": "Carica audio"
     },
     "library": {
       "empty": {
@@ -4912,7 +4902,13 @@
       "songs": "Canzoni",
       "subtitle": "Gestisci la tua libreria musicale"
     },
-    "title": "Canzoni"
+    "title": "Canzoni",
+    "audio": {
+      "deleteConfirm": "Sei sicuro di voler eliminare questo file audio?",
+      "tooLarge": "Il file è troppo grande. La dimensione massima è 25 MB.",
+      "unsupportedFormat": "Formato audio non supportato. Carica un file MP3, M4A o AAC.",
+      "upload": "Carica audio"
+    }
   },
   "stockPhotos": {
     "photoBy": "Foto di",

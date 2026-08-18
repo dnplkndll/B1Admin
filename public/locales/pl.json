@@ -2630,19 +2630,7 @@
       "report": "Report"
     },
     "reportsPage": {
-      "attTrend": "Trend obecności",
-      "attTrendDesc": "View attendance trends over time",
-      "bDays": "Birthdays",
-      "bDaysDesc": "View upcoming birthdays",
-      "dailyGroupAtt": "Daily Group Attendance",
-      "dailyGroupAttDesc": "View daily group attendance",
-      "donSum": "Donation Summary",
-      "donSumDesc": "View donation summary",
-      "groupAtt": "Obecność grupy",
-      "groupAttDesc": "View group attendance",
-      "helpText": "Select a report to view detailed information",
-      "reports": "Reports",
-      "subtitle": "View and download church reports"
+      "reports": "Reports"
     }
   },
   "sermons": {
@@ -4833,7 +4821,9 @@
       "importPrompt": "Would you like to import the text lyrics from PraiseCharts?",
       "keysTabsAria": "Zakładki tonacji",
       "noKeysAvailable": "Brak dostępnych tonacji. Dodaj tonację, aby rozpocząć.",
-      "title": "Keys"
+      "title": "Keys",
+      "audioTracks": "Ścieżki audio",
+      "uploadAudio": "Prześlij audio"
     },
     "library": {
       "empty": {
@@ -4912,7 +4902,13 @@
       "songs": "Piosenki",
       "subtitle": "Manage your music library"
     },
-    "title": "Piosenki"
+    "title": "Piosenki",
+    "audio": {
+      "deleteConfirm": "Czy na pewno chcesz usunąć ten plik audio?",
+      "tooLarge": "Plik jest za duży. Maksymalny rozmiar to 25 MB.",
+      "unsupportedFormat": "Nieobsługiwany format audio. Prześlij plik MP3, M4A lub AAC.",
+      "upload": "Prześlij audio"
+    }
   },
   "stockPhotos": {
     "photoBy": "Zdjęcie autorstwa",

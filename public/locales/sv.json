@@ -2630,19 +2630,7 @@
       "report": "Rapport"
     },
     "reportsPage": {
-      "attTrend": "Närvarotrend",
-      "attTrendDesc": "Visa närvarotrender över tid",
-      "bDays": "Födelsedagar",
-      "bDaysDesc": "Visa kommande födelsedagar",
-      "dailyGroupAtt": "Daglig gruppnärvaro",
-      "dailyGroupAttDesc": "Visa daglig gruppnärvaro",
-      "donSum": "Gåvosammanfattning",
-      "donSumDesc": "Visa gåvosammanfattning",
-      "groupAtt": "Gruppnärvaro",
-      "groupAttDesc": "Visa gruppnärvaro",
-      "helpText": "Välj en rapport för att visa detaljerad information",
-      "reports": "Rapporter",
-      "subtitle": "Visa och ladda ner kyrkrapporter"
+      "reports": "Rapporter"
     }
   },
   "sermons": {
@@ -4833,7 +4821,9 @@
       "importPrompt": "Vill du importera textsångtexterna från PraiseCharts?",
       "keysTabsAria": "Tonartsflikar",
       "noKeysAvailable": "Inga tonarter tillgängliga. Lägg till en tonart för att komma igång.",
-      "title": "Tonarter"
+      "title": "Tonarter",
+      "audioTracks": "Ljudspår",
+      "uploadAudio": "Ladda upp ljud"
     },
     "library": {
       "empty": {
@@ -4912,7 +4902,13 @@
       "songs": "Sånger",
       "subtitle": "Hantera ditt musikbibliotek"
     },
-    "title": "Sånger"
+    "title": "Sånger",
+    "audio": {
+      "deleteConfirm": "Är du säker på att du vill ta bort den här ljudfilen?",
+      "tooLarge": "Filen är för stor. Maximal storlek är 25 MB.",
+      "unsupportedFormat": "Formatet stöds inte. Ladda upp en MP3-, M4A- eller AAC-fil.",
+      "upload": "Ladda upp ljud"
+    }
   },
   "stockPhotos": {
     "photoBy": "Foto av",

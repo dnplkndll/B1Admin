@@ -2630,19 +2630,7 @@
       "report": "Report"
     },
     "reportsPage": {
-      "attTrend": "Attendance Trend",
-      "attTrendDesc": "View attendance trends over time",
-      "bDays": "Birthdays",
-      "bDaysDesc": "View upcoming birthdays",
-      "dailyGroupAtt": "Daily Group Attendance",
-      "dailyGroupAttDesc": "View daily group attendance",
-      "donSum": "Donation Summary",
-      "donSumDesc": "View donation summary",
-      "groupAtt": "Group Attendance",
-      "groupAttDesc": "View group attendance",
-      "helpText": "Select a report to view detailed information",
-      "reports": "Reports",
-      "subtitle": "View and download church reports"
+      "reports": "Reports"
     }
   },
   "sermons": {
@@ -4833,7 +4821,9 @@
       "importPrompt": "Would you like to import the text lyrics from PraiseCharts?",
       "keysTabsAria": "Hangnem fülek",
       "noKeysAvailable": "Nincsenek elérhető hangnemek. Adjon hozzá egyet a kezdéshez.",
-      "title": "Keys"
+      "title": "Keys",
+      "audioTracks": "Sávok",
+      "uploadAudio": "Hang feltöltése"
     },
     "library": {
       "empty": {
@@ -4912,7 +4902,13 @@
       "songs": "Songs",
       "subtitle": "Manage your music library"
     },
-    "title": "Songs"
+    "title": "Songs",
+    "audio": {
+      "deleteConfirm": "Biztosan törli ezt a hangfájlt?",
+      "tooLarge": "A fájl túl nagy. A maximális méret 25 MB.",
+      "unsupportedFormat": "Nem támogatott hangformátum. Töltsön fel MP3, M4A vagy AAC fájlt.",
+      "upload": "Hang feltöltése"
+    }
   },
   "stockPhotos": {
     "photoBy": "Fotó:",

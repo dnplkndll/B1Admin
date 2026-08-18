@@ -2630,19 +2630,7 @@
       "report": "Report"
     },
     "reportsPage": {
-      "attTrend": "Attendance Trend",
-      "attTrendDesc": "View attendance trends over time",
-      "bDays": "Birthdays",
-      "bDaysDesc": "View upcoming birthdays",
-      "dailyGroupAtt": "Daily Group Attendance",
-      "dailyGroupAttDesc": "View daily group attendance",
-      "donSum": "Donation Summary",
-      "donSumDesc": "View donation summary",
-      "groupAtt": "Group Attendance",
-      "groupAttDesc": "View group attendance",
-      "helpText": "Select a report to view detailed information",
-      "reports": "Reports",
-      "subtitle": "View and download church reports"
+      "reports": "Reports"
     }
   },
   "sermons": {
@@ -4833,7 +4821,9 @@
       "importPrompt": "Would you like to import the text lyrics from PraiseCharts?",
       "keysTabsAria": "キータブ",
       "noKeysAvailable": "利用可能なキーがありません。キーを追加して開始します。",
-      "title": "Keys"
+      "title": "Keys",
+      "audioTracks": "音声トラック",
+      "uploadAudio": "音声をアップロード"
     },
     "library": {
       "empty": {
@@ -4912,7 +4902,13 @@
       "songs": "Songs",
       "subtitle": "Manage your music library"
     },
-    "title": "Songs"
+    "title": "Songs",
+    "audio": {
+      "deleteConfirm": "この音声ファイルを削除してもよろしいですか？",
+      "tooLarge": "ファイルが大きすぎます。最大サイズは 25 MB です。",
+      "unsupportedFormat": "未対応の音声形式です。MP3、M4A、または AAC ファイルをアップロードしてください。",
+      "upload": "音声をアップロード"
+    }
   },
   "stockPhotos": {
     "photoBy": "写真提供",

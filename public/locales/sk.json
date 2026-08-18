@@ -2630,19 +2630,7 @@
       "report": "Report"
     },
     "reportsPage": {
-      "attTrend": "Attendance Trend",
-      "attTrendDesc": "View attendance trends over time",
-      "bDays": "Birthdays",
-      "bDaysDesc": "View upcoming birthdays",
-      "dailyGroupAtt": "Daily Group Attendance",
-      "dailyGroupAttDesc": "View daily group attendance",
-      "donSum": "Donation Summary",
-      "donSumDesc": "View donation summary",
-      "groupAtt": "Group Attendance",
-      "groupAttDesc": "View group attendance",
-      "helpText": "Select a report to view detailed information",
-      "reports": "Správy",
-      "subtitle": "View and download church reports"
+      "reports": "Správy"
     }
   },
   "sermons": {
@@ -4833,7 +4821,9 @@
       "importPrompt": "Would you like to import the text lyrics from PraiseCharts?",
       "keysTabsAria": "Karty tónin",
       "noKeysAvailable": "Žiadne tóniny nie sú k dispozícii. Pridajte tóninu, aby ste začali.",
-      "title": "Keys"
+      "title": "Keys",
+      "audioTracks": "Zvukové stopy",
+      "uploadAudio": "Nahrať audio"
     },
     "library": {
       "empty": {
@@ -4912,7 +4902,13 @@
       "songs": "Songs",
       "subtitle": "Manage your music library"
     },
-    "title": "Songs"
+    "title": "Songs",
+    "audio": {
+      "deleteConfirm": "Naozaj chcete odstrániť tento zvukový súbor?",
+      "tooLarge": "Súbor je príliš veľký. Maximálna veľkosť je 25 MB.",
+      "unsupportedFormat": "Nepodporovaný zvukový formát. Nahrajte súbor MP3, M4A alebo AAC.",
+      "upload": "Nahrať audio"
+    }
   },
   "stockPhotos": {
     "photoBy": "Fotografia od",

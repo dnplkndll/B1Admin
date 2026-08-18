@@ -2630,19 +2630,7 @@
       "report": "Rapport"
     },
     "reportsPage": {
-      "attTrend": "Aanwezigheidstrend",
-      "attTrendDesc": "Bekijk aanwezigheidstrends in de tijd",
-      "bDays": "Verjaardagen",
-      "bDaysDesc": "Bekijk aankomende verjaardagen",
-      "dailyGroupAtt": "Dagelijkse groepsaanwezigheid",
-      "dailyGroupAttDesc": "Bekijk dagelijkse groepsaanwezigheid",
-      "donSum": "Donatiesamenvatting",
-      "donSumDesc": "Bekijk donatiesamenvatting",
-      "groupAtt": "Groepsaanwezigheid",
-      "groupAttDesc": "Bekijk groepsaanwezigheid",
-      "helpText": "Selecteer een rapport om gedetailleerde informatie te bekijken",
-      "reports": "Rapporten",
-      "subtitle": "Bekijk en download kerkrapporten"
+      "reports": "Rapporten"
     }
   },
   "sermons": {
@@ -4833,7 +4821,9 @@
       "importPrompt": "Wilt u de tekst van PraiseCharts importeren?",
       "keysTabsAria": "Toonsoort-tabbladen",
       "noKeysAvailable": "Geen toonsoorten beschikbaar. Voeg een toonsoort toe om te beginnen.",
-      "title": "Toonsoorten"
+      "title": "Toonsoorten",
+      "audioTracks": "Audiosporen",
+      "uploadAudio": "Audio uploaden"
     },
     "library": {
       "empty": {
@@ -4912,7 +4902,13 @@
       "songs": "Liederen",
       "subtitle": "Beheer uw muziekbibliotheek"
     },
-    "title": "Liederen"
+    "title": "Liederen",
+    "audio": {
+      "deleteConfirm": "Weet u zeker dat u dit audiobestand wilt verwijderen?",
+      "tooLarge": "Het bestand is te groot. De maximale grootte is 25 MB.",
+      "unsupportedFormat": "Niet-ondersteund audioformaat. Upload een MP3-, M4A- of AAC-bestand.",
+      "upload": "Audio uploaden"
+    }
   },
   "stockPhotos": {
     "photoBy": "Foto door",

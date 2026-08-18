@@ -2630,19 +2630,7 @@
       "report": "Report"
     },
     "reportsPage": {
-      "attTrend": "Lankomumo tendencija",
-      "attTrendDesc": "View attendance trends over time",
-      "bDays": "Birthdays",
-      "bDaysDesc": "View upcoming birthdays",
-      "dailyGroupAtt": "Daily Group Attendance",
-      "dailyGroupAttDesc": "View daily group attendance",
-      "donSum": "Donation Summary",
-      "donSumDesc": "View donation summary",
-      "groupAtt": "Grupės lankomumas",
-      "groupAttDesc": "View group attendance",
-      "helpText": "Select a report to view detailed information",
-      "reports": "Reports",
-      "subtitle": "View and download church reports"
+      "reports": "Reports"
     }
   },
   "sermons": {
@@ -4833,7 +4821,9 @@
       "importPrompt": "Would you like to import the text lyrics from PraiseCharts?",
       "keysTabsAria": "Tonacijų skirtukai",
       "noKeysAvailable": "Nėra prieinamų tonacijų. Pridėkite tonaciją, kad pradėtumėte.",
-      "title": "Keys"
+      "title": "Keys",
+      "audioTracks": "Garso takeliai",
+      "uploadAudio": "Įkelti garsą"
     },
     "library": {
       "empty": {
@@ -4912,7 +4902,13 @@
       "songs": "Songs",
       "subtitle": "Manage your music library"
     },
-    "title": "Songs"
+    "title": "Songs",
+    "audio": {
+      "deleteConfirm": "Ar tikrai norite ištrinti šį garso failą?",
+      "tooLarge": "Failas per didelis. Didžiausias dydis yra 25 MB.",
+      "unsupportedFormat": "Nepalaikomas garso formatas. Įkelkite MP3, M4A arba AAC failą.",
+      "upload": "Įkelti garsą"
+    }
   },
   "stockPhotos": {
     "photoBy": "Nuotrauka",
