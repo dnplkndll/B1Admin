@@ -2173,6 +2173,8 @@
     },
     "planItem": {
       "addItem": "Add Item",
+      "collapseToSection": "Collapse to Section",
+      "collapseToSectionConfirm": "Collapse these actions back into a single section? Any changes made to the individual actions will be lost.",
       "duration": "Duration",
       "editItem": "Edit Item",
       "editSection": "Edit Section",
@@ -2194,8 +2196,10 @@
       "enterSearch": "Enter search term",
       "includeInServices": "Include in services",
       "minutes": "Minutes",
+      "noPosition": "None",
       "planItemDescriptionAria": "Plan item description",
       "planItemNameAria": "Plan item name",
+      "position": "Position",
       "searchBoxAria": "searchBox",
       "seconds": "Seconds"
     },
